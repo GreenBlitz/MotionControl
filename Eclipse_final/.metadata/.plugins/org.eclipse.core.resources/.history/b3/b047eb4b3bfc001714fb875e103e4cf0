@@ -209,18 +209,11 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         // page 87
         //Drive
         double R = 1 / getCurve();
-        double returnVal;
-        double slowPercent;
         if (R - d / 2 == 0){
-        	slowPercent = 0;
+        	
         }
-        else
-        {
-	        double fastSlowRatio = (R + d / 2) / (R - d / 2);
-	        slowPercent = 1 / (1 + fastSlowRatio);
-        }
-        
-        return returnVal;
+        double fastSlowRatio = (R + d / 2) / (R - d / 2);
+        double slowPercent = 1 / (1 + fastSlowRatio);
     }
 
     public double getCurve(){

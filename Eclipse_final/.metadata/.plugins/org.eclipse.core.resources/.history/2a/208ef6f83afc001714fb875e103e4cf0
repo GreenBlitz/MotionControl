@@ -198,7 +198,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     }
 
     /**
-     * recieve the motor power ratio (leftMotor power percentege) we need to use
+     * recieve the motor power ratio (leftMotor : rightMotor) we need to use
      * <p>https://pdfs.semanticscholar.org/82aa/c3a57f1941d11f13e6eb53e136bdea23894b.pdf</p>
      * @return the angular speed
      */
@@ -209,18 +209,16 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         // page 87
         //Drive
         double R = 1 / getCurve();
-        double returnVal;
-        double slowPercent;
+        if (m_goalPointR.getX() > 0){ // check if da wae is to the right
+        	if (R - d / 2 == 0){
+        		//TODO
+        	}
+        	return (R - d / 2) / (R + d / 2);
+        }
         if (R - d / 2 == 0){
-        	slowPercent = 0;
+        	//TODO
         }
-        else
-        {
-	        double fastSlowRatio = (R + d / 2) / (R - d / 2);
-	        slowPercent = 1 / (1 + fastSlowRatio);
-        }
-        
-        return returnVal;
+        return (R + d / 2) / (R - d / 2) ;
     }
 
     public double getCurve(){

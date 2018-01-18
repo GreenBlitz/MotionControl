@@ -1,13 +1,10 @@
 package APPC;
 
 
-import org.usfirst.frc.team4590.robot.RobotStats;
-
 import base.Input;
 import base.IterativeController;
 import base.Output;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 
 
 
@@ -198,29 +195,29 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     }
 
     /**
-     * recieve the motor power ratio (leftMotor power percentege) we need to use
+     * recieve the motor power ratio (leftMotor : rightMotor) we need to use
      * <p>https://pdfs.semanticscholar.org/82aa/c3a57f1941d11f13e6eb53e136bdea23894b.pdf</p>
      * @return the angular speed
      */
     public double getMotorRatio(){
-        double d = RobotStats.RightLeftWheelDistance;
+        if (Lb == -1){
+            throw new RuntimeException("Lb wasn't set prior to run");
+        }
         // equation from:
         // https://pdfs.semanticscholar.org/82aa/c3a57f1941d11f13e6eb53e136bdea23894b.pdf
         // page 87
         //Drive
         double R = 1 / getCurve();
-        double returnVal;
-        double slowPercent;
-        if (R - d / 2 == 0){
-        	slowPercent = 0;
+        if (m_goalPointR.getX() > 0){
+        	if (R - 0.5*Lb == 0){
+        		//TODO
+        	}
+        	return (R - 0.5*Lb) / (R + 0.5*Lb);
         }
-        else
-        {
-	        double fastSlowRatio = (R + d / 2) / (R - d / 2);
-	        slowPercent = 1 / (1 + fastSlowRatio);
+        if (R - 0.5*Lb == 0){
+        	//TODO
         }
-        
-        return returnVal;
+        return (R + 0.5*Lb) / (R - 0.5*Lb) ;
     }
 
     public double getCurve(){
