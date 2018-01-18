@@ -17,8 +17,8 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
 
     protected Timer m_controllerLoop;                         // the loop which will calculate the controller
 
-    private IterativeController(Input<IN> in, Output<OUT> out, ITolerance tolerance, IN destination, double period) {
-        super(in, out, tolerance, destination);
+    private IterativeController(Input<IN> in, Output<OUT> out, IN destination, double period) {
+        super(in, out, destination);
         m_period = period;
 
         m_controllerLoop = new Timer();
@@ -28,12 +28,8 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
         		(long) (1000*period));
     }
 
-    public IterativeController(Input<IN> in, Output<OUT> out, ITolerance tolerance, IN destination) {
-        this(in, out, tolerance, destination, DEFAULT_PERIOD);
-    }
-
     public IterativeController(Input<IN> in, Output<OUT> out, IN destination) {
-        this(in, out, NO_TOLERANCE, destination);
+        this(in, out, destination, DEFAULT_PERIOD);
     }
 
     @SuppressWarnings("unchecked")
@@ -42,7 +38,7 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
     }
 
     public IterativeController(Input<IN> in, Output<OUT> out, double period){
-        this(in, out, NO_TOLERANCE, null, period);
+        this(in, out, null, period);
     }
 
     public IterativeController(Input<IN> in, Output<OUT> out) {

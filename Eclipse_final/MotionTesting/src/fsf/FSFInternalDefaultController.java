@@ -44,7 +44,8 @@ public class FSFInternalDefaultController extends IterativeController implements
     }
 
     @Override
-    public void initOptionalParameters() {
+    public void initParameters() throws NoSuchFieldException {
 
     }
+
 }
