@@ -13,9 +13,8 @@ import java.util.TimerTask;
  * Created by karlo on 10/01/2018.
  * Finding the location of the robot
  */
-// TODO: implement a constructor with just 2 WrappedEncoders
-// TODO: implement getRealDistance - URGENT
-public class Localizer implements Input<Point2D> {
+// TODO: add wheel distance to robotmap
+public class Localizer implements Input<Point2D> {	
     public static final double PERIOD = 0.005;
     public static final Object LOCK = new Object();
 
@@ -35,6 +34,10 @@ public class Localizer implements Input<Point2D> {
 
     public Localizer(WrappedEncoder left, WrappedEncoder right, Point2D location, double wheelDistance) {
         this(new WrappedEncoder[]{left}, new WrappedEncoder[]{right}, location, wheelDistance);
+    }
+    
+    public static Localizer of(WrappedEncoder left, WrappedEncoder right, double wheelDist) {
+    	return new Localizer(left, right, new Point2D(0,0,0), wheelDist);
     }
 
     public double getLeftDistance() {

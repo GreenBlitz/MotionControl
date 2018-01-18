@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
-
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import APPC.*;
 import base.WrappedEncoder;
 
@@ -45,9 +46,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		// TODO Auto-generated method stub
 		System.out.println("auto Init");
-    	APPController ctrl = new APPController(loc,out,genPath());
-
-    }
+	}
     // 0.49 m
 	
     public Path genPath(){
@@ -79,7 +78,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		// TODO Auto-generated method stub
-		super.autonomousPeriodic();
+		System.out.println(loc.recieve());
+		out.tankDrive(0.8, 0.8);
 	}
 
 	@Override
@@ -114,7 +114,10 @@ public class Robot extends IterativeRobot {
 		
 		//WrappedEncoder[] leftEncoders = {new WrappedEncoder(new Encoder(0),a),new WrappedEncoder()};
 		System.out.println("robo");
-    	loc = new Localizer(new WrappedEncoder(new Encoder(2,3),-scale),new WrappedEncoder(new Encoder(0,1),scale),new Point2D(0,0,0),0.68);
+    	loc = Localizer.of(
+    			new WrappedEncoder(new Encoder(2,3),-scale),
+    			new WrappedEncoder(new Encoder(0,1),scale),
+    			0.68);
     	out = new APPCOutput(new RobotDrive(
 				new CANTalon(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT),
 				new CANTalon(RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT), 
