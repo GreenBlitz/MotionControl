@@ -4,6 +4,7 @@ import base.Input;
 import base.IterativeController;
 import base.WrappedEncoder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Arrays;
 import java.util.Timer;
@@ -69,6 +70,9 @@ public class Localizer implements Input<Point2D> {
         	rightDistDiff += rightDist;
         	leftDistDiff += leftDist;
         	
+        	//System.out.println(getLeftDistance()+"    "+leftDistDiff);
+        	//System.out.println(getRightDistance()+"    "+rightDistDiff);
+        	
 
             if (leftDistDiff == rightDistDiff) {
                 synchronized (LOCK) {
@@ -99,4 +103,6 @@ public class Localizer implements Input<Point2D> {
             return m_location;
         }
     }
+    
+    
 }

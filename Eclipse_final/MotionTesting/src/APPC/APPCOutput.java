@@ -4,11 +4,12 @@ import org.usfirst.frc.team4590.robot.RobotStats;
 
 import base.Output;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPCOutput implements Output<Double[]> {
     private RobotDrive m_robotDrive;
     
-    private static double safteyFactor = 0.25;
+    private static double safteyFactor = 0.5;
     private static double fullPower = 0.8;
     
     public APPCOutput(RobotDrive robotDrive){
@@ -18,6 +19,7 @@ public class APPCOutput implements Output<Double[]> {
 
     
     public void curveDrive(RobotDrive r,double power,double curve){
+    	SmartDashboard.putNumber("Curve", curve);
     	if(curve == 0){
     		r.tankDrive(power, power,false);
     		System.out.println(power+"   "+power);
@@ -30,7 +32,8 @@ public class APPCOutput implements Output<Double[]> {
         if (R - d / 2 == 0)
         	ratio = 0;
         else
-        	ratio = (R + d / 2) / (R - d / 2);    
+        	ratio = (R + d / 2) / (R - d / 2);
+        SmartDashboard.putNumber("Ratio", ratio);
     	if(curve > 0){
     		r.tankDrive(power, power*ratio,false);
     		System.out.println(power+"   "+power*ratio);// left faster
@@ -47,6 +50,7 @@ public class APPCOutput implements Output<Double[]> {
      */
     @Override
     public void use(Double[] output) {
+    	System.out.println("here");
   	  //e^(-r/w)
   	  //throw new Exception("for those of you who dont know yet that this now does shit");
   	  //double realCurve = Math.pow(Math.E,(-1/output[1])/0.5);

@@ -9,6 +9,7 @@ import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Sendable;
@@ -28,6 +29,7 @@ public class Robot extends IterativeRobot {
 	
 	private Localizer loc;
 	private APPCOutput out;
+	private RobotDrive rd;
 	
 	@Override
 	public void startCompetition() {
@@ -48,7 +50,9 @@ public class Robot extends IterativeRobot {
 		
 		System.out.println("auto Init");
 		//Path path = new PathFactory().genStraightLine(1.5, 0, 0.01).genStraightLine(1.5,- Math.PI / 4, 0.01).construct();
-		Path path = new PathFactory().genStraightLine(1.5, - Math.PI / 4, 0.01).construct();
+		//Path path = new PathFactory().genStraightLine(10, 0, 0.001).construct();
+		Path path = genPath();
+		System.out.println(path);
 		APPController APPCTester = new APPController(loc, out, genPath());
 		APPCTester.start();
 	}
@@ -56,8 +60,10 @@ public class Robot extends IterativeRobot {
 	
     public Path genPath(){
         ArrayList<Point2D> pointList= new ArrayList<Point2D>();
-        for(double i = 0;i < 1;i+=0.001)
-            pointList.add(new Point2D(i, i, 0));
+        for(double i = 0;i < 15;i+=0.001)
+            pointList.add(new Point2D(0, i, 0));
+        //for(double i = 0;i < 4;i+=0.001)
+            //pointList.add(new Point2D(-i, 4, 0));
         //for(double i = 0;i < 0.5;i+=0.001)
             //pointList.add(new Point2D(i,i+1,0));
         System.out.println(pointList.size());
@@ -72,8 +78,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotPeriodic() {
-		// TODO Auto-generated method stub
-		super.robotPeriodic();
 	}
 
 	@Override
@@ -91,7 +95,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		// TODO Auto-generated method stub
-		super.teleopPeriodic();
+		/*rd.tankDrive(0.4, 0.4, false);
+		System.out.println(loc.recieve());*/
+		Joystick dispairStick = new Joystick(0);
+		rd.arcadeDrive(-dispairStick.getRawAxis(1), dispairStick.getRawAxis(4));
 	}
 
 	private static Robot instance;
@@ -124,11 +131,12 @@ public class Robot extends IterativeRobot {
     			new WrappedEncoder(new Encoder(2,3),-scale),
     			new WrappedEncoder(new Encoder(0,1),scale),
     			0.68);
-    	out = new APPCOutput(new RobotDrive(
+    	rd = new RobotDrive(
 				new CANTalon(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT),
 				new CANTalon(RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT), 
 				new CANTalon(RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT), 
-				new CANTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT)));
+				new CANTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT));
+    	out = new APPCOutput(rd);
     }
 
 	

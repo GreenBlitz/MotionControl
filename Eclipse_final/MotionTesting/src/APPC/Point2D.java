@@ -243,7 +243,7 @@ public class Point2D {
     }
     
     public double length() {
-    	return this.distance(GLOBAL_ORIGIN);
+    	return Math.hypot(m_x, m_y);
     }
 
 	@Override

@@ -4,15 +4,16 @@ import base.Input;
 import base.IterativeController;
 import base.Output;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Point2D, Double[]> {
-    protected static final double DEFAULT_LOOKAHEAD = 0.2;
+    protected static final double DEFAULT_LOOKAHEAD = 1;
     protected static final double DEFAULT_EPSILON = 0.005;
-    protected static final double DEFAULT_TOLERANCEDIST = 0.1;
+    protected static final double DEFAULT_TOLERANCEDIST = 0.2;
     protected static final double DEFAULT_MINONTARGETTIME = 10;
-    protected static final double DEFAULT_SLOWDOWN = 0.1;
+    protected static final double DEFAULT_SLOWDOWN = 1;
 
-    protected static final int LOOKBACK_DISTANCE = 5;
+    protected static final int LOOKBACK_DISTANCE = 25;
 
     /**
      * The most recent robot location calc
@@ -201,7 +202,9 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	@Override
     public void calculate() {
        updateRobotLocation();
-       System.out.println(m_robotLoc);
+       SmartDashboard.putNumber("X-pos", m_robotLoc.getX());
+       SmartDashboard.putNumber("Y-pos", m_robotLoc.getY());
+       System.out.println("robot:"+m_robotLoc+"\ngoal:"+m_goalPointR);
        updateGoalPoint();
 
        m_output.use(new Double[]{getPowerPrecent(),getCurve()});
@@ -255,6 +258,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     }
 
     protected double getPowerPrecent(){
-        return Math.min(1.0,m_robotLoc.distance(m_path.getLast())/m_slowDownDistance);
+        return 1;//Math.min(1.0,m_robotLoc.distance(m_path.getLast())/m_slowDownDistance);
     }
 }
