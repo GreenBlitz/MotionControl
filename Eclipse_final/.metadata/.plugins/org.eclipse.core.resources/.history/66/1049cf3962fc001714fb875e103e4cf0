@@ -1,0 +1,8 @@
+package base;
+
+public final class ControllerStoppedEvent extends Event {
+	public ControllerStoppedEvent(){
+		super();
+		setCancelable(false);
+	}
+}

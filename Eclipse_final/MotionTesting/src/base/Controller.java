@@ -13,12 +13,12 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 
 /**
- * Created by karlo on 24/12/2017.
+ *
  * Abstract controller with input and output
  */
 
-// TODO- javadoc everything in here
-// TODO- alexey do your shit right already im sick of it
+// TODO- Javadoc everything in here
+// TODO- Alexey do your shit right already im sick of it
 // TODO- create a new I/O objects limiting the current input recieve and output use by existing limits
 // TODO- consider changing the way the upper and lower bounds work in accordance with the above todo
 public abstract class Controller<IN, OUT> implements LiveWindowSendable, IController {
@@ -35,7 +35,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
 
     protected boolean m_active = false;
     protected boolean m_free   = false;
-
+    
     protected ITolerance m_tolerance = NO_TOLERANCE;
 
     protected HashMap<String, Parameter<?>> m_parameters;
@@ -100,7 +100,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
         }
 
         /**
-         * Read only constrictor
+         * Read only constructor
          * @param get the getter function
          */
         public Parameter(Supplier<T> get) {
@@ -120,7 +120,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
         }
 
         /**
-         * The default recieve() function
+         * The default receive() function
          * @return the value
          */
         @SuppressWarnings("unchecked")
@@ -235,10 +235,17 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
     }
 
     @Override
-    public void stop() {
-        if (!constructed)
+    public final void stop() {
+    	
+    	stop_();
+    	EventManager.fireEvent(ControllerStoppedEvent.of(this));
+    	m_active = false;
+    }
+    
+    protected void stop_(){
+    	if (!constructed)
             throw new ClassNotConstructedException();
-        m_active = false;
+        
     }
 
     /**
@@ -435,7 +442,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
             m_input = null;
         }
     }
-
+    
     /**
      * the main function of the controller.
      * will be run every 20 milliseconds (by default).

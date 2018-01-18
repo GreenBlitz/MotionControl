@@ -1,0 +1,5 @@
+package base;
+
+public class Event {
+	private boolean m_isCanceled;
+}

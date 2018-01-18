@@ -6,7 +6,7 @@ import java.util.TimerTask;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
- * Created by karlo on 14/12/2017.
+ *
  * Represents a controller which has the basic structure of a loop which calls it's input and output
  */
 
@@ -61,16 +61,26 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
         @Override
         public void run() { 
         	if (DriverStation.getInstance().isEnabled()) {
-        		if (m_destination == null) {
-        			System.err.println("WARNING - destination is null");
-        			return;
-        		}
+        		if (m_active) {
+        			if (m_destination == null) {
+        				System.err.println("WARNING - destination is null");
+        				return;
+        			}
         	
-        		if (m_tolerance == NO_TOLERANCE) {
-        			System.err.println("WARNING - tolerance not set");
+        			if (m_tolerance == NO_TOLERANCE) {
+        				System.err.println("WARNING - tolerance not set");
+        			}
+        		
+        			if (!m_tolerance.onTarget()) {
+        				calculate();
+        			} else {
+        				m_active = false;
+        	        	System.out.println("WARNING: STOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
+        			}
+        		} else {
+        			stop();
         		}
         		
-        		calculate(); 
         		//if(itNum++==50) free();
         		//free(); //test only first iteration
         	}

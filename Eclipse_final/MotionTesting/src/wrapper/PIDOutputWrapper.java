@@ -4,7 +4,7 @@ import base.Output;
 import edu.wpi.first.wpilibj.PIDOutput;
 
 /**
- * Created by karlo on 14/12/2017.
+ *
  * Wraps wpilib PIDOutput
  */
 public class PIDOutputWrapper implements Output {

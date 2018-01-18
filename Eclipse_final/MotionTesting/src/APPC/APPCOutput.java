@@ -19,7 +19,7 @@ public class APPCOutput implements Output<Double[]> {
     
     public void curveDrive(RobotDrive r,double power,double curve){
     	if(curve == 0){
-    		r.tankDrive(power, power);
+    		r.tankDrive(power, power,false);
     		//System.out.println(power+"   "+power);
     		return;
     	}
@@ -32,10 +32,10 @@ public class APPCOutput implements Output<Double[]> {
         else
         	ratio = (R + d / 2) / (R - d / 2);    
     	if(curve > 0)
-    		r.tankDrive(power, power*ratio);
+    		r.tankDrive(power, power*ratio,false);
     		//System.out.println(power+"   "+power*ratio);// left faster
     	else
-    		r.tankDrive(power*ratio, power);
+    		r.tankDrive(power*ratio, power,false);
     		//System.out.println(power*ratio+"   "+power); // right faster
     }
 
@@ -52,10 +52,19 @@ public class APPCOutput implements Output<Double[]> {
     	curveDrive(m_robotDrive,output[0]*fullPower*safteyFactor,output[1]);
     	//m_robotDrive.tankDrive(0, 0);
     	  //m_robotDrive.tankDrive(0, 0);
-    	System.out.printf("APPCOutput active: power = %f, curve = %f\n", output[0], output[1]);
+    	System.out.printf("APPCOutput active: power = %f, curve = %f\n", output[0]*fullPower*safteyFactor, output[1]);
     }
     
-    public void tankDrive(double left, double right) {
+    
+    
+    @Override
+	public Double[] noPower() {
+		// TODO Auto-generated method stub
+		return new Double[] {.0, .0};
+	}
+
+
+	public void tankDrive(double left, double right) {
     	m_robotDrive.tankDrive(left, right);
     }
     

@@ -1,0 +1,5 @@
+package base;
+
+public class EventManager {
+	private static Map<Event<T>, IEventListener<T>> map
+}

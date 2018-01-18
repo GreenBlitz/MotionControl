@@ -1,7 +1,7 @@
 package base.exceptions;
 
 /**
- * Created by karlo on 25/12/2017.
+ *
  * This will be thrown when a method is not implemented
  */
 public class NotImplementedException extends IllegalStateException {

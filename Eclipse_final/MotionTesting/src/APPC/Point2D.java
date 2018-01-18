@@ -11,7 +11,7 @@ import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * Created by karlo on 09/01/2018.
+ *
  * Represents a cartesian point
  */
 public class Point2D {

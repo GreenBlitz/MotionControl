@@ -1,7 +1,7 @@
 package APPC;
 
 /**
- * Created by karlo on 10/01/2018.
+ *
  * Representing a 2D line
  */
 public class Line2D {

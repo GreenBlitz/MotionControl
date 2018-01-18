@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.RobotState;
 public class APPController extends IterativeController<Point2D, Double[]> {
     protected static final double DEFAULT_LOOKAHEAD = 0.3;
     protected static final double DEFAULT_EPSILON = 0.005;
-    protected static final double DEFAULT_TOLERANCEDIST = 0.01;
+    protected static final double DEFAULT_TOLERANCEDIST = 0.03;
     protected static final double DEFAULT_MINONTARGETTIME = 10;
     protected static final double DEFAULT_SLOWDOWN = 0.1;
     protected static final double DEFAULT_LB = 0.49;
@@ -115,7 +115,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         m_path = path;
         setLb(Lb);
         m_lookAhead = lookAhead;
-        setTolerance(new AbsoluteTolerance(toleranceDist,minOnTargetTime));
+        setTolerance(new AbsoluteTolerance2(toleranceDist));
         m_epsilon = epsilon > 0 ? epsilon : DEFAULT_EPSILON;
         setDestination(path.getLast());
         m_slowDownDistance = slowDownDistance;
@@ -232,12 +232,14 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	@Override
     public void calculate() {
         if(m_tolerance.onTarget()){
-        	System.out.println("STOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
+        	System.out.println("WARNING: STOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
             m_output.stop();
         }
         else{
             updateRobotLocation();
+            System.out.println(m_robotLoc);
             updateGoalPoint();
+
             m_output.use(new Double[]{getPowerPrecent(),getCurve()});
         }
     }
@@ -269,6 +271,26 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         */// discuss if this is needed
         @Override
         protected boolean onInstantTimeTarget(){
+            return m_robotLoc.distance(m_destination)<m_toleranceDist;
+        }
+
+    }
+    
+    public class AbsoluteTolerance2 extends Tolerance{
+
+        double m_toleranceDist;
+
+        public AbsoluteTolerance2(double toleranceDist){
+            m_toleranceDist = toleranceDist;
+        }
+        /*
+        public AbsoluteTolerance(double toleranceDist) {
+            super(2 * DEFAULT_PERIOD);
+            m_toleranceDist = toleranceDist;
+        }
+        */// discuss if this is needed
+        @Override
+		public boolean onTarget(){
             return m_robotLoc.distance(m_destination)<m_toleranceDist;
         }
 

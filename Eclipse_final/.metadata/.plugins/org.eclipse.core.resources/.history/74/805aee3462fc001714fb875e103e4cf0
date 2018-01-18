@@ -1,0 +1,7 @@
+package base;
+
+public class ControllerStoppedEvent extends Event {
+	public ControllerStoppedEvent(){
+		super();
+	}
+}

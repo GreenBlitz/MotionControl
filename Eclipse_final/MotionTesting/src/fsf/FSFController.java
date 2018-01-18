@@ -9,7 +9,7 @@ import org.la4j.matrix.dense.Basic2DMatrix;
 
 
 /**
- * Created by karlo on 15/12/2017.
+ *
  * This is the FSF controller
  */
 

@@ -1,0 +1,10 @@
+package base;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class EventManager {
+	private static Map<Event, List<IEventListener<?>>> allListeners = new HashMap<>();
+}

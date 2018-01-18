@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Created by karlo on 08/01/2018.
+ *
  * Represents a path of points
  */
 public class Path implements Iterator<Point2D> {

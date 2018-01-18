@@ -1,7 +1,7 @@
 package base;
 
 /**
- * Created by karlo on 08/01/2018.
+ *
  
 public abstract class SISOController extends IterativeController<Double, Double> {
     public SISOController(Input<Double> in, Output<Double> out, Double destination) {

@@ -1,0 +1,30 @@
+package base;
+
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+public class EventManager {
+	private static final Map<Class<? extends Event>, List<IEventListener<?>>> allListeners = new HashMap<>();
+	
+	public static <T extends Event> void registerListener(IEventListener<T> listener, Class<T> eventClass){
+		if (!allListeners.containsKey(eventClass)){
+			allListeners.put(eventClass, new LinkedList<IEventListener<?>>());
+		}
+		
+		allListeners.get(eventClass).add(listener);
+		
+	}
+	
+	public static <T extends Event> void registerListener(Method m){
+		if (!allListeners.containsKey(eventClass)){
+			allListeners.put(eventClass, new LinkedList<IEventListener<?>>());
+		}
+		
+		allListeners.get(eventClass).add(listener);
+		
+	}
+	
+}

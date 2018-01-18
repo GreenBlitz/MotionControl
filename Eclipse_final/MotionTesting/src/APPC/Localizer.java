@@ -1,6 +1,7 @@
 package APPC;
 
 import base.Input;
+import base.IterativeController;
 import base.WrappedEncoder;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -10,12 +11,12 @@ import java.util.TimerTask;
 
 
 /**
- * Created by karlo on 10/01/2018.
+ *
  * Finding the location of the robot
  */
 // TODO: add wheel distance to robotmap
 public class Localizer implements Input<Point2D> {	
-    public static final double PERIOD = 0.005;
+    public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 2;
     public static final Object LOCK = new Object();
 
     private Point2D   m_location;

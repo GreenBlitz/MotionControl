@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
 /**
- * Created by karlo on 14/12/2017.
+ *
  * Wraps wpilib PIDSource
  */
 public class PIDSourceWrapper implements Input<Double> {

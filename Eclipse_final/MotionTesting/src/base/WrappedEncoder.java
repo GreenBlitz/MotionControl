@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.tables.ITable;
 import wrapper.PIDSourceWrapper;
 
 /**
- * Created by karlo on 11/01/2018.
+ *
  * Wraps the methods of Encoder
  *
  * Does everything the same as the regular encoder class except the constructor.

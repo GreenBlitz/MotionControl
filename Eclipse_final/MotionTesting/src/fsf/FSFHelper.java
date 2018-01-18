@@ -1,7 +1,7 @@
 package fsf;
 
 /**
- * Created by karlo on 15/12/2017.
+ *
  * The main part of the FSF algorithm as it calculates everything that the algorithm needs
  */
 

@@ -7,7 +7,7 @@ import base.Output;
 import org.la4j.Matrix;
 
 /**
- * Created by karlo on 14/12/2017.
+ *
  * The internal controller in the default implementation of Full State Feedback
  */
 
