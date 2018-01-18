@@ -1,0 +1,26 @@
+package APPC;
+
+import java.util.ArrayList;
+
+public class PathGenerator {
+	
+	public class PathWrapper {
+		public Path path;
+	}
+	
+	public static Path genStraightLine(Point2D origin, double len, double metersPerPoint, double rotation){
+		ArrayList<Point2D> path = new ArrayList<>();
+		for(int i = 0; i <= len; i += metersPerPoint){
+			path.add(new Point2D(0, i, 0).rotate(rotation).moveBy(origin));
+		}
+		return new Path(path);
+	}
+	public static Path genStraightLine(Path path, double len, double metersPerPoint, double rotation){
+		Point2D origin = path.getLast();
+		for(int i = 0; i <= len; i += metersPerPoint){
+			path.add(new Point2D(0, i, 0).rotate(rotation).moveBy(origin));
+		}
+		return path;
+	}
+	
+}

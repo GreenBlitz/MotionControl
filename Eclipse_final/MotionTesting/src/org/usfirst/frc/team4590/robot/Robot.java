@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team4590.robot;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -27,8 +28,6 @@ public class Robot extends IterativeRobot {
 	
 	private Localizer loc;
 	private APPCOutput out;
-	private static double SPEED_GEARS_RATIO = 4.17;
-	private static double POWER_GEARS_RATIO = 11.03;
 	
 	@Override
 	public void startCompetition() {
@@ -48,14 +47,17 @@ public class Robot extends IterativeRobot {
 		// TODO Auto-generated method stub
 		
 		System.out.println("auto Init");
-		APPController a = new APPController(loc, out, genPath());
+		//Path path = new PathFactory().genStraightLine(1.5, 0, 0.01).genStraightLine(1.5,- Math.PI / 4, 0.01).construct();
+		Path path = new PathFactory().genStraightLine(1.5, - Math.PI / 4, 0.01).construct();
+		APPController APPCTester = new APPController(loc, out, genPath());
+		APPCTester.start();
 	}
     // 0.49 m
 	
     public Path genPath(){
         ArrayList<Point2D> pointList= new ArrayList<Point2D>();
         for(double i = 0;i < 1;i+=0.001)
-            pointList.add(new Point2D(0,i,0));
+            pointList.add(new Point2D(i, i, 0));
         //for(double i = 0;i < 0.5;i+=0.001)
             //pointList.add(new Point2D(i,i+1,0));
         System.out.println(pointList.size());

@@ -20,23 +20,25 @@ public class APPCOutput implements Output<Double[]> {
     public void curveDrive(RobotDrive r,double power,double curve){
     	if(curve == 0){
     		r.tankDrive(power, power,false);
-    		//System.out.println(power+"   "+power);
+    		System.out.println(power+"   "+power);
     		return;
     	}
     	
-    	double d = RobotStats.RightLeftWheelDistance;
+    	double d = RobotStats.HORIZONTAL_WHEEL_DIST;
     	double R = 1 / Math.abs(curve);
         double ratio;
         if (R - d / 2 == 0)
         	ratio = 0;
         else
         	ratio = (R + d / 2) / (R - d / 2);    
-    	if(curve > 0)
+    	if(curve > 0){
     		r.tankDrive(power, power*ratio,false);
-    		//System.out.println(power+"   "+power*ratio);// left faster
-    	else
+    		System.out.println(power+"   "+power*ratio);// left faster
+    	}
+    	else{
     		r.tankDrive(power*ratio, power,false);
-    		//System.out.println(power*ratio+"   "+power); // right faster
+    		System.out.println(power*ratio+"   "+power); // right faster
+    	}
     }
 
     /**

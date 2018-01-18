@@ -21,9 +21,14 @@ import java.util.function.Supplier;
 // TODO- Alexey do your shit right already im sick of it
 // TODO- create a new I/O objects limiting the current input recieve and output use by existing limits
 // TODO- consider changing the way the upper and lower bounds work in accordance with the above todo
-public abstract class Controller<IN, OUT> implements LiveWindowSendable, IController {
+// TODO- uncomment the generic bounds when the time will come. AND IT WILL!!!!! (someday)
+public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Comparable<OUT>*/> implements LiveWindowSendable, IController {
     public static final Input NO_INPUT = () -> null;
     public static final NullTolerance NO_TOLERANCE = new NullTolerance();
+    
+    public static enum State {
+    	ENABLED, DISABLED, END
+    }
 
     protected Output<OUT> m_output;
     protected Input<IN>  m_input = NO_INPUT;
@@ -33,7 +38,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
     protected OUT m_outputLowerBound, m_outputUpperBound;          // out of bounds output will be ignored
     protected IN m_inputLowerBound, m_inputUpperBound;            // out of bounds input will be ignored
 
-    protected boolean m_active = false;
+    protected State m_controllerState = State.DISABLED;
     protected boolean m_free   = false;
     
     protected ITolerance m_tolerance = NO_TOLERANCE;
@@ -228,24 +233,20 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
     }
 
     @Override
-    public void run() {
-        if (!constructed)
-            throw new ClassNotConstructedException();
-        m_active = true;
+    public final synchronized void start() {
+    	System.out.println("starting memes");
+        m_controllerState = State.ENABLED;
     }
 
     @Override
-    public final void stop() {
-    	
-    	stop_();
-    	EventManager.fireEvent(ControllerStoppedEvent.of(this));
-    	m_active = false;
+    public final synchronized void stop() {
+    	m_controllerState = State.DISABLED;
     }
     
-    protected void stop_(){
-    	if (!constructed)
-            throw new ClassNotConstructedException();
-        
+    @Override
+    public final synchronized void end() {
+    	EventManager.fireEvent(ControllerStoppedEvent.of(this));
+    	m_controllerState = State.END;
     }
 
     /**
@@ -395,20 +396,8 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
         return "Controller (general)";
     }
 
-    public synchronized void enable() {
-        if (!constructed)
-            throw new ClassNotConstructedException();
-        m_active = true;
-    }
-    public synchronized void disable() {
-        if (!constructed)
-            throw new ClassNotConstructedException();
-        m_active = false;
-        m_output.stop();
-    }
-
-    public boolean isEnabled() {
-        return m_active;
+    public State getControllerState() {
+        return m_controllerState;
     }
 
     public synchronized void setInputRange(IN min, IN max) {
@@ -436,7 +425,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
 
     public void free() {
         synchronized (LOCK) {
-            m_active = false;
+            m_controllerState = State.END;
             m_free = true;
             m_output = null;
             m_input = null;
@@ -449,6 +438,11 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
      * should move the engines and receive data from the sensors
      */
     public abstract void calculate();
-
+    
+    /**
+     * Initialize any field that you want.
+     * Note: don't use the (String, Controller) constructor, but instead <code>constructParam(String paramName)</code>
+     * @throws NoSuchFieldException
+     */
     public abstract void initParameters() throws NoSuchFieldException;
 }

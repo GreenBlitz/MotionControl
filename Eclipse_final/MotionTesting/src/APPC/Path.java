@@ -98,6 +98,11 @@ public class Path implements Iterator<Point2D> {
             return false;
         }
     }
+    
+    @Override
+    public String toString(){
+    	return "Start point - " + m_path.get(0).toString() + " | End point - " + getLast().toString();
+    }
 
     public Point2D next() {
         return get();

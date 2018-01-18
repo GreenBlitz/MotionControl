@@ -6,7 +6,9 @@ package base;
  */
 
 public interface IController {
-    void run();
+    void start();
 
     void stop();
+    
+    void end();
 }

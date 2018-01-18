@@ -1,0 +1,28 @@
+package APPC;
+
+import java.util.ArrayList;
+
+public class PathFactory {
+	
+	private Path m_path = new Path();
+	
+	public PathFactory() { m_path.add(new Point2D(0, 0, 0)); }
+	public PathFactory(Path path) {
+		m_path = path;
+		if (path.getTotalLength() == 0){
+			System.err.println("No origin supplied to path, setting default");
+			this();
+		}
+	}
+	
+	public PathFactory genStraightLine(double len, double metersPerPoint, double rotation){
+		Point2D origin = path.getLast();
+		for(int i = 0; i <= len; i += metersPerPoint){
+			m_path.add(new Point2D(0, i, 0).rotate(rotation).moveBy(origin));
+		}
+		return this;
+	}
+	
+	
+	
+}

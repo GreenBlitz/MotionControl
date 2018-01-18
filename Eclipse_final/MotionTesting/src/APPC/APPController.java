@@ -1,23 +1,16 @@
 package APPC;
 
-
-import org.usfirst.frc.team4590.robot.RobotStats;
-
 import base.Input;
 import base.IterativeController;
 import base.Output;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
-
-
 
 public class APPController extends IterativeController<Point2D, Double[]> {
-    protected static final double DEFAULT_LOOKAHEAD = 0.3;
+    protected static final double DEFAULT_LOOKAHEAD = 0.2;
     protected static final double DEFAULT_EPSILON = 0.005;
-    protected static final double DEFAULT_TOLERANCEDIST = 0.03;
+    protected static final double DEFAULT_TOLERANCEDIST = 0.1;
     protected static final double DEFAULT_MINONTARGETTIME = 10;
     protected static final double DEFAULT_SLOWDOWN = 0.1;
-    protected static final double DEFAULT_LB = 0.49;
 
     protected static final int LOOKBACK_DISTANCE = 5;
 
@@ -41,10 +34,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
      * The point we are trying to reach in robot coordinates
      */
     private Point2D m_goalPointR;
-    /**
-     * The length of the robot form middle of back wheels to middle of front wheels, in m
-     */
-    public static double Lb = -1;
+
 
     /**
      *used in update() to know if this search is the first
@@ -57,21 +47,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     private double m_slowDownDistance;
 
 
-
-    public static void setLb(double newVal){
-        if (Lb != -1){
-            System.err.println(String.format("Lb was already set to %d", Lb));
-            return;
-        }
-        if (newVal <= 0){
-            throw new RuntimeException(String.format("Lb must be positive but it was set to %d", newVal));
-        }
-        if (newVal > 1 || newVal < 0.4){
-            DriverStation.reportWarning(String.format("Lb was set to %d, isn't that a little to big/small?", newVal), false);
-        }
-        Lb = newVal;
-    }
-
     /**
      *
      * @param in The input object
@@ -82,18 +57,14 @@ public class APPController extends IterativeController<Point2D, Double[]> {
      * @param toleranceDist Absolute tolerance distance
      * @param minOnTargetTime Minimal time on target required for the controller
      * @param slowDownDistance Distance from path end point in which the robot will slow down
-     * @param Lb Distance between middle of the front and rear wheels
      */
-
-
-
     public APPController(Input<Point2D> in, Output<Double[]> out,Path path){
-    	this(in,out,DEFAULT_PERIOD,path,DEFAULT_LOOKAHEAD,DEFAULT_EPSILON,DEFAULT_TOLERANCEDIST,DEFAULT_MINONTARGETTIME,DEFAULT_SLOWDOWN,DEFAULT_LB);
+    	this(in,out,DEFAULT_PERIOD,path,DEFAULT_LOOKAHEAD,DEFAULT_EPSILON,DEFAULT_TOLERANCEDIST,DEFAULT_MINONTARGETTIME,DEFAULT_SLOWDOWN);
     }
 
 
-    public APPController(Input<Point2D> in, Output<Double[]> out,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,double slowDownDistance, double Lb) {
-        this(in,out,DEFAULT_PERIOD,path,lookAhead,epsilon,toleranceDist,minOnTargetTime,slowDownDistance, Lb);
+    public APPController(Input<Point2D> in, Output<Double[]> out,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,double slowDownDistance) {
+        this(in,out,DEFAULT_PERIOD,path,lookAhead,epsilon,toleranceDist,minOnTargetTime,slowDownDistance);
     }
 
     /**
@@ -107,13 +78,11 @@ public class APPController extends IterativeController<Point2D, Double[]> {
      * @param toleranceDist Absolute tolerance distance
      * @param minOnTargetTime Minimal time on target required for the controller
      * @param slowDownDistance Distance from path end point in which the robot will slow down
-     * @param Lb Distance between middle of the front and rear wheels
      */
-    public APPController(Input<Point2D> in, Output<Double[]> out,double period,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,double slowDownDistance, double Lb) {
+    public APPController(Input<Point2D> in, Output<Double[]> out,double period,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,double slowDownDistance) {
         super(in,out,period);
         m_robotLoc = in.recieve();
         m_path = path;
-        setLb(Lb);
         m_lookAhead = lookAhead;
         setTolerance(new AbsoluteTolerance2(toleranceDist));
         m_epsilon = epsilon > 0 ? epsilon : DEFAULT_EPSILON;
@@ -231,27 +200,16 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 
 	@Override
     public void calculate() {
-        if(m_tolerance.onTarget()){
-        	System.out.println("WARNING: STOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
-            m_output.stop();
-        }
-        else{
-            updateRobotLocation();
-            System.out.println(m_robotLoc);
-            updateGoalPoint();
+       updateRobotLocation();
+       System.out.println(m_robotLoc);
+       updateGoalPoint();
 
-            m_output.use(new Double[]{getPowerPrecent(),getCurve()});
-        }
-    }
+       m_output.use(new Double[]{getPowerPrecent(),getCurve()});
+   }
 
     @Override
-    public void initParameters() {
-    	/*
-        try {
-            m_parameters.put("Look-ahead distance", new Parameter<>("m_lookAhead", this));
-        }
-        catch(NoSuchFieldException e) {}
-        */
+    public void initParameters() throws NoSuchFieldException {
+        m_parameters.put("Look-ahead distance", constructParam("m_lookAhead"));
     }
 
 

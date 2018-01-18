@@ -1,0 +1,11 @@
+package APPC;
+
+import java.util.ArrayList;
+
+public class PathGenerator {
+	
+	public static ArrayList<Point2D> genStraightLine(double len, double metersPerPoint, double rotation){
+		
+	}
+	
+}
