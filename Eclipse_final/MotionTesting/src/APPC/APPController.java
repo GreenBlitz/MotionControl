@@ -6,10 +6,17 @@ import base.IterativeController;
 import base.Output;
 import edu.wpi.first.wpilibj.DriverStation;
 
-// TODO add factory
+
 
 public class APPController extends IterativeController<Point2D, Double[]> {
-
+    protected static final double DEFAULT_LOOKAHEAD = 0.3;
+    protected static final double DEFAULT_EPSILON = 0.005;
+    protected static final double DEFAULT_TOLERANCEDIST = 0.01;
+    protected static final double DEFAULT_MINONTARGETTIME = 10;
+    protected static final double DEFAULT_SLOWDOWN = 0.1;
+    protected static final double DEFAULT_LB = 0.49;
+    
+    protected static final int LOOKBACK_DISTANCE = 5;
 
     /**
      * The most recent robot location calc
@@ -44,7 +51,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     /**
      * starts slowing down when the distance to the end of path is shorter than this
      */
-    private int m_slowDownDistance;
+    private double m_slowDownDistance;
 
 
 
@@ -55,29 +62,66 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         if (newVal <= 0){
             throw new RuntimeException(String.format("Lb must be positive but it was set to %d", newVal));
         }
-        if (newVal > 100 || newVal < 40){
+        if (newVal > 1 || newVal < 0.4){
             DriverStation.reportWarning(String.format("Lb was set to %d, isn't that a little to big/small?", newVal), false);
         }
         Lb = newVal;
     }
 
-    public APPController(Input<Point2D> in, Output<Double[]> out,Point2D robotLoc,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,int slowDownDistance) {
-        this(in,out,DEFAULT_PERIOD,robotLoc,path,lookAhead,epsilon,toleranceDist,minOnTargetTime,slowDownDistance);
-    }
+    /**
+     * 
+     * @param in The input object
+     * @param out The motor manager object
+     * @param path The path the robot will follow
+     * @param lookAhead Look Ahead distance
+     * @param epsilon Margin of search for goal point on path 
+     * @param toleranceDist Absolute tolerance distance
+     * @param minOnTargetTime Minimal time on target required for the controller
+     * @param slowDownDistance Distance from path end point in which the robot will slow down
+     * @param Lb Distance between middle of the front and rear wheels
+     */
+    
 
-    public APPController(Input<Point2D> in, Output<Double[]> out,double period,Point2D robotLoc,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,int slowDownDistance) {
+    
+    public APPController(Input<Point2D> in, Output<Double[]> out,Path path){
+    	this(in,out,DEFAULT_PERIOD,path,DEFAULT_LOOKAHEAD,DEFAULT_EPSILON,DEFAULT_TOLERANCEDIST,DEFAULT_MINONTARGETTIME,DEFAULT_SLOWDOWN,DEFAULT_LB);
+    }
+    
+    
+    public APPController(Input<Point2D> in, Output<Double[]> out,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,double slowDownDistance, double Lb) {
+        this(in,out,DEFAULT_PERIOD,path,lookAhead,epsilon,toleranceDist,minOnTargetTime,slowDownDistance, Lb);
+    }
+    
+    /**
+     * 
+     * @param in The input object
+     * @param out The motor manager object
+     * @param period The time period of calling the controller calculation
+     * @param path The path the robot will follow
+     * @param lookAhead Look Ahead distance
+     * @param epsilon Margin of search for goal point on path 
+     * @param toleranceDist Absolute tolerance distance
+     * @param minOnTargetTime Minimal time on target required for the controller
+     * @param slowDownDistance Distance from path end point in which the robot will slow down
+     * @param Lb Distance between middle of the front and rear wheels
+     */
+    public APPController(Input<Point2D> in, Output<Double[]> out,double period,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,double slowDownDistance, double Lb) {
         super(in,out,period);
-        m_robotLoc = robotLoc;
+        m_robotLoc = in.recieve();
         m_path = path;
+        //@TODO HOLY FUCKING SHIT WHY DID YOU MAKE IT CRASH - IT INITIALIZES LB EVERY AUTO RUN PLZ FIX NOW - Guyde <3
+        if (APPController.Lb == -1)
+        	setLb(Lb);
+        
         m_lookAhead = lookAhead;
-        m_epsilon = epsilon;
+        m_epsilon = epsilon > 0 ? epsilon : DEFAULT_EPSILON;
         m_destination = path.getLast();
         m_tolerance = new AbsoluteTolerance(toleranceDist,minOnTargetTime);
         m_slowDownDistance = slowDownDistance;
         firstSearch = true;
         m_goalPointR = null;
-        if(epsilon < 0)
-            DriverStation.reportWarning(String.format("epsilon should be a positive number"), false);
+        if(epsilon <= 0)
+            DriverStation.reportWarning(String.format("epsilon should be a positive number and has been replaced with a default value"), false);
     }
 
 
@@ -86,8 +130,11 @@ public class APPController extends IterativeController<Point2D, Double[]> {
      * from encoders, gyro and accelerometer. then sets it
      * If we will have time we need to implement Kalman Filter
      */
-    public void getRobotLocation(){
+    public void updateRobotLocation(){
         m_robotLoc = m_input.recieve();
+    	//System.out.print("moving from-"+m_robotLoc);
+    	//m_robotLoc = m_robotLoc.moveBy(0,0.02);
+    	System.out.println(" cur robot loc: "+m_robotLoc);
     }
 
     /**
@@ -99,13 +146,19 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         boolean foundPoint = false;
         double distance;
         int goalPointIndex = 0; //not relevant, set in order to not recieve an error
+        int i = 0;
+
         while(m_path.hasNext())
         {
+        	//System.out.println(m_path.getCurrentIndex());
             checkPoint = m_path.get();
-            distance = m_robotLoc.distance(checkPoint) - m_lookAhead;
+            distance = Math.abs(m_robotLoc.distance(checkPoint) - m_lookAhead);
+            //System.out.println("dist between r:"+m_robotLoc+" c:"+checkPoint+"    is:"+distance);
+            
             if(foundPoint) //once a point is found searches nearby points for a better point
             {
-                if (distance < m_epsilon && distance > -m_epsilon){
+                if (distance<m_epsilon){
+                	//System.out.println("another "+distance +" min is: "+min_distance +"THE POINT IS: "+checkPoint);
                     if(distance < min_distance){
                         min_distance = distance;
                         m_goalPointR = checkPoint;
@@ -114,11 +167,15 @@ public class APPController extends IterativeController<Point2D, Double[]> {
                 } else if (firstSearch) //preforms a global search on the first search
                     foundPoint = false;
                 else {
-                    m_path.setCurrentIndex(goalPointIndex);
+                    m_path.setCurrentIndex(Math.max(goalPointIndex - LOOKBACK_DISTANCE,0));
+                	//m_path.setCurrentIndex(Math.min(goalPointIndex - LOOKBACK_DISTANCE);
+                    //System.out.println("robot: "+m_robotLoc);
+                    //System.out.println("found a goalpoint!:: "+m_goalPointR);
                     return; //returns once the local search finishes
                 }
             } else {
-                if (distance < m_epsilon && distance > -m_epsilon){
+                if (distance<m_epsilon){
+                	//System.out.println("found first dist "+distance);
                     foundPoint = true;
                     min_distance = distance;
                     m_goalPointR = checkPoint;
@@ -127,21 +184,20 @@ public class APPController extends IterativeController<Point2D, Double[]> {
             }
         }
         if(firstSearch){
-            if(m_goalPointR == null)
-                m_goalPointR = m_path.closetPointTo(m_robotLoc);
+            if(m_goalPointR == null){
+                m_goalPointR = m_path.closestPointTo(m_robotLoc);
+                //System.out.println("no goal");
+            }
             firstSearch = false;
-            m_path.setCurrentIndex(goalPointIndex);
+            m_path.setCurrentIndex(Math.max(goalPointIndex - LOOKBACK_DISTANCE,0));
+            //System.out.println("in first search->");
         } else
             m_goalPointR = m_path.getLast();
-
-
+        //System.out.println("None Found "+m_goalPointR);
     }
 
-
-
-
     /**
-     * recieve the motor power ratio (fastMotor : slowMotor) we need to use
+     * recieve the motor power ratio (leftMotor : rightMotor) we need to use
      * <p>https://pdfs.semanticscholar.org/82aa/c3a57f1941d11f13e6eb53e136bdea23894b.pdf</p>
      * @return the angular speed
      */
@@ -152,10 +208,28 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         // equation from:
         // https://pdfs.semanticscholar.org/82aa/c3a57f1941d11f13e6eb53e136bdea23894b.pdf
         // page 87
-        double R = Math.pow(m_lookAhead, 2) / (2 * m_goalPointR.getX());
-        return (R - 0.5*Lb) / (R + 0.5*Lb);
+        //Drive
+        double R = Math.pow(m_lookAhead, 2) / (2 * Math.abs(m_goalPointR.getX()));
+        if (m_goalPointR.getX() > 0){
+        	if (R - 0.5*Lb == 0){
+        		//TODO
+        	}
+        	return (R - 0.5*Lb) / (R + 0.5*Lb);
+        }
+        if (R - 0.5*Lb == 0){
+        	//TODO
+        }
+        return (R + 0.5*Lb) / (R - 0.5*Lb) ;
     }
 
+    public double getCurve(){
+    	Point2D goalVector = m_goalPointR.changePrespectiveTo(m_robotLoc);
+    	return (2 * Math.abs(goalVector.getX())) / Math.pow(goalVector.length(), 2);
+    }
+
+    
+    //TODO: fix all the constructors to call this and not super
+    /*
     public APPController(Input<Point2D> in, Output<Double[]> out, Point2D destination) {
         super(in, out, destination);
     }
@@ -176,21 +250,29 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         super(in, out);
         //setTolerance(new AbsoluteTolerance(absoluteTolerance));
     }
+	*/
 
-    @Override
+	@Override
     public void calculate() {
-        if(m_tolerance.onTarget())
-            m_output.use(new Double[]{0.0,0.0});
+        if(m_tolerance.onTarget()){
+        	System.out.println("STOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
+            m_output.stop();
+        }
         else{
-            getRobotLocation();
+            updateRobotLocation();
             updateGoalPoint();
-            m_output.use(new Double[]{getMotorRatio(),getPowerPrecent()});
+            m_output.use(new Double[]{getPowerPrecent(),getCurve()});
         }
     }
 
     @Override
-    public void initParameters() throws NoSuchFieldException {
-        m_parameters.put("Look-ahead distance", constructParam("m_lookAhead"));
+    public void initParameters() {
+    	/*
+        try {
+            m_parameters.put("Look-ahead distance", new Parameter<>("m_lookAhead", this));
+        }
+        catch(NoSuchFieldException e) {}
+        */
     }
 
 
@@ -216,6 +298,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     }
 
     protected double getPowerPrecent(){
-        return Math.min(1.0,m_robotLoc.distance(m_path.getLast())/(double)m_slowDownDistance);
+        return Math.min(1.0,m_robotLoc.distance(m_path.getLast())/m_slowDownDistance);
     }
 }

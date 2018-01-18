@@ -1,15 +1,19 @@
 
 package org.usfirst.frc.team4590.robot;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-import org.usfirst.frc.team4590.robot.commands.ExampleCommand;
-import org.usfirst.frc.team4590.robot.subsystems.ExampleSubsystem;
+import com.ctre.CANTalon;
+
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SampleRobot;
+
+import APPC.*;
+import base.WrappedEncoder;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,98 +23,104 @@ import org.usfirst.frc.team4590.robot.subsystems.ExampleSubsystem;
  * directory.
  */
 public class Robot extends IterativeRobot {
-
-	public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-	public static OI oi;
-
-	Command autonomousCommand;
-	SendableChooser<Command> chooser = new SendableChooser<>();
-
-	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
-	 */
+	
+	private Localizer loc;
+	private APPCOutput out;
+	private static double SPEED_GEARS_RATIO = 4.17;
+	private static double POWER_GEARS_RATIO = 11.03;
+	
 	@Override
-	public void robotInit() {
-		oi = new OI();
-		chooser.addDefault("Default Auto", new ExampleCommand());
-		// chooser.addObject("My Auto", new MyAutoCommand());
-		SmartDashboard.putData("Auto mode", chooser);
+	public void startCompetition() {
+		// TODO Auto-generated method stub
+		super.startCompetition();
 	}
 
-	/**
-	 * This function is called once each time the robot enters Disabled mode.
-	 * You can use it to reset any subsystem information you want to clear when
-	 * the robot is disabled.
-	 */
 	@Override
 	public void disabledInit() {
+		// TODO Auto-generated method stub
+		super.disabledInit();
+	}
 
+	@Override
+	public void autonomousInit() {
+		// TODO Auto-generated method stub
+		System.out.println("auto Init");
+    	APPController ctrl = new APPController(loc,out,genPath());
+
+    }
+    // 0.49 m
+	
+    public Path genPath(){
+        ArrayList<Point2D> pointList= new ArrayList<Point2D>();
+        for(double i = 0;i < 5;i+=0.001)
+            pointList.add(new Point2D(0,i,0));
+        System.out.println(pointList.size());
+        return new Path(pointList);
+    }
+
+	@Override
+	public void teleopInit() {
+		// TODO Auto-generated method stub
+		super.teleopInit();
+	}
+
+	@Override
+	public void robotPeriodic() {
+		// TODO Auto-generated method stub
+		super.robotPeriodic();
 	}
 
 	@Override
 	public void disabledPeriodic() {
-		Scheduler.getInstance().run();
+		// TODO Auto-generated method stub
+		super.disabledPeriodic();
 	}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select
-	 * between different autonomous modes using the dashboard. The sendable
-	 * chooser code works with the Java SmartDashboard. If you prefer the
-	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-	 * getString code to get the auto name from the text box below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional commands to the
-	 * chooser code above (like the commented example) or additional comparisons
-	 * to the switch structure below with additional strings & commands.
-	 */
-	@Override
-	public void autonomousInit() {
-		autonomousCommand = chooser.getSelected();
-
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
-		// schedule the autonomous command (example)
-		if (autonomousCommand != null)
-			autonomousCommand.start();
-	}
-
-	/**
-	 * This function is called periodically during autonomous
-	 */
 	@Override
 	public void autonomousPeriodic() {
-		Scheduler.getInstance().run();
+		// TODO Auto-generated method stub
+		super.autonomousPeriodic();
 	}
 
-	@Override
-	public void teleopInit() {
-		// This makes sure that the autonomous stops running when
-		// teleop starts running. If you want the autonomous to
-		// continue until interrupted by another command, remove
-		// this line or comment it out.
-		if (autonomousCommand != null)
-			autonomousCommand.cancel();
-	}
-
-	/**
-	 * This function is called periodically during operator control
-	 */
 	@Override
 	public void teleopPeriodic() {
-		Scheduler.getInstance().run();
+		// TODO Auto-generated method stub
+		super.teleopPeriodic();
 	}
 
-	/**
-	 * This function is called periodically during test mode
-	 */
-	@Override
-	public void testPeriodic() {
-		LiveWindow.run();
-	}
+	private static Robot instance;
+	/*double scale = 2.4/650;
+		
+		//WrappedEncoder[] leftEncoders = {new WrappedEncoder(new Encoder(0),a),new WrappedEncoder()};
+		Point2D p = new Point2D(0.0,0.0,0.0);
+    	Localizer l = new Localizer(new WrappedEncoder(new Encoder(2,3),scale),new WrappedEncoder(new Encoder(0,1),scale),p,70.0);
+    	APPCOutput ooo = new APPCOutput(Chassis.getInstance().<RobotDrive>getActuator("Robot Drive"));
+    	/*new RobotDrive(
+				new CANTalon(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT),
+				new CANTalon(RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT), 
+				new CANTalon(RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT), 
+				new CANTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT)));*/
+ 	
+    public Robot() {
+    }
+    
+    @Override
+    public void robotInit() {
+		
+		//double scale = 2.4/650;
+		double scale = 0.0036;//(1.0 / 220.5);// * POWER_GEARS_RATIO / SPEED_GEARS_RATIO;
+		
+		//WrappedEncoder[] leftEncoders = {new WrappedEncoder(new Encoder(0),a),new WrappedEncoder()};
+		
+		//WrappedEncoder[] leftEncoders = {new WrappedEncoder(new Encoder(0),a),new WrappedEncoder()};
+		System.out.println("robo");
+    	loc = new Localizer(new WrappedEncoder(new Encoder(2,3),-scale),new WrappedEncoder(new Encoder(0,1),scale),new Point2D(0,0,0),0.68);
+    	out = new APPCOutput(new RobotDrive(
+				new CANTalon(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT),
+				new CANTalon(RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT), 
+				new CANTalon(RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT), 
+				new CANTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT)));
+    }
+
+	
 }
