@@ -8,31 +8,28 @@ import edu.wpi.first.wpilibj.RobotDrive;
 public class APPCOutput implements Output<Double[]> {
     private RobotDrive m_robotDrive;
     
-    private static double safteyFactor = 0.5;
-    private static double fullPower = 0.8;
+    private static double safteyFactor = 0.1;
     
     public APPCOutput(RobotDrive robotDrive){
         m_robotDrive = robotDrive;
     }
 
     
-    public void curveDrive(RobotDrive r,double power,double curve){
-    	if(curve == 0){
-    		r.tankDrive(power, power);
-    		return;
-    	}
+    public void curveDrive(RobotDrive r,double crve){
+    	double speed = 1;
+    	
     	
     	double d = RobotStats.RightLeftWheelDistance;
-    	double R = 1 / Math.abs(curve);
+    	double R = 1 / Math.abs(crve);
         double ratio;
         if (R - d / 2 == 0)
         	ratio = 0;
         else
         	ratio = (R + d / 2) / (R - d / 2);    
-    	if(curve > 0)
-    		r.tankDrive(power, power*ratio);		// left faster
+    	if(crve > 0)
+    		r.tankDrive(speed, speed*ratio);;		// left faster
     	else
-    		r.tankDrive(power*ratio, power);  // right faster
+    		r.tankDrive(speed*ratio, speed);  // right faster
     }
 
     /**
@@ -41,8 +38,10 @@ public class APPCOutput implements Output<Double[]> {
      */
     @Override
     public void use(Double[] output) {
-    	  
-    	  curveDrive(m_robotDrive,output[1]*fullPower*safteyFactor,output[2]);
+    	  //e^(-r/w)
+    	  //throw new Exception("for those of you who dont know yet that this now does shit");
+    	  double realCurve = Math.pow(Math.E,(-1/output[1])/0.5);
+    	  m_robotDrive.drive(safteyFactor * output[0],realCurve);
     	  System.out.printf("APPCOutput active: power = %f, curve = %f", output[0], output[1]);
     }
     

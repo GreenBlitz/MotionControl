@@ -197,6 +197,32 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         //System.out.println("None Found "+m_goalPointR);
     }
 
+    /**
+     * recieve the motor power ratio (leftMotor power percentege) we need to use
+     * <p>https://pdfs.semanticscholar.org/82aa/c3a57f1941d11f13e6eb53e136bdea23894b.pdf</p>
+     * @return the angular speed
+     */
+    public double getMotorRatio(){
+        double d = RobotStats.RightLeftWheelDistance;
+        // equation from:
+        // https://pdfs.semanticscholar.org/82aa/c3a57f1941d11f13e6eb53e136bdea23894b.pdf
+        // page 87
+        //Drive
+        double R = 1 / getCurve();
+        double returnVal;
+        double slowPercent;
+        if (R - d / 2 == 0){
+        	slowPercent = 0;
+        }
+        else
+        {
+	        double fastSlowRatio = (R + d / 2) / (R - d / 2);
+	        slowPercent = 1 / (1 + fastSlowRatio);
+        }
+        
+        return returnVal;
+    }
+
     public double getCurve(){
     	Point2D goalVector = m_goalPointR.changePrespectiveTo(m_robotLoc);
     	return (2 * Math.abs(goalVector.getX())) / Math.pow(goalVector.length(), 2);
