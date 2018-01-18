@@ -1,19 +1,21 @@
 package APPC;
 
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.function.Function;
+
 import org.la4j.Matrix;
 import org.la4j.Vector;
 import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.dense.BasicVector;
-
-
-import java.util.function.Function;
 
 /**
  * Created by karlo on 09/01/2018.
  * Represents a cartesian point
  */
 public class Point2D {
-    public static final Point2D GLOBAL_ORIGIN = new Point2D(0,0, 0);
+    public static final Point2D GLOBAL_ORIGIN = new Point2D(0, 0, 0);
 
     private double m_x;
     private double m_y;
@@ -52,8 +54,25 @@ public class Point2D {
      * @param y shift along the Y axis
      * @return this point shifted by x and y
      */
+    private Point2D toNatrualChords(){
+    	return this.rotate(-m_direction);
+    }
+    private Point2D toRegularChords(){
+    	return this.rotate(m_direction);
+    }
+    
     public Point2D moveBy(double x, double y) {
-        return (new Point2D(m_x + x, m_y + y, m_direction)).rotateRelativeTo(this, m_direction);
+        //return (new Point2D(m_x + x, m_y + y, m_direction)).rotateRelativeTo(this, m_direction);
+        Point2D meh = this.toNatrualChords();
+        return new Point2D(meh.getX() + x, meh.getY() + y, meh.getDirection()).toRegularChords();
+    }
+    
+    public Point2D moveBy(Point2D point){
+    	return moveBy(point.getX(),point.getY());
+    }
+    
+    public Point2D changePrespectiveTo(Point2D point){
+    	return new Point2D(m_x-point.getX(),m_y-point.getY(),0).rotate(-point.getDirection());
     }
 
     /**
@@ -111,7 +130,14 @@ public class Point2D {
      */
     //TODO- moveBy behaviour changed fix accordingly
     public Point2D rotateRelativeTo(Point2D origin, double angle) {
-        return moveRelativeTo(origin).rotate(normalize(angle)).moveBy(origin.getX(), origin.getY());
+    	Point2D relative = new Point2D(
+    			m_x - origin.getX(),
+    			m_y - origin.getY(),
+    			m_direction).rotate(angle);
+    	
+    	return new Point2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction - angle);
+    	//return new Point2D(relative.getX() +m_x, relative.getY() + m_y, m_direction);
+    	//there where pluses
     }
 
     /**
@@ -122,7 +148,7 @@ public class Point2D {
      * @param a22 second line, second column
      * @return Matrix containing these 4 elements
      */
-    public static Matrix genMatrix(double a11, double a12, double a21, double a22) {
+    public static org.la4j.Matrix genMatrix(double a11, double a12, double a21, double a22) {
         return new Basic2DMatrix(new double[][] {{a11, a12}, {a21, a22}});
     }
 
@@ -131,7 +157,7 @@ public class Point2D {
      * @param s the scale factor
      * @return A scale matrix
      */
-    public static Matrix genScaleMatrix(double s) {
+    public static org.la4j.Matrix genScaleMatrix(double s) {
         return genMatrix(s, 0, 0, s);
     }
 
@@ -140,7 +166,7 @@ public class Point2D {
      * @param angle the rotation angle
      * @return A rotation matrix
      */
-    public static Matrix genRotationMatrix(double angle) {
+    public static org.la4j.Matrix genRotationMatrix(double angle) {
         return genMatrix(Math.cos(angle), -Math.sin(angle), Math.sin(angle), Math.cos(angle));
     }
 
@@ -169,10 +195,6 @@ public class Point2D {
 
     public double distance(Point2D other) {
         return toPolarRelative(other)[0];
-    }
-
-    public double distanceFromOrigin() {
-        return distance(new Point2D(0, 0, m_direction));
     }
 
     /**
@@ -216,7 +238,25 @@ public class Point2D {
      */
     private static double normalize(double angle) {
         if (angle >= 2*Math.PI) return normalize(angle - 2*Math.PI);
-        if (angle<  0) return normalize(angle + 2*Math.PI);
+        if (angle <= -2*Math.PI) return normalize(angle + 2*Math.PI);
         return angle;
     }
+    
+    public double length() {
+    	return this.distance(GLOBAL_ORIGIN);
+    }
+
+	@Override
+	public String toString() {
+		int p = 4;
+		return "Point2D [m_x=" + goodRound(m_x, p) + "("+m_x+")" + ", m_y=" +goodRound(m_y, p)+ "(" + m_y +")" + ", m_direction=" + m_direction + "]";
+	}
+	
+	private static String goodRound(double num,int precision){
+		DecimalFormat df = new DecimalFormat("#.####");
+		df.setRoundingMode(RoundingMode.CEILING);
+		return df.format(num);
+	}
+    
+    
 }

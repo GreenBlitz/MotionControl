@@ -47,9 +47,10 @@ public class FSFController extends IterativeController implements LTIController 
     }
 
     @Override
-    public void initOptionalParameters() {
+    public void initParameters() throws NoSuchFieldException {
 
     }
+
 
     public Matrix[] toLTI() { return new Matrix[] { m_A, m_B, m_C, m_D }; }
 }

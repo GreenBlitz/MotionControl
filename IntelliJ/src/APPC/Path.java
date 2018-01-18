@@ -28,12 +28,17 @@ public class Path implements Iterator<Point2D> {
      * @throws EndOfPathException if the path doesn't have enough locations in it
      */
     public Point2D getRaw(int tick) throws EndOfPathException{
+    	if(tick>=m_path.size())
+    		throw new EndOfPathException(tick);
+    	return m_path.get(tick);
+    	/*
         try {
-            return m_path.get(tick);
+            
         }
         catch(ArrayIndexOutOfBoundsException e) {
             throw new EndOfPathException(tick);
         }
+        */
     }
 
     public Point2D getLast() {
@@ -67,7 +72,9 @@ public class Path implements Iterator<Point2D> {
         m_currentIndex = currentIndex;
     }
 
-    public Point2D closetPointTo(Point2D point2D){
+    public Point2D closestPointTo(Point2D point2D){
+    	System.out.println(point2D);
+    	System.out.println(m_path.get(0));
         return m_path.stream().min(Comparator.comparingDouble(value -> value.distance(point2D))).get();
     }
 

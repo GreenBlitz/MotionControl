@@ -16,32 +16,32 @@ public class PID extends IterativeController<Double, Double> {
     double m_kD;
     double m_kF;
 
-    public PID(Input<Double> in, Output<Double> out, ITolerance tolerance, Double destination, double kp, double ki, double kd, double kf) {
-        super(in, out, tolerance, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double kd, double kf) {
+        super(in, out, destination);
         m_kP = kp;
         m_kI = ki;
         m_kD = kd;
         m_kF = kf;
     }
 
-    public PID(Input<Double> in, Output<Double> out, ITolerance tolerance, Double destination, double kp) {
-        super(in, out, tolerance, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination, double kp) {
+        super(in, out, destination);
         m_kP = kp;
         m_kI = 0;
         m_kD = 0;
         m_kF = 0;
     }
 
-    public PID(Input<Double> in, Output<Double> out, ITolerance tolerance, Double destination, double kp, double ki) {
-        super(in, out, tolerance, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki) {
+        super(in, out, destination);
         m_kP = kp;
         m_kI = ki;
         m_kD = 0;
         m_kF = 0;
     }
 
-    public PID(Input<Double> in, Output<Double> out, ITolerance tolerance, Double destination, double kp, double ki, double kd) {
-        super(in, out, tolerance, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double kd) {
+        super(in, out, destination);
         m_kP = kp;
         m_kI = ki;
         m_kD = kd;

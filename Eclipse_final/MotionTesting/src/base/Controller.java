@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.tables.ITable;
 import edu.wpi.first.wpilibj.tables.ITableListener;
 
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.function.Supplier;
@@ -23,7 +24,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
     public static final NullTolerance NO_TOLERANCE = new NullTolerance();
 
     protected Output<OUT> m_output;
-    protected Input<IN>  m_input;
+    protected Input<IN>  m_input = NO_INPUT;
     protected IN m_error;
     protected IN m_destination;
 
@@ -33,11 +34,13 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
     protected boolean m_active = false;
     protected boolean m_free   = false;
 
-    protected ITolerance m_tolerance;
+    protected ITolerance m_tolerance = NO_TOLERANCE;
 
     protected HashMap<String, Parameter> m_parameters;
 
     protected final Object LOCK = new Object();
+
+    protected boolean constructed = false;
 
     /**
      * The function set() tries to set a parameter and returns whether that set happened or not
@@ -140,40 +143,63 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
 
     }
 
-    public Controller(Input<IN> in, Output<OUT> out, ITolerance tolerance, IN destination) {
+    public Controller setInput(Input<IN> in){
+        if (constructed)
+            throw new RuntimeException("Controller already constructed");
+        m_input = in;
+        return this;
+    }
+
+    public Controller setOutput(Output<OUT> out){
+        if (constructed)
+            throw new RuntimeException("Controller already constructed");
+        m_output = out;
+        return this;
+    }
+
+    public Controller setDest(IN dest){
+        if (constructed)
+            throw new RuntimeException("Controller already constructed");
+        m_destination = dest;
+        return this;
+    }
+
+    public Controller construct(){
+        if (constructed)
+            throw new RuntimeException("Already constructed");
+        if (m_tolerance.equals(NO_TOLERANCE))
+            throw new RuntimeException("Tolerance not set");
+        if (m_output == null)
+            throw new RuntimeException("Output not set");
+        if (m_input == null)
+            throw new RuntimeException("Bitch why the fuck you set the input to null?");
+        constructed = true;
+        return this;
+    }
+
+    public Controller(){ initDashboard(); }
+
+    public Controller(Input<IN> in, Output<OUT> out, IN destination) {
+        this();
         m_input = in;
         m_output = out;
-        m_tolerance = tolerance;
         m_destination = destination;
-
-        initDashboard();
-    }
-    
-    public Controller(Input<IN> in, Output<OUT> out, IN destination) {
-        this(in, out, NO_TOLERANCE, destination);
     }
 
     @SuppressWarnings("unchecked")
     public Controller(Output<OUT> out, IN destination) {
         this(NO_INPUT, out, destination);
     }
-    
+
     public Controller(Input<IN> in, Output<OUT> out) {
+        this();
         m_input = in;
         m_output = out;
-        m_tolerance = NO_TOLERANCE;
-
-        initDashboard();
     }
 
     @SuppressWarnings("unchecked")
     public Controller(Output<OUT> out) {
         this(NO_INPUT, out);
-    }
-
-    public Controller(Input<IN> in, Output<OUT> out, ITolerance tolerance) {
-        this(in, out);
-        m_tolerance = tolerance;
     }
 
     /**
@@ -188,7 +214,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
             m_parameters.put("Input lower bound", this.<IN>constructParam("m_inputLowerBound"));
             m_parameters.put("Input upper bound", this.<IN>constructParam("m_inputLowerBound"));
             m_parameters.put("Current error", new Parameter<>(() -> m_error));
-            //m_parameters.put("Tolerance", new Parameter<Tolerance>("m_tolerance"));
+            // TODO m_parameters.put("Tolerance", new Parameter<Tolerance>("m_tolerance"));
             m_parameters.put("Input", new Parameter<>(m_input::toString));
             m_parameters.put("Output", new Parameter<>(m_output::toString));
             m_parameters.put("Active", this.<Boolean>constructParam("m_active"));
@@ -202,11 +228,15 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
 
     @Override
     public void run() {
+        if (!constructed)
+            throw new ClassNotConstructedException();
         m_active = true;
     }
 
     @Override
     public void stop() {
+        if (!constructed)
+            throw new ClassNotConstructedException();
         m_active = false;
     }
 
@@ -357,13 +387,21 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
         return "Controller (general)";
     }
 
-    public synchronized void enable() { m_active = true; }
+    public synchronized void enable() {
+        if (!constructed)
+            throw new ClassNotConstructedException();
+        m_active = true;
+    }
     public synchronized void disable() {
+        if (!constructed)
+            throw new ClassNotConstructedException();
         m_active = false;
         m_output.stop();
     }
 
-    public boolean isEnabled() { return m_active; }
+    public boolean isEnabled() {
+        return m_active;
+    }
 
     public void setInputRange(IN min, IN max) {
         m_inputLowerBound = min;
@@ -379,9 +417,13 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
         m_destination = dest;
     }
 
-    public synchronized IN getDestination() { return m_destination; }
+    public synchronized IN getDestination() {
+        return m_destination;
+    }
 
-    public synchronized void setTolerance(Tolerance tolerance) { m_tolerance = tolerance; }
+    public synchronized void setTolerance(Tolerance tolerance) {
+        m_tolerance = tolerance;
+    }
 
     public void free() {
         synchronized (LOCK) {
@@ -399,5 +441,5 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
      */
     public abstract void calculate();
 
-    public abstract void initParameters();
+    public abstract void initParameters() throws NoSuchFieldException;
 }

@@ -15,7 +15,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     protected static final double DEFAULT_MINONTARGETTIME = 10;
     protected static final double DEFAULT_SLOWDOWN = 0.1;
     protected static final double DEFAULT_LB = 0.49;
-    
+
     protected static final int LOOKBACK_DISTANCE = 5;
 
     /**
@@ -69,37 +69,37 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     }
 
     /**
-     * 
+     *
      * @param in The input object
      * @param out The motor manager object
      * @param path The path the robot will follow
      * @param lookAhead Look Ahead distance
-     * @param epsilon Margin of search for goal point on path 
+     * @param epsilon Margin of search for goal point on path
      * @param toleranceDist Absolute tolerance distance
      * @param minOnTargetTime Minimal time on target required for the controller
      * @param slowDownDistance Distance from path end point in which the robot will slow down
      * @param Lb Distance between middle of the front and rear wheels
      */
-    
 
-    
+
+
     public APPController(Input<Point2D> in, Output<Double[]> out,Path path){
     	this(in,out,DEFAULT_PERIOD,path,DEFAULT_LOOKAHEAD,DEFAULT_EPSILON,DEFAULT_TOLERANCEDIST,DEFAULT_MINONTARGETTIME,DEFAULT_SLOWDOWN,DEFAULT_LB);
     }
-    
-    
+
+
     public APPController(Input<Point2D> in, Output<Double[]> out,Path path, double lookAhead,double epsilon,double toleranceDist,double minOnTargetTime,double slowDownDistance, double Lb) {
         this(in,out,DEFAULT_PERIOD,path,lookAhead,epsilon,toleranceDist,minOnTargetTime,slowDownDistance, Lb);
     }
-    
+
     /**
-     * 
+     *
      * @param in The input object
      * @param out The motor manager object
      * @param period The time period of calling the controller calculation
      * @param path The path the robot will follow
      * @param lookAhead Look Ahead distance
-     * @param epsilon Margin of search for goal point on path 
+     * @param epsilon Margin of search for goal point on path
      * @param toleranceDist Absolute tolerance distance
      * @param minOnTargetTime Minimal time on target required for the controller
      * @param slowDownDistance Distance from path end point in which the robot will slow down
@@ -112,7 +112,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         //@TODO HOLY FUCKING SHIT WHY DID YOU MAKE IT CRASH - IT INITIALIZES LB EVERY AUTO RUN PLZ FIX NOW - Guyde <3
         if (APPController.Lb == -1)
         	setLb(Lb);
-        
+
         m_lookAhead = lookAhead;
         m_epsilon = epsilon > 0 ? epsilon : DEFAULT_EPSILON;
         m_destination = path.getLast();
@@ -154,7 +154,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
             checkPoint = m_path.get();
             distance = Math.abs(m_robotLoc.distance(checkPoint) - m_lookAhead);
             //System.out.println("dist between r:"+m_robotLoc+" c:"+checkPoint+"    is:"+distance);
-            
+
             if(foundPoint) //once a point is found searches nearby points for a better point
             {
                 if (distance<m_epsilon){
@@ -227,7 +227,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     	return (2 * Math.abs(goalVector.getX())) / Math.pow(goalVector.length(), 2);
     }
 
-    
+
     //TODO: fix all the constructors to call this and not super
     /*
     public APPController(Input<Point2D> in, Output<Double[]> out, Point2D destination) {

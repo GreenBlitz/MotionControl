@@ -3,6 +3,8 @@ package base;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 /**
  * Created by karlo on 14/12/2017.
  * Represents a controller which has the basic structure of a loop which calls it's input and output
@@ -15,20 +17,19 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
 
     protected Timer m_controllerLoop;                         // the loop which will calculate the controller
 
-    public IterativeController(Input<IN> in, Output<OUT> out, IN destination, double period) {
+    private IterativeController(Input<IN> in, Output<OUT> out, IN destination, double period) {
         super(in, out, destination);
         m_period = period;
 
         m_controllerLoop = new Timer();
-        m_controllerLoop.schedule(new IterativeCalculationTask(this), 0L, (long) (1000*period));
-    }
-
-    public IterativeController(Input<IN> in, Output<OUT> out, ITolerance tolerance, IN destination) {
-        this(in, out, destination, DEFAULT_PERIOD);
+        m_controllerLoop.schedule(
+        		new IterativeCalculationTask(),
+        		0L, 
+        		(long) (1000*period));
     }
 
     public IterativeController(Input<IN> in, Output<OUT> out, IN destination) {
-        this(in, out, NO_TOLERANCE, destination);
+        this(in, out, destination, DEFAULT_PERIOD);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,13 +38,11 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
     }
 
     public IterativeController(Input<IN> in, Output<OUT> out, double period){
-        super(in, out);
-        m_period = period;
+        this(in, out, null, period);
     }
 
     public IterativeController(Input<IN> in, Output<OUT> out) {
-        super(in, out);
-        m_period = DEFAULT_PERIOD;
+        this(in, out, DEFAULT_PERIOD);
     }
 
     @SuppressWarnings("unchecked")
@@ -51,16 +50,25 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
         this(NO_INPUT, out);
     }
 
-    protected static class IterativeCalculationTask extends TimerTask {
-        protected IterativeController m_controller;
-
-        public IterativeCalculationTask(IterativeController controller) {
-            if (controller == null) throw new NullPointerException("null controller was given");
-            m_controller = controller;
-        }
-
+    protected class IterativeCalculationTask extends TimerTask {
+        public IterativeCalculationTask() {}
+        
+        
+    
+        int itNum = 0;
+        
         @Override
-        public void run() { m_controller.calculate(); }
+        public void run() { 
+        	if (DriverStation.getInstance().isEnabled()) {
+        		calculate(); 
+        		//if(itNum++==50) free();
+        		//free(); //test only first iteration
+        	}
+        	else {
+        		free();
+        		System.out.println("free");
+        	}
+        }
     }
 
     public void free() {
