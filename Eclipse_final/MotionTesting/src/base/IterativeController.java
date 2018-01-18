@@ -41,6 +41,7 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
         this(in, out, null, period);
     }
 
+
     public IterativeController(Input<IN> in, Output<OUT> out) {
         this(in, out, DEFAULT_PERIOD);
     }
@@ -60,13 +61,22 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
         @Override
         public void run() { 
         	if (DriverStation.getInstance().isEnabled()) {
+        		if (m_destination == null) {
+        			System.err.println("WARNING - destination is null");
+        			return;
+        		}
+        	
+        		if (m_tolerance == NO_TOLERANCE) {
+        			System.err.println("WARNING - tolerance not set");
+        		}
+        		
         		calculate(); 
         		//if(itNum++==50) free();
         		//free(); //test only first iteration
         	}
         	else {
         		free();
-        		System.out.println("free");
+        		System.out.println("APPCOutput object #" + this.hashCode() + " is now freed");
         	}
         }
     }

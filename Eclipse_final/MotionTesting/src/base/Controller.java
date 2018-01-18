@@ -18,7 +18,9 @@ import java.util.function.Supplier;
  */
 
 // TODO- javadoc everything in here
-// TODO- add networktable support (less urgent)
+// TODO- alexey do your shit right already im sick of it
+// TODO- create a new I/O objects limiting the current input recieve and output use by existing limits
+// TODO- consider changing the way the upper and lower bounds work in accordance with the above todo
 public abstract class Controller<IN, OUT> implements LiveWindowSendable, IController {
     public static final Input NO_INPUT = () -> null;
     public static final NullTolerance NO_TOLERANCE = new NullTolerance();
@@ -28,7 +30,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
     protected IN m_error;
     protected IN m_destination;
 
-    protected IN m_outputLowerBound, m_outputUpperBound;          // out of bounds output will be ignored
+    protected OUT m_outputLowerBound, m_outputUpperBound;          // out of bounds output will be ignored
     protected IN m_inputLowerBound, m_inputUpperBound;            // out of bounds input will be ignored
 
     protected boolean m_active = false;
@@ -36,7 +38,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
 
     protected ITolerance m_tolerance = NO_TOLERANCE;
 
-    protected HashMap<String, Parameter> m_parameters;
+    protected HashMap<String, Parameter<?>> m_parameters;
 
     protected final Object LOCK = new Object();
 
@@ -133,7 +135,6 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
          * The default set function
          * @param key the name of the parameter being changed
          */
-        @SuppressWarnings("unchecked")
         private void _set(String key) {
             if (SmartDashboard.getData(key) == null) return;
             try {
@@ -143,32 +144,32 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
 
     }
 
-    public Controller setInput(Input<IN> in){
+    public Controller<IN, OUT> setInput(Input<IN> in){
         if (constructed)
             throw new RuntimeException("Controller already constructed");
         m_input = in;
         return this;
     }
 
-    public Controller setOutput(Output<OUT> out){
+    public Controller<IN, OUT> setOutput(Output<OUT> out){
         if (constructed)
             throw new RuntimeException("Controller already constructed");
         m_output = out;
         return this;
     }
 
-    public Controller setDest(IN dest){
+    public Controller<IN, OUT> setDest(IN dest){
         if (constructed)
             throw new RuntimeException("Controller already constructed");
         m_destination = dest;
         return this;
     }
 
-    public Controller construct(){
+    public Controller<IN, OUT> construct(){
         if (constructed)
             throw new RuntimeException("Already constructed");
-        if (m_tolerance.equals(NO_TOLERANCE))
-            throw new RuntimeException("Tolerance not set");
+        if (m_tolerance == null)
+            throw new RuntimeException("Tolerance is null");
         if (m_output == null)
             throw new RuntimeException("Output not set");
         if (m_input == null)
@@ -403,17 +404,18 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
         return m_active;
     }
 
-    public void setInputRange(IN min, IN max) {
+    public synchronized void setInputRange(IN min, IN max) {
         m_inputLowerBound = min;
         m_inputUpperBound = max;
     }
 
-    public void setOutputRange(IN min, IN max) {
+    public synchronized void setOutputRange(OUT min, OUT max) {
         m_outputLowerBound = min;
         m_outputUpperBound = max;
     }
 
     public synchronized void setDestination(IN dest) {
+    	System.out.println("ARE YPU SHITING ME");
         m_destination = dest;
     }
 
@@ -421,7 +423,7 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
         return m_destination;
     }
 
-    public synchronized void setTolerance(Tolerance tolerance) {
+    public synchronized void setTolerance(ITolerance tolerance) {
         m_tolerance = tolerance;
     }
 
@@ -436,8 +438,8 @@ public abstract class Controller<IN, OUT> implements LiveWindowSendable, IContro
 
     /**
      * the main function of the controller.
-     * will be run every 20 millie seconds (by default).
-     * should move the engines and recieve data from the sensors
+     * will be run every 20 milliseconds (by default).
+     * should move the engines and receive data from the sensors
      */
     public abstract void calculate();
 

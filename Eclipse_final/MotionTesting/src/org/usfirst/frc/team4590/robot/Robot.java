@@ -44,15 +44,18 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
+		
 		// TODO Auto-generated method stub
+		
 		System.out.println("auto Init");
+		APPController a = new APPController(loc, out, genPath());
 	}
     // 0.49 m
 	
     public Path genPath(){
         ArrayList<Point2D> pointList= new ArrayList<Point2D>();
-        for(double i = 0;i < 5;i+=0.001)
-            pointList.add(new Point2D(0,i,0));
+        for(double i = 0;i < 0.5;i+=0.001)
+            pointList.add(new Point2D(i,i,0));
         System.out.println(pointList.size());
         return new Path(pointList);
     }
@@ -78,8 +81,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		// TODO Auto-generated method stub
-		System.out.println(loc.recieve());
-		out.tankDrive(0.8, 0.8);
+		//System.out.println(loc.recieve());
 	}
 
 	@Override

@@ -115,9 +115,9 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         m_path = path;
         setLb(Lb);
         m_lookAhead = lookAhead;
+        setTolerance(new AbsoluteTolerance(toleranceDist,minOnTargetTime));
         m_epsilon = epsilon > 0 ? epsilon : DEFAULT_EPSILON;
-        m_destination = path.getLast();
-        m_tolerance = new AbsoluteTolerance(toleranceDist,minOnTargetTime);
+        setDestination(path.getLast());
         m_slowDownDistance = slowDownDistance;
         firstSearch = true;
         m_goalPointR = null;
@@ -135,7 +135,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         m_robotLoc = m_input.recieve();
     	//System.out.print("moving from-"+m_robotLoc);
     	//m_robotLoc = m_robotLoc.moveBy(0,0.02);
-    	System.out.println(" cur robot loc: "+m_robotLoc);
+    	//System.out.println(" cur robot loc: "+m_robotLoc);
     }
 
     /**
@@ -196,10 +196,12 @@ public class APPController extends IterativeController<Point2D, Double[]> {
             m_goalPointR = m_path.getLast();
         //System.out.println("None Found "+m_goalPointR);
     }
-
+    
+    
+    
     public double getCurve(){
     	Point2D goalVector = m_goalPointR.changePrespectiveTo(m_robotLoc);
-    	return (2 * Math.abs(goalVector.getX())) / Math.pow(goalVector.length(), 2);
+    	return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
     }
 
 
