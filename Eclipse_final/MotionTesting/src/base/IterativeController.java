@@ -58,7 +58,7 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
         
         @Override
         public void run() { 
-        	//if(itNum++==10) free();
+        	if(itNum++==200) free();
         	if (DriverStation.getInstance().isEnabled()) {
         		if (m_controllerState == State.ENABLED) {
         			if (m_destination == null) {

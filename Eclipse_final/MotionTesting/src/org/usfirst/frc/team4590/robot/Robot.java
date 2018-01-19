@@ -51,8 +51,6 @@ public class Robot extends IterativeRobot {
 		System.out.println("auto Init");
 		//Path path = new PathFactory().genStraightLine(1.5, 0, 0.01).genStraightLine(1.5,- Math.PI / 4, 0.01).construct();
 		//Path path = new PathFactory().genStraightLine(10, 0, 0.001).construct();
-		Path path = genPath();
-		System.out.println(path);
 		APPController APPCTester = new APPController(loc, out, genPath());
 		APPCTester.start();
 	}
@@ -60,13 +58,12 @@ public class Robot extends IterativeRobot {
 	
     public Path genPath(){
         ArrayList<Point2D> pointList= new ArrayList<Point2D>();
-        for(double i = 0;i < 15;i+=0.001)
+        for(double i = 0;i <= 8;i+=0.001)
             pointList.add(new Point2D(0, i, 0));
         //for(double i = 0;i < 4;i+=0.001)
             //pointList.add(new Point2D(-i, 4, 0));
         //for(double i = 0;i < 0.5;i+=0.001)
             //pointList.add(new Point2D(i,i+1,0));
-        System.out.println(pointList.size());
         return new Path(pointList);
     }
 

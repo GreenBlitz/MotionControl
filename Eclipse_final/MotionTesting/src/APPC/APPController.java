@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Point2D, Double[]> {
-    protected static final double DEFAULT_LOOKAHEAD = 1;
-    protected static final double DEFAULT_EPSILON = 0.005;
+    protected static final double DEFAULT_LOOKAHEAD = 1.5 /*0.3*/;
+    protected static final double DEFAULT_EPSILON = 0.02;
     protected static final double DEFAULT_TOLERANCEDIST = 0.2;
-    protected static final double DEFAULT_MINONTARGETTIME = 10;
-    protected static final double DEFAULT_SLOWDOWN = 1;
+    protected static final double DEFAULT_MINONTARGETTIME = 1;
+    protected static final double DEFAULT_SLOWDOWN = 3;
 
     protected static final int LOOKBACK_DISTANCE = 25;
 
@@ -165,12 +165,16 @@ public class APPController extends IterativeController<Point2D, Double[]> {
         } else
             m_goalPointR = m_path.getLast();
         //System.out.println("None Found "+m_goalPointR);
+        SmartDashboard.putNumber("X-pos GP", m_goalPointR.getX());
+        SmartDashboard.putNumber("Y-pos GP", m_goalPointR.getY());
     }
     
     
     
     public double getCurve(){
     	Point2D goalVector = m_goalPointR.changePrespectiveTo(m_robotLoc);
+    	double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
+    	SmartDashboard.putNumber("Angle", angle);
     	return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
     }
 
@@ -202,9 +206,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	@Override
     public void calculate() {
        updateRobotLocation();
-       SmartDashboard.putNumber("X-pos", m_robotLoc.getX());
-       SmartDashboard.putNumber("Y-pos", m_robotLoc.getY());
-       System.out.println("robot:"+m_robotLoc+"\ngoal:"+m_goalPointR);
        updateGoalPoint();
 
        m_output.use(new Double[]{getPowerPrecent(),getCurve()});
@@ -258,6 +259,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     }
 
     protected double getPowerPrecent(){
-        return 1;//Math.min(1.0,m_robotLoc.distance(m_path.getLast())/m_slowDownDistance);
+    	// DON'T CHANGE
+        return Math.min(1.0, m_robotLoc.distance(m_path.getLast()) / m_slowDownDistance);
     }
 }

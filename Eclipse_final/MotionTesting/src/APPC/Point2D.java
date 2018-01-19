@@ -135,6 +135,17 @@ public class Point2D {
     			m_y - origin.getY(),
     			m_direction).rotate(angle);
     	
+    	return new Point2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction);
+    	//return new Point2D(relative.getX() +m_x, relative.getY() + m_y, m_direction);
+    	//there where pluses
+    }
+    
+    public Point2D rotateRelativeToChange(Point2D origin, double angle) {
+    	Point2D relative = new Point2D(
+    			m_x - origin.getX(),
+    			m_y - origin.getY(),
+    			m_direction).rotate(angle);
+    	
     	return new Point2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction - angle);
     	//return new Point2D(relative.getX() +m_x, relative.getY() + m_y, m_direction);
     	//there where pluses
@@ -249,10 +260,11 @@ public class Point2D {
 	@Override
 	public String toString() {
 		int p = 4;
-		return "Point2D [m_x=" + goodRound(m_x, p) + "("+m_x+")" + ", m_y=" +goodRound(m_y, p)+ "(" + m_y +")" + ", m_direction=" + m_direction + "]";
+		return "Point2D [m_x=" + goodRound(m_x, p) + ", m_y=" + goodRound(m_y, p) + ", m_direction=" + goodRound(m_direction, p) + "]";
 	}
 	
-	private static String goodRound(double num,int precision){
+	// TODO goodRound doesn't use precision
+	private static String goodRound(double num, int precision){
 		DecimalFormat df = new DecimalFormat("#.####");
 		df.setRoundingMode(RoundingMode.CEILING);
 		return df.format(num);

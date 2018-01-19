@@ -61,6 +61,11 @@ public class Localizer implements Input<Point2D> {
     	private double rightDist;
         @Override
         public void run() {
+        	SmartDashboard.putNumber("Encoder Left", getLeftDistance());
+        	SmartDashboard.putNumber("Right encoder", getRightDistance());
+        	SmartDashboard.putNumber("X-pos R", m_location.getX());
+            SmartDashboard.putNumber("Y-pos R", m_location.getY());
+        	if (DriverStation.getInstance().isDisabled()) reset();
         	//System.out.println("i");
         	// Equivalent to reading the encoder value and storing it only once - then assigning the difference between the last distance and the current one
             double rightDistDiff = -rightDist;
@@ -70,8 +75,7 @@ public class Localizer implements Input<Point2D> {
         	rightDistDiff += rightDist;
         	leftDistDiff += leftDist;
         	
-        	//System.out.println(getLeftDistance()+"    "+leftDistDiff);
-        	//System.out.println(getRightDistance()+"    "+rightDistDiff);
+        	
         	
 
             if (leftDistDiff == rightDistDiff) {
@@ -92,7 +96,8 @@ public class Localizer implements Input<Point2D> {
     		double adjustedRadiusFromCenter = radiusFromCenter;
     		Point2D rotationOrigin = m_location.moveBy(adjustedRadiusFromCenter, 0);
             synchronized (LOCK){
-                m_location = m_location.rotateRelativeTo(rotationOrigin, angle);
+                m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
+                //System.out.println("WARNING - " +  m_location);
             }
         }
     }
@@ -104,5 +109,14 @@ public class Localizer implements Input<Point2D> {
         }
     }
     
+    private void reset() {
+    	for (WrappedEncoder enc : m_leftWrappedEncoders)
+    		enc.reset();
+    
+    	for (WrappedEncoder enc : m_rightWrappedEncoders)
+    		enc.reset();
+    	
+        m_location = Point2D.GLOBAL_ORIGIN;
+    }
     
 }

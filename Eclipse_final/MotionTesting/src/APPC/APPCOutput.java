@@ -19,9 +19,10 @@ public class APPCOutput implements Output<Double[]> {
 
     
     public void curveDrive(RobotDrive r,double power,double curve){
+    	System.out.println("c: "+curve);
     	SmartDashboard.putNumber("Curve", curve);
     	if(curve == 0){
-    		r.tankDrive(power, power,false);
+    		r.tankDrive(power, power, false);
     		System.out.println(power+"   "+power);
     		return;
     	}
@@ -29,17 +30,17 @@ public class APPCOutput implements Output<Double[]> {
     	double d = RobotStats.HORIZONTAL_WHEEL_DIST;
     	double R = 1 / Math.abs(curve);
         double ratio;
-        if (R - d / 2 == 0)
-        	ratio = 0;
-        else
-        	ratio = (R + d / 2) / (R - d / 2);
+        //if (R + d / 2 == 0) // (R - d / 2 == 0)
+        //	ratio = 0;
+        //else
+        ratio = (R - d / 2) / (R + d / 2); //ratio = (R + d / 2) / (R - d / 2);
         SmartDashboard.putNumber("Ratio", ratio);
     	if(curve > 0){
-    		r.tankDrive(power, power*ratio,false);
+    		r.tankDrive(power, power*ratio, false);
     		System.out.println(power+"   "+power*ratio);// left faster
     	}
     	else{
-    		r.tankDrive(power*ratio, power,false);
+    		r.tankDrive(power*ratio, power, false);
     		System.out.println(power*ratio+"   "+power); // right faster
     	}
     }
@@ -58,7 +59,7 @@ public class APPCOutput implements Output<Double[]> {
     	curveDrive(m_robotDrive,output[0]*fullPower*safteyFactor,output[1]);
     	//m_robotDrive.tankDrive(0, 0);
     	  //m_robotDrive.tankDrive(0, 0);
-    	System.out.printf("APPCOutput active: power = %f, curve = %f\n", output[0]*fullPower*safteyFactor, output[1]);
+    	//System.out.printf("APPCOutput active: power = %f, curve = %f\n", output[0]*fullPower*safteyFactor, output[1]);
     }
     
     
