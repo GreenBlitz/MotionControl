@@ -26,7 +26,7 @@ public class APPCOutput implements Output<Double[]> {
     		System.out.println(power+"   "+power);
     		return;
     	}
-    	
+    	//test
     	double d = RobotStats.HORIZONTAL_WHEEL_DIST;
     	double R = 1 / Math.abs(curve);
         double ratio;
