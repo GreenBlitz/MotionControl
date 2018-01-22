@@ -1,5 +1,7 @@
 package APPC;
 
+
+
 import org.usfirst.frc.team4590.robot.RobotStats;
 
 import base.Output;
@@ -21,26 +23,29 @@ public class APPCOutput implements Output<Double[]> {
     public void curveDrive(RobotDrive r,double power,double curve){
     	SmartDashboard.putNumber("Curve", curve);
     	if(curve == 0){
-    		r.tankDrive(power, power,false);
-    		System.out.println(power+"   "+power);
+    		r.tankDrive(power, power, false);
+    		SmartDashboard.putNumber("powerR", power);
+    		SmartDashboard.putNumber("powerL", power);
     		return;
     	}
-    	
+    	//test
     	double d = RobotStats.HORIZONTAL_WHEEL_DIST;
     	double R = 1 / Math.abs(curve);
         double ratio;
-        if (R - d / 2 == 0)
+        if (R + d / 2 == 0) // (R - d / 2 == 0)
         	ratio = 0;
         else
-        	ratio = (R + d / 2) / (R - d / 2);
+        	ratio = (R - d / 2) / (R + d / 2); //ratio = (R + d / 2) / (R - d / 2);
         SmartDashboard.putNumber("Ratio", ratio);
     	if(curve > 0){
-    		r.tankDrive(power, power*ratio,false);
-    		System.out.println(power+"   "+power*ratio);// left faster
+	    r.tankDrive(power, power*ratio, false);
+	    SmartDashboard.putNumber("powerL", power);
+	    SmartDashboard.putNumber("powerR", power*ratio);
     	}
-    	else{
-    		r.tankDrive(power*ratio, power,false);
-    		System.out.println(power*ratio+"   "+power); // right faster
+    	else {
+    	    r.tankDrive(power*ratio, power, false);
+    	    SmartDashboard.putNumber("powerL", power*ratio);
+    	    SmartDashboard.putNumber("powerR", power);
     	}
     }
 
@@ -50,7 +55,7 @@ public class APPCOutput implements Output<Double[]> {
      */
     @Override
     public void use(Double[] output) {
-    	System.out.println("here");
+    	System.out.println("power: " + output[0] + ", curve: " + output[1]);
   	  //e^(-r/w)
   	  //throw new Exception("for those of you who dont know yet that this now does shit");
   	  //double realCurve = Math.pow(Math.E,(-1/output[1])/0.5);
@@ -58,7 +63,7 @@ public class APPCOutput implements Output<Double[]> {
     	curveDrive(m_robotDrive,output[0]*fullPower*safteyFactor,output[1]);
     	//m_robotDrive.tankDrive(0, 0);
     	  //m_robotDrive.tankDrive(0, 0);
-    	System.out.printf("APPCOutput active: power = %f, curve = %f\n", output[0]*fullPower*safteyFactor, output[1]);
+    	//System.out.printf("APPCOutput active: power = %f, curve = %f\n", output[0]*fullPower*safteyFactor, output[1]);
     }
     
     

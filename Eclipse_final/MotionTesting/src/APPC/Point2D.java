@@ -135,6 +135,17 @@ public class Point2D {
     			m_y - origin.getY(),
     			m_direction).rotate(angle);
     	
+    	return new Point2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction);
+    	//return new Point2D(relative.getX() +m_x, relative.getY() + m_y, m_direction);
+    	//there where pluses
+    }
+    
+    public Point2D rotateRelativeToChange(Point2D origin, double angle) {
+    	Point2D relative = new Point2D(
+    			m_x - origin.getX(),
+    			m_y - origin.getY(),
+    			m_direction).rotate(angle);
+    	
     	return new Point2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction - angle);
     	//return new Point2D(relative.getX() +m_x, relative.getY() + m_y, m_direction);
     	//there where pluses
@@ -193,10 +204,19 @@ public class Point2D {
                 Math.atan2(m_y - other.getY(), m_x - other.getX()) - m_direction };
     }
 
-    public double distance(Point2D other) {
-        return toPolarRelative(other)[0];
+    public double distanceSquared(Point2D other) {
+        return moveBy(new Point2D(-other.m_x, -other.m_y, 0)).lengthSquared();
+    }
+    
+    public double lengthSquared(){
+	return m_x * m_x + m_y * m_y;
     }
 
+    public double distance(Point2D other) {
+        return Math.hypot(m_x-other.m_x, m_y-other.m_y);
+    }
+
+    
     /**
      *
      * @return the polar representation of this point relatively to the center (0,0)
@@ -249,10 +269,11 @@ public class Point2D {
 	@Override
 	public String toString() {
 		int p = 4;
-		return "Point2D [m_x=" + goodRound(m_x, p) + "("+m_x+")" + ", m_y=" +goodRound(m_y, p)+ "(" + m_y +")" + ", m_direction=" + m_direction + "]";
+		return "Point2D [m_x=" + goodRound(m_x, p) + ", m_y=" + goodRound(m_y, p) + ", m_direction=" + goodRound(m_direction, p) + "]";
 	}
 	
-	private static String goodRound(double num,int precision){
+	// TODO goodRound doesn't use precision
+	private static String goodRound(double num, int precision){
 		DecimalFormat df = new DecimalFormat("#.####");
 		df.setRoundingMode(RoundingMode.CEILING);
 		return df.format(num);

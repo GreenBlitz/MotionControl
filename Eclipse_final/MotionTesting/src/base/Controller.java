@@ -17,10 +17,10 @@ import java.util.function.Supplier;
  * Abstract controller with input and output
  */
 
-// TODO- Javadoc everything in here
-// TODO- Alexey do your shit right already im sick of it
-// TODO- create a new I/O objects limiting the current input recieve and output use by existing limits
-// TODO- consider changing the way the upper and lower bounds work in accordance with the above todo
+// TODO- Java documentation everything in here
+// TODO- Alexey do your shit right already I'm sick of it
+// TODO- create a new I/O objects limiting the current input receive and output use by existing limits
+// TODO- consider changing the way the upper and lower bounds work in accordance with the above to do
 // TODO- uncomment the generic bounds when the time will come. AND IT WILL!!!!! (someday)
 public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Comparable<OUT>*/> implements LiveWindowSendable, IController {
     public static final Input NO_INPUT = () -> null;
@@ -411,7 +411,6 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
     }
 
     public synchronized void setDestination(IN dest) {
-    	System.out.println("ARE YPU SHITING ME");
         m_destination = dest;
     }
 

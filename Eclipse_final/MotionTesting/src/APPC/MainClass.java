@@ -13,7 +13,7 @@ public class MainClass {
 
     public Path genPath(){
         LinkedList<Point2D> pointList= new LinkedList<Point2D>();
-        for(int i = 0;i < 100;i++)
+        for(double i = 0;i < 1;i+=0.01)
             pointList.add(new Point2D(0,i,0));
         return new Path(pointList);
     }
