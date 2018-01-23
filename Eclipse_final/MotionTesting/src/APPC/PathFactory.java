@@ -22,12 +22,35 @@ public class PathFactory {
 		}
 	}
 
-	// TODO this
-	@Deprecated
+	/**
+	 * Continue the path in a straight line form the last path point to the given point 
+	 * @param connectTo the given point
+	 * @param metersPerPoint the distance in meters between each point
+	 * @return the factory
+	 */
 	public PathFactory connectLine(Point2D connectTo, double metersPerPoint) {
+		Point2D origin = m_path.getLast();
+		Point2D distance = origin.distanceVector(connectTo);
+		if (distance.length() == 0) return this;
+		double totalPoints = distance.length() / metersPerPoint;
+		
+		double xJump = distance.getX() / totalPoints,
+			   yJump = distance.getY() / totalPoints;
+		
+		while (m_path.getLast().distance(connectTo) > 0) {
+			if (m_path.getLast().distance(connectTo) <= metersPerPoint){
+				// Code almost done, finish it off
+				m_path.add(connectTo);
+				break;
+			}
+			m_path.add(m_path.getLast().add(xJump, yJump));
+		}
 		return this;
 	}
-
+	
+	
+	//TODO test
+	@Deprecated
 	public PathFactory genStraightLine(double len, double rotation, double metersPerPoint) {
 		Point2D origin = m_path.getLast();
 		for (double i = 0; i <= len; i += metersPerPoint) {
