@@ -32,14 +32,13 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
 
     protected Output<OUT> m_output;
     protected Input<IN>  m_input = NO_INPUT;
-    protected IN m_error;
     protected IN m_destination;
 
     protected OUT m_outputLowerBound, m_outputUpperBound;          // out of bounds output will be ignored
     protected IN m_inputLowerBound, m_inputUpperBound;            // out of bounds input will be ignored
 
     protected State m_controllerState = State.DISABLED;
-    protected boolean m_free   = false;
+    protected boolean m_free = false;
     
     protected ITolerance m_tolerance = NO_TOLERANCE;
 
@@ -47,8 +46,8 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
 
     protected final Object LOCK = new Object();
 
-    protected boolean constructed = false;
-
+    protected String m_name;
+    
     /**
      * The function set() tries to set a parameter and returns whether that set happened or not
      */
@@ -147,65 +146,34 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
             } catch (IllegalAccessException e) {}
         }
 
+    }    
+
+    public Controller(String name){ 
+    	initDashboard();
+    	m_name = name;
     }
 
-    public Controller<IN, OUT> setInput(Input<IN> in){
-        if (constructed)
-            throw new RuntimeException("Controller already constructed");
-        m_input = in;
-        return this;
-    }
-
-    public Controller<IN, OUT> setOutput(Output<OUT> out){
-        if (constructed)
-            throw new RuntimeException("Controller already constructed");
-        m_output = out;
-        return this;
-    }
-
-    public Controller<IN, OUT> setDest(IN dest){
-        if (constructed)
-            throw new RuntimeException("Controller already constructed");
-        m_destination = dest;
-        return this;
-    }
-
-    public Controller<IN, OUT> construct(){
-        if (constructed)
-            throw new RuntimeException("Already constructed");
-        if (m_tolerance == null)
-            throw new RuntimeException("Tolerance is null");
-        if (m_output == null)
-            throw new RuntimeException("Output not set");
-        if (m_input == null)
-            throw new RuntimeException("Bitch why the fuck you set the input to null?");
-        constructed = true;
-        return this;
-    }
-
-    public Controller(){ initDashboard(); }
-
-    public Controller(Input<IN> in, Output<OUT> out, IN destination) {
-        this();
+    public Controller(Input<IN> in, Output<OUT> out, IN destination, String name) {
+        this(name);
         m_input = in;
         m_output = out;
         m_destination = destination;
     }
 
     @SuppressWarnings("unchecked")
-    public Controller(Output<OUT> out, IN destination) {
-        this(NO_INPUT, out, destination);
+    public Controller(Output<OUT> out, IN destination, String name) {
+        this(NO_INPUT, out, destination, name);
     }
 
-    public Controller(Input<IN> in, Output<OUT> out) {
-        this();
+    public Controller(Input<IN> in, Output<OUT> out, String name) {
+        this(name);
         m_input = in;
         m_output = out;
     }
 
     @SuppressWarnings("unchecked")
-    public Controller(Output<OUT> out) {
-        this(NO_INPUT, out);
+    public Controller(Output<OUT> out, String name) {
+        this(NO_INPUT, out, name);
     }
 
     /**
@@ -219,11 +187,12 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
             m_parameters.put("Output upper bound", this.<OUT>constructParam("m_outputUpperBound"));
             m_parameters.put("Input lower bound", this.<IN>constructParam("m_inputLowerBound"));
             m_parameters.put("Input upper bound", this.<IN>constructParam("m_inputLowerBound"));
-            m_parameters.put("Current error", new Parameter<>(() -> m_error));
+            m_parameters.put("Current error", new Parameter<>(Controller.this :: getError));
             // TODO m_parameters.put("Tolerance", new Parameter<Tolerance>("m_tolerance"));
             m_parameters.put("Input", new Parameter<>(m_input::toString));
             m_parameters.put("Output", new Parameter<>(m_output::toString));
             m_parameters.put("Active", this.<Boolean>constructParam("m_active"));
+            m_parameters.put("Name", new Parameter<>(() -> m_name));
             // TODO add parameters as needed
             initParameters();
         } catch (NoSuchFieldException e) {
@@ -234,7 +203,8 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
 
     @Override
     public final synchronized void start() {
-    	System.out.println("starting memes");
+    	System.out.printf("%s #%d has started running\n",
+    			m_name, this.hashCode());
         m_controllerState = State.ENABLED;
     }
 
@@ -423,6 +393,8 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
     }
 
     public void free() {
+    	System.out.printf("%s object #%d is now freed\n",
+				this.getClass().getSimpleName(), this.hashCode());
         synchronized (LOCK) {
             m_controllerState = State.END;
             m_free = true;
@@ -430,13 +402,15 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
             m_input = null;
         }
     }
-    
+
     /**
      * the main function of the controller.
      * will be run every 20 milliseconds (by default).
      * should move the engines and receive data from the sensors
+     * @param input
+     * @return
      */
-    public abstract void calculate();
+    public abstract OUT calculate(IN input);
     
     /**
      * Initialize any field that you want.
@@ -444,4 +418,6 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
      * @throws NoSuchFieldException
      */
     public abstract void initParameters() throws NoSuchFieldException;
+    
+    public abstract IN getError(IN input);
 }

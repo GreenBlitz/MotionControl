@@ -1,282 +1,181 @@
 package APPC;
 
+import java.util.Arrays;
+
 import base.Input;
 import base.IterativeController;
 import base.Output;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Point2D, Double[]> {
-    protected static final double DEFAULT_LOOKAHEAD = 0.3;
-    protected static final double DEFAULT_TOLERANCE_DIST = 0.2;
-    protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
-    protected static final double DEFAULT_SLOWDOWN = 0.5;
-    
-    /**
-     * The most recent robot location calc
-     */
-    private Point2D m_robotLoc;
-    /**
-     * the path the controller is following
-     */
-    private Path.PathIterator m_path;
-    /**
-     * Look ahead distance
-     */
-    private double m_lookAhead;
-    /**
-     * The point we are trying to reach in robot coordinates
-     */
-    private Point2D m_goalPoint;
+	protected static final double DEFAULT_LOOKAHEAD = 0.3;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.2;
+	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
+	protected static final double DEFAULT_SLOWDOWN = 0.5;
 
-    /**
-     * starts slowing down when the distance to the end of path is shorter than
-     * this
-     */
-    private double m_slowDownDistance;
+	/**
+	 * The most recent robot location calc
+	 */
+	private Point2D m_robotLoc;
+	/**
+	 * the path the controller is following
+	 */
+	private Path.PathIterator m_path;
+	/**
+	 * Look ahead distance
+	 */
+	private double m_lookAhead;
+	/**
+	 * starts slowing down when the distance to the end of path is shorter than
+	 * this
+	 */
+	private double m_slowDownDistance;
 
-    /**
-     *
-     * @param in
-     *            The input object
-     * @param out
-     *            The motor manager object
-     * @param path
-     *            The path the robot will follow
-     * @param lookAhead
-     *            Look Ahead distance
-     * @param toleranceDist
-     *            Absolute tolerance distance
-     * @param minOnTargetTime
-     *            Minimal time on target required for the controller
-     * @param slowDownDistance
-     *            Distance from path end point in which the robot will slow down
-     */
-    public APPController(Input<Point2D> in, Output<Double[]> out, Path path) {
-	this(in, out, DEFAULT_PERIOD, path, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST,
-		DEFAULT_MIN_ON_TARGET_TIME, DEFAULT_SLOWDOWN);
-    }
-
-    public APPController(Input<Point2D> in, Output<Double[]> out, Path path, double lookAhead,
-	    double toleranceDist, double minOnTargetTime, double slowDownDistance) {
-	this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
-    }
-
-    /**
-     *
-     * @param in
-     *            The input object
-     * @param out
-     *            The motor manager object
-     * @param period
-     *            The time period of calling the controller calculation
-     * @param path
-     *            The path the robot will follow
-     * @param lookAhead
-     *            Look Ahead distance
-     * @param toleranceDist
-     *            Absolute tolerance distance
-     * @param minOnTargetTime
-     *            Minimal time on target required for the controller
-     * @param slowDownDistance
-     *            Distance from path end point in which the robot will slow down
-     */
-    public APPController(Input<Point2D> in, Output<Double[]> out, double period, Path path, double lookAhead,
-	    double toleranceDist, double minOnTargetTime, double slowDownDistance) {
-	super(in, out, period);
-	m_robotLoc = in.recieve();
-	m_path = path.iterator();
-	m_lookAhead = lookAhead;
-	setTolerance(new AbsoluteTolerance2(toleranceDist));
-	setDestination(path.getLast());
-	m_slowDownDistance = slowDownDistance;
-	m_goalPoint = null;
-	updateGoalPoint();
-    }
-
-    /**
-     * Calculates the robot position using information from encoders, gyro and
-     * accelerometer. then sets it If we will have time we need to implement
-     * Kalman Filter
-     */
-    public void updateRobotLocation() {
-	m_robotLoc = m_input.recieve();
-	// System.out.print("moving from-"+m_robotLoc);
-	// m_robotLoc = m_robotLoc.moveBy(0,0.02);
-	// System.out.println(" cur robot loc: "+m_robotLoc);
-    }
-    
-    private void updateGoalPoint(){
-	m_path.resetIterator();
-	m_path.setCurrentIndex(m_path.getLength()-1);
-	Point2D close = m_path.peek();
-	Point2D point;
-	while(m_path.getCurrentIndex()>0 && close.distance(m_robotLoc)>m_lookAhead){
-	    m_path.changeCurrentIndex(-1);
-	    point = m_path.peek();
-	    if(close.distance(m_robotLoc) > point.distance(m_robotLoc)) {
-		close = point;
-	    }
+	/**
+	 *
+	 * @param in
+	 *            The input object
+	 * @param out
+	 *            The motor manager object
+	 * @param path
+	 *            The path the robot will follow
+	 * @param lookAhead
+	 *            Look Ahead distance
+	 * @param toleranceDist
+	 *            Absolute tolerance distance
+	 * @param minOnTargetTime
+	 *            Minimal time on target required for the controller
+	 * @param slowDownDistance
+	 *            Distance from path end point in which the robot will slow down
+	 */
+	public APPController(Input<Point2D> in, Output<Double[]> out, Path path, String name) {
+		this(in, out, DEFAULT_PERIOD, path, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
+				DEFAULT_SLOWDOWN, name);
 	}
-	m_goalPoint = close;
-    }
-    /**
-     * Calculate the goal point we are trying to reach with path & lookahead
-     */
-    /**private void updateGoalPoint(){
-	changeGoalPoint();
-	SmartDashboard.putNumber("X-pos GP", m_goalPoint.getX());
-	SmartDashboard.putNumber("Y-pos GP", m_goalPoint.getY());
-    }
-    private void changeGoalPoint() {
-	double min_distance = 0; // not relevant, set to not receive an error
-	boolean foundPoint = false;
-	double distance;
-	int goalPointIndex = 0; // not relevant, set to not receive an error
 
-	for(Point2D point:m_path) {
-	    // System.out.println(m_path.getCurrentIndex());
-	    distance = Math.abs(m_robotLoc.distance(point) - m_lookAhead);
-	    // System.out.println("dist between r:"+m_robotLoc+"
-	    // c:"+checkPoint+" is:"+distance);
+	public APPController(Input<Point2D> in, Output<Double[]> out, Path path, double lookAhead, double toleranceDist,
+			double minOnTargetTime, double slowDownDistance, String name) {
+		this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance, name);
+	}
 
-	    if (foundPoint) // once a point is found searches nearby points for a better point
-	    {
-		if (distance < m_epsilon) {
-		    // System.out.println("another "+distance +" min is: "+min_distance +"THE POINT IS: "+checkPoint);
-		    if (distance < min_distance) {
-			min_distance = distance;
-			m_goalPoint = point;
-			goalPointIndex = m_path.getCurrentIndex();
-			return;
-		    }
-		} else {
-		    m_path.setCurrentIndex(Math.max(goalPointIndex - LOOKBACK_OFFSET, 0));
-		    // m_path.setCurrentIndex(Math.min(goalPointIndex -
-		    // LOOKBACK_DISTANCE);
-		    // System.out.println("robot: "+m_robotLoc);
-		    // System.out.println("found a goalpoint!:: "+m_goalPointR);
-		    return; // returns once the local search finishes
+	/**
+	 *
+	 * @param in
+	 *            The input object
+	 * @param out
+	 *            The motor manager object
+	 * @param period
+	 *            The time period of calling the controller calculation
+	 * @param path
+	 *            The path the robot will follow
+	 * @param lookAhead
+	 *            Look Ahead distance
+	 * @param toleranceDist
+	 *            Absolute tolerance distance
+	 * @param minOnTargetTime
+	 *            Minimal time on target required for the controller
+	 * @param slowDownDistance
+	 *            Distance from path end point in which the robot will slow down
+	 */
+	public APPController(Input<Point2D> in, Output<Double[]> out, double period, Path path, double lookAhead,
+			double toleranceDist, double minOnTargetTime, double slowDownDistance, String name) {
+		super(in, out, period, name);
+		m_robotLoc = in.recieve();
+		m_path = path.iterator();
+		m_lookAhead = lookAhead;
+		setTolerance(new AbsoluteTolerance2(toleranceDist));
+		setDestination(path.getLast());
+		m_slowDownDistance = slowDownDistance;
+	}
+
+	private Point2D updateGoalPoint(Point2D loc, Path.PathIterator path, double lookAhead) {
+		path.resetIterator();
+		path.setCurrentIndex(path.getLength() - 1);
+		Point2D close = path.peek();
+		Point2D point;
+		while (path.getCurrentIndex() > 0 && close.distance(loc) > lookAhead) {
+			path.changeCurrentIndex(-1);
+			point = path.peek();
+			if (close.distance(loc) > point.distance(loc)) {
+				close = point;
+			}
 		}
-	    } else if (distance < m_epsilon) {
-	    // System.out.println("found first dist "+distance);
-	    foundPoint = true;
-	    min_distance = distance;
-	    m_goalPoint = point;
-	    goalPointIndex = m_path.getCurrentIndex();
-	    return;
-	    }
-	}
-	m_goalPoint = m_path.getLast();
-	// System.out.println("None Found "+m_goalPointR);
-    }
-**/
-    /**
-    public void updateGoalPoint(){
-	m_path.changeCurrentIndex(-LOOKBACK_OFFSET);
-	Point2D close = m_path.peek();
-	double closeVal = calcVal(close);
-	Point2D curPoint = m_path.peek();
-	int ticksFromLastChange = 0;
-	while(ticksFromLastChange<30 && m_path.hasNext()){
-	    if (calcVal(curPoint) < closeVal){
-		ticksFromLastChange = 0;
-		close = curPoint;
-		closeVal = calcVal(close);
-	    }
-	    else ticksFromLastChange++;
-	}
-	
-	m_goalPoint = close;
-    }
-**/
-    public double getCurve() {
-	Point2D goalVector = m_goalPoint.changePrespectiveTo(m_robotLoc);
-	double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
-	SmartDashboard.putNumber("Angle", angle);
-	return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
-    }
-
-    // TODO: fix all the constructors to call this and not super
-    /*
-     * public APPController(Input<Point2D> in, Output<Double[]> out, Point2D
-     * destination) { super(in, out, destination); }
-     * 
-     * public APPController(Output<Double[]> out, Point2D destination) {
-     * super(out, destination); }
-     * 
-     * public APPController(Input<Point2D> in, Output<Double[]> out) { super(in,
-     * out); }
-     * 
-     * public APPController(Output<Double[]> out) { super(out); }
-     * 
-     * public APPController(Input<Point2D> in, Output<Double[]> out, double
-     * absoluteTolerance) { super(in, out); //setTolerance(new
-     * AbsoluteTolerance(absoluteTolerance)); }
-     */
-
-    @Override
-    public void calculate() {
-	updateRobotLocation();
-	updateGoalPoint();
-	System.out.println("WARNING ---------------------------");
-	System.out.println("WARNING - next goal point: " + m_goalPoint);
-	
-	
-	System.out.println("WARNING ---------------------------");
-	m_output.use(new Double[] { getPower(), getCurve() });
-    }
-
-    @Override
-    public void initParameters() throws NoSuchFieldException {
-	m_parameters.put("Look-ahead distance", constructParam("m_lookAhead"));
-    }
-
-    public class AbsoluteTolerance extends TimedTolerance {
-
-	double m_toleranceDist;
-
-	public AbsoluteTolerance(double toleranceDist, double minTime) {
-	    super(minTime);
-	    m_toleranceDist = toleranceDist;
+		return close;
 	}
 
-	/*
-	 * public AbsoluteTolerance(double toleranceDist) { super(2 *
-	 * DEFAULT_PERIOD); m_toleranceDist = toleranceDist; }
-	 */// discuss if this is needed
+	public double calculateCurve(Point2D loc, Point2D goal) {
+		Point2D goalVector = goal.changePrespectiveTo(loc);
+		double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
+		SmartDashboard.putNumber("Angle", angle);
+		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
+	}
+
 	@Override
-	protected boolean onInstantTimeTarget() {
-	    return m_robotLoc.distance(m_destination) < m_toleranceDist;
+	public Double[] calculate(Point2D robotLocation) {
+		Point2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
+		System.out.println("next goal point: " + goal);
+		return new Double[] { 
+				calculatePower(robotLocation, m_path, m_slowDownDistance), 
+				calculateCurve(robotLocation, goal) };
 	}
 
-    }
-
-    public class AbsoluteTolerance2 extends Tolerance {
-
-	double m_toleranceDist;
-
-	public AbsoluteTolerance2(double toleranceDist) {
-	    m_toleranceDist = toleranceDist;
-	}
-
-	/*
-	 * public AbsoluteTolerance(double toleranceDist) { super(2 *
-	 * DEFAULT_PERIOD); m_toleranceDist = toleranceDist; }
-	 */// discuss if this is needed
 	@Override
-	public boolean onTarget() {
-	    //Beep Boop! Those debug messages were generated automatically - do not change! Checksum will be checked
-	    System.out.println("I am a robot, my location is " + m_robotLoc);
-	    //System.out.println("I am a robot, I am going to a vacation at " + m_destination);
-	    //System.out.println("I am a robot, I am not that patient, this is my tolerance for bullshit " + m_toleranceDist + "m");
-	    System.out.println("Beep Boop! I know how to generate random numbers " + m_robotLoc.distance(m_destination));
-	    return m_robotLoc.distance(m_destination) <= m_toleranceDist;
+	public void initParameters() throws NoSuchFieldException {
+		m_parameters.put("Look-ahead distance", constructParam("m_lookAhead"));
 	}
 
-    }
+	public class AbsoluteTolerance extends TimedTolerance {
 
-    protected double getPower() {
-	// DON'T CHANGE
-	return Math.min(1, m_robotLoc.distance(m_path.getLast()) / m_slowDownDistance);
-    }
+		double m_toleranceDist;
+
+		public AbsoluteTolerance(double toleranceDist, double minTime) {
+			super(minTime);
+			m_toleranceDist = toleranceDist;
+		}
+
+		@Override
+		protected boolean onInstantTimeTarget() {
+			return m_robotLoc.distance(m_destination) < m_toleranceDist;
+		}
+
+	}
+
+	public class AbsoluteTolerance2 extends Tolerance {
+
+		double m_toleranceDist;
+
+		public AbsoluteTolerance2(double toleranceDist) {
+			m_toleranceDist = toleranceDist;
+		}
+
+		@Override
+		public boolean onTarget() {
+			return m_robotLoc.distance(m_destination) <= m_toleranceDist;
+		}
+
+	}
+
+	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {
+		return Math.min(1, robotLoc.distance(path.getLast()) / slowDownDistance);
+	}
+
+	@Override
+	protected String generateActivityDescription(Point2D input, Double[] output) {
+		// Beep Boop! I'm a robot and this is what i just did!
+		return String.format(
+				"\tLocation: %s\n\tOutput: %s\n",
+				input.toString(), Arrays.toString(output));
+	}
+
+	@Override
+	public Point2D getError() {
+		return getError(m_input.recieve(), m_destination);
+	}
+	
+	private Point2D getError(Point2D loc, Point2D dest) {
+		return new Point2D(
+				loc.getX() - dest.getX(),
+				loc.getY() - dest.getY(),
+				loc.getDirection() - dest.getDirection());
+	}
 }

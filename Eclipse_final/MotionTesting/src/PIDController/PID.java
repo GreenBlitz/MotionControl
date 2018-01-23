@@ -7,41 +7,43 @@ import edu.wpi.first.wpilibj.PIDController;
 
 public class PID extends IterativeController<Double, Double> {
 
-    double m_lastError = 0;
-    double m_error = 0;
-    double m_totalError = 0;
+    private double m_lastError = 0;
+    private double m_error = 0;
+    private double m_totalError = 0;
 
     double m_kP;
     double m_kI;
     double m_kD;
     double m_kF;
 
-    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double kd, double kf) {
-        super(in, out, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination,
+    		double kp, double ki, double kd, double kf, String name) {
+        super(in, out, destination, name);
         m_kP = kp;
         m_kI = ki;
         m_kD = kd;
         m_kF = kf;
     }
 
-    public PID(Input<Double> in, Output<Double> out, Double destination, double kp) {
-        super(in, out, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, String name) {
+        super(in, out, destination, name);
         m_kP = kp;
         m_kI = 0;
         m_kD = 0;
         m_kF = 0;
     }
 
-    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki) {
-        super(in, out, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, String name) {
+        super(in, out, destination, name);
         m_kP = kp;
         m_kI = ki;
         m_kD = 0;
         m_kF = 0;
     }
 
-    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double kd) {
-        super(in, out, destination);
+    public PID(Input<Double> in, Output<Double> out, Double destination,
+    		double kp, double ki, double kd, String name) {
+        super(in, out, destination, name);
         m_kP = kp;
         m_kI = ki;
         m_kD = kd;
@@ -50,21 +52,49 @@ public class PID extends IterativeController<Double, Double> {
 
 
     @Override
-    public void calculate() {
-        double in = m_input.recieve();
-        m_lastError = m_error;
-        m_error = m_destination - in;
-        m_totalError += m_error;
-        double calculatedValue = m_kP * m_error + m_kI * m_totalError + m_kD * (m_error - m_lastError) + m_kF * m_destination;
+    public Double calculate(Double in) {
+        m_totalError += getError(in);
+        double calculatedValue = calculatePIDvalue(
+        		getError(in), m_lastError, m_totalError, m_destination,
+        		m_kP, m_kI, m_kD, m_kF);
         if (calculatedValue > m_outputUpperBound)
             calculatedValue = m_outputUpperBound;
         else if (calculatedValue < m_outputLowerBound)
             calculatedValue = m_outputLowerBound;
-        m_output.use(calculatedValue);
+        m_lastError = getError(in);
+        return calculatedValue;
     }
 
-    @Override
-    public void initParameters() {
-        //TODO add stuff
+    /**
+     * 
+     * @param currentError
+     * @param lastError
+     * @param totalError
+     * @param destination
+     * @param Kp
+     * @param Ki
+     * @param Kd
+     * @param Kf
+     * @return
+     */
+    private double calculatePIDvalue(
+    		double currentError, double lastError, double totalError, double destination,
+    		double Kp, double Ki, double Kd, double Kf) {
+    	return Kp * currentError + Ki * totalError + Kd * (currentError - lastError) +
+    			Kf * destination;
     }
+
+	@Override
+	protected String generateActivityDescription(Double input, Double output) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getError(Double in) {
+		// TODO Auto-generated method stub
+		return in - m_destination;
+	}
+    
+    
 }
