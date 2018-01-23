@@ -50,48 +50,46 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
     }
 
     protected class IterativeCalculationTask extends TimerTask {
-
 	public IterativeCalculationTask() {
 	}
 
 	@Override
 	public void run() {
 	    if (DriverStation.getInstance().isEnabled()) {
-			if (m_controllerState == State.ENABLED) {
-			    if (m_destination == null) {
-					System.err.println("WARNING - destination is null");
-					return;
-			    }
-	
-			    if (m_tolerance == NO_TOLERANCE) {
-					System.err.println("WARNING - tolerance not set");
-					return;
-			    }
-			    boolean dafuckIsTrue = m_tolerance.onTarget();
-			    System.out.println("Dafuck? Why is this shit " + dafuckIsTrue);
-			    if (!dafuckIsTrue) {
-			    	calculate();
-			    } else {
-					m_controllerState = State.END;
-					m_output.stop();
-					try {
-					    throw new RuntimeException("FUCK YOU");
-					} catch (Exception e){
-					    e.printStackTrace();
-					}
-					System.out.println("WARNING: controller has finished running");
-			    }
-			} else {
-			    if (m_controllerState == State.END)
-				stop();
-			}
-			// free(); //test only first iteration
-		    } else {
-				free();
-				System.out.println("APPCOutput object #" + this.hashCode() + " is now freed");
+		if (m_controllerState == State.ENABLED) {
+		    if (m_destination == null) {
+			System.err.println("WARNING - destination is null");
+			return;
 		    }
+
+		    if (m_tolerance == NO_TOLERANCE) {
+			System.err.println("WARNING - tolerance not set");
+			return;
+		    }
+		    boolean dafuckIsTrue = m_tolerance.onTarget();
+		    System.out.println("Dafuck? Why is this shit " + dafuckIsTrue);
+		    if (!dafuckIsTrue) {
+			calculate();
+		    } else {
+			m_controllerState = State.END;
+			m_output.stop();
+			try {
+			    throw new RuntimeException("FUCK YOU");
+			} catch (Exception e){
+			    e.printStackTrace();
+			}
+			System.out.println("WARNING: controller has finished running");
+		    }
+		} else {
+		    if (m_controllerState == State.END)
+			stop();
 		}
-	
+		// free(); //test only first iteration
+	    } else {
+		free();
+		System.out.println("APPCOutput object #" + this.hashCode() + " is now freed");
+	    }
+	}
     }
 
     public void free() {

@@ -21,36 +21,17 @@ public class APPCOutput implements Output<Double[]> {
 
     
     public void curveDrive(RobotDrive r,double power,double curve){
-    	System.out.println("c: "+curve);
     	SmartDashboard.putNumber("Curve", curve);
     	if(curve == 0){
     		r.tankDrive(power, power, false);
-<<<<<<< HEAD
-    		System.out.println(power+"   "+power);
-=======
     		SmartDashboard.putNumber("powerR", power);
     		SmartDashboard.putNumber("powerL", power);
->>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
     		return;
     	}
     	//test
     	double d = RobotStats.HORIZONTAL_WHEEL_DIST;
     	double R = 1 / Math.abs(curve);
         double ratio;
-<<<<<<< HEAD
-        //if (R + d / 2 == 0) // (R - d / 2 == 0)
-        //	ratio = 0;
-        //else
-        ratio = (R - d / 2) / (R + d / 2); //ratio = (R + d / 2) / (R - d / 2);
-        SmartDashboard.putNumber("Ratio", ratio);
-    	if(curve > 0){
-    		r.tankDrive(power, power*ratio, false);
-    		System.out.println(power+"   "+power*ratio);// left faster
-    	}
-    	else{
-    		r.tankDrive(power*ratio, power, false);
-    		System.out.println(power*ratio+"   "+power); // right faster
-=======
         if (R + d / 2 == 0) // (R - d / 2 == 0)
         	ratio = 0;
         else
@@ -65,7 +46,6 @@ public class APPCOutput implements Output<Double[]> {
     	    r.tankDrive(power*ratio, power, false);
     	    SmartDashboard.putNumber("powerL", power*ratio);
     	    SmartDashboard.putNumber("powerR", power);
->>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
     	}
     }
 

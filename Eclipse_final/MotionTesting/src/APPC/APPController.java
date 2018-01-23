@@ -6,22 +6,11 @@ import base.Output;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Point2D, Double[]> {
-<<<<<<< HEAD
-    protected static final double DEFAULT_LOOKAHEAD = 1.5 /*0.3*/;
-    protected static final double DEFAULT_EPSILON = 0.02;
-    protected static final double DEFAULT_TOLERANCEDIST = 0.2;
-    protected static final double DEFAULT_MINONTARGETTIME = 1;
-    protected static final double DEFAULT_SLOWDOWN = 3;
-
-    protected static final int LOOKBACK_DISTANCE = 25;
-
-=======
     protected static final double DEFAULT_LOOKAHEAD = 0.3;
     protected static final double DEFAULT_TOLERANCE_DIST = 0.2;
     protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
     protected static final double DEFAULT_SLOWDOWN = 0.5;
     
->>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
     /**
      * The most recent robot location calc
      */
@@ -133,73 +122,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
     /**
      * Calculate the goal point we are trying to reach with path & lookahead
      */
-<<<<<<< HEAD
-    private void updateGoalPoint(){
-        Point2D checkPoint;
-        double min_distance = 0; //not relevant, set in order to not recieve an error
-        boolean foundPoint = false;
-        double distance;
-        int goalPointIndex = 0; //not relevant, set in order to not recieve an error
-        int i = 0;
-
-        while(m_path.hasNext())
-        {
-        	//System.out.println(m_path.getCurrentIndex());
-            checkPoint = m_path.get();
-            distance = Math.abs(m_robotLoc.distance(checkPoint) - m_lookAhead);
-            //System.out.println("dist between r:"+m_robotLoc+" c:"+checkPoint+"    is:"+distance);
-
-            if(foundPoint) //once a point is found searches nearby points for a better point
-            {
-                if (distance<m_epsilon){
-                	//System.out.println("another "+distance +" min is: "+min_distance +"THE POINT IS: "+checkPoint);
-                    if(distance < min_distance){
-                        min_distance = distance;
-                        m_goalPointR = checkPoint;
-                        goalPointIndex = m_path.getCurrentIndex();
-                    }
-                } else if (firstSearch) //preforms a global search on the first search
-                    foundPoint = false;
-                else {
-                    m_path.setCurrentIndex(Math.max(goalPointIndex - LOOKBACK_DISTANCE,0));
-                	//m_path.setCurrentIndex(Math.min(goalPointIndex - LOOKBACK_DISTANCE);
-                    //System.out.println("robot: "+m_robotLoc);
-                    //System.out.println("found a goalpoint!:: "+m_goalPointR);
-                    return; //returns once the local search finishes
-                }
-            } else {
-                if (distance<m_epsilon){
-                	//System.out.println("found first dist "+distance);
-                    foundPoint = true;
-                    min_distance = distance;
-                    m_goalPointR = checkPoint;
-                    goalPointIndex = m_path.getCurrentIndex();
-                }
-            }
-        }
-        if(firstSearch){
-            if(m_goalPointR == null){
-                m_goalPointR = m_path.closestPointTo(m_robotLoc);
-                //System.out.println("no goal");
-            }
-            firstSearch = false;
-            m_path.setCurrentIndex(Math.max(goalPointIndex - LOOKBACK_DISTANCE,0));
-            //System.out.println("in first search->");
-        } else
-            m_goalPointR = m_path.getLast();
-        //System.out.println("None Found "+m_goalPointR);
-        SmartDashboard.putNumber("X-pos GP", m_goalPointR.getX());
-        SmartDashboard.putNumber("Y-pos GP", m_goalPointR.getY());
-    }
-    
-    
-    
-    public double getCurve(){
-    	Point2D goalVector = m_goalPointR.changePrespectiveTo(m_robotLoc);
-    	double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
-    	SmartDashboard.putNumber("Angle", angle);
-    	return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
-=======
     /**private void updateGoalPoint(){
 	changeGoalPoint();
 	SmartDashboard.putNumber("X-pos GP", m_goalPoint.getX());
@@ -246,7 +168,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	}
 	m_goalPoint = m_path.getLast();
 	// System.out.println("None Found "+m_goalPointR);
->>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
     }
 **/
     /**
@@ -295,13 +216,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 
     @Override
     public void calculate() {
-<<<<<<< HEAD
-       updateRobotLocation();
-       updateGoalPoint();
-
-       m_output.use(new Double[]{getPowerPrecent(),getCurve()});
-   }
-=======
 	updateRobotLocation();
 	updateGoalPoint();
 	System.out.println("WARNING ---------------------------");
@@ -311,7 +225,6 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	System.out.println("WARNING ---------------------------");
 	m_output.use(new Double[] { getPower(), getCurve() });
     }
->>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
 
     @Override
     public void initParameters() throws NoSuchFieldException {
@@ -362,14 +275,8 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 
     }
 
-<<<<<<< HEAD
-    protected double getPowerPrecent(){
-    	// DON'T CHANGE
-        return Math.min(1.0, m_robotLoc.distance(m_path.getLast()) / m_slowDownDistance);
-=======
     protected double getPower() {
 	// DON'T CHANGE
 	return Math.min(1, m_robotLoc.distance(m_path.getLast()) / m_slowDownDistance);
->>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
     }
 }

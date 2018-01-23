@@ -98,10 +98,6 @@ public class Localizer implements Input<Point2D> {
     		Point2D rotationOrigin = m_location.moveBy(adjustedRadiusFromCenter, 0);
             synchronized (LOCK){
                 m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
-<<<<<<< HEAD
-                //System.out.println("WARNING - " +  m_location);
-=======
->>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
             }
         }
     }
