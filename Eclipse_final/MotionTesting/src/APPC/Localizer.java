@@ -100,13 +100,13 @@ public class Localizer implements Input<Point2D> {
             synchronized (LOCK){
                 m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
             }
+            System.out.println("WARNING - robot location: " +  m_location);
         }
     }
 
     @Override
     public Point2D recieve() {
         synchronized (LOCK){
-            System.out.println("WARNING - robot location: " +  m_location);
             return m_location;
         }
     }
