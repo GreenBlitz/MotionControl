@@ -82,7 +82,7 @@ public class Localizer implements Input<Point2D> {
 
             if (leftDistDiff == rightDistDiff) {
                 synchronized (LOCK) {
-                    m_location = m_location.moveBy(0, leftDistDiff);
+                    m_location = m_location.add(0, leftDistDiff);
                     return;
                 }
             }
@@ -96,7 +96,7 @@ public class Localizer implements Input<Point2D> {
 
     		double radiusFromCenter = -(shortDist/angle + Math.signum(angle) * m_wheelDistance/2);
     		double adjustedRadiusFromCenter = radiusFromCenter;
-    		Point2D rotationOrigin = m_location.moveBy(adjustedRadiusFromCenter, 0);
+    		Point2D rotationOrigin = m_location.add(adjustedRadiusFromCenter, 0);
             synchronized (LOCK){
                 m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
             }
