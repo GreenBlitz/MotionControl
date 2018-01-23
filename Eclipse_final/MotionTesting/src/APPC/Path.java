@@ -18,6 +18,10 @@ public class Path implements Iterable<Point2D> {
     }
 
     public Path() { this(new ArrayList<>()); }
+    public Path(Point2D origin) {
+    	this();
+    	this.add(origin);
+    }
 
     /**
      * Attains the Location2D at the given tick

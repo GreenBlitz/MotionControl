@@ -61,14 +61,25 @@ public class Point2D {
     	return this.rotate(m_direction);
     }
     
-    public Point2D moveBy(double x, double y) {
+    public Point2D add(double x, double y, double dir) {
         //return (new Point2D(m_x + x, m_y + y, m_direction)).rotateRelativeTo(this, m_direction);
         Point2D meh = this.toNatrualChords();
-        return new Point2D(meh.getX() + x, meh.getY() + y, meh.getDirection()).toRegularChords();
+        meh = new Point2D(meh.getX() + x, meh.getY() + y, meh.getDirection()).toRegularChords();
+        return new Point2D(meh.getX(), meh.getY(), meh.getDirection() + dir);
     }
     
-    public Point2D moveBy(Point2D point){
-    	return moveBy(point.getX(),point.getY());
+    public Point2D add(double x, double y) {
+    	return add(x, y, 0);
+    }
+    
+    public Point2D add(Point2D point){
+    	return add(point.getX(),point.getY(), point.getDirection());
+    }
+    public Point2D sub(Point2D point) {
+    	return add(point.neg());
+    }
+    public Point2D neg() {
+    	return new Point2D(-m_x, -m_y, -m_direction);
     }
     
     public Point2D changePrespectiveTo(Point2D point){
@@ -205,7 +216,7 @@ public class Point2D {
     }
 
     public double distanceSquared(Point2D other) {
-        return moveBy(new Point2D(-other.m_x, -other.m_y, 0)).lengthSquared();
+        return add(new Point2D(-other.m_x, -other.m_y, 0)).lengthSquared();
     }
     
     public double lengthSquared(){

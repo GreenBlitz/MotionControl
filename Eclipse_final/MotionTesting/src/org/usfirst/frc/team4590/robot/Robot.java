@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
 	public Path genPath() {
 		ArrayList<Point2D> pointList = new ArrayList<Point2D>();
 		for (double i = 0; i <= 1; i += 0.01)
-			pointList.add(new Point2D(i, i, 0));
+			pointList.add(new Point2D(0, i, 0));
 		// for(double i = 0;i < 4;i+=0.001)
 		// pointList.add(new Point2D(-i, 4, 0));
 		// for(double i = 0;i < 0.5;i+=0.001)
