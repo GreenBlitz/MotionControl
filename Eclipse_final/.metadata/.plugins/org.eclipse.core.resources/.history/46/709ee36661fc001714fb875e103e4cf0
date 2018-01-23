@@ -1,7 +1,0 @@
-package base;
-
-public class Event {
-	private boolean m_isCanceled;
-	private boolean m_isCancelable;
-	private long timestamp;
-}

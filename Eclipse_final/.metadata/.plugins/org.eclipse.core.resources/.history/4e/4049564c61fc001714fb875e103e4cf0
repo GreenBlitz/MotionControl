@@ -1,6 +1,0 @@
-package base;
-
-@FunctionalInterface
-public interface IEventListener<T> {
-	
-}
