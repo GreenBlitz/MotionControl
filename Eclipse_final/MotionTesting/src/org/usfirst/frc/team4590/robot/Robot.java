@@ -39,26 +39,17 @@ public class Robot extends IterativeRobot {
 		}
 
 	}
-
+	Point2D GP;
 	@Override
 	public void autonomousInit() {
 		System.out.println("auto Init");
-		controller = new APPController(loc, out, genPath());
+		Path myPath = new PathFactory().genForwardPath(1.5, false, 0.002).construct();
+		GP = myPath.getLast();
+		controller = new APPController(loc, out, myPath);
 		controller.start();
 	}
 	// 0.49 m
 
-	public Path genPath() {
-		ArrayList<Point2D> pointList = new ArrayList<Point2D>();
-		for (double i = 0; i <= 1; i += 0.01)
-			pointList.add(new Point2D(i, i, 0));
-		// for(double i = 0;i < 4;i+=0.001)
-		// pointList.add(new Point2D(-i, 4, 0));
-		// for(double i = 0;i < 0.5;i+=0.001)
-		// pointList.add(new Point2D(i,i+1,0));
-		pointList.add(new Point2D(1,1,0));
-		return new Path(pointList);
-	}
 
 	@Override
 	public void teleopInit() {
@@ -76,7 +67,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		//out.curveDrive(rd, 0.8, 0.5);
+		if (loc.recieve().distance(GP) <= 0.5)
+			controller.stop();
 	}
 
 	@Override
