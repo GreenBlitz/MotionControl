@@ -55,35 +55,29 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 		@Override
 		public void run() {
-			if (DriverStation.getInstance().isEnabled()) {
-				if (m_controllerState == State.ENABLED) {
-					if (m_destination == null) {
-						System.err.println("WARNING - destination is null");
-						return;
-					}
+			if (m_controllerState == State.DISABLED)
+				m_output.stop();
+			
+			if (DriverStation.getInstance().isEnabled() && m_controllerState == State.ENABLED) {
+				if (m_destination == null) {
+					System.err.println("WARNING - destination is null");
+					return;
+				}
 
-					if (m_tolerance == NO_TOLERANCE) {
-						System.err.println("WARNING - tolerance not set");
-						return;
-					}
-					if (!m_tolerance.onTarget()) {
-						IN input = m_input.recieve();
-						OUT output = calculate(input);
-						m_output.use(output);
-						System.out.printf(
-								"%s #%d:\n%s\n",
-								m_name, this.hashCode(),
-								IterativeController.this.generateActivityDescription(input, output));
-					} else {
-						m_controllerState = State.END;
-						m_output.stop();
-						System.out.printf(
-								"WARNING: %s #%d has finished running\n",
-								m_name, this.hashCode());
-					}
+				if (m_tolerance == NO_TOLERANCE) {
+					System.err.println("WARNING - tolerance not set");
+					return;
+				}
+				if (!m_tolerance.onTarget()) {
+					IN input = m_input.recieve();
+					OUT output = calculate(input);
+					m_output.use(output);
+					System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
+							IterativeController.this.generateActivityDescription(input, output));
 				} else {
-					if (m_controllerState == State.END)
-						stop();
+					m_controllerState = State.END;
+					m_output.stop();
+					System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
 				}
 			} else {
 				free();
@@ -98,10 +92,10 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 			m_controllerLoop = null;
 		}
 	}
-	
+
 	protected String generateActivityDescription(IN input, OUT output) {
 		// Beep Boop! I'm a robot and this is what i just did!
 		return String.format("\tLocation: %s\n\tOutput: %s\n", input.toString(), output.toString());
 	}
-	
+
 }
