@@ -204,10 +204,19 @@ public class Point2D {
                 Math.atan2(m_y - other.getY(), m_x - other.getX()) - m_direction };
     }
 
-    public double distance(Point2D other) {
-        return toPolarRelative(other)[0];
+    public double distanceSquared(Point2D other) {
+        return moveBy(new Point2D(-other.m_x, -other.m_y, 0)).lengthSquared();
+    }
+    
+    public double lengthSquared(){
+	return m_x * m_x + m_y * m_y;
     }
 
+    public double distance(Point2D other) {
+        return Math.hypot(m_x-other.m_x, m_y-other.m_y);
+    }
+
+    
     /**
      *
      * @return the polar representation of this point relatively to the center (0,0)

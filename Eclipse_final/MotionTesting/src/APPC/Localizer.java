@@ -20,7 +20,7 @@ public class Localizer implements Input<Point2D> {
     public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 2;
     public static final Object LOCK = new Object();
 
-    private Point2D   m_location;
+    private Point2D m_location;
    
     private WrappedEncoder[] m_leftWrappedEncoders;
     private WrappedEncoder[] m_rightWrappedEncoders;
@@ -32,7 +32,8 @@ public class Localizer implements Input<Point2D> {
         m_rightWrappedEncoders = right;
         m_wheelDistance = wheelDistance;
         Timer m_timer = new Timer();
-        m_timer.schedule(new LocalizeTimerTask(), 0,(long) (1000 * PERIOD));    }
+        m_timer.schedule(new LocalizeTimerTask(), 0,(long) (1000 * PERIOD)); 
+    }
 
     public Localizer(WrappedEncoder left, WrappedEncoder right, Point2D location, double wheelDistance) {
         this(new WrappedEncoder[]{left}, new WrappedEncoder[]{right}, location, wheelDistance);
@@ -97,7 +98,10 @@ public class Localizer implements Input<Point2D> {
     		Point2D rotationOrigin = m_location.moveBy(adjustedRadiusFromCenter, 0);
             synchronized (LOCK){
                 m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
+<<<<<<< HEAD
                 //System.out.println("WARNING - " +  m_location);
+=======
+>>>>>>> 3958adb17261b79aabfa0e07a78b7bb53bf0ce28
             }
         }
     }
@@ -105,6 +109,7 @@ public class Localizer implements Input<Point2D> {
     @Override
     public Point2D recieve() {
         synchronized (LOCK){
+            System.out.println("WARNING - robot location: " +  m_location);
             return m_location;
         }
     }
