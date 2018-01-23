@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  * it's input and output
  */
 
-public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
+public abstract class IterativeController<IN, OUT> extends AbstractController<IN, OUT> {
 	public static final double DEFAULT_PERIOD = .05;
 
 	protected final double m_period;
