@@ -23,7 +23,7 @@ Implementation Instructions:
 
 //TODO: complete this!
 
-public class FSFController extends IterativeController implements LTIController {
+public class FSFController { /*extends IterativeController implements LTIController {
     private Basic2DMatrix m_A, m_B, m_C, m_D,m_K;
 
     public FSFController(Basic2DMatrix a, Basic2DMatrix b, Basic2DMatrix c, Basic2DMatrix d, Input in, Output out) {
@@ -52,5 +52,5 @@ public class FSFController extends IterativeController implements LTIController 
     }
 
 
-    public Matrix[] toLTI() { return new Matrix[] { m_A, m_B, m_C, m_D }; }
+    public Matrix[] toLTI() { return new Matrix[] { m_A, m_B, m_C, m_D }; }*/
 }

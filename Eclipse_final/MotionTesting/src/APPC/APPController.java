@@ -1,22 +1,16 @@
 package APPC;
 
-import java.util.Arrays;
-
 import base.Input;
 import base.IterativeController;
 import base.Output;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class APPController extends IterativeController<Point2D, Double[]> {
+public class APPController extends IterativeController<Point2D, APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.3;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.2;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 
-	/**
-	 * The most recent robot location calc
-	 */
-	private Point2D m_robotLoc;
 	/**
 	 * the path the controller is following
 	 */
@@ -48,14 +42,14 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<Double[]> out, Path path, String name) {
+	public APPController(Input<Point2D> in, Output<APPDriveData> out, Path path) {
 		this(in, out, DEFAULT_PERIOD, path, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
-				DEFAULT_SLOWDOWN, name);
+				DEFAULT_SLOWDOWN);
 	}
 
-	public APPController(Input<Point2D> in, Output<Double[]> out, Path path, double lookAhead, double toleranceDist,
-			double minOnTargetTime, double slowDownDistance, String name) {
-		this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance, name);
+	public APPController(Input<Point2D> in, Output<APPDriveData> out, Path path, double lookAhead, double toleranceDist,
+			double minOnTargetTime, double slowDownDistance) {
+		this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
 
 	/**
@@ -77,10 +71,9 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<Double[]> out, double period, Path path, double lookAhead,
-			double toleranceDist, double minOnTargetTime, double slowDownDistance, String name) {
-		super(in, out, period, name);
-		m_robotLoc = in.recieve();
+	public APPController(Input<Point2D> in, Output<APPDriveData> out, double period, Path path, double lookAhead,
+			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
+		super(in, out, period, "APPController");
 		m_path = path.iterator();
 		m_lookAhead = lookAhead;
 		setTolerance(new AbsoluteTolerance2(toleranceDist));
@@ -111,12 +104,11 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	}
 
 	@Override
-	public Double[] calculate(Point2D robotLocation) {
+	public APPDriveData calculate(Point2D robotLocation) {
 		Point2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
 		System.out.println("next goal point: " + goal);
-		return new Double[] { 
-				calculatePower(robotLocation, m_path, m_slowDownDistance), 
-				calculateCurve(robotLocation, goal) };
+		return new APPDriveData(calculatePower(robotLocation, m_path, m_slowDownDistance),
+				calculateCurve(robotLocation, goal));
 	}
 
 	@Override
@@ -135,7 +127,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 
 		@Override
 		protected boolean onInstantTimeTarget() {
-			return m_robotLoc.distance(m_destination) < m_toleranceDist;
+			return m_input.recieve().distance(m_destination) < m_toleranceDist;
 		}
 
 	}
@@ -150,7 +142,7 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 
 		@Override
 		public boolean onTarget() {
-			return m_robotLoc.distance(m_destination) <= m_toleranceDist;
+			return m_input.recieve().distance(m_destination) <= m_toleranceDist;
 		}
 
 	}
@@ -160,22 +152,9 @@ public class APPController extends IterativeController<Point2D, Double[]> {
 	}
 
 	@Override
-	protected String generateActivityDescription(Point2D input, Double[] output) {
-		// Beep Boop! I'm a robot and this is what i just did!
-		return String.format(
-				"\tLocation: %s\n\tOutput: %s\n",
-				input.toString(), Arrays.toString(output));
-	}
-
-	@Override
-	public Point2D getError() {
-		return getError(m_input.recieve(), m_destination);
-	}
-	
-	private Point2D getError(Point2D loc, Point2D dest) {
-		return new Point2D(
-				loc.getX() - dest.getX(),
-				loc.getY() - dest.getY(),
+	public Point2D getError(Point2D loc, Point2D dest) {
+		return new Point2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				loc.getDirection() - dest.getDirection());
-	}
+	}	
+	
 }

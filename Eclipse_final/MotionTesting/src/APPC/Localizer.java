@@ -14,6 +14,7 @@ import java.util.TimerTask;
 /**
  *
  * Finding the location of the robot
+ * the front is the gear side
  */
 // TODO: add wheel distance to robotmap
 public class Localizer implements Input<Point2D> {	

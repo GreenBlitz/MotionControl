@@ -25,7 +25,7 @@ Implementation Instructions:
 
 //TODO: complete this!
 
-public class FSFInternalDefaultController extends IterativeController implements LTIController {
+public class FSFInternalDefaultController { /* extends IterativeController implements LTIController {
     private Matrix m_A, m_B, m_C, m_D;
 
     public FSFInternalDefaultController(Matrix a, Matrix b, Matrix c, Matrix d, Input in, Output out) {
@@ -47,5 +47,5 @@ public class FSFInternalDefaultController extends IterativeController implements
     public void initParameters() throws NoSuchFieldException {
 
     }
-
+*/
 }

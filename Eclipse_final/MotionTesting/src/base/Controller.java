@@ -12,6 +12,9 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import APPC.APPDriveData;
+import APPC.Point2D;
+
 /**
  *
  * Abstract controller with input and output
@@ -187,7 +190,7 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
             m_parameters.put("Output upper bound", this.<OUT>constructParam("m_outputUpperBound"));
             m_parameters.put("Input lower bound", this.<IN>constructParam("m_inputLowerBound"));
             m_parameters.put("Input upper bound", this.<IN>constructParam("m_inputLowerBound"));
-            m_parameters.put("Current error", new Parameter<>(Controller.this :: getError));
+            m_parameters.put("Current error", new Parameter<IN>(Controller.this :: getError));
             // TODO m_parameters.put("Tolerance", new Parameter<Tolerance>("m_tolerance"));
             m_parameters.put("Input", new Parameter<>(m_input::toString));
             m_parameters.put("Output", new Parameter<>(m_output::toString));
@@ -348,7 +351,7 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
     /**
      * The table that is associated with this {@link Sendable}.
      *
-     * @return the table that is currently associated with the {@link Sendable}.
+    f * @return the table that is currently associated with the {@link Sendable}.
      */
     @Override
     public ITable getTable() {
@@ -394,7 +397,7 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
 
     public void free() {
     	System.out.printf("%s object #%d is now freed\n",
-				this.getClass().getSimpleName(), this.hashCode());
+				m_name, this.hashCode());
         synchronized (LOCK) {
             m_controllerState = State.END;
             m_free = true;
@@ -402,6 +405,15 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
             m_input = null;
         }
     }
+    
+    public final IN getError() {
+    	return getError(m_input.recieve());
+    }
+    
+    public final IN getError(IN input) {
+    	return getError(input, m_destination);
+    }
+    
 
     /**
      * the main function of the controller.
@@ -419,5 +431,5 @@ public abstract class Controller<IN /*extends Comparable<IN>*/, OUT /*extends Co
      */
     public abstract void initParameters() throws NoSuchFieldException;
     
-    public abstract IN getError(IN input);
+    public abstract IN getError(IN input, IN dest);
 }

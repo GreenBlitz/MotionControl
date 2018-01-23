@@ -72,14 +72,14 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
 						m_output.use(output);
 						System.out.printf(
 								"%s #%d:\n%s\n",
-								this.getClass().getSimpleName(), this.hashCode(),
+								m_name, this.hashCode(),
 								IterativeController.this.generateActivityDescription(input, output));
 					} else {
 						m_controllerState = State.END;
 						m_output.stop();
 						System.out.printf(
 								"WARNING: %s #%d has finished running\n",
-								this.getClass().getSimpleName(), this.hashCode());
+								m_name, this.hashCode());
 					}
 				} else {
 					if (m_controllerState == State.END)
@@ -99,5 +99,9 @@ public abstract class IterativeController<IN, OUT> extends Controller<IN, OUT> {
 		}
 	}
 	
-	protected abstract String generateActivityDescription(IN input, OUT output);
+	protected String generateActivityDescription(IN input, OUT output) {
+		// Beep Boop! I'm a robot and this is what i just did!
+		return String.format("\tLocation: %s\n\tOutput: %s\n", input.toString(), output.toString());
+	}
+	
 }

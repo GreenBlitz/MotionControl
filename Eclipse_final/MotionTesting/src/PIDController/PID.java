@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.PIDController;
 public class PID extends IterativeController<Double, Double> {
 
     private double m_lastError = 0;
-    private double m_error = 0;
     private double m_totalError = 0;
 
     double m_kP;
@@ -84,17 +83,18 @@ public class PID extends IterativeController<Double, Double> {
     			Kf * destination;
     }
 
+
 	@Override
-	protected String generateActivityDescription(Double input, Double output) {
+	public void initParameters() throws NoSuchFieldException {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	@Override
-	public Double getError(Double in) {
-		// TODO Auto-generated method stub
-		return in - m_destination;
+	public Double getError(Double input, Double dest) {
+		return dest - input;
 	}
+
     
     
 }

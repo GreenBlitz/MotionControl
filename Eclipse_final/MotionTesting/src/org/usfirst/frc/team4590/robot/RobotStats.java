@@ -8,4 +8,9 @@ public final class RobotStats {
 							   SPEED_GEARS_RATIO = 4.17,
 	                           POWER_GEARS_RATIO = 11.03;
 	
+	public static final boolean CHASSIS_LEFT_ENCODER_INVERT = false,
+								CHASSIS_RIGHT_ENCODER_INVERT = false;
+
+	
+	
 }
