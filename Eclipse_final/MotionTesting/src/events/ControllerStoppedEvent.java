@@ -1,4 +1,4 @@
-package base;
+package events;
 
 public final class ControllerStoppedEvent<I,O> extends Event {
 	

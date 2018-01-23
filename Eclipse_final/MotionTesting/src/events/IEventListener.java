@@ -1,4 +1,4 @@
-package base;
+package events;
 
 @FunctionalInterface
 public interface IEventListener<T extends Event> {

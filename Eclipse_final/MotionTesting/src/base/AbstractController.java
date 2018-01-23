@@ -3,6 +3,8 @@ package base;
 import java.util.function.Function;
 
 import base.exceptions.*;
+import events.ControllerStoppedEvent;
+import events.EventManager;
 
 /**
  * Abstract controller with input and output
