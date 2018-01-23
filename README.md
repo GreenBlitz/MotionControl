@@ -1,7 +1,8 @@
 # motion_control
 This is the work and test enviorment for emotion control.
 
-Plleeeeease commit your code to WIP, and only in the end of the day (or project) commit to master.
+Plleeeeease commit your code to WIP, and only in the end of the day (or project) create a request to merge into master.
+Open each day by merging any pending requests.
 
 Current team project is APPC. Some relevant information:
 
