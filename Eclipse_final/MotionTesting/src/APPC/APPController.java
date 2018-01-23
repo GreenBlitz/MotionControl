@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Point2D, APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.3;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.2;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.1;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 
@@ -76,7 +76,7 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 		super(in, out, period, "APPController");
 		m_path = path.iterator();
 		m_lookAhead = lookAhead;
-		setTolerance(new AbsoluteTolerance2(toleranceDist));
+		setTolerance(new AbsoluteTolerance(toleranceDist, 20));
 		setDestination(path.getLast());
 		m_slowDownDistance = slowDownDistance;
 	}
@@ -148,7 +148,7 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 	}
 
 	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {
-		return Math.min(1, robotLoc.distance(path.getLast()) / slowDownDistance);
+		return Math.min(1, (robotLoc.distance(path.getLast()) / slowDownDistance)+0.5);
 	}
 
 	@Override
@@ -156,5 +156,5 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 		return new Point2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				loc.getDirection() - dest.getDirection());
 	}	
-	
+
 }

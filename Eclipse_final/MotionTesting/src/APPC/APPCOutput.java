@@ -34,7 +34,8 @@ public class APPCOutput implements Output<APPDriveData> {
         double ratio;
         ratio = (R - d / 2) / (R + d / 2);
         SmartDashboard.putNumber("Ratio", ratio);
-    	if(curve > 0){
+        System.out.println("ratio:" + ratio + " power:" + power);
+    	if(curve < 0){
 	    r.tankDrive(power, power*ratio, false);
 	    SmartDashboard.putNumber("powerL", power);
 	    SmartDashboard.putNumber("powerR", power*ratio);
@@ -73,10 +74,13 @@ public class APPCOutput implements Output<APPDriveData> {
 
 
 	public void tankDrive(double left, double right) {
-    	m_robotDrive.tankDrive(left, right);
+    	m_robotDrive.tankDrive(fullPower * safteyFactor * left, fullPower * safteyFactor * right, false);
+    }
+	public void tankDrive(double left, double right, boolean squared) {
+    	m_robotDrive.tankDrive(fullPower * safteyFactor * left, fullPower * safteyFactor * right, squared);
     }
     
     public void arcadeDrive(double magnitude, double curve) {
-    	m_robotDrive.arcadeDrive(magnitude, curve);
+    	m_robotDrive.arcadeDrive(fullPower * safteyFactor * magnitude, fullPower * safteyFactor * curve);
     }
 }
