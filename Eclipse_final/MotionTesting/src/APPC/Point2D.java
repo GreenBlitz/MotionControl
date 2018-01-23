@@ -211,9 +211,24 @@ public class Point2D {
     public double lengthSquared(){
 	return m_x * m_x + m_y * m_y;
     }
-
+    
+    
+    /**
+     * Return absolute distance between two points
+     * @param other the other point
+     * @return the absolute distance
+     */
     public double distance(Point2D other) {
         return Math.hypot(m_x-other.m_x, m_y-other.m_y);
+    }
+    
+    /**
+     * Returns the distance between this point and another as a vector
+     * @param other The other point
+     * @return The distance vector
+     */
+    public Point2D distanceVector(Point2D other) {
+    	return new Point2D(-this.m_x + other.m_x, -this.m_y + other.m_y, -this.m_direction + other.m_direction);
     }
 
     
