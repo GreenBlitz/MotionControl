@@ -3,7 +3,6 @@ package APPC;
 import base.Input;
 import base.IterativeController;
 import base.Output;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Point2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.3;
@@ -99,7 +98,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	public double calculateCurve(Point2D loc, Point2D goal) {
 		Point2D goalVector = goal.changePrespectiveTo(loc);
 		double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
-		SmartDashboard.putNumber("Angle", angle);
+		m_environmentPort.putNumber("Angle", angle);
 		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
