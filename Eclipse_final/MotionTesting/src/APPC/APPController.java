@@ -5,7 +5,7 @@ import base.IterativeController;
 import base.Output;
 
 public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
-	protected static final double DEFAULT_LOOKAHEAD = 0.1;
+	protected static final double DEFAULT_LOOKAHEAD = 1;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.02;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
