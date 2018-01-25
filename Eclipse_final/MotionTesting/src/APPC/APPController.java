@@ -151,10 +151,12 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	 * @return the power which the robot will go at
 	 */
 	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {
-		return Math.min(1, 
-				Math.min(
-						(robotLoc.distance(path.getLast()) / slowDownDistance),
-						0.5));
+		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
+		if (distanceOverSlowDown > 1)
+			return 1;
+		if (distanceOverSlowDown > 0.5)
+			return distanceOverSlowDown;
+		return 0.5;
 	}
 
 	@Override
