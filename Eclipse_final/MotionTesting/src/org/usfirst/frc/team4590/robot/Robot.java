@@ -4,9 +4,11 @@ package org.usfirst.frc.team4590.robot;
 import APPC.APPCOutput;
 import APPC.APPController;
 import APPC.Localizer;
+import APPC.Orientation2D;
 import APPC.Path;
 import APPC.PathFactory;
 import base.DrivePort;
+import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -34,10 +36,10 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		System.out.println("auto Init");
-		Path myPath = new PathFactory().genForwardPath(2, false, 0.002).construct();
+
+		Path myPath = new PathFactory().connectLine(new Orientation2D(0.707, 0.707, 0), 0.005).construct();
 		controller = new APPController(loc, out, myPath);
-		controller.setOutputConstrain(driveData -> new APPController.APPDriveData(0.5 * driveData.power, driveData.curve));
+		controller.setOutputConstrain(driveData -> new APPController.APPDriveData(0.4 * driveData.power, driveData.curve));
 		controller.start();
 	}
 	// 0.49 m
@@ -72,7 +74,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
+		double scale = RobotStats.ENCODER_SCALE;
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
+		loc = Localizer.of(
+				new ScaledEncoder(RobotMap.CHASSIS_LEFT_ENCODER_PORT_A, RobotMap.CHASSIS_LEFT_ENCODER_PORT_B, 
+						RobotStats.CHASSIS_LEFT_ENCODER_INVERT, scale), 
+				new ScaledEncoder(RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A, RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B,
+						RobotStats.CHASSIS_RIGHT_ENCODER_INVERT, scale),
+				0.68);
 	}
 }

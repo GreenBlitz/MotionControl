@@ -5,8 +5,8 @@ import base.IterativeController;
 import base.Output;
 
 public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
-	protected static final double DEFAULT_LOOKAHEAD = 0.3;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.1;
+	protected static final double DEFAULT_LOOKAHEAD = 1;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.02;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 
@@ -85,7 +85,7 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 		super(in, out, period, "APPController");
 		m_path = path.iterator();
 		m_lookAhead = lookAhead;
-		setTolerance(new AbsoluteTimedTolerance(toleranceDist, 20));
+		setTolerance(new AbsoluteTolerance(toleranceDist));
 		setDestination(path.getLast());
 		m_slowDownDistance = slowDownDistance;
 	}
@@ -209,9 +209,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
-		if (distanceOverSlowDown > 0.5)
+		if (distanceOverSlowDown > 0.2)
 			return distanceOverSlowDown;
-		return 0.5;
+		return 0.2;
 	}
 
 	@Override

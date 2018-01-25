@@ -126,7 +126,6 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 					System.err.println("WARNING - destination is null");
 					return;
 				}
-
 				if (tolerance == NO_TOLERANCE) {
 					System.err.println("WARNING - tolerance not set");
 					return;
@@ -136,7 +135,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 					System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
 							IterativeController.this.generateActivityDescription(IO._1, IO._2));
 				} else {
-					controllerState = State.END;
+					m_controllerState = State.END;
 					outputStop();
 					System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
 				}
@@ -144,6 +143,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		} else {
 			free();
 		}
+
 	}
 
 	public void free() {
