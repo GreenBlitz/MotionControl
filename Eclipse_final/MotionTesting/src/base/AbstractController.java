@@ -1,8 +1,9 @@
 package base;
 
+import java.util.Comparator;
 import java.util.function.Function;
 
-import base.exceptions.*;
+import base.exceptions.NullToleranceException;
 import events.ControllerStoppedEvent;
 import events.EventManager;
 
@@ -16,19 +17,17 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	/**
 	 * Represents a controller state
-	 *         <p>
-	 *         {@link AbstractController.State#ENABLED ENABLED} - controller is
-	 *         active
-	 *         </p>
-	 *         <p>
-	 *         {@link AbstractController.State#ENABLED DISABLE} - controller is
-	 *         halted
-	 *         </p>
-	 *         <p>
-	 *         {@link AbstractController.State#ENABLED END} - controller is
-	 *         ended
-	 *         </p>
-	 * @author karlo 
+	 * <p>
+	 * {@link AbstractController.State#ENABLED ENABLED} - controller is active
+	 * </p>
+	 * <p>
+	 * {@link AbstractController.State#ENABLED DISABLE} - controller is halted
+	 * </p>
+	 * <p>
+	 * {@link AbstractController.State#ENABLED END} - controller is ended
+	 * </p>
+	 * 
+	 * @author karlo
 	 */
 	public static enum State {
 		/**
@@ -218,7 +217,8 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	/**
 	 * Tolerance with time limitation until onTarget() will return true
-	 * @author karlo 
+	 * 
+	 * @author karlo
 	 */
 	public abstract class TimedTolerance implements ITolerance {
 
@@ -256,6 +256,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	/**
 	 * No tolerance- will throw a {@link NullToleranceException} when called
+	 * 
 	 * @author karlo
 	 */
 	public static class NullTolerance implements ITolerance {
@@ -278,16 +279,58 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * 
 	 * @param inputConstrain
 	 */
-	public synchronized void setInputRange(Function<IN, IN> inputConstrain) {
+	public synchronized void setInputConstrain(Function<IN, IN> inputConstrain) {
 		m_inputConstrain = inputConstrain;
+		m_input = () -> m_inputConstrain.apply(m_originalInput.recieve());
 	}
 
 	/**
 	 * 
 	 * @param outputConstrain
 	 */
-	public synchronized void setOutputRange(Function<OUT, OUT> outputConstrain) {
+	public synchronized void setOutputConstrain(Function<OUT, OUT> outputConstrain) {
 		m_outputConstrain = outputConstrain;
+		m_output = new Output<OUT>() {
+
+			@Override
+			public void use(OUT output) {
+				m_originalOutput.use(m_outputConstrain.apply(output));				
+			}
+
+			@Override
+			public OUT noPower() {
+				return m_originalOutput.noPower();
+			}
+
+			@Override
+			public void stop() {
+				m_originalOutput.stop();
+			}			
+		};
+	}
+	
+	public synchronized void setInputRange(IN min, IN max, Comparator<IN> compare) {
+		Function<IN, IN> inputConstrain = new Function<IN, IN>() {
+			@Override
+			public IN apply(IN input) {
+				if (compare.compare(min, input) >= 0) return min;
+				if (compare.compare(max, input) <= 0) return max;
+				return input;
+			}
+		};
+		setInputConstrain(inputConstrain);
+	}
+	
+	public synchronized void setOutputRange(OUT min, OUT max, Comparator<OUT> compare) {
+		Function<OUT, OUT> outputConstrain = new Function<OUT, OUT>() {
+			@Override
+			public OUT apply(OUT output) {
+				if (compare.compare(min, output) >= 0) return min;
+				if (compare.compare(max, output) <= 0) return max;
+				return output;
+			}
+		};
+		setOutputConstrain(outputConstrain);
 	}
 
 	/**
@@ -331,6 +374,15 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	public final IN getError(IN input) {
 		return getError(input, m_destination);
 	}
+	
+	protected IN getInput() {
+		return m_input.recieve();
+	}
+	
+	protected void useOutput(OUT output) {
+		m_output.use(output);
+	}
+
 
 	/**
 	 * the main function of the controller. will be run every 20 milliseconds
@@ -340,15 +392,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * @return
 	 */
 	public abstract OUT calculate(IN input);
-
-	/**
-	 * Initialize any field that you want. Note: don't use the (String,
-	 * Controller) constructor, but instead
-	 * <code>constructParam(String paramName)</code>
-	 * 
-	 * @throws NoSuchFieldException
-	 */
-	public abstract void initParameters() throws NoSuchFieldException;
 
 	/**
 	 * Calculates the error between two instances of input.

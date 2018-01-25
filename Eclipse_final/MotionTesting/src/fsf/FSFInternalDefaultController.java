@@ -1,11 +1,5 @@
 package fsf;
 
-import base.Input;
-import base.IterativeController;
-import base.LTIController;
-import base.Output;
-import org.la4j.Matrix;
-
 /**
  *
  * The internal controller in the default implementation of Full State Feedback

@@ -3,7 +3,6 @@ package PIDController;
 import base.Input;
 import base.IterativeController;
 import base.Output;
-import edu.wpi.first.wpilibj.PIDController;
 
 public class PID extends IterativeController<Double, Double> {
 
@@ -56,10 +55,6 @@ public class PID extends IterativeController<Double, Double> {
         double calculatedValue = calculatePIDvalue(
         		getError(in), m_lastError, m_totalError, m_destination,
         		m_kP, m_kI, m_kD, m_kF);
-        if (calculatedValue > m_outputUpperBound)
-            calculatedValue = m_outputUpperBound;
-        else if (calculatedValue < m_outputLowerBound)
-            calculatedValue = m_outputLowerBound;
         m_lastError = getError(in);
         return calculatedValue;
     }
@@ -82,13 +77,6 @@ public class PID extends IterativeController<Double, Double> {
     	return Kp * currentError + Ki * totalError + Kd * (currentError - lastError) +
     			Kf * destination;
     }
-
-
-	@Override
-	public void initParameters() throws NoSuchFieldException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public Double getError(Double input, Double dest) {

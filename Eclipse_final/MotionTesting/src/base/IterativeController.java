@@ -95,36 +95,55 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 		@Override
 		public void run() {
-			if (m_controllerState == State.DISABLED)
-				m_output.stop();
-			
-			if (environmentPort.isEnabled() && m_controllerState == State.ENABLED) {
-				if (m_destination == null) {
-					System.err.println("WARNING - destination is null");
-					return;
-				}
-
-				if (m_tolerance == NO_TOLERANCE) {
-					System.err.println("WARNING - tolerance not set");
-					return;
-				}
-				if (!m_tolerance.onTarget()) {
-					IN input = m_input.recieve();
-					OUT output = calculate(input);
-					m_output.use(output);
-					System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
-							IterativeController.this.generateActivityDescription(input, output));
-				} else {
-					m_controllerState = State.END;
-					m_output.stop();
-					System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
-				}
-			} else {
-				free();
-			}
+			IterativeController.this.run(
+					m_controllerState,
+					m_input,
+					m_output,
+					m_destination,
+					m_tolerance,
+					environmentPort);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param controllerState current controller state
+	 * @param input controller input object
+	 * @param output controller output object
+	 * @param destination controller destination
+	 * @param tolerance controller tolerance
+	 * @param port SmartDashboard and DriverStation replacement
+	 */
+	public final void run(
+			AbstractController.State controllerState, Input<IN> input, Output<OUT> output,
+			IN destination, ITolerance tolerance, EnvironmentPort port) {
+		if (controllerState == State.DISABLED)
+			output.stop();
+		
+		if (port.isEnabled() && controllerState == State.ENABLED) {
+			if (destination == null) {
+				System.err.println("WARNING - destination is null");
+				return;
+			}
 
+			if (tolerance == NO_TOLERANCE) {
+				System.err.println("WARNING - tolerance not set");
+				return;
+			}
+			if (!tolerance.onTarget()) {
+				Tuple<IN, OUT> IO = act();
+				System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
+						IterativeController.this.generateActivityDescription(IO._1, IO._2));
+			} else {
+				controllerState = State.END;
+				output.stop();
+				System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
+			}
+		} else {
+			free();
+		}
+	}
+	
 	public void free() {
 		m_controllerLoop.cancel();
 		super.free();
@@ -133,6 +152,14 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		}
 	}
 
+	
+	protected Tuple<IN, OUT> act() {
+		IN input = getInput();
+		OUT output = calculate(input);
+		useOutput(output);
+		return new Tuple<IN, OUT>(input, output);
+	}
+	
 	/**
 	 * 
 	 * @param input

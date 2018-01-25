@@ -111,11 +111,6 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 				calculateCurve(robotLocation, goal));
 	}
 
-	@Override
-	public void initParameters() throws NoSuchFieldException {
-		m_parameters.put("Look-ahead distance", constructParam("m_lookAhead"));
-	}
-
 	public class AbsoluteTolerance extends TimedTolerance {
 
 		double m_toleranceDist;
@@ -132,7 +127,7 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 
 	}
 
-	public class AbsoluteTolerance2 extends Tolerance {
+	public class AbsoluteTolerance2 implements ITolerance {
 
 		double m_toleranceDist;
 
@@ -148,13 +143,26 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 	}
 
 	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {
-		return Math.min(1, (robotLoc.distance(path.getLast()) / slowDownDistance)+0.5);
+		return Math.min(1, (robotLoc.distance(path.getLast()) / slowDownDistance) + 0.5);
 	}
 
 	@Override
 	public Point2D getError(Point2D loc, Point2D dest) {
 		return new Point2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				loc.getDirection() - dest.getDirection());
-	}	
+	}
 
+	public int compare(Point2D o1, Point2D o2) {
+		return Double.compare(o1.length(), o2.length());
+	}
+
+	public void setPowerLimit(double limit) {
+		setOutputConstrain(data -> Math.abs(data.power) <= limit ? data
+				: new APPDriveData(limit * Math.signum(data.power), data.curve));
+	}
+	
+	public void setInputLimit(double length) {
+		setInputConstrain(input -> input.length() <= length ? input
+				: input.scale(length / input.length()));
+	}
 }
