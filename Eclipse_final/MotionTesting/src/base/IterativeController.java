@@ -120,24 +120,25 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 */
 	public final void run(AbstractController.State controllerState, IN destination, ITolerance tolerance,
 			EnvironmentPort port) {
-		if (port.isEnabled() && controllerState == State.ENABLED) {
-			if (destination == null) {
-				System.err.println("WARNING - destination is null");
-				return;
-			}
-
-			if (tolerance == NO_TOLERANCE) {
-				System.err.println("WARNING - tolerance not set");
-				return;
-			}
-			if (!tolerance.onTarget()) {
-				Tuple<IN, OUT> IO = act();
-				System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
-						IterativeController.this.generateActivityDescription(IO._1, IO._2));
-			} else {
-				controllerState = State.END;
-				outputStop();
-				System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
+		if (port.isEnabled()) {
+			if (controllerState == State.ENABLED) {
+				if (destination == null) {
+					System.err.println("WARNING - destination is null");
+					return;
+				}
+				if (tolerance == NO_TOLERANCE) {
+					System.err.println("WARNING - tolerance not set");
+					return;
+				}
+				if (!tolerance.onTarget()) {
+					Tuple<IN, OUT> IO = act();
+					System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
+							IterativeController.this.generateActivityDescription(IO._1, IO._2));
+				} else {
+					m_controllerState = State.END;
+					outputStop();
+					System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
+				}
 			}
 		} else {
 			free();

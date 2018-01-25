@@ -10,7 +10,7 @@ import base.IterativeController;
 import base.ScaledEncoder;
 
 public class Localizer implements Input<Orientation2D> {
-	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 2;
+	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;
 	public static final Object LOCK = new Object();
 
 	private Orientation2D m_location;
@@ -133,7 +133,6 @@ public class Localizer implements Input<Orientation2D> {
 			synchronized (LOCK) {
 				m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
 			}
-			System.out.println("WARNING - robot location: " + m_location);
 		}
 	}
 

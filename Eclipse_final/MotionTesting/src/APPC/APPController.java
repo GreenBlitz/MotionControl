@@ -5,8 +5,8 @@ import base.IterativeController;
 import base.Output;
 
 public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
-	protected static final double DEFAULT_LOOKAHEAD = 0.3;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.1;
+	protected static final double DEFAULT_LOOKAHEAD = 1;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.02;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 
@@ -102,7 +102,6 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @return the goal point
 	 */
 	private Orientation2D updateGoalPoint(Orientation2D loc, Path.PathIterator path, double lookAhead) {
-		path.resetIterator();
 		path.setCurrentIndex(path.getLength() - 1);
 		Orientation2D close = path.peek();
 		Orientation2D point;
@@ -209,9 +208,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
-		if (distanceOverSlowDown > 0.5)
+		if (distanceOverSlowDown > 0.3)
 			return distanceOverSlowDown;
-		return 0.5;
+		return 0.3;
 	}
 
 	@Override
@@ -219,10 +218,12 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 		return new Orientation2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				loc.getDirection() - dest.getDirection());
 	}
-	
+
 	/**
 	 * set the maximum and minimum power to be passed to m_output
-	 * @param limit the maximum power and the lower limit (absaloute value)
+	 * 
+	 * @param limit
+	 *            the maximum power and the lower limit (absaloute value)
 	 */
 	public void setPowerLimit(double limit) {
 		setPowerRange(-limit, limit);
@@ -230,12 +231,14 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 
 	/**
 	 * set the farthest input location to be within a certain distance
-	 * @param length that distance
+	 * 
+	 * @param length
+	 *            that distance
 	 */
 	public void setLocationMaxLength(double length) {
 		setInputConstrain(input -> input.length() <= length ? input : input.scale(length / input.length()));
 	}
-	
+
 	/**
 	 * @param power
 	 * @param curve
@@ -247,6 +250,7 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 
 	/**
 	 * Set maximum power to be sent to m_output
+	 * 
 	 * @param min
 	 * @param max
 	 */

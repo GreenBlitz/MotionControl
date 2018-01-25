@@ -7,6 +7,7 @@ import APPC.Localizer;
 import APPC.Path;
 import APPC.PathFactory;
 import base.DrivePort;
+import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -37,6 +38,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("auto Init");
 		Path myPath = new PathFactory().genForwardPath(1, false, 0.002).construct();
 		controller = new APPController(loc, out, myPath);
+		controller.start();
 	}
 	// 0.49 m
 
@@ -70,6 +72,12 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
+		loc = Localizer.of(
+				new ScaledEncoder(RobotMap.CHASSIS_LEFT_ENCODER_PORT_A, RobotMap.CHASSIS_LEFT_ENCODER_PORT_B,
+						-RobotStats.ENCODER_SCALE),
+				new ScaledEncoder(RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A, RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B,
+						RobotStats.ENCODER_SCALE),
+				0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 	}
