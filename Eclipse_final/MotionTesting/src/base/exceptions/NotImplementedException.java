@@ -5,7 +5,9 @@ package base.exceptions;
  * This will be thrown when a method is not implemented
  */
 public class NotImplementedException extends IllegalStateException {
-    public NotImplementedException() {
+	private static final long serialVersionUID = -1425383206793952750L;
+
+	public NotImplementedException() {
     }
 
     public NotImplementedException(String s) {

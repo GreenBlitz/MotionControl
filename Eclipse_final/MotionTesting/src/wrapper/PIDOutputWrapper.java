@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
  *
  * Wraps wpilib PIDOutput
  */
-public class PIDOutputWrapper implements Output {
+public class PIDOutputWrapper implements Output<Double> {
     private final PIDOutput m_output;
     
     public PIDOutputWrapper(PIDOutput output) { m_output = output; }
@@ -17,17 +17,12 @@ public class PIDOutputWrapper implements Output {
     public PIDOutput wrapped() { return m_output; }
 
     @Override
-    public void use(Object output) {
+    public void use(Double output) {
 
     }
 
     @Override
-    public Object noPower() {
-        return null;
-    }
-
-    @Override
-    public void stop() {
-
+    public Double noPower() {
+        return 0.0;
     }
 }

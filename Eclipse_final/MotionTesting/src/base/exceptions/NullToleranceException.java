@@ -1,7 +1,9 @@
 package base.exceptions;
 
 public class NullToleranceException extends RuntimeException {
-    public NullToleranceException() {
+	private static final long serialVersionUID = 8518422509730034031L;
+
+	public NullToleranceException() {
     }
 
     public NullToleranceException(String message) {

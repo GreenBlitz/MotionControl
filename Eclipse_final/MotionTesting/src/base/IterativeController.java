@@ -9,19 +9,22 @@ import java.util.TimerTask;
  */
 public abstract class IterativeController<IN, OUT> extends AbstractController<IN, OUT> {
 	public static final double DEFAULT_PERIOD = .05;
-	
+
 	public static final EnvironmentPort environmentPort = new EnvironmentPort();
 
 	protected final double m_period;
 
-	protected Timer m_controllerLoop; // the loop which will calculate the controller
+	protected Timer m_controllerLoop; // the loop which will calculate the
+										// controller
 
 	/**
 	 * 
 	 * @param in
 	 * @param out
 	 * @param destination
-	 * @param period the time interval between each call to {@link IterativeController#calculate calculate}
+	 * @param period
+	 *            the time interval between each call to
+	 *            {@link IterativeController#calculate calculate}
 	 * @param name
 	 */
 	public IterativeController(Input<IN> in, Output<OUT> out, IN destination, double period, String name) {
@@ -58,7 +61,9 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 * 
 	 * @param in
 	 * @param out
-	 * @param period the time interval between each call to {@link IterativeController#calculate calculate}
+	 * @param period
+	 *            the time interval between each call to
+	 *            {@link IterativeController#calculate calculate}
 	 * @param name
 	 */
 	public IterativeController(Input<IN> in, Output<OUT> out, double period, String name) {
@@ -87,6 +92,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 	/**
 	 * The task which will be run periodically
+	 * 
 	 * @author karlo
 	 */
 	protected class IterativeCalculationTask extends TimerTask {
@@ -95,33 +101,52 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 		@Override
 		public void run() {
-			if (m_controllerState == State.DISABLED)
-				m_output.stop();
-			
-			if (environmentPort.isEnabled() && m_controllerState == State.ENABLED) {
-				if (m_destination == null) {
-					System.err.println("WARNING - destination is null");
-					return;
-				}
+			IterativeController.this.run(m_controllerState, m_input, m_output, m_destination, m_tolerance,
+					environmentPort);
+		}
+	}
 
-				if (m_tolerance == NO_TOLERANCE) {
-					System.err.println("WARNING - tolerance not set");
-					return;
-				}
-				if (!m_tolerance.onTarget()) {
-					IN input = m_input.recieve();
-					OUT output = calculate(input);
-					m_output.use(output);
-					System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
-							IterativeController.this.generateActivityDescription(input, output));
-				} else {
-					m_controllerState = State.END;
-					m_output.stop();
-					System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
-				}
-			} else {
-				free();
+	/**
+	 * 
+	 * @param controllerState
+	 *            current controller state
+	 * @param input
+	 *            controller input object
+	 * @param output
+	 *            controller output object
+	 * @param destination
+	 *            controller destination
+	 * @param tolerance
+	 *            controller tolerance
+	 * @param port
+	 *            SmartDashboard and DriverStation replacement
+	 */
+	public final void run(AbstractController.State controllerState, Input<IN> input, Output<OUT> output, IN destination,
+			ITolerance tolerance, EnvironmentPort port) {
+		if (controllerState == State.DISABLED)
+			output.stop();
+
+		if (port.isEnabled() && controllerState == State.ENABLED) {
+			if (destination == null) {
+				System.err.println("WARNING - destination is null");
+				return;
 			}
+
+			if (tolerance == NO_TOLERANCE) {
+				System.err.println("WARNING - tolerance not set");
+				return;
+			}
+			if (!tolerance.onTarget()) {
+				Tuple<IN, OUT> IO = act();
+				System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
+						IterativeController.this.generateActivityDescription(IO._1, IO._2));
+			} else {
+				controllerState = State.END;
+				output.stop();
+				System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
+			}
+		} else {
+			free();
 		}
 	}
 
@@ -133,11 +158,19 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		}
 	}
 
+	protected Tuple<IN, OUT> act() {
+		IN input = getInput();
+		OUT output = calculate(input);
+		useOutput(output);
+		return new Tuple<IN, OUT>(input, output);
+	}
+
 	/**
 	 * 
 	 * @param input
 	 * @param output
-	 * @return String describing the actions this controller done before and after {@link IterativeController#calculate}
+	 * @return String describing the actions this controller done before and
+	 *         after {@link IterativeController#calculate}
 	 */
 	protected String generateActivityDescription(IN input, OUT output) {
 		// Beep Boop! I'm a robot and this is what i just did!

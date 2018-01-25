@@ -1,19 +1,19 @@
 
 package org.usfirst.frc.team4590.robot;
 
-import java.util.ArrayList;
-
 import com.ctre.CANTalon;
 
+import APPC.APPCOutput;
+import APPC.APPController;
+import APPC.Localizer;
+import APPC.Path;
+import APPC.PathFactory;
+import APPC.Point2D;
+import base.WrappedEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import APPC.*;
-import base.WrappedEncoder;
 
 /**
  * The VM is configured to automatically run this class, and to call the

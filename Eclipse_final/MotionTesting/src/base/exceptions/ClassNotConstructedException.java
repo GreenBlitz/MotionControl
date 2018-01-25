@@ -1,7 +1,9 @@
 package base.exceptions;
 
 public class ClassNotConstructedException extends IllegalStateException {
-    public ClassNotConstructedException() {
+	private static final long serialVersionUID = 4357420926888101207L;
+
+	public ClassNotConstructedException() {
         super("Class didn't call construct() method");
     }
 

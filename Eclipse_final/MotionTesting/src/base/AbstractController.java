@@ -1,34 +1,32 @@
 package base;
 
+import java.util.Comparator;
 import java.util.function.Function;
 
-import base.exceptions.*;
+import base.exceptions.NullToleranceException;
 import events.ControllerStoppedEvent;
 import events.EventManager;
 
 /**
  * Abstract controller with input and output
  */
-
 public abstract class AbstractController<IN, OUT> implements IController {
 	public static final Input NO_INPUT = () -> null;
 	public static final NullTolerance NO_TOLERANCE = NullTolerance.INSTANCE;
 
 	/**
 	 * Represents a controller state
-	 *         <p>
-	 *         {@link AbstractController.State#ENABLED ENABLED} - controller is
-	 *         active
-	 *         </p>
-	 *         <p>
-	 *         {@link AbstractController.State#ENABLED DISABLE} - controller is
-	 *         halted
-	 *         </p>
-	 *         <p>
-	 *         {@link AbstractController.State#ENABLED END} - controller is
-	 *         ended
-	 *         </p>
-	 * @author karlo 
+	 * <p>
+	 * {@link AbstractController.State#ENABLED ENABLED} - controller is active
+	 * </p>
+	 * <p>
+	 * {@link AbstractController.State#ENABLED DISABLE} - controller is halted
+	 * </p>
+	 * <p>
+	 * {@link AbstractController.State#ENABLED END} - controller is ended
+	 * </p>
+	 * 
+	 * @author karlo
 	 */
 	public static enum State {
 		/**
@@ -48,9 +46,9 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	protected Output<OUT> m_output;
-	protected Output<OUT> m_originalOutput;
+	private Output<OUT> m_originalOutput;
 	protected Input<IN> m_input = NO_INPUT;
-	protected Input<IN> m_originalInput = NO_INPUT;
+	private Input<IN> m_originalInput = NO_INPUT;
 	protected IN m_destination;
 
 	protected Function<OUT, OUT> m_outputConstrain;
@@ -218,7 +216,8 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	/**
 	 * Tolerance with time limitation until onTarget() will return true
-	 * @author karlo 
+	 * 
+	 * @author karlo
 	 */
 	public abstract class TimedTolerance implements ITolerance {
 
@@ -256,6 +255,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	/**
 	 * No tolerance- will throw a {@link NullToleranceException} when called
+	 * 
 	 * @author karlo
 	 */
 	public static class NullTolerance implements ITolerance {
@@ -275,19 +275,113 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	/**
-	 * 
-	 * @param inputConstrain
+	 * Removes the input constrain's effect
 	 */
-	public synchronized void setInputRange(Function<IN, IN> inputConstrain) {
-		m_inputConstrain = inputConstrain;
+	public synchronized void resetInputConstrain() {
+		m_inputConstrain = obj -> obj;
+		m_input = m_originalInput;
 	}
 
 	/**
+	 * Removes the output constrain's effect
+	 */
+	public synchronized void resetOutputConstrain() {
+		m_outputConstrain = obj -> obj;
+		m_output = m_originalOutput;
+	}
+
+	/**
+	 * Changing the input object such that every input will go throw new new
+	 * inputConstrain
+	 * 
+	 * @param inputConstrain
+	 */
+	public synchronized void setInputConstrain(Function<IN, IN> inputConstrain) {
+		m_inputConstrain = inputConstrain;
+		m_input = () -> m_inputConstrain.apply(m_originalInput.recieve());
+	}
+
+	/**
+	 * Changing the output object such that every output will go throw new new
+	 * outputConstrain
 	 * 
 	 * @param outputConstrain
 	 */
-	public synchronized void setOutputRange(Function<OUT, OUT> outputConstrain) {
+	public synchronized void setOutputConstrain(Function<OUT, OUT> outputConstrain) {
 		m_outputConstrain = outputConstrain;
+		m_output = new Output<OUT>() {
+
+			@Override
+			public void use(OUT output) {
+				m_originalOutput.use(m_outputConstrain.apply(output));
+			}
+
+			@Override
+			public OUT noPower() {
+				return m_originalOutput.noPower();
+			}
+
+			@Override
+			public void stop() {
+				m_originalOutput.stop();
+			}
+		};
+	}
+
+	/**
+	 * Put's a constrain on the input, such that he will always be smaller than
+	 * max and larger than min
+	 * 
+	 * <p>
+	 * <b>note:</b> in this method's default implementation, the minimum and
+	 * maximum canno't be found once applied
+	 * </p>
+	 * 
+	 * @param min
+	 * @param max
+	 * @param compare
+	 *            Input comparator
+	 */
+	public synchronized void setInputRange(IN min, IN max, Comparator<IN> compare) {
+		Function<IN, IN> inputConstrain = new Function<IN, IN>() {
+			@Override
+			public IN apply(IN input) {
+				if (compare.compare(min, input) >= 0)
+					return min;
+				if (compare.compare(max, input) <= 0)
+					return max;
+				return input;
+			}
+		};
+		setInputConstrain(inputConstrain);
+	}
+
+	/**
+	 * Put's a constrain on the output, such that the used output can't be
+	 * smaller than min or larger than max
+	 * 
+	 * <p>
+	 * <b>note:</b> in this method's default implementation, the minimum and
+	 * maximum canno't be found once applied
+	 * </p>
+	 * 
+	 * @param min
+	 * @param max
+	 * @param compare
+	 *            Input comparator
+	 */
+	public synchronized void setOutputRange(OUT min, OUT max, Comparator<OUT> compare) {
+		Function<OUT, OUT> outputConstrain = new Function<OUT, OUT>() {
+			@Override
+			public OUT apply(OUT output) {
+				if (compare.compare(min, output) >= 0)
+					return min;
+				if (compare.compare(max, output) <= 0)
+					return max;
+				return output;
+			}
+		};
+		setOutputConstrain(outputConstrain);
 	}
 
 	/**
@@ -332,6 +426,14 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		return getError(input, m_destination);
 	}
 
+	protected IN getInput() {
+		return m_input.recieve();
+	}
+
+	protected void useOutput(OUT output) {
+		m_output.use(output);
+	}
+
 	/**
 	 * the main function of the controller. will be run every 20 milliseconds
 	 * (by default). should move the engines and receive data from the sensors
@@ -340,15 +442,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * @return
 	 */
 	public abstract OUT calculate(IN input);
-
-	/**
-	 * Initialize any field that you want. Note: don't use the (String,
-	 * Controller) constructor, but instead
-	 * <code>constructParam(String paramName)</code>
-	 * 
-	 * @throws NoSuchFieldException
-	 */
-	public abstract void initParameters() throws NoSuchFieldException;
 
 	/**
 	 * Calculates the error between two instances of input.
