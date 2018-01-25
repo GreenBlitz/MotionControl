@@ -58,7 +58,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-
 	}
 
 	@Override
