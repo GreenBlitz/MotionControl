@@ -35,8 +35,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		System.out.println("auto Init");
-		Path myPath = new PathFactory().genForwardPath(1, false, 0.002).construct();
+		Path myPath = new PathFactory().genForwardPath(2, false, 0.002).construct();
 		controller = new APPController(loc, out, myPath);
+		controller.setOutputConstrain(driveData -> new APPController.APPDriveData(0.5 * driveData.power, driveData.curve));
+		controller.start();
 	}
 	// 0.49 m
 
