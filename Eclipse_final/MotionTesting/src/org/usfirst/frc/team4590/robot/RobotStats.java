@@ -9,7 +9,7 @@ public final class RobotStats {
 	                           POWER_GEARS_RATIO = 11.03;
 	
 	public static final boolean CHASSIS_LEFT_ENCODER_INVERT = false,
-								CHASSIS_RIGHT_ENCODER_INVERT = false;
+								CHASSIS_RIGHT_ENCODER_INVERT = true;
 
 	
 	
