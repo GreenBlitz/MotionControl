@@ -435,11 +435,11 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	protected void useOutput(OUT output) {
 		m_output.use(output);
 	}
-	
+
 	protected void outputStop() {
 		m_output.stop();
 	}
-	
+
 	protected OUT noPower() {
 		return m_output.noPower();
 	}
