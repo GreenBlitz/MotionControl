@@ -3,7 +3,6 @@ package APPC;
 import base.Input;
 import base.IterativeController;
 import base.Output;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Point2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.3;
@@ -99,7 +98,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	public double calculateCurve(Point2D loc, Point2D goal) {
 		Point2D goalVector = goal.changePrespectiveTo(loc);
 		double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
-		SmartDashboard.putNumber("Angle", angle);
+		m_environmentPort.putNumber("Angle", angle);
 		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
@@ -122,7 +121,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 
 		@Override
 		protected boolean onInstantTimeTarget() {
-			return m_input.recieve().distance(m_destination) < m_toleranceDist;
+			return APPController.this.getInput().distance(m_destination) < m_toleranceDist;
 		}
 
 	}
@@ -137,13 +136,32 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 
 		@Override
 		public boolean onTarget() {
-			return m_input.recieve().distance(m_destination) <= m_toleranceDist;
+			return APPController.this.getInput().distance(m_destination) <= m_toleranceDist;
 		}
 
 	}
 
+	/**
+	 * If the robot is farther then <code>slowDownDistance</code> return 1,
+	 * otherwise return a 0.5 unless
+	 * <code>path.getLast()) / slowDownDistance</code> is larger than 1, then
+	 * return <code>path.getLast()) / slowDownDistance</code>
+	 * 
+	 * @param robotLoc
+	 *            the location of the robot
+	 * @param path
+	 *            the path the robot is following
+	 * @param slowDownDistance
+	 *            the distance at which the robot stats to slow down
+	 * @return the power which the robot will go at
+	 */
 	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {
-		return Math.min(1, (robotLoc.distance(path.getLast()) / slowDownDistance) + 0.5);
+		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
+		if (distanceOverSlowDown > 1)
+			return 1;
+		if (distanceOverSlowDown > 0.5)
+			return distanceOverSlowDown;
+		return 0.5;
 	}
 
 	@Override

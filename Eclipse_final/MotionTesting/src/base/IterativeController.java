@@ -10,8 +10,6 @@ import java.util.TimerTask;
 public abstract class IterativeController<IN, OUT> extends AbstractController<IN, OUT> {
 	public static final double DEFAULT_PERIOD = .05;
 
-	public static final EnvironmentPort environmentPort = new EnvironmentPort();
-
 	protected final double m_period;
 
 	protected Timer m_controllerLoop; // the loop which will calculate the
@@ -101,8 +99,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 		@Override
 		public void run() {
-			IterativeController.this.run(m_controllerState, m_input, m_output, m_destination, m_tolerance,
-					environmentPort);
+			IterativeController.this.run(m_controllerState, m_destination, m_tolerance, m_environmentPort);
 		}
 	}
 
@@ -121,11 +118,8 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 * @param port
 	 *            SmartDashboard and DriverStation replacement
 	 */
-	public final void run(AbstractController.State controllerState, Input<IN> input, Output<OUT> output, IN destination,
-			ITolerance tolerance, EnvironmentPort port) {
-		if (controllerState == State.DISABLED)
-			output.stop();
-
+	public final void run(AbstractController.State controllerState, IN destination, ITolerance tolerance,
+			EnvironmentPort port) {
 		if (port.isEnabled() && controllerState == State.ENABLED) {
 			if (destination == null) {
 				System.err.println("WARNING - destination is null");
@@ -142,7 +136,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 						IterativeController.this.generateActivityDescription(IO._1, IO._2));
 			} else {
 				controllerState = State.END;
-				output.stop();
+				outputStop();
 				System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
 			}
 		} else {
@@ -176,5 +170,4 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		// Beep Boop! I'm a robot and this is what i just did!
 		return String.format("\tLocation: %s\n\tOutput: %s\n", input.toString(), output.toString());
 	}
-
 }
