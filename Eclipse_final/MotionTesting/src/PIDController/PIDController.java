@@ -4,7 +4,7 @@ import base.Input;
 import base.IterativeController;
 import base.Output;
 
-public class PID extends IterativeController<Double, Double> {
+public class PIDController extends IterativeController<Double, Double> {
 
     private double m_lastError = 0;
     private double m_totalError = 0;
@@ -14,7 +14,7 @@ public class PID extends IterativeController<Double, Double> {
     double m_kD;
     double m_kF;
 
-    public PID(Input<Double> in, Output<Double> out, Double destination,
+    public PIDController(Input<Double> in, Output<Double> out, Double destination,
     		double kp, double ki, double kd, double kf, String name) {
         super(in, out, destination, name);
         m_kP = kp;
@@ -23,7 +23,7 @@ public class PID extends IterativeController<Double, Double> {
         m_kF = kf;
     }
 
-    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, String name) {
+    public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, String name) {
         super(in, out, destination, name);
         m_kP = kp;
         m_kI = 0;
@@ -31,7 +31,7 @@ public class PID extends IterativeController<Double, Double> {
         m_kF = 0;
     }
 
-    public PID(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, String name) {
+    public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, String name) {
         super(in, out, destination, name);
         m_kP = kp;
         m_kI = ki;
@@ -39,7 +39,7 @@ public class PID extends IterativeController<Double, Double> {
         m_kF = 0;
     }
 
-    public PID(Input<Double> in, Output<Double> out, Double destination,
+    public PIDController(Input<Double> in, Output<Double> out, Double destination,
     		double kp, double ki, double kd, String name) {
         super(in, out, destination, name);
         m_kP = kp;

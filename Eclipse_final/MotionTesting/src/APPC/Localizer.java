@@ -2,7 +2,7 @@ package APPC;
 
 import base.Input;
 import base.IterativeController;
-import base.WrappedEncoder;
+import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -17,17 +17,17 @@ import java.util.TimerTask;
  * the front is the gear side
  */
 // TODO: add wheel distance to robotmap
-public class Localizer implements Input<Point2D> {	
+public class Localizer implements Input<Orientation2D> {	
     public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 2;
     public static final Object LOCK = new Object();
 
-    private Point2D m_location;
+    private Orientation2D m_location;
    
-    private WrappedEncoder[] m_leftWrappedEncoders;
-    private WrappedEncoder[] m_rightWrappedEncoders;
+    private ScaledEncoder[] m_leftWrappedEncoders;
+    private ScaledEncoder[] m_rightWrappedEncoders;
     private double m_wheelDistance;
 
-    public Localizer(WrappedEncoder[] left, WrappedEncoder[] right, Point2D location,double wheelDistance) {
+    public Localizer(ScaledEncoder[] left, ScaledEncoder[] right, Orientation2D location,double wheelDistance) {
         m_location = location;
         m_leftWrappedEncoders = left;
         m_rightWrappedEncoders = right;
@@ -36,21 +36,21 @@ public class Localizer implements Input<Point2D> {
         m_timer.schedule(new LocalizeTimerTask(), 0,(long) (1000 * PERIOD)); 
     }
 
-    public Localizer(WrappedEncoder left, WrappedEncoder right, Point2D location, double wheelDistance) {
-        this(new WrappedEncoder[]{left}, new WrappedEncoder[]{right}, location, wheelDistance);
+    public Localizer(ScaledEncoder left, ScaledEncoder right, Orientation2D location, double wheelDistance) {
+        this(new ScaledEncoder[]{left}, new ScaledEncoder[]{right}, location, wheelDistance);
     }
     
-    public static Localizer of(WrappedEncoder left, WrappedEncoder right, double wheelDist) {
-    	return new Localizer(left, right, new Point2D(0,0,0), wheelDist);
+    public static Localizer of(ScaledEncoder left, ScaledEncoder right, double wheelDist) {
+    	return new Localizer(left, right, new Orientation2D(0,0,0), wheelDist);
     }
 
     public double getLeftDistance() {
-        return Arrays.stream(m_leftWrappedEncoders).map(WrappedEncoder :: getDistance).reduce((a, b) -> a + b).orElse(.0) /
+        return Arrays.stream(m_leftWrappedEncoders).map(ScaledEncoder :: getDistance).reduce((a, b) -> a + b).orElse(.0) /
                 m_leftWrappedEncoders.length;
     }
 
     public double getRightDistance() {
-        return Arrays.stream(m_rightWrappedEncoders).map(WrappedEncoder :: getDistance).reduce((a, b) -> a + b).orElse(.0) /
+        return Arrays.stream(m_rightWrappedEncoders).map(ScaledEncoder :: getDistance).reduce((a, b) -> a + b).orElse(.0) /
                 m_rightWrappedEncoders.length;
     }
 
@@ -96,7 +96,7 @@ public class Localizer implements Input<Point2D> {
 
     		double radiusFromCenter = -(shortDist/angle + Math.signum(angle) * m_wheelDistance/2);
     		double adjustedRadiusFromCenter = radiusFromCenter;
-    		Point2D rotationOrigin = m_location.add(adjustedRadiusFromCenter, 0);
+    		Orientation2D rotationOrigin = m_location.add(adjustedRadiusFromCenter, 0);
             synchronized (LOCK){
                 m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
             }
@@ -105,20 +105,20 @@ public class Localizer implements Input<Point2D> {
     }
 
     @Override
-    public Point2D recieve() {
+    public Orientation2D recieve() {
         synchronized (LOCK){
             return m_location;
         }
     }
     
     private void reset() {
-    	for (WrappedEncoder enc : m_leftWrappedEncoders)
+    	for (ScaledEncoder enc : m_leftWrappedEncoders)
     		enc.reset();
     
-    	for (WrappedEncoder enc : m_rightWrappedEncoders)
+    	for (ScaledEncoder enc : m_rightWrappedEncoders)
     		enc.reset();
     	
-        m_location = Point2D.GLOBAL_ORIGIN;
+        m_location = Orientation2D.GLOBAL_ORIGIN;
     }
     
 }

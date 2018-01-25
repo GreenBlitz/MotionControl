@@ -4,7 +4,7 @@ import base.Input;
 import base.IterativeController;
 import base.Output;
 
-public class APPController extends IterativeController<Point2D, APPController.APPDriveData> {
+public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.3;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.1;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
@@ -41,12 +41,12 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, Path path) {
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, Path path) {
 		this(in, out, DEFAULT_PERIOD, path, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
 				DEFAULT_SLOWDOWN);
 	}
 
-	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, Path path, double lookAhead,
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, Path path, double lookAhead,
 			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
@@ -70,7 +70,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, double period, Path path,
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, double period, Path path,
 			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		super(in, out, period, "APPController");
 		m_path = path.iterator();
@@ -80,11 +80,11 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 		m_slowDownDistance = slowDownDistance;
 	}
 
-	private Point2D updateGoalPoint(Point2D loc, Path.PathIterator path, double lookAhead) {
+	private Orientation2D updateGoalPoint(Orientation2D loc, Path.PathIterator path, double lookAhead) {
 		path.resetIterator();
 		path.setCurrentIndex(path.getLength() - 1);
-		Point2D close = path.peek();
-		Point2D point;
+		Orientation2D close = path.peek();
+		Orientation2D point;
 		while (path.getCurrentIndex() > 0 && close.distance(loc) > lookAhead) {
 			path.changeCurrentIndex(-1);
 			point = path.peek();
@@ -95,16 +95,16 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 		return close;
 	}
 
-	public double calculateCurve(Point2D loc, Point2D goal) {
-		Point2D goalVector = goal.changePrespectiveTo(loc);
+	public double calculateCurve(Orientation2D loc, Orientation2D goal) {
+		Orientation2D goalVector = goal.changePrespectiveTo(loc);
 		double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
 		m_environmentPort.putNumber("Angle", angle);
 		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
 	@Override
-	public APPController.APPDriveData calculate(Point2D robotLocation) {
-		Point2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
+	public APPController.APPDriveData calculate(Orientation2D robotLocation) {
+		Orientation2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
 		System.out.println("next goal point: " + goal);
 		return new APPController.APPDriveData(calculatePower(robotLocation, m_path, m_slowDownDistance),
 				calculateCurve(robotLocation, goal));
@@ -155,7 +155,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	 *            the distance at which the robot stats to slow down
 	 * @return the power which the robot will go at
 	 */
-	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {
+	protected double calculatePower(Orientation2D robotLoc, Path.PathIterator path, double slowDownDistance) {
 		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
@@ -165,12 +165,12 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	}
 
 	@Override
-	public Point2D getError(Point2D loc, Point2D dest) {
-		return new Point2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
+	public Orientation2D getError(Orientation2D loc, Orientation2D dest) {
+		return new Orientation2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				loc.getDirection() - dest.getDirection());
 	}
 
-	public int compare(Point2D o1, Point2D o2) {
+	public int compare(Orientation2D o1, Orientation2D o2) {
 		return Double.compare(o1.length(), o2.length());
 	}
 

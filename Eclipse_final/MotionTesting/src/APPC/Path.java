@@ -10,15 +10,15 @@ import java.util.List;
  *
  * Represents a path of points
  */
-public class Path implements Iterable<Point2D> {
-    protected List<Point2D> m_path;
+public class Path implements Iterable<Orientation2D> {
+    protected List<Orientation2D> m_path;
 
-    public Path(List<Point2D> path) {
+    public Path(List<Orientation2D> path) {
         m_path = path;
     }
 
     public Path() { this(new ArrayList<>()); }
-    public Path(Point2D origin) {
+    public Path(Orientation2D origin) {
     	this();
     	this.add(origin);
     }
@@ -29,7 +29,7 @@ public class Path implements Iterable<Point2D> {
      * @return The location at the given tick
      * @throws EndOfPathException if the path doesn't have enough locations in it
      */
-    public Point2D get(int tick) throws EndOfPathException{
+    public Orientation2D get(int tick) throws EndOfPathException{
     	if(tick>=m_path.size())
     		throw new EndOfPathException(tick);
     	return m_path.get(tick);
@@ -39,7 +39,7 @@ public class Path implements Iterable<Point2D> {
 	return new PathIterator();
     }
 
-    public Point2D getLast() {
+    public Orientation2D getLast() {
         return m_path.get(m_path.size()-1);
     }
 
@@ -52,11 +52,11 @@ public class Path implements Iterable<Point2D> {
      * Adds a location at the end of the path
      * @param l The location to be added
      */
-    public void add(Point2D l) {
+    public void add(Orientation2D l) {
         m_path.add(l);
     }
 
-    public Point2D closestPointTo(Point2D point2D){
+    public Orientation2D closestPointTo(Orientation2D point2D){
         return m_path.stream().min(Comparator.comparingDouble(value -> value.distance(point2D))).get();
     }
 
@@ -69,7 +69,7 @@ public class Path implements Iterable<Point2D> {
 	return "Path [m_path=" + m_path + "]";
     }
 
-    public class PathIterator implements Iterator<Point2D>, Iterable<Point2D> {
+    public class PathIterator implements Iterator<Orientation2D>, Iterable<Orientation2D> {
 	private int currentIndex = 0;
 
 	public PathIterator(int currentIndex) {
@@ -85,15 +85,15 @@ public class Path implements Iterable<Point2D> {
 	
 	public int getLength(){return Path.this.m_path.size();}
 	
-	public Point2D getLast(){return Path.this.getLast();}
+	public Orientation2D getLast(){return Path.this.getLast();}
 	
 	public boolean hasNext() { return currentIndex < m_path.size(); }
 	
-	public Point2D peek(){
+	public Orientation2D peek(){
 	    return m_path.get(currentIndex);
 	}
 	
-	public Point2D next() {
+	public Orientation2D next() {
 	    return m_path.get(currentIndex++);
 	}
 	
@@ -111,7 +111,7 @@ public class Path implements Iterable<Point2D> {
 	 * @return The next location in the path
 	 * @throws EndOfPathException If the path has ended
 	*/
-	public synchronized Point2D get() throws EndOfPathException {
+	public synchronized Orientation2D get() throws EndOfPathException {
 	    return Path.this.get(currentIndex++);
 	}
 

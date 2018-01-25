@@ -14,8 +14,8 @@ import org.la4j.vector.dense.BasicVector;
  *
  * Represents a cartesian point
  */
-public class Point2D {
-    public static final Point2D GLOBAL_ORIGIN = new Point2D(0, 0, 0);
+public class Orientation2D {
+    public static final Orientation2D GLOBAL_ORIGIN = new Orientation2D(0, 0, 0);
 
     private double m_x;
     private double m_y;
@@ -28,7 +28,7 @@ public class Point2D {
      * @param y Y axis value
      * @param direction the direction of the point
      */
-    public Point2D(double x, double y, double direction) {
+    public Orientation2D(double x, double y, double direction) {
         m_x = x;
         m_y = y;
         m_direction = normalize(direction);
@@ -38,7 +38,7 @@ public class Point2D {
      * copy constructor
      * @param point2D
      */
-    public Point2D(Point2D point2D){
+    public Orientation2D(Orientation2D point2D){
         m_x = point2D.m_x;
         m_y = point2D.m_y;
         m_direction = point2D.m_direction;
@@ -54,36 +54,36 @@ public class Point2D {
      * @param y shift along the Y axis
      * @return this point shifted by x and y
      */
-    private Point2D toNatrualChords(){
+    private Orientation2D toNatrualChords(){
     	return this.rotate(-m_direction);
     }
-    private Point2D toRegularChords(){
+    private Orientation2D toRegularChords(){
     	return this.rotate(m_direction);
     }
     
-    public Point2D add(double x, double y, double dir) {
+    public Orientation2D add(double x, double y, double dir) {
         //return (new Point2D(m_x + x, m_y + y, m_direction)).rotateRelativeTo(this, m_direction);
-        Point2D meh = this.toNatrualChords();
-        meh = new Point2D(meh.getX() + x, meh.getY() + y, meh.getDirection()).toRegularChords();
-        return new Point2D(meh.getX(), meh.getY(), meh.getDirection() + dir);
+        Orientation2D meh = this.toNatrualChords();
+        meh = new Orientation2D(meh.getX() + x, meh.getY() + y, meh.getDirection()).toRegularChords();
+        return new Orientation2D(meh.getX(), meh.getY(), meh.getDirection() + dir);
     }
     
-    public Point2D add(double x, double y) {
+    public Orientation2D add(double x, double y) {
     	return add(x, y, 0);
     }
     
-    public Point2D add(Point2D point){
+    public Orientation2D add(Orientation2D point){
     	return add(point.getX(),point.getY(), point.getDirection());
     }
-    public Point2D sub(Point2D point) {
+    public Orientation2D sub(Orientation2D point) {
     	return add(point.neg());
     }
-    public Point2D neg() {
-    	return new Point2D(-m_x, -m_y, -m_direction);
+    public Orientation2D neg() {
+    	return new Orientation2D(-m_x, -m_y, -m_direction);
     }
     
-    public Point2D changePrespectiveTo(Point2D point){
-    	return new Point2D(m_x-point.getX(),m_y-point.getY(),0).rotate(-point.getDirection());
+    public Orientation2D changePrespectiveTo(Orientation2D point){
+    	return new Orientation2D(m_x-point.getX(),m_y-point.getY(),0).rotate(-point.getDirection());
     }
 
     /**
@@ -91,9 +91,9 @@ public class Point2D {
      * @param other the point which will relate to this
      * @return other point in relation to this
      */
-    public Point2D moveRelativeTo(Point2D other) {
-        Point2D tmp = other.rotateRelativeTo(this, m_direction);
-        return new Point2D(tmp.getX() - m_x, tmp.getY() - m_y, m_direction);
+    public Orientation2D moveRelativeTo(Orientation2D other) {
+        Orientation2D tmp = other.rotateRelativeTo(this, m_direction);
+        return new Orientation2D(tmp.getX() - m_x, tmp.getY() - m_y, m_direction);
     }
 
     /**
@@ -102,7 +102,7 @@ public class Point2D {
      * @return transform * point (matrix multiplication)
      * @throws IllegalArgumentException if transform isn't 2X2
      */
-    public Point2D apply(Matrix transform) throws IllegalArgumentException {
+    public Orientation2D apply(Matrix transform) throws IllegalArgumentException {
         if (transform.rows() != 2 || transform.columns() != 2)
             throw new IllegalArgumentException(
                     String.format(
@@ -112,7 +112,7 @@ public class Point2D {
 
         Vector ret = transform.multiply(new BasicVector(new double[] {m_x, m_y}));
 
-        return new Point2D(ret.get(0), ret.get(1), m_direction);
+        return new Orientation2D(ret.get(0), ret.get(1), m_direction);
     }
 
     /**
@@ -120,7 +120,7 @@ public class Point2D {
      * @param s scaled version of this point
      * @return a new point whose coordinates are this * s
      */
-    public Point2D scale(double s) {
+    public Orientation2D scale(double s) {
         return apply(genScaleMatrix(s));
     }
 
@@ -129,7 +129,7 @@ public class Point2D {
      * @param angle the angle of rotation
      * @return this point rotated by angle
      */
-    public Point2D rotate(double angle) {
+    public Orientation2D rotate(double angle) {
         return apply(genRotationMatrix(angle));
     }
 
@@ -140,24 +140,24 @@ public class Point2D {
      * @return this point rotated with a different origin
      */
     //TODO- moveBy behaviour changed fix accordingly
-    public Point2D rotateRelativeTo(Point2D origin, double angle) {
-    	Point2D relative = new Point2D(
+    public Orientation2D rotateRelativeTo(Orientation2D origin, double angle) {
+    	Orientation2D relative = new Orientation2D(
     			m_x - origin.getX(),
     			m_y - origin.getY(),
     			m_direction).rotate(angle);
     	
-    	return new Point2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction);
+    	return new Orientation2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction);
     	//return new Point2D(relative.getX() +m_x, relative.getY() + m_y, m_direction);
     	//there where pluses
     }
     
-    public Point2D rotateRelativeToChange(Point2D origin, double angle) {
-    	Point2D relative = new Point2D(
+    public Orientation2D rotateRelativeToChange(Orientation2D origin, double angle) {
+    	Orientation2D relative = new Orientation2D(
     			m_x - origin.getX(),
     			m_y - origin.getY(),
     			m_direction).rotate(angle);
     	
-    	return new Point2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction - angle);
+    	return new Orientation2D(relative.getX() + origin.getX(), relative.getY() + origin.getY(), m_direction - angle);
     	//return new Point2D(relative.getX() +m_x, relative.getY() + m_y, m_direction);
     	//there where pluses
     }
@@ -200,7 +200,7 @@ public class Point2D {
      * @param a22 second line, second column
      * @return The linear transformation defined by these four elements
      */
-    public Function<Point2D, Point2D> genTransformation(double a11, double a12, double a21, double a22) {
+    public Function<Orientation2D, Orientation2D> genTransformation(double a11, double a12, double a21, double a22) {
         return point -> point.apply(genMatrix(a11, a12, a21, a22));
     }
 
@@ -209,14 +209,14 @@ public class Point2D {
      * @param other the center of rotation and distance
      * @return the polar representation of this point relatively to origin
      */
-    public double[] toPolarRelative(Point2D other) {
+    public double[] toPolarRelative(Orientation2D other) {
         return new double[] {
                 Math.hypot(m_x - other.getX(), m_y - other.getY()),
                 Math.atan2(m_y - other.getY(), m_x - other.getX()) - m_direction };
     }
 
-    public double distanceSquared(Point2D other) {
-        return add(new Point2D(-other.m_x, -other.m_y, 0)).lengthSquared();
+    public double distanceSquared(Orientation2D other) {
+        return add(new Orientation2D(-other.m_x, -other.m_y, 0)).lengthSquared();
     }
     
     public double lengthSquared(){
@@ -229,7 +229,7 @@ public class Point2D {
      * @param other the other point
      * @return the absolute distance
      */
-    public double distance(Point2D other) {
+    public double distance(Orientation2D other) {
         return Math.hypot(m_x-other.m_x, m_y-other.m_y);
     }
     
@@ -238,8 +238,8 @@ public class Point2D {
      * @param other The other point
      * @return The distance vector
      */
-    public Point2D distanceVector(Point2D other) {
-    	return new Point2D(-this.m_x + other.m_x, -this.m_y + other.m_y, -this.m_direction + other.m_direction);
+    public Orientation2D distanceVector(Orientation2D other) {
+    	return new Orientation2D(-this.m_x + other.m_x, -this.m_y + other.m_y, -this.m_direction + other.m_direction);
     }
 
     
@@ -263,8 +263,8 @@ public class Point2D {
      * @param angle the angle of the polar representation
      * @return
      */
-    public Point2D genRelativeRotated(double radius, double angle) {
-        return new Point2D(m_x + radius, m_y, m_direction).rotate(angle + m_direction);
+    public Orientation2D genRelativeRotated(double radius, double angle) {
+        return new Orientation2D(m_x + radius, m_y, m_direction).rotate(angle + m_direction);
     }
 
     /**
@@ -273,8 +273,8 @@ public class Point2D {
      * @param y Y axis shift
      * @return the new point, in relative coordinates to this point
      */
-    public Point2D genRelative(double x, double y) {
-        return new Point2D(m_x + x, m_y + y, m_direction).rotate(m_direction);
+    public Orientation2D genRelative(double x, double y) {
+        return new Orientation2D(m_x + x, m_y + y, m_direction).rotate(m_direction);
     }
 
     /**

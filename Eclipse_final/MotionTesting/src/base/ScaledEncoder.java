@@ -12,10 +12,10 @@ import wrapper.PIDSourceWrapper;
  *
  * Does everything the same as the regular encoder class except the constructor.
 1 */
-public class WrappedEncoder extends PIDSourceWrapper {
+public class ScaledEncoder extends PIDSourceWrapper {
     private Encoder m_encoder;
 
-    public WrappedEncoder(Encoder enc, double distancePerTick) {
+    public ScaledEncoder(Encoder enc, double distancePerTick) {
         super(enc);
         m_encoder = enc;
         m_encoder.setDistancePerPulse(distancePerTick);
@@ -279,10 +279,10 @@ public class WrappedEncoder extends PIDSourceWrapper {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof WrappedEncoder)) return false;
+        if (!(o instanceof ScaledEncoder)) return false;
         if (!super.equals(o)) return false;
 
-        WrappedEncoder that = (WrappedEncoder) o;
+        ScaledEncoder that = (ScaledEncoder) o;
 
         return m_encoder.equals(that.m_encoder);
     }
