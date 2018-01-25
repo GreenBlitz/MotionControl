@@ -8,25 +8,33 @@ import base.Output;
 
 public class APPCOutput implements Output<APPController.APPDriveData> {
 	private static double fullPower = 0.8;
-	
+
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 	private DrivePort dPort = DrivePort.DEFAULT;
-	
+
 	public APPCOutput(EnvironmentPort ePort, DrivePort dPort) {
 		this.ePort = ePort;
 		this.dPort = dPort;
 	}
-	
-	public APPCOutput() {}
-	
+
+	public APPCOutput() {
+	}
+
 	public void setDrivePort(DrivePort dPort) {
 		this.dPort = dPort;
 	}
-	
+
 	public void setEnvironmentPort(EnvironmentPort ePort) {
 		this.ePort = ePort;
 	}
 
+	/**
+	 * Drive by curve and max power
+	 * 
+	 * @param r
+	 * @param power
+	 * @param curve
+	 */
 	public void curveDrive(DrivePort r, double power, double curve) {
 		ePort.putNumber("Curve", curve);
 		if (curve == 0) {
@@ -69,14 +77,33 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		return new APPController.APPDriveData(.0, .0);
 	}
 
+	/**
+	 * 
+	 * @param d
+	 * @param left
+	 * @param right
+	 */
 	public void tankDrive(DrivePort d, double left, double right) {
 		d.tankDrive(fullPower * left, fullPower * right, false);
 	}
 
+	/**
+	 * 
+	 * @param d
+	 * @param left
+	 * @param right
+	 * @param squared
+	 */
 	public void tankDrive(DrivePort d, double left, double right, boolean squared) {
 		d.tankDrive(fullPower * left, fullPower * right, squared);
 	}
 
+	/**
+	 * 
+	 * @param d
+	 * @param magnitude
+	 * @param curve
+	 */
 	public void arcadeDrive(DrivePort d, double magnitude, double curve) {
 		d.arcadeDrive(fullPower * magnitude, fullPower * curve);
 	}

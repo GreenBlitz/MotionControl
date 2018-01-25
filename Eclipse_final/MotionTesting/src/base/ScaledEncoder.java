@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.Encoder;
 
 /**
  * Represents a scaled encoder- it will return a scaled value from construction
- * 1
  */
 public class ScaledEncoder extends Encoder implements Input<Double> {
 	double scale;
