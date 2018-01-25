@@ -37,6 +37,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		Path myPath = new PathFactory().genForwardPath(2, false, 0.002).construct();
 		controller = new APPController(loc, out, myPath);
+		controller.start();
 	}
 	// 0.49 m
 
@@ -70,12 +71,11 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
-		double scale = RobotStats.ENCODER_SCALE;
 		loc = Localizer.of(
-				new ScaledEncoder(RobotMap.CHASSIS_LEFT_ENCODER_PORT_A, RobotMap.CHASSIS_LEFT_ENCODER_PORT_B, 
-						RobotStats.CHASSIS_LEFT_ENCODER_INVERT, scale), 
+				new ScaledEncoder(RobotMap.CHASSIS_LEFT_ENCODER_PORT_A, RobotMap.CHASSIS_LEFT_ENCODER_PORT_B,
+						-RobotStats.ENCODER_SCALE),
 				new ScaledEncoder(RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A, RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B,
-						RobotStats.CHASSIS_RIGHT_ENCODER_INVERT, scale),
+						RobotStats.ENCODER_SCALE),
 				0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();

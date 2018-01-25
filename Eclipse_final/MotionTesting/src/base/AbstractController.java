@@ -79,6 +79,12 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 */
 	protected final void initializeIO(Input<IN> in, Output<OUT> out, Function<IN, IN> inputConstrain,
 			Function<OUT, OUT> outputConstrain) {
+		m_originalInput = in;
+		m_originalOutput = out;
+
+		m_inputConstrain = inputConstrain;
+		m_outputConstrain = outputConstrain;
+		
 		m_input = () -> inputConstrain.apply(in.recieve());
 		m_output = new Output<OUT>() {
 			@Override
@@ -96,12 +102,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 				out.stop();
 			}
 		};
-
-		m_originalInput = in;
-		m_originalOutput = out;
-
-		m_inputConstrain = inputConstrain;
-		m_outputConstrain = outputConstrain;
 	}
 
 	/**
