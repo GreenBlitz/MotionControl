@@ -37,7 +37,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		System.out.println("auto Init");
-		Path myPath = new PathFactory().genForwardPath(1.5, false, 0.002).construct();
+		Path myPath = new PathFactory().genForwardPath(1, false, 0.002).construct();
 		controller = new APPController(loc, out, myPath);
 		controller.start();
 	}
@@ -76,6 +76,7 @@ public class Robot extends IterativeRobot {
 		double scale = 0.0036;
 		loc = Localizer.of(new WrappedEncoder(new Encoder(2, 3), -scale), new WrappedEncoder(new Encoder(0, 1), scale),
 				0.68);
+		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 	}
 
