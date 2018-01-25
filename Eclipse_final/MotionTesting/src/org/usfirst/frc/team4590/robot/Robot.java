@@ -39,7 +39,6 @@ public class Robot extends IterativeRobot {
 		System.out.println("auto Init");
 		Path myPath = new PathFactory().genForwardPath(1, false, 0.002).construct();
 		controller = new APPController(loc, out, myPath);
-		controller.start();
 	}
 	// 0.49 m
 

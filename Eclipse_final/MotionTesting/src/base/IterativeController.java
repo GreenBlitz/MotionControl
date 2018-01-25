@@ -120,9 +120,6 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 */
 	public final void run(AbstractController.State controllerState, IN destination, ITolerance tolerance,
 			EnvironmentPort port) {
-		if (controllerState == State.DISABLED)
-			outputStop();
-
 		if (port.isEnabled() && controllerState == State.ENABLED) {
 			if (destination == null) {
 				System.err.println("WARNING - destination is null");

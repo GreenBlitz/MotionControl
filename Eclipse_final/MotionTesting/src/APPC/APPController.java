@@ -140,14 +140,19 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 		}
 
 	}
-	
+
 	/**
 	 * If the robot is farther then <code>slowDownDistance</code> return 1,
-	 * otherwise return a 0.5 unless <code>path.getLast()) / slowDownDistance</code> is 
-	 * larger than 1, then return <code>path.getLast()) / slowDownDistance</code>
-	 * @param robotLoc the location of the robot
-	 * @param path the path the robot is following
-	 * @param slowDownDistance the distance at which the robot stats to slow down
+	 * otherwise return a 0.5 unless
+	 * <code>path.getLast()) / slowDownDistance</code> is larger than 1, then
+	 * return <code>path.getLast()) / slowDownDistance</code>
+	 * 
+	 * @param robotLoc
+	 *            the location of the robot
+	 * @param path
+	 *            the path the robot is following
+	 * @param slowDownDistance
+	 *            the distance at which the robot stats to slow down
 	 * @return the power which the robot will go at
 	 */
 	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {

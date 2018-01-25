@@ -40,7 +40,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		DISABLED,
 
 		/**
-		 * Indicates an ended controller, which will no restart
+		 * Indicates an ended controller, which will not restart
 		 */
 		END
 	}
