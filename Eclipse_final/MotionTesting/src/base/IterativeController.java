@@ -136,7 +136,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 					System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
 							IterativeController.this.generateActivityDescription(IO._1, IO._2));
 				} else {
-					controllerState = State.END;
+					m_controllerState = State.END;
 					outputStop();
 					System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
 				}
