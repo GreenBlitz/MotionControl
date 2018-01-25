@@ -63,6 +63,8 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	protected String m_name;
 
+	protected EnvironmentPort m_environmentPort = EnvironmentPort.DEFAULT;
+
 	/**
 	 * Initializes I/O object using the constrains
 	 * 
@@ -432,6 +434,17 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	protected void useOutput(OUT output) {
 		m_output.use(output);
+	}
+
+	/**
+	 * Changes the environment port- an object which is used as a layer between
+	 * a controller and <code>DriverStation</code> and
+	 * <code>SmartDashboard</code>
+	 * 
+	 * @param newPort
+	 */
+	public void setEnvironmentPort(EnvironmentPort newPort) {
+		m_environmentPort = newPort;
 	}
 
 	/**

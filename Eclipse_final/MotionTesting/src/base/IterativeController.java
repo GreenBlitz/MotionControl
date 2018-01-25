@@ -10,8 +10,6 @@ import java.util.TimerTask;
 public abstract class IterativeController<IN, OUT> extends AbstractController<IN, OUT> {
 	public static final double DEFAULT_PERIOD = .05;
 
-	public static final EnvironmentPort environmentPort = new EnvironmentPort();
-
 	protected final double m_period;
 
 	protected Timer m_controllerLoop; // the loop which will calculate the
@@ -102,7 +100,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		@Override
 		public void run() {
 			IterativeController.this.run(m_controllerState, m_input, m_output, m_destination, m_tolerance,
-					environmentPort);
+					m_environmentPort);
 		}
 	}
 
@@ -176,5 +174,4 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		// Beep Boop! I'm a robot and this is what i just did!
 		return String.format("\tLocation: %s\n\tOutput: %s\n", input.toString(), output.toString());
 	}
-
 }
