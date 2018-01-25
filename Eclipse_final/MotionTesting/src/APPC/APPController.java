@@ -5,7 +5,7 @@ import base.IterativeController;
 import base.Output;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class APPController extends IterativeController<Point2D, APPDriveData> {
+public class APPController extends IterativeController<Point2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.3;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.1;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
@@ -42,13 +42,13 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<APPDriveData> out, Path path) {
+	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, Path path) {
 		this(in, out, DEFAULT_PERIOD, path, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
 				DEFAULT_SLOWDOWN);
 	}
 
-	public APPController(Input<Point2D> in, Output<APPDriveData> out, Path path, double lookAhead, double toleranceDist,
-			double minOnTargetTime, double slowDownDistance) {
+	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, Path path, double lookAhead,
+			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
 
@@ -71,8 +71,8 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<APPDriveData> out, double period, Path path, double lookAhead,
-			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
+	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, double period, Path path,
+			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		super(in, out, period, "APPController");
 		m_path = path.iterator();
 		m_lookAhead = lookAhead;
@@ -104,10 +104,10 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 	}
 
 	@Override
-	public APPDriveData calculate(Point2D robotLocation) {
+	public APPController.APPDriveData calculate(Point2D robotLocation) {
 		Point2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
 		System.out.println("next goal point: " + goal);
-		return new APPDriveData(calculatePower(robotLocation, m_path, m_slowDownDistance),
+		return new APPController.APPDriveData(calculatePower(robotLocation, m_path, m_slowDownDistance),
 				calculateCurve(robotLocation, goal));
 	}
 
@@ -158,11 +158,62 @@ public class APPController extends IterativeController<Point2D, APPDriveData> {
 
 	public void setPowerLimit(double limit) {
 		setOutputConstrain(data -> Math.abs(data.power) <= limit ? data
-				: new APPDriveData(limit * Math.signum(data.power), data.curve));
+				: new APPController.APPDriveData(limit * Math.signum(data.power), data.curve));
 	}
-	
-	public void setInputLimit(double length) {
-		setInputConstrain(input -> input.length() <= length ? input
-				: input.scale(length / input.length()));
+
+	public void setLocationMaxLength(double length) {
+		setInputConstrain(input -> input.length() <= length ? input : input.scale(length / input.length()));
+	}
+
+	public APPController.APPDriveData of(double power, double curve) {
+		return new APPController.APPDriveData(power, curve);
+	}
+
+	public void setPowerRange(double min, double max) {
+		setOutputConstrain(
+				data -> data.power >= min ? (data.power <= max ? data : of(max, data.curve)) : of(min, data.curve));
+	}
+
+	public static class APPDriveData {
+		public double power;
+		public double curve;
+
+		public APPDriveData(double power, double curve) {
+			this.power = power;
+			this.curve = curve;
+		}
+
+		@Override
+		public String toString() {
+			return "[power=" + power + ", curve=" + curve + "]";
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			long temp;
+			temp = Double.doubleToLongBits(curve);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(power);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			APPController.APPDriveData other = (APPController.APPDriveData) obj;
+			if (Double.doubleToLongBits(curve) != Double.doubleToLongBits(other.curve))
+				return false;
+			if (Double.doubleToLongBits(power) != Double.doubleToLongBits(other.power))
+				return false;
+			return true;
+		}
 	}
 }

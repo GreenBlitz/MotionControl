@@ -10,7 +10,6 @@ import events.EventManager;
 /**
  * Abstract controller with input and output
  */
-
 public abstract class AbstractController<IN, OUT> implements IController {
 	public static final Input NO_INPUT = () -> null;
 	public static final NullTolerance NO_TOLERANCE = NullTolerance.INSTANCE;
@@ -47,9 +46,9 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	protected Output<OUT> m_output;
-	protected Output<OUT> m_originalOutput;
+	private Output<OUT> m_originalOutput;
 	protected Input<IN> m_input = NO_INPUT;
-	protected Input<IN> m_originalInput = NO_INPUT;
+	private Input<IN> m_originalInput = NO_INPUT;
 	protected IN m_destination;
 
 	protected Function<OUT, OUT> m_outputConstrain;
@@ -276,6 +275,24 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	/**
+	 * Removes the input constrain's effect
+	 */
+	public synchronized void resetInputConstrain() {
+		m_inputConstrain = obj -> obj;
+		m_input = m_originalInput;
+	}
+
+	/**
+	 * Removes the output constrain's effect
+	 */
+	public synchronized void resetOutputConstrain() {
+		m_outputConstrain = obj -> obj;
+		m_output = m_originalOutput;
+	}
+
+	/**
+	 * Changing the input object such that every input will go throw new new
+	 * inputConstrain
 	 * 
 	 * @param inputConstrain
 	 */
@@ -285,6 +302,8 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	/**
+	 * Changing the output object such that every output will go throw new new
+	 * outputConstrain
 	 * 
 	 * @param outputConstrain
 	 */
@@ -294,7 +313,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 			@Override
 			public void use(OUT output) {
-				m_originalOutput.use(m_outputConstrain.apply(output));				
+				m_originalOutput.use(m_outputConstrain.apply(output));
 			}
 
 			@Override
@@ -305,28 +324,60 @@ public abstract class AbstractController<IN, OUT> implements IController {
 			@Override
 			public void stop() {
 				m_originalOutput.stop();
-			}			
+			}
 		};
 	}
-	
+
+	/**
+	 * Put's a constrain on the input, such that he will always be smaller than
+	 * max and larger than min
+	 * 
+	 * <p>
+	 * <b>note:</b> in this method's default implementation, the minimum and
+	 * maximum canno't be found once applied
+	 * </p>
+	 * 
+	 * @param min
+	 * @param max
+	 * @param compare
+	 *            Input comparator
+	 */
 	public synchronized void setInputRange(IN min, IN max, Comparator<IN> compare) {
 		Function<IN, IN> inputConstrain = new Function<IN, IN>() {
 			@Override
 			public IN apply(IN input) {
-				if (compare.compare(min, input) >= 0) return min;
-				if (compare.compare(max, input) <= 0) return max;
+				if (compare.compare(min, input) >= 0)
+					return min;
+				if (compare.compare(max, input) <= 0)
+					return max;
 				return input;
 			}
 		};
 		setInputConstrain(inputConstrain);
 	}
-	
+
+	/**
+	 * Put's a constrain on the output, such that the used output can't be
+	 * smaller than min or larger than max
+	 * 
+	 * <p>
+	 * <b>note:</b> in this method's default implementation, the minimum and
+	 * maximum canno't be found once applied
+	 * </p>
+	 * 
+	 * @param min
+	 * @param max
+	 * @param compare
+	 *            Input comparator
+	 */
 	public synchronized void setOutputRange(OUT min, OUT max, Comparator<OUT> compare) {
 		Function<OUT, OUT> outputConstrain = new Function<OUT, OUT>() {
 			@Override
 			public OUT apply(OUT output) {
-				if (compare.compare(min, output) >= 0) return min;
-				if (compare.compare(max, output) <= 0) return max;
+				if (compare.compare(min, output) >= 0)
+					return min;
+				if (compare.compare(max, output) <= 0)
+					return max;
 				return output;
 			}
 		};
@@ -374,15 +425,14 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	public final IN getError(IN input) {
 		return getError(input, m_destination);
 	}
-	
+
 	protected IN getInput() {
 		return m_input.recieve();
 	}
-	
+
 	protected void useOutput(OUT output) {
 		m_output.use(output);
 	}
-
 
 	/**
 	 * the main function of the controller. will be run every 20 milliseconds
