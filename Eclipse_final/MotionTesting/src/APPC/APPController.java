@@ -209,9 +209,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
-		if (distanceOverSlowDown > 0.5)
+		if (distanceOverSlowDown > 0.2)
 			return distanceOverSlowDown;
-		return 0.5;
+		return 0.2;
 	}
 
 	@Override

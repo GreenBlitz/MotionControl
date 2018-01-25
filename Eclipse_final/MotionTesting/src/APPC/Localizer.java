@@ -98,42 +98,40 @@ public class Localizer implements Input<Orientation2D> {
 		 * Update the robot position
 		 */
 		public void run() {
-			ePort.putNumber("Encoder Left", getLeftDistance());
-			ePort.putNumber("Right encoder", getRightDistance());
-			ePort.putNumber("X-pos R", m_location.getX());
-			ePort.putNumber("Y-pos R", m_location.getY());
-			if (ePort.isDisabled())
-				reset();
-			// System.out.println("i");
-			// Equivalent to reading the encoder value and storing it only once
-			// - then assigning the difference between the last distance and the
-			// current one
-			double rightDistDiff = -rightDist;
-			double leftDistDiff = -leftDist;
-			leftDist = getLeftDistance();
-			rightDist = getRightDistance();
-			rightDistDiff += rightDist;
-			leftDistDiff += leftDist;
+			if (ePort.isDisabled()) {
+				ePort.putNumber("Encoder Left", getLeftDistance());
+				ePort.putNumber("Right encoder", getRightDistance());
+				ePort.putNumber("X-pos R", m_location.getX());
+				ePort.putNumber("Y-pos R", m_location.getY());
+				double rightDistDiff = -rightDist;
+				double leftDistDiff = -leftDist;
+				leftDist = getLeftDistance();
+				rightDist = getRightDistance();
+				rightDistDiff += rightDist;
+				leftDistDiff += leftDist;
 
-			if (leftDistDiff == rightDistDiff) {
-				synchronized (LOCK) {
-					m_location = m_location.add(0, leftDistDiff);
-					return;
+				if (leftDistDiff == rightDistDiff) {
+					synchronized (LOCK) {
+						m_location = m_location.add(0, leftDistDiff);
+						return;
+					}
 				}
+
+				boolean leftIsLong = leftDistDiff > rightDistDiff;
+				double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
+
+				double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
+
+				double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
+				double adjustedRadiusFromCenter = radiusFromCenter;
+				Orientation2D rotationOrigin = m_location.add(adjustedRadiusFromCenter, 0);
+				synchronized (LOCK) {
+					m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
+				}
+				System.out.println("WARNING - robot location: " + m_location);
+			} else {
+				reset();
 			}
-
-			boolean leftIsLong = leftDistDiff > rightDistDiff;
-			double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
-
-			double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
-
-			double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
-			double adjustedRadiusFromCenter = radiusFromCenter;
-			Orientation2D rotationOrigin = m_location.add(adjustedRadiusFromCenter, 0);
-			synchronized (LOCK) {
-				m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
-			}
-			System.out.println("WARNING - robot location: " + m_location);
 		}
 	}
 
