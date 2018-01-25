@@ -16,10 +16,10 @@ public class RobotMap {
 							CHASSIS_FRONT_RIGHT_MOTOR_PORT = 2,
 							CHASSIS_REAR_RIGHT_MOTOR_PORT = 1;
 	//Chassis encoder ports
-	public static final int CHASSIS_LEFT_ENCODER_PORT_A = 0,
-							CHASSIS_LEFT_ENCODER_PORT_B = 0,
+	public static final int CHASSIS_LEFT_ENCODER_PORT_A = 2,
+							CHASSIS_LEFT_ENCODER_PORT_B = 3,
 							CHASSIS_RIGHT_ENCODER_PORT_A = 0,
-							CHASSIS_RIGHT_ENCODER_PORT_B = 0;
+							CHASSIS_RIGHT_ENCODER_PORT_B = 1;
 	
 	//Catapult ports
 	public static final int CATAPULT_MOTOR_PORT = 0,

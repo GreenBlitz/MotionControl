@@ -18,7 +18,14 @@ public class DrivePort {
 
 	protected DrivePort() {
 	}
-
+	
+	/**
+	 * 
+	 * @param frontLeftMotor
+	 * @param rearLeftMotor
+	 * @param frontRightMotor
+	 * @param rearRightMotor
+	 */
 	public DrivePort(SpeedController frontLeftMotor, SpeedController rearLeftMotor, SpeedController frontRightMotor,
 			SpeedController rearRightMotor) {
 		m_robotDrive = new RobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
