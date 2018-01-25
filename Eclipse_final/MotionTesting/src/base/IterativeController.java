@@ -99,8 +99,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 		@Override
 		public void run() {
-			IterativeController.this.run(m_controllerState, m_input, m_output, m_destination, m_tolerance,
-					m_environmentPort);
+			IterativeController.this.run(m_controllerState, m_destination, m_tolerance, m_environmentPort);
 		}
 	}
 
@@ -119,10 +118,10 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 * @param port
 	 *            SmartDashboard and DriverStation replacement
 	 */
-	public final void run(AbstractController.State controllerState, Input<IN> input, Output<OUT> output, IN destination,
-			ITolerance tolerance, EnvironmentPort port) {
+	public final void run(AbstractController.State controllerState, IN destination, ITolerance tolerance,
+			EnvironmentPort port) {
 		if (controllerState == State.DISABLED)
-			output.stop();
+			outputStop();
 
 		if (port.isEnabled() && controllerState == State.ENABLED) {
 			if (destination == null) {
@@ -140,7 +139,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 						IterativeController.this.generateActivityDescription(IO._1, IO._2));
 			} else {
 				controllerState = State.END;
-				output.stop();
+				outputStop();
 				System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
 			}
 		} else {

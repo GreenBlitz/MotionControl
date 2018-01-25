@@ -45,9 +45,9 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		END
 	}
 
-	protected Output<OUT> m_output;
+	private Output<OUT> m_output;
 	private Output<OUT> m_originalOutput;
-	protected Input<IN> m_input = NO_INPUT;
+	private Input<IN> m_input = NO_INPUT;
 	private Input<IN> m_originalInput = NO_INPUT;
 	protected IN m_destination;
 
@@ -434,6 +434,14 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 	protected void useOutput(OUT output) {
 		m_output.use(output);
+	}
+	
+	protected void outputStop() {
+		m_output.stop();
+	}
+	
+	protected OUT noPower() {
+		return m_output.noPower();
 	}
 
 	/**

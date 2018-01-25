@@ -121,7 +121,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 
 		@Override
 		protected boolean onInstantTimeTarget() {
-			return m_input.recieve().distance(m_destination) < m_toleranceDist;
+			return APPController.this.getInput().distance(m_destination) < m_toleranceDist;
 		}
 
 	}
@@ -136,7 +136,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 
 		@Override
 		public boolean onTarget() {
-			return m_input.recieve().distance(m_destination) <= m_toleranceDist;
+			return APPController.this.getInput().distance(m_destination) <= m_toleranceDist;
 		}
 
 	}
