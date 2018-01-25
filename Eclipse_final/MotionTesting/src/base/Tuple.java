@@ -11,7 +11,7 @@ public class Tuple<T1, T2> {
 
 	@Override
 	public String toString() {
-		return "Tuple [_1=" + _1 + ", _2=" + _2 + "]";
+		return "Tuple [First=" + _1 + ", Second=" + _2 + "]";
 	}
 
 	@Override
