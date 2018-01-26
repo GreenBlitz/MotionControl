@@ -10,7 +10,7 @@ import base.IterativeController;
 import base.ScaledEncoder;
 
 public class Localizer implements Input<Orientation2D> {
-	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;
+	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 2;
 	public static final Object LOCK = new Object();
 
 	private Orientation2D m_location;
@@ -98,7 +98,7 @@ public class Localizer implements Input<Orientation2D> {
 		 * Update the robot position
 		 */
 		public void run() {
-			if (ePort.isDisabled()) {
+			if (ePort.isEnabled()) {
 				ePort.putNumber("Encoder Left", getLeftDistance());
 				ePort.putNumber("Right encoder", getRightDistance());
 				ePort.putNumber("X-pos R", m_location.getX());

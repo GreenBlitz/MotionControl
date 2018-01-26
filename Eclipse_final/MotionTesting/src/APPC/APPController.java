@@ -6,18 +6,20 @@ import base.Output;
 
 public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 1;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.02;
-	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
+	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 
 	/**
 	 * the path the controller is following
 	 */
 	private Path.PathIterator m_path;
+	
 	/**
 	 * Look ahead distance
 	 */
 	private double m_lookAhead;
+	
 	/**
 	 * starts slowing down when the distance to the end of path is shorter than
 	 * this
