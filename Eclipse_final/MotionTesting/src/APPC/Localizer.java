@@ -128,6 +128,7 @@ public class Localizer implements Input<Orientation2D> {
 				Orientation2D rotationOrigin = m_location.add(adjustedRadiusFromCenter, 0);
 				synchronized (LOCK) {
 					m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
+					System.out.println("WARNING: robot location: " + m_location);
 				}
 			} else {
 				reset();

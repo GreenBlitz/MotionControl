@@ -14,10 +14,12 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * the path the controller is following
 	 */
 	private Path.PathIterator m_path;
+	
 	/**
 	 * Look ahead distance
 	 */
 	private double m_lookAhead;
+	
 	/**
 	 * starts slowing down when the distance to the end of path is shorter than
 	 * this
