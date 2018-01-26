@@ -10,7 +10,7 @@ import base.IterativeController;
 import base.ScaledEncoder;
 
 public class Localizer implements Input<Orientation2D> {
-	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 2;
+	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;
 	public static final Object LOCK = new Object();
 
 	private Orientation2D m_location;
@@ -103,6 +103,7 @@ public class Localizer implements Input<Orientation2D> {
 				ePort.putNumber("Right encoder", getRightDistance());
 				ePort.putNumber("X-pos R", m_location.getX());
 				ePort.putNumber("Y-pos R", m_location.getY());
+
 				double rightDistDiff = -rightDist;
 				double leftDistDiff = -leftDist;
 				leftDist = getLeftDistance();
@@ -113,6 +114,7 @@ public class Localizer implements Input<Orientation2D> {
 				if (leftDistDiff == rightDistDiff) {
 					synchronized (LOCK) {
 						m_location = m_location.add(0, leftDistDiff);
+						System.out.println("WARNING - robot location: " + m_location);
 						return;
 					}
 				}
@@ -145,7 +147,7 @@ public class Localizer implements Input<Orientation2D> {
 	/**
 	 * reset the encoders and the localizer saved location.
 	 */
-	private void reset() {
+	public void reset() {
 		for (ScaledEncoder enc : m_leftWrappedEncoders)
 			enc.reset();
 

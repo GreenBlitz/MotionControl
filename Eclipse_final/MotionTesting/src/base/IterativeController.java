@@ -8,7 +8,7 @@ import java.util.TimerTask;
  * it's input and output
  */
 public abstract class IterativeController<IN, OUT> extends AbstractController<IN, OUT> {
-	public static final double DEFAULT_PERIOD = .05;
+	public static final double DEFAULT_PERIOD = .025;
 
 	protected final double m_period;
 
