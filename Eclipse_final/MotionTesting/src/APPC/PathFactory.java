@@ -59,6 +59,18 @@ public class PathFactory {
 	}
 
 	/**
+	 * Like {@link PathFactory#connectLine(Orientation2D, double)} but with different parameters
+	 * @param x
+	 * @param y
+	 * @param metersPerPoint
+	 * @return
+	 */
+	public PathFactory conncetLine(double x, double y, double metersPerPoint){
+		return connectLine(new Orientation2D(x, y, 0), metersPerPoint);
+	}
+	
+
+	/**
 	 * Generate a straight line from the last path point to a point a certain
 	 * distance and angle form it
 	 * 
