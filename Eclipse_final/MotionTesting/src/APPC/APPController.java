@@ -4,7 +4,7 @@ import base.Input;
 import base.IterativeController;
 import base.Output;
 
-public class APPController extends IterativeController<Point2D, APPController.APPDriveData> {
+public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.3;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.1;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 1;
@@ -41,12 +41,22 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, Path path) {
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, Path path) {
 		this(in, out, DEFAULT_PERIOD, path, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
 				DEFAULT_SLOWDOWN);
 	}
 
-	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, Path path, double lookAhead,
+	/**
+	 * 
+	 * @param in
+	 * @param out
+	 * @param path
+	 * @param lookAhead
+	 * @param toleranceDist
+	 * @param minOnTargetTime
+	 * @param slowDownDistance
+	 */
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, Path path, double lookAhead,
 			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
@@ -70,21 +80,32 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Point2D> in, Output<APPController.APPDriveData> out, double period, Path path,
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, double period, Path path,
 			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		super(in, out, period, "APPController");
 		m_path = path.iterator();
 		m_lookAhead = lookAhead;
-		setTolerance(new AbsoluteTolerance(toleranceDist, 20));
+		setTolerance(new AbsoluteTimedTolerance(toleranceDist, 20));
 		setDestination(path.getLast());
 		m_slowDownDistance = slowDownDistance;
 	}
 
-	private Point2D updateGoalPoint(Point2D loc, Path.PathIterator path, double lookAhead) {
+	/**
+	 * Updates the goal point the robot is trying to reach
+	 * 
+	 * @param loc
+	 *            the robot location
+	 * @param path
+	 *            the path the robot is following
+	 * @param lookAhead
+	 *            the distance the goal point should be at
+	 * @return the goal point
+	 */
+	private Orientation2D updateGoalPoint(Orientation2D loc, Path.PathIterator path, double lookAhead) {
 		path.resetIterator();
 		path.setCurrentIndex(path.getLength() - 1);
-		Point2D close = path.peek();
-		Point2D point;
+		Orientation2D close = path.peek();
+		Orientation2D point;
 		while (path.getCurrentIndex() > 0 && close.distance(loc) > lookAhead) {
 			path.changeCurrentIndex(-1);
 			point = path.peek();
@@ -95,46 +116,75 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 		return close;
 	}
 
-	public double calculateCurve(Point2D loc, Point2D goal) {
-		Point2D goalVector = goal.changePrespectiveTo(loc);
+	/**
+	 * Calculate the curve the robot should follow to reach the goal point
+	 * 
+	 * @param loc
+	 *            the robot location
+	 * @param goal
+	 *            the goal point
+	 * @return the curve coefficient which is 1/R
+	 */
+	public double calculateCurve(Orientation2D loc, Orientation2D goal) {
+		Orientation2D goalVector = goal.changePrespectiveTo(loc);
 		double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
 		m_environmentPort.putNumber("Angle", angle);
 		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
 	@Override
-	public APPController.APPDriveData calculate(Point2D robotLocation) {
-		Point2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
+	public APPController.APPDriveData calculate(Orientation2D robotLocation) {
+		Orientation2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
 		System.out.println("next goal point: " + goal);
 		return new APPController.APPDriveData(calculatePower(robotLocation, m_path, m_slowDownDistance),
 				calculateCurve(robotLocation, goal));
 	}
 
-	public class AbsoluteTolerance extends TimedTolerance {
+	public class AbsoluteTimedTolerance extends TimedTolerance {
 
 		double m_toleranceDist;
 
-		public AbsoluteTolerance(double toleranceDist, double minTime) {
+		/**
+		 * The object that describes the distance that is acceptable to count as
+		 * finishing the path
+		 * 
+		 * @param toleranceDist
+		 *            the acceptable distance
+		 * @param minTime
+		 *            minimum time before the tolerance will return true
+		 */
+		public AbsoluteTimedTolerance(double toleranceDist, double minTime) {
 			super(minTime);
 			m_toleranceDist = toleranceDist;
 		}
 
 		@Override
+		/**
+		 * return whether or not the path is finished
+		 */
 		protected boolean onInstantTimeTarget() {
 			return APPController.this.getInput().distance(m_destination) < m_toleranceDist;
 		}
 
 	}
 
-	public class AbsoluteTolerance2 implements ITolerance {
+	public class AbsoluteTolerance implements ITolerance {
 
 		double m_toleranceDist;
 
-		public AbsoluteTolerance2(double toleranceDist) {
+		/**
+		 * Same as
+		 * {@link APPController.AbsoluteTimedTolerance#AbsoluteTimedTolerance(double, double)}
+		 * except that this doesn't have mintime 1 * @param toleranceDist
+		 */
+		public AbsoluteTolerance(double toleranceDist) {
 			m_toleranceDist = toleranceDist;
 		}
 
 		@Override
+		/**
+		 * return whether or not the path is finished
+		 */
 		public boolean onTarget() {
 			return APPController.this.getInput().distance(m_destination) <= m_toleranceDist;
 		}
@@ -155,7 +205,7 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	 *            the distance at which the robot stats to slow down
 	 * @return the power which the robot will go at
 	 */
-	protected double calculatePower(Point2D robotLoc, Path.PathIterator path, double slowDownDistance) {
+	protected double calculatePower(Orientation2D robotLoc, Path.PathIterator path, double slowDownDistance) {
 		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
@@ -165,28 +215,41 @@ public class APPController extends IterativeController<Point2D, APPController.AP
 	}
 
 	@Override
-	public Point2D getError(Point2D loc, Point2D dest) {
-		return new Point2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
+	public Orientation2D getError(Orientation2D loc, Orientation2D dest) {
+		return new Orientation2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				loc.getDirection() - dest.getDirection());
 	}
-
-	public int compare(Point2D o1, Point2D o2) {
-		return Double.compare(o1.length(), o2.length());
-	}
-
+	
+	/**
+	 * set the maximum and minimum power to be passed to m_output
+	 * @param limit the maximum power and the lower limit (absaloute value)
+	 */
 	public void setPowerLimit(double limit) {
-		setOutputConstrain(data -> Math.abs(data.power) <= limit ? data
-				: new APPController.APPDriveData(limit * Math.signum(data.power), data.curve));
+		setPowerRange(-limit, limit);
 	}
 
+	/**
+	 * set the farthest input location to be within a certain distance
+	 * @param length that distance
+	 */
 	public void setLocationMaxLength(double length) {
 		setInputConstrain(input -> input.length() <= length ? input : input.scale(length / input.length()));
 	}
-
+	
+	/**
+	 * @param power
+	 * @param curve
+	 * @return DriveDate with given variables
+	 */
 	public APPController.APPDriveData of(double power, double curve) {
 		return new APPController.APPDriveData(power, curve);
 	}
 
+	/**
+	 * Set maximum power to be sent to m_output
+	 * @param min
+	 * @param max
+	 */
 	public void setPowerRange(double min, double max) {
 		setOutputConstrain(
 				data -> data.power >= min ? (data.power <= max ? data : of(max, data.curve)) : of(min, data.curve));

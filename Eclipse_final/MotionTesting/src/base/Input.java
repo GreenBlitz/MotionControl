@@ -6,5 +6,9 @@ package base;
  */
 @FunctionalInterface
 public interface Input<T> {
-    T recieve();
+	/**
+	 * 
+	 * @return the input form the sensors
+	 */
+	T recieve();
 }
