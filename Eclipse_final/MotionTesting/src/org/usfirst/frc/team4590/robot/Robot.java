@@ -92,7 +92,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		logger.enable();
 		loc.reset();
-		Path myPath = new PathFactory().connectLine(new Orientation2D(0.707, 0.707, 0), 0.005).construct();
+		Path myPath = new PathFactory().genStraightLine(1, 0, 0.005).construct();
 		controller = new APPController(loc, out, myPath);
 		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
 		controller.start();
