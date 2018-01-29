@@ -12,6 +12,7 @@ import APPC.APPCOutput;
 import APPC.APPController;
 import APPC.APPController.APPDriveData;
 import APPC.Localizer;
+import APPC.Orientation2D;
 import APPC.Path;
 import APPC.PathFactory;
 import base.DrivePort;
@@ -91,9 +92,9 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		logger.enable();
 		loc.reset();
-		Path myPath = new PathFactory().genForwardPath(2, false, 0.002).construct();
+		Path myPath = new PathFactory().connectLine(new Orientation2D(0.707, 0.707, 0), 0.005).construct();
 		controller = new APPController(loc, out, myPath);
-		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.7, data.curve));
+		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
 		controller.start();
 	}
 	// 0.49 m

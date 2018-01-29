@@ -5,7 +5,7 @@ import base.IterativeController;
 import base.Output;
 
 public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
-	protected static final double DEFAULT_LOOKAHEAD = 1;
+	protected static final double DEFAULT_LOOKAHEAD = 0.5;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
@@ -208,11 +208,12 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 */
 	protected double calculatePower(Orientation2D robotLoc, Path.PathIterator path, double slowDownDistance) {
 		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
+		int sign = path.getLast().changePrespectiveTo(robotLoc).getY()>=0 ? 1:-1;
 		if (distanceOverSlowDown > 1)
-			return 1;
-		if (distanceOverSlowDown > 0.3)
-			return distanceOverSlowDown;
-		return 0.3;
+			return sign;
+		if (distanceOverSlowDown > 0.4)
+			return distanceOverSlowDown * sign;
+		return 0.4 * sign;
 	}
 
 	@Override
