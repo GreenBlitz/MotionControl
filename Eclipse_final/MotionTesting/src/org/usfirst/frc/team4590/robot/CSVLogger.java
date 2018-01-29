@@ -29,4 +29,8 @@ public class CSVLogger {
 	private void updateTime(){
 		ntHelper.putString("Time sample", "" + System.currentTimeMillis());
 	}
+
+	public void log(String key, double value) {
+		log(key,value + "");
+	}
 }
