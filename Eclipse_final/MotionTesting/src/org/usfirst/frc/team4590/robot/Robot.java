@@ -82,7 +82,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledInit() {
 		logger.disable();
-		System.out.println("Am I Disabled?");
+		System.out.println("Disabled");
 		if (controller != null) {
 			controller = null;
 		}
@@ -92,9 +92,9 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		logger.enable();
 		loc.reset();
-		Path myPath = new PathFactory().genStraightLine(1, 0, 0.005).construct();
-		controller = new APPController(loc, out, myPath);
-		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
+		Path myPath = new PathFactory().conncetLine(0, 8, 0.001).construct();
+		controller = new APPController(loc, out, myPath, 0.5, 0.03, 0.02, 2);
+		controller.setOutputConstrain(data -> new APPDriveData(data.power, data.curve));
 		controller.start();
 	}
 	// 0.49 m
