@@ -17,9 +17,9 @@ import org.la4j.vector.dense.BasicVector;
 public class Orientation2D {
     public static final Orientation2D GLOBAL_ORIGIN = new Orientation2D(0, 0, 0);
 
-    private double m_x;
-    private double m_y;
-    private double m_direction;
+    private final double m_x;
+    private final double m_y;
+    private final double m_direction;
 
     /**
      * creates a 2D point with x,y coordinates and a direction
@@ -251,10 +251,6 @@ public class Orientation2D {
         return toPolarRelative(GLOBAL_ORIGIN);
     }
 
-    public void setDirection(double dir) {
-        m_direction = dir;
-    }
-
     public double getDirection() { return m_direction; }
 
     /**
@@ -283,6 +279,7 @@ public class Orientation2D {
      * @return The angle normalized to be contained by -2pi and 2pi
      */
     private static double normalize(double angle) {
+    	if (!Double.isFinite(angle)) return angle;
         if (angle >= 2*Math.PI) return normalize(angle - 2*Math.PI);
         if (angle <= -2*Math.PI) return normalize(angle + 2*Math.PI);
         return angle;
@@ -303,6 +300,38 @@ public class Orientation2D {
 		DecimalFormat df = new DecimalFormat("#.####");
 		df.setRoundingMode(RoundingMode.CEILING);
 		return df.format(num);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(m_direction);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(m_x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(m_y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Orientation2D other = (Orientation2D) obj;
+		if (Double.doubleToLongBits(m_direction) != Double.doubleToLongBits(other.m_direction))
+			return false;
+		if (Double.doubleToLongBits(m_x) != Double.doubleToLongBits(other.m_x))
+			return false;
+		if (Double.doubleToLongBits(m_y) != Double.doubleToLongBits(other.m_y))
+			return false;
+		return true;
 	}
     
     

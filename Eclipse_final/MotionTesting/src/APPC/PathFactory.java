@@ -92,8 +92,9 @@ public class PathFactory {
 		return this;
 	}
 
-	public Path construct() {
-		return m_path;
+	public ArenaMap construct(ArenaMap map) {
+		map.construct(m_path);
+		return map;
 	}
 
 	/**

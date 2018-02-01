@@ -29,12 +29,17 @@ import edu.wpi.first.wpilibj.SPI;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	
+	public static final double DEFUALT_ARENA_MAP_ACC = 0.1;
+	public static final double DEFUALT_ARENA_LENGTH = 16.4592;
+	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
 
 	private Localizer loc;
 	private APPCOutput out;
 	private DrivePort rd;
 	private APPController controller = null;
 	private CSVLogger logger;
+	private APPC.ArenaMap m_arenaMap;
 
 	// sensors
 	ScaledEncoder left;
@@ -92,8 +97,8 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		logger.enable();
 		loc.reset();
-		Path myPath = new PathFactory().genStraightLine(1, 0, 0.005).construct();
-		controller = new APPController(loc, out, myPath);
+		new PathFactory().genStraightLine(1, 0, 0.005).construct(m_arenaMap);
+		controller = new APPController(loc, out, m_arenaMap);
 		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
 		controller.start();
 	}
@@ -136,6 +141,7 @@ public class Robot extends IterativeRobot {
 		loc = Localizer.of(left, right, 0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
+		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACC, DEFUALT_ARENA_LENGTH, DEFUALT_ARENA_WIDTH);
 	}
 
 	// getters for sensors
