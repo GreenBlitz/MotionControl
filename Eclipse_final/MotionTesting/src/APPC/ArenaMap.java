@@ -37,23 +37,41 @@ public class ArenaMap {
 			ind++;
 		}
 	}
-
-	public IndexedOrientation2D pointInRange(Orientation2D loc, double radius) {
-		int radInSqrs = (int) (radius / m_mapAccuracy) + 1;
-		IndexedOrientation2D close = new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1);
+	
+	private IndexedOrientation2D findClosest(LinkedList<IndexedOrientation2D> list, Orientation2D loc){
+		if(list.isEmpty()) return null;
+		IndexedOrientation2D close = list.getFirst();
+		for(IndexedOrientation2D point:list)
+			if(point.distanceSquared(loc) < close.distanceSquared(loc))
+				close = point;
+		return close;
+	}
+	private LinkedList<IndexedOrientation2D> pointsInRange(Orientation2D loc, double minRadius, double maxRadius) {
+		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
+		LinkedList<IndexedOrientation2D> inRange = new LinkedList<IndexedOrientation2D>();
 		for (int x = -radInSqrs; x < radInSqrs; x++)
 			for (int y = -radInSqrs; y < radInSqrs; y++)
 				for (Object notPointYet : m_map[x][y]) {
 					IndexedOrientation2D point = (IndexedOrientation2D) notPointYet;
-					if (point.distance(loc) <= radius && point.index > close.index)
-						close = point;
+					if (minRadius <= point.distance(loc) && point.distance(loc) <= maxRadius)
+						inRange.add(point);
+		}
+		return inRange;
+	}
+	private IndexedOrientation2D closestPoint(Orientation2D loc, double radius){
+		IndexedOrientation2D ret = findClosest(pointsInRange(loc, radius, 2*radius), loc);
+		if(ret != null) return ret;
+		return closestPoint(loc, 2*radius);
+	}
+	
+	public IndexedOrientation2D pointInRange(Orientation2D loc, double radius) {
+		IndexedOrientation2D close = new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1);
+		for(IndexedOrientation2D point:pointsInRange(loc, 0, (int) (radius / m_mapAccuracy) + 1)){
+			if(point.distanceSquared(loc) < close.distanceSquared(loc)) close = point;
 		}
 		
 		if(close.equals(new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1))) return close;
-		for(IndexedOrientation2D point:m_path)
-			if(close.getIndex() == -1 || point.distanceSquared(loc)< close.distanceSquared(loc))
-				close = point;
-		return close;
+		return closestPoint(loc, radius);
 	}
 
 	public Orientation2D getLast() {
