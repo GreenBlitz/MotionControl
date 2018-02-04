@@ -10,4 +10,8 @@ public class IndexedOrientation2D extends Orientation2D{
 	}
 	
 	public int getIndex(){return index;}
+	
+	public String toString(){
+		return "(" + super.toString() + ", "  + index + ")";
+	}
 }

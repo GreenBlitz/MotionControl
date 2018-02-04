@@ -36,12 +36,12 @@ public class Orientation2D {
 
     /**
      * copy constructor
-     * @param point2D
+     * @param point
      */
-    public Orientation2D(Orientation2D point2D){
-        m_x = point2D.m_x;
-        m_y = point2D.m_y;
-        m_direction = point2D.m_direction;
+    public Orientation2D(Orientation2D point){
+        m_x = point.m_x;
+        m_y = point.m_y;
+        m_direction = point.m_direction;
     }
 
 
@@ -216,7 +216,7 @@ public class Orientation2D {
     }
 
     public double distanceSquared(Orientation2D other) {
-        return add(new Orientation2D(-other.m_x, -other.m_y, 0)).lengthSquared();
+        return (m_x-other.m_x)*(m_x-other.m_x)+(m_y-other.m_y)*(m_y-other.m_y);
     }
     
     public double lengthSquared(){
@@ -292,7 +292,7 @@ public class Orientation2D {
 	@Override
 	public String toString() {
 		int p = 4;
-		return "Point2D [m_x=" + goodRound(m_x, p) + ", m_y=" + goodRound(m_y, p) + ", m_direction=" + goodRound(m_direction, p) + "]";
+		return "Orientation2D [m_x=" + goodRound(m_x, p) + ", m_y=" + goodRound(m_y, p) + ", m_direction=" + goodRound(m_direction, p) + "]";
 	}
 	
 	// TODO goodRound doesn't use precision
@@ -325,13 +325,7 @@ public class Orientation2D {
 		if (getClass() != obj.getClass())
 			return false;
 		Orientation2D other = (Orientation2D) obj;
-		if (Double.doubleToLongBits(m_direction) != Double.doubleToLongBits(other.m_direction))
-			return false;
-		if (Double.doubleToLongBits(m_x) != Double.doubleToLongBits(other.m_x))
-			return false;
-		if (Double.doubleToLongBits(m_y) != Double.doubleToLongBits(other.m_y))
-			return false;
-		return true;
+		return this.m_x==other.m_x && this.m_y==other.m_y && this.m_direction==other.m_direction; 
 	}
     
     
