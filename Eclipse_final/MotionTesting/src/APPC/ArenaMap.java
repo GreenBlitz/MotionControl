@@ -52,10 +52,11 @@ public class ArenaMap {
 		int[] mapLoc = getLoc(loc);
 		for (int x = mapLoc[0] - radInSqrs; x < mapLoc[0] + radInSqrs; x++)
 			for (int y = mapLoc[1] - radInSqrs; y < mapLoc[1] + radInSqrs; y++)
-				for (Object notPointYet : m_map[x][y]) {
-					IndexedOrientation2D point = (IndexedOrientation2D) notPointYet;
-					if (minRadius <= point.distance(loc) && point.distance(loc) <= maxRadius)
-						inRange.add(point);
+				if (x<0 || y<0)
+					for (Object notPointYet : m_map[x][y]) {
+						IndexedOrientation2D point = (IndexedOrientation2D) notPointYet;
+						if (minRadius <= point.distance(loc) && point.distance(loc) <= maxRadius)
+							inRange.add(point);
 		}
 		return inRange;
 	}
