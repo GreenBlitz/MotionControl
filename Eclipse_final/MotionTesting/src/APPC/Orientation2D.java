@@ -55,10 +55,11 @@ public class Orientation2D {
      * @return this point shifted by x and y
      */
     private Orientation2D toNatrualChords(){
-    	return this.rotate(-m_direction);
+    	
+    	return m_direction == 0 ? this : this.rotate(-m_direction);
     }
     private Orientation2D toRegularChords(){
-    	return this.rotate(m_direction);
+    	return m_direction == 0 ? this : this.rotate(m_direction);
     }
     
     public Orientation2D add(double x, double y, double dir) {
@@ -68,12 +69,20 @@ public class Orientation2D {
         return new Orientation2D(meh.getX(), meh.getY(), meh.getDirection() + dir);
     }
     
+    public Orientation2D addButNotStupid(double x, double y, double dir) {
+        return new Orientation2D(m_x + x, m_y + y, m_direction + dir);
+    }
+    
     public Orientation2D add(double x, double y) {
-    	return add(x, y, 0);
+    	return new Orientation2D(m_x + x, m_y + y, m_direction);
     }
     
     public Orientation2D add(Orientation2D point){
     	return add(point.getX(),point.getY(), point.getDirection());
+    }
+    
+    public Orientation2D addButNotStupid(Orientation2D point){
+    	return addButNotStupid(point.getX(),point.getY(), point.getDirection());
     }
     public Orientation2D sub(Orientation2D point) {
     	return add(point.neg());

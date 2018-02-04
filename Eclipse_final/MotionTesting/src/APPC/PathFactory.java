@@ -86,7 +86,7 @@ public class PathFactory {
 	public PathFactory genStraightLine(double len, double rotation, double metersPerPoint) {
 		Orientation2D origin = m_path.getLast();
 		for (double i = metersPerPoint; i < len + metersPerPoint; i += metersPerPoint) {
-			m_path.add(new Orientation2D(0, i, 0).rotate(rotation).add(origin));
+			m_path.add(new Orientation2D(0, i, 0).rotate(rotation).addButNotStupid(origin));
 			// System.out.println(m_path.getLast());
 		}
 		return this;

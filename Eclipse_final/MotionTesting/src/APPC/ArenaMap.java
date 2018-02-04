@@ -1,8 +1,7 @@
 package APPC;
 
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * maps a path on the arena
@@ -77,18 +76,18 @@ public class ArenaMap {
 	 * @return
 	 */
 	/**private**/ public LinkedList<IndexedOrientation2D> pointsInRange(Orientation2D loc, double minRadius, double maxRadius) {
+		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		LinkedList<IndexedOrientation2D> inRange = new LinkedList<IndexedOrientation2D>();
 		int[] mapLoc = getLoc(loc);
-		for (int x = mapLoc[0] - radInSqrs > 0 ? mapLoc[0] - radInSqrs:0;
-		x < (mapLoc[0] + radInSqrs < m_map.length ? mapLoc[0] + radInSqrs:m_map.length);
-		x++)
-			for (int y = mapLoc[1] - radInSqrs > 0 ? mapLoc[1] - radInSqrs : 0;
-			y < (mapLoc[1] + radInSqrs < m_map.length ? mapLoc[1] + radInSqrs:m_map.length);
-			y++)
-				for (Object notPointYet : m_map[x][y]) {
-					IndexedOrientation2D point = (IndexedOrientation2D) notPointYet;
-					if (minRadius <= point.distance(loc) && point.distance(loc) <= maxRadius)
+		int x0 = Math.max(mapLoc[0] - radInSqrs,0);
+		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length);
+		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
+		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map.length);
+		for (int x = x0; x < x1; x++)
+			for (int y = y0; y < y1; y++)
+				for (IndexedOrientation2D point : (List<IndexedOrientation2D>)m_map[x][y]) {
+					if (minRadiusSq <= point.distanceSquared(loc) && point.distanceSquared(loc) <= maxRadiusSq)
 						inRange.add(point);
 		}
 		return inRange;
@@ -121,16 +120,18 @@ public class ArenaMap {
 	 */
 	public Orientation2D pointInRange(Orientation2D loc, double radius) {
 		IndexedOrientation2D close = new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1);
-		for(IndexedOrientation2D point:pointsInRange(loc, 0, (int) (radius / m_mapAccuracy) + 1)){
-			if(point.distance(loc) < radius && point.index > close.index) {
+		List<IndexedOrientation2D> list = pointsInRange(loc, 0, (int) (radius / m_mapAccuracy) + 1);
+		for(IndexedOrientation2D point: list){
+			if(point.distanceSquared(loc) < radius * radius && point.index > close.index) {
 				close = point;
 
 			}
 		}
-		
-		if(!close.equals(new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1))) return close;
-		System.out.println("defualt");
-		return closestPoint(loc, radius);
+		Orientation2D ret = close;
+		if(close.equals(new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1))){
+			ret = closestPoint(loc, radius);
+		}
+		return ret;
 	}
 	
 	//returns the last point in the path
