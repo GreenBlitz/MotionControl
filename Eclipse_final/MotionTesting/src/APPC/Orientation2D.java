@@ -55,7 +55,7 @@ public class Orientation2D {
      * @return this point shifted by x and y
      */
     private Orientation2D toNatrualChords(){
-    	
+    
     	return m_direction == 0 ? this : this.rotate(-m_direction);
     }
     private Orientation2D toRegularChords(){
@@ -139,7 +139,7 @@ public class Orientation2D {
      * @return this point rotated by angle
      */
     public Orientation2D rotate(double angle) {
-        return apply(genRotationMatrix(angle));
+        return angle == 0 ? this : apply(genRotationMatrix(angle));
     }
 
     /**
@@ -327,10 +327,10 @@ public class Orientation2D {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
 		if (obj == null)
 			return false;
+		if (this == obj)
+			return true;
 		if (getClass() != obj.getClass())
 			return false;
 		Orientation2D other = (Orientation2D) obj;

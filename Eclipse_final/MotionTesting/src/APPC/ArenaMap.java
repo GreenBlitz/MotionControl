@@ -92,6 +92,27 @@ public class ArenaMap {
 		}
 		return inRange;
 	}
+	
+	public IndexedOrientation2D pointInRange(Orientation2D loc, double minRadius, double maxRadius) {
+		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
+		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
+		IndexedOrientation2D ret = null;
+		int[] mapLoc = getLoc(loc);
+		int x0 = Math.max(mapLoc[0] - radInSqrs,0);
+		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length);
+		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
+		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map.length);
+		double dontCollectGC;
+		int bestIndex = -1;
+		for (int x = x0; x < x1; x++)
+			for (int y = y0; y < y1; y++)
+				for (IndexedOrientation2D point : (List<IndexedOrientation2D>)m_map[x][y]) {
+					dontCollectGC = point.distanceSquared(loc);
+					if (minRadiusSq <= dontCollectGC && dontCollectGC <= maxRadiusSq && (ret == null || bestIndex < point.index))
+						ret = point;
+		}
+		return ret;
+	}
 	/**
 	 * finds the closest point to a given point (loc)
 	 * uses the param radius for recursive search
@@ -118,17 +139,13 @@ public class ArenaMap {
 	 * @param radius
 	 * @return
 	 */
-	public Orientation2D pointInRange(Orientation2D loc, double radius) {
-		IndexedOrientation2D close = new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1);
-		List<IndexedOrientation2D> list = pointsInRange(loc, 0, (int) (radius / m_mapAccuracy) + 1);
-		for(IndexedOrientation2D point: list){
-			if(point.distanceSquared(loc) < radius * radius && point.index > close.index) {
-				close = point;
+	
 
-			}
-		}
-		Orientation2D ret = close;
-		if(close.equals(new IndexedOrientation2D(new Orientation2D(0, 0, Double.NaN), -1))){
+	public Orientation2D pointInRange(Orientation2D loc, double radius) {
+		
+		Orientation2D ret = pointInRange(loc, 0, (int) (radius / m_mapAccuracy) + 1);
+		
+		if(ret == null){
 			ret = closestPoint(loc, radius);
 		}
 		return ret;

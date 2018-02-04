@@ -1,6 +1,9 @@
 package APPC;
 
-// Orientation2D with an index
+/** 
+ * Orientation2D with an index
+ *
+ */
 public class IndexedOrientation2D extends Orientation2D{
 	final int index;
 	
