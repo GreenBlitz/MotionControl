@@ -16,7 +16,7 @@ public class ArenaMap {
 		m_map = new LinkedList[(int) (arenaLen / acc)][(int) (arenaWdth / acc)];
 	}
 
-	private int[] getLoc(IndexedOrientation2D point) {
+	private int[] getLoc(Orientation2D point) {
 		return new int[] { (int) (point.getX() * m_mapAccuracy), (int) (point.getY() * m_mapAccuracy) };
 	}
 
@@ -49,8 +49,9 @@ public class ArenaMap {
 	private LinkedList<IndexedOrientation2D> pointsInRange(Orientation2D loc, double minRadius, double maxRadius) {
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		LinkedList<IndexedOrientation2D> inRange = new LinkedList<IndexedOrientation2D>();
-		for (int x = -radInSqrs; x < radInSqrs; x++)
-			for (int y = -radInSqrs; y < radInSqrs; y++)
+		int[] mapLoc = getLoc(loc);
+		for (int x = mapLoc[0] - radInSqrs; x < mapLoc[0] + radInSqrs; x++)
+			for (int y = mapLoc[1] - radInSqrs; y < mapLoc[1] + radInSqrs; y++)
 				for (Object notPointYet : m_map[x][y]) {
 					IndexedOrientation2D point = (IndexedOrientation2D) notPointYet;
 					if (minRadius <= point.distance(loc) && point.distance(loc) <= maxRadius)
