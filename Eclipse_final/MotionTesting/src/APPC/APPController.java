@@ -104,7 +104,7 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @return the goal point
 	 */
 	private Orientation2D updateGoalPoint(Orientation2D loc, ArenaMap map, double lookAhead) {
-		return map.pointInRange(loc, lookAhead);
+		return map.lastPointInRange(loc, lookAhead);
 	}
 
 	/**

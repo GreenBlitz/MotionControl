@@ -82,6 +82,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		m_originalInput = in;
 		m_originalOutput = out;
 
+		
 		m_inputConstrain = inputConstrain;
 		m_outputConstrain = outputConstrain;
 		
