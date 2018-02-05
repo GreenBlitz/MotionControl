@@ -56,10 +56,10 @@ public class Orientation2D {
      */
     private Orientation2D toNatrualChords(){
     
-    	return m_direction == 0 ? this : this.rotate(-m_direction);
+    	return this.rotate(-m_direction);
     }
     private Orientation2D toRegularChords(){
-    	return m_direction == 0 ? this : this.rotate(m_direction);
+    	return this.rotate(m_direction);
     }
     
     public Orientation2D add(double x, double y, double dir) {
@@ -198,7 +198,8 @@ public class Orientation2D {
      * @return A rotation matrix
      */
     public static org.la4j.Matrix genRotationMatrix(double angle) {
-        return genMatrix(Math.cos(angle), -Math.sin(angle), Math.sin(angle), Math.cos(angle));
+    	double cos = Math.cos(angle), sin = Math.sin(angle);
+        return genMatrix(cos, -sin, sin, cos);
     }
 
     /**

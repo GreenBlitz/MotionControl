@@ -11,11 +11,11 @@ import java.util.List;
 @SuppressWarnings("all")
 public class ArenaMap {
 	// the map
-	/**private**/ public LinkedList[][] m_map;
+	private LinkedList<IndexedOrientation2D>[][] m_map;
 	// a list of the points inserted, used to clear the map
-	/**private**/ public LinkedList<IndexedOrientation2D> m_path = new LinkedList<IndexedOrientation2D>();
+	private LinkedList<IndexedOrientation2D> m_path = new LinkedList<IndexedOrientation2D>();
 	// 
-	/**private**/ public final double m_mapAccuracy;
+	private final double m_mapAccuracy;
 
 	public ArenaMap(double acc, double arenaXLength, double arenaYLength) {
 		m_mapAccuracy = acc;
@@ -26,7 +26,7 @@ public class ArenaMap {
 	}
 	
 	// the hash function
-	/**private**/ public int[] getLoc(Orientation2D point) {
+	private int[] getLoc(Orientation2D point) {
 		return new int[] { (int) (point.getX() / m_mapAccuracy), (int) (point.getY() / m_mapAccuracy) };
 	}
 	
@@ -34,10 +34,11 @@ public class ArenaMap {
 	 * inserts a point to the map
 	 * @param point
 	 */
-	/**private**/ public void insert(IndexedOrientation2D point) {
+	public void insert(Orientation2D point) {
 		int[] loc = getLoc(point);
-		m_map[loc[0]][loc[1]].add(point);
-		m_path.add(point);
+		IndexedOrientation2D IPoint = new IndexedOrientation2D(point, m_path.size());
+		m_map[loc[0]][loc[1]].add(IPoint);
+		m_path.add(IPoint);
 
 	}
 	
@@ -47,10 +48,8 @@ public class ArenaMap {
 	 */
 	public void construct(Iterable<Orientation2D> path) {
 		clear();
-		int ind = 0;
 		for (Orientation2D point : path) {
-			insert(new IndexedOrientation2D(point, ind));
-			ind++;
+			insert(point);
 		}
 	}
 	
@@ -60,7 +59,7 @@ public class ArenaMap {
 	 * @param loc
 	 * @return
 	 */
-	/**private**/ public Orientation2D findClosest(LinkedList<? extends Orientation2D> list, Orientation2D loc){
+	private Orientation2D findClosest(LinkedList<? extends Orientation2D> list, Orientation2D loc){
 		if(list.isEmpty()) return null;
 		Orientation2D close = list.getFirst();
 		for(Orientation2D point:list)
@@ -75,7 +74,7 @@ public class ArenaMap {
 	 * @param maxRadius
 	 * @return
 	 */
-	/**private**/ public LinkedList<IndexedOrientation2D> pointsInRange(Orientation2D loc, double minRadius, double maxRadius) {
+	private LinkedList<IndexedOrientation2D> pointsInRange(Orientation2D loc, double minRadius, double maxRadius) {
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		LinkedList<IndexedOrientation2D> inRange = new LinkedList<IndexedOrientation2D>();
@@ -93,7 +92,7 @@ public class ArenaMap {
 		return inRange;
 	}
 	
-	public IndexedOrientation2D pointInRange(Orientation2D loc, double minRadius, double maxRadius) {
+	public IndexedOrientation2D lastPointInRange(Orientation2D loc, double minRadius, double maxRadius) {
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		IndexedOrientation2D ret = null;
@@ -120,10 +119,10 @@ public class ArenaMap {
 	 * @param radius
 	 * @return
 	 */
-	/**private**/ public Orientation2D closestPoint(Orientation2D loc){
+	private Orientation2D closestPoint(Orientation2D loc){
 		return closestPoint(loc, 1);
 	}
-	/**private**/ public Orientation2D closestPoint(Orientation2D loc, double radius){
+	private Orientation2D closestPoint(Orientation2D loc, double radius){
 		if(radius > 2*m_mapAccuracy*(m_map.length + m_map[0].length))
 			return null;
 		Orientation2D ret = findClosest(pointsInRange(loc, 0, 2*radius), loc);
@@ -141,9 +140,9 @@ public class ArenaMap {
 	 */
 	
 
-	public Orientation2D pointInRange(Orientation2D loc, double radius) {
+	public Orientation2D lastPointInRange(Orientation2D loc, double radius) {
 		
-		Orientation2D ret = pointInRange(loc, 0, (int) (radius / m_mapAccuracy) + 1);
+		Orientation2D ret = lastPointInRange(loc, 0, radius);
 		
 		if(ret == null){
 			ret = closestPoint(loc, radius);
