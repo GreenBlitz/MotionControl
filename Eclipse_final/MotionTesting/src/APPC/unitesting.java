@@ -8,7 +8,7 @@ public class unitesting {
 		new PathFactory().genStraightLine(5, 0, 0.005).construct(map);
 		for (;;) {
 			or = map.lastPointInRange(origin, 1.1);
-			Thread.sleep(1);
+			Thread.sleep(20);
 		}
 
 	}

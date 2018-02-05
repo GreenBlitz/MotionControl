@@ -11,7 +11,7 @@ import java.util.List;
 @SuppressWarnings("all")
 public class ArenaMap {
 	// the map
-	private LinkedList[][] m_map;
+	private LinkedList<IndexedOrientation2D>[][] m_map;
 	// a list of the points inserted, used to clear the map
 	private LinkedList<IndexedOrientation2D> m_path = new LinkedList<IndexedOrientation2D>();
 	// 
@@ -92,7 +92,7 @@ public class ArenaMap {
 		return inRange;
 	}
 	
-	public IndexedOrientation2D pointInRange(Orientation2D loc, double minRadius, double maxRadius) {
+	public IndexedOrientation2D lastPointInRange(Orientation2D loc, double minRadius, double maxRadius) {
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		IndexedOrientation2D ret = null;
@@ -142,7 +142,7 @@ public class ArenaMap {
 
 	public Orientation2D lastPointInRange(Orientation2D loc, double radius) {
 		
-		Orientation2D ret = pointInRange(loc, 0, radius);
+		Orientation2D ret = lastPointInRange(loc, 0, radius);
 		
 		if(ret == null){
 			ret = closestPoint(loc, radius);
