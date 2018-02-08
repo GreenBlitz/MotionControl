@@ -10,5 +10,6 @@
 	<classpathentry kind="var" path="USERLIBS_DIR/navx_frc.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Programmer/Downloads/la4j-0.6.0.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/la4j-0.6.0.jar"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/gson-2.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
