@@ -68,7 +68,7 @@ public interface IOrientation2D extends IPoint2D {
 	static final class Orientation2DOrigin extends Point2DOrigin implements IOrientation2D {
 		public static final IOrientation2D ORIGIN = new Orientation2DOrigin();
 
-		private static final String errorMsg = "can't move origin";
+		private static final String errorMsg = "Can't move origin";
 
 		protected Orientation2DOrigin() {
 		}
@@ -190,7 +190,7 @@ public interface IOrientation2D extends IPoint2D {
 		case CARTESIAN:
 			return Tuple.of(getX() - origin.getX(), getY() - origin.getY());
 		case POLAR:
-			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()));
+			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()) + getDirection());
 		default:
 			throw new IllegalArgumentException(
 					"so here we are again, it's always such a pleasure... what did you even do to get to here?");
@@ -260,7 +260,7 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return this point, subtracted by given coordinates
 	 */
 	default IOrientation2D moveByReversed(double x, double y, double direction, DirectionEffect effect) {
-		return moveBy(-x, -y, -direction, effect);
+		return moveBy(-x, -y, effect.changed() ? -direction : direction, effect);
 	}
 
 	/**
@@ -332,10 +332,17 @@ public interface IOrientation2D extends IPoint2D {
 	 * @see IOrientation2D#relativeCordsTo(IOrientation2D,
 	 *      base.point.IPoint2D.CordSystem)
 	 */
-	@Deprecated
 	@Override
 	default Tuple<Double, Double> relativeCordsTo(IPoint2D origin, CordSystem sys) {
-		return IPoint2D.super.relativeCordsTo(origin, sys);
+		switch (sys) {
+		case CARTESIAN:
+			return Tuple.of(getX() - origin.getX(), getY() - origin.getY());
+		case POLAR:
+			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()));
+		default:
+			throw new IllegalArgumentException(
+					"so here we are again, it's always such a pleasure... what did you even do to get to here?");
+		}
 	}
 
 	/**

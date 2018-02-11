@@ -30,24 +30,32 @@ public class ImOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D moveBy(double x, double y, double direction, DirectionEffect effect) {
+		double cos, sin, dir;
+
 		switch (effect) {
 		case IGNORED:
 			return new ImOrientation2D(m_x + x, m_y + y, m_direction);
-		case RESERVED:
-			return new ImOrientation2D(m_x + Math.sin(direction + m_direction) * m_x,
-					m_y + Math.cos(direction + m_direction) * m_y, m_direction);
 		case CHANGED:
-			return new ImOrientation2D(m_x + Math.sin(m_direction) * m_x, m_y + Math.cos(m_direction) * m_y,
-					m_direction + direction);
+			dir = m_direction + direction;
+			break;
+		case RESERVED:
+			dir = m_direction;
+			break;	
 		default:
 			throw new IllegalArgumentException(
-					"Oh, the places you'll go!" + "wait, how did we got here? this souldn't be possible!");
+					"Oh, the places you'll go! wait, how did we got here? this souldn't be possible!");
 		}
+		
+		cos = Math.cos(m_direction + direction);
+		sin = Math.sin(m_direction + direction);
+
+		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, dir);
+
 	}
 
 	@Override
 	public IOrientation2D rotate(double angle, DirectionEffect effect) {
-		double sin, cos, x, y;
+		double sin, cos, x, y, dir;
 
 		switch (effect) {
 		case IGNORED:
@@ -59,25 +67,22 @@ public class ImOrientation2D extends Orientation2D {
 
 			return new ImOrientation2D(x, y, m_direction);
 		case RESERVED:
-			sin = Math.sin(angle + m_direction);
-			cos = Math.cos(angle + m_direction);
-
-			x = cos * m_x - sin * m_y;
-			y = sin * m_x + cos * m_y;
-
-			return new ImOrientation2D(x, y, m_direction);
+			dir = m_direction;
+			break;
 		case CHANGED:
-			sin = Math.sin(angle + m_direction);
-			cos = Math.cos(angle + m_direction);
-
-			x = cos * m_x - sin * m_y;
-			y = sin * m_x + cos * m_y;
-
-			return new ImOrientation2D(x, y, m_direction + angle);
+			dir = m_direction + angle;
 		default:
 			throw new IllegalArgumentException(
 					"It's dangerous to go alone! take this!" + "Oh wait, this is an exception. try again next time!");
 		}
+
+		sin = Math.sin(angle + m_direction);
+		cos = Math.cos(angle + m_direction);
+
+		x = cos * m_x - sin * m_y;
+		y = sin * m_x + cos * m_y;
+
+		return new ImOrientation2D(x, y, dir);
 
 	}
 

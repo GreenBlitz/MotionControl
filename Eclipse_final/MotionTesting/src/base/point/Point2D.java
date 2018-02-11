@@ -21,7 +21,7 @@ public abstract class Point2D implements IPoint2D {
 
 	/**
 	 * @param x
-	 *            X axis cords
+	 *            X axis cords	
 	 * @param y
 	 *            Y axis cords
 	 * @return new {@link ImPoint2D immutable Point2D} object

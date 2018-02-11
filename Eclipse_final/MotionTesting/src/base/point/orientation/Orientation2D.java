@@ -16,6 +16,7 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 
 	public Orientation2D(double x, double y, double direction) {
 		super(x, y);
+		m_direction = direction;
 	}
 
 	public Orientation2D(IPoint2D point, double direction) {
@@ -34,7 +35,7 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	 * @return mutable Orientation2D object
 	 * @see MOrientation2D
 	 */
-	public static Orientation2D mutable(double x, double y, double direction) {
+	public static final Orientation2D mutable(double x, double y, double direction) {
 		return new MOrientation2D(x, y, direction);
 	}
 
@@ -49,7 +50,7 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	 * @return immutable Orientation2D object
 	 * @see ImOrientation2D
 	 */
-	public static Orientation2D immutable(double x, double y, double direction) {
+	public static final Orientation2D immutable(double x, double y, double direction) {
 		return new ImOrientation2D(x, y, direction);
 	}
 

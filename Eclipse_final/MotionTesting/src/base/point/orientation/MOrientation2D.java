@@ -29,22 +29,33 @@ public class MOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D moveBy(double x, double y, double direction, DirectionEffect effect) {
+		double cos, sin;
+		
 		switch (effect) {
 		case IGNORED:
 			m_x += x;
 			m_y += y;
-			break;
+			
 		case RESERVED:
-			m_x += Math.sin(direction + m_direction) * m_x;
-			m_y += Math.cos(direction + m_direction) * m_y;
+			cos = Math.cos(m_direction + direction);
+			sin = Math.sin(m_direction + direction);
+
+			m_x += x * cos - y * sin;
+			m_y += x * sin + y * cos;
 			break;
+			
 		case CHANGED:
-			m_direction += direction;
-			m_x += Math.sin(m_direction) * m_x;
-			m_y += Math.cos(m_direction) * m_y;
+			m_direction = direction;
+			cos = Math.cos(m_direction);
+			sin = Math.sin(m_direction);
+			
+			m_x += x * cos - y * sin;
+			m_y += x * sin + y * cos;
 			break;
+			
 		default:
-			throw new IllegalArgumentException("for the night is dark and full of terrors. Just like here.");
+			throw new IllegalArgumentException(
+					"for the night is dark and full of terrors. Just like here.");
 		}
 
 		return this;
