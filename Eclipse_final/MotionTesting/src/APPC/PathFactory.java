@@ -57,7 +57,7 @@ public class PathFactory {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Like {@link PathFactory#connectLine(Orientation2D, double)} but with different parameters
 	 * @param x
@@ -86,14 +86,14 @@ public class PathFactory {
 	public PathFactory genStraightLine(double len, double rotation, double metersPerPoint) {
 		Orientation2D origin = m_path.getLast();
 		for (double i = metersPerPoint; i < len + metersPerPoint; i += metersPerPoint) {
-			m_path.add(new Orientation2D(0, i, 0).rotate(rotation).add(origin));
-			// System.out.println(m_path.getLast());
+			m_path.add(new Orientation2D(0, i, 0).rotate(rotation).addButNotStupid(origin));
 		}
 		return this;
 	}
 
-	public Path construct() {
-		return m_path;
+	public ArenaMap construct(ArenaMap map) {
+		map.construct(m_path);
+		return map;
 	}
 
 	/**

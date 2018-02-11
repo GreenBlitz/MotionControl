@@ -3,7 +3,6 @@ package APPC;
 import base.Input;
 import base.IterativeController;
 import base.Output;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
@@ -15,6 +14,7 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * the path the controller is following
 	 */
 	private Path.PathIterator m_path;
+	private ArenaMap m_map;
 	
 	/**
 	 * Look ahead distance
@@ -44,9 +44,8 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, Path path) {
-		this(in, out, DEFAULT_PERIOD, path, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
-				DEFAULT_SLOWDOWN);
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map) {
+		this(in, out, DEFAULT_PERIOD, map, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,DEFAULT_SLOWDOWN);
 	}
 
 	/**
@@ -59,9 +58,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @param minOnTargetTime
 	 * @param slowDownDistance
 	 */
-	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, Path path, double lookAhead,
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map, double lookAhead,
 			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
-		this(in, out, DEFAULT_PERIOD, path, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
+		this(in, out, DEFAULT_PERIOD, map, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
 
 	/**
@@ -83,43 +82,18 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, double period, Path path,
+	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, double period, ArenaMap map,
 			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		super(in, out, period, "APPController");
-		m_path = path.iterator();
+		m_map = map;
 		m_lookAhead = lookAhead;
-		setTolerance(new AbsoluteTimedTolerance(toleranceDist, minOnTargetTime));
-		setDestination(path.getLast());
+		setTolerance(new AbsoluteTolerance(toleranceDist));
+		setDestination(map.getLast());
 		m_slowDownDistance = slowDownDistance;
 	}
 
-	/**
-	 * Updates the goal point the robot is trying to reach
-	 * 
-	 * @param loc
-	 *            the robot location
-	 * @param path
-	 *            the path the robot is following
-	 * @param lookAhead
-	 *            the distance the goal point should be at
-	 * @return the goal point
-	 */
-	private Orientation2D updateGoalPoint(Orientation2D loc, Path.PathIterator path, double lookAhead) {
-		path.setCurrentIndex(path.getLength() - 1);
-		Orientation2D close = path.peek();
-		Orientation2D point;
-		while (path.getCurrentIndex() > 0 && close.distance(loc) > lookAhead) {
-			path.changeCurrentIndex(-1);
-			point = path.peek();
-			if (close.distance(loc) > point.distance(loc)) {
-				close = point;
-			}
-		}
-		
-		SmartDashboard.putNumber("X-pos GP", close.getX());
-		SmartDashboard.putNumber("Y-pos GP", close.getY());
-		
-		return close;
+	private Orientation2D updateGoalPoint(Orientation2D loc, ArenaMap map, double lookAhead) {
+		return map.lastPointInRange(loc, lookAhead);
 	}
 
 	/**
@@ -140,10 +114,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 
 	@Override
 	public APPController.APPDriveData calculate(Orientation2D robotLocation) {
-		Orientation2D goal = updateGoalPoint(robotLocation, m_path, m_lookAhead);
+		Orientation2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
 		System.out.println("next goal point: " + goal);
-		return new APPController.APPDriveData(calculatePower(robotLocation, m_path, m_slowDownDistance),
-				calculateCurve(robotLocation, goal));
+		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance), calculateCurve(robotLocation, goal));
 	}
 
 	public class AbsoluteTimedTolerance extends TimedTolerance {
@@ -197,23 +170,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 
 	}
 
-	/**
-	 * If the robot is farther then <code>slowDownDistance</code> return 1,
-	 * otherwise return a 0.5 unless
-	 * <code>path.getLast()) / slowDownDistance</code> is larger than 1, then
-	 * return <code>path.getLast()) / slowDownDistance</code>
-	 * 
-	 * @param robotLoc
-	 *            the location of the robot
-	 * @param path
-	 *            the path the robot is following
-	 * @param slowDownDistance
-	 *            the distance at which the robot stats to slow down
-	 * @return the power which the robot will go at
-	 */
-	protected double calculatePower(Orientation2D robotLoc, Path.PathIterator path, double slowDownDistance) {
-		double distanceOverSlowDown = robotLoc.distance(path.getLast()) / slowDownDistance;
-		int sign = path.getLast().changePrespectiveTo(robotLoc).getY()>=0 ? 1:-1;
+	protected double calculatePower(Orientation2D robotLoc, Orientation2D endPoint, double slowDownDistance) {
+		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
+		int sign = endPoint.changePrespectiveTo(robotLoc).getY()>=0 ? 1:-1;
 		if (distanceOverSlowDown > 1)
 			return sign;
 		if (distanceOverSlowDown > 0.4)
