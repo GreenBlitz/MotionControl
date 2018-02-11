@@ -27,6 +27,10 @@ public class ImOrientation2D extends Orientation2D {
 	public ImOrientation2D(IPoint2D point, double direction) {
 		super(point, direction);
 	}
+	
+	public ImOrientation2D(IOrientation2D point) {
+		super(point);
+	}
 
 	@Override
 	public IOrientation2D moveBy(double x, double y, double direction, DirectionEffect effect) {

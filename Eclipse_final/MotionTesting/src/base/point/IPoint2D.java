@@ -241,4 +241,12 @@ public interface IPoint2D {
 	default double distanceSquared(IPoint2D other) {
 		return (getX() - other.getX()) * (getX() - other.getX()) + (getY() - other.getY()) * (getY() - other.getY());
 	}
+	
+	default double length() {
+		return Math.hypot(getX(), getY());
+	}
+	
+	default double legnth() {
+		return getX() * getX() + getY() * getY();
+	}
 }

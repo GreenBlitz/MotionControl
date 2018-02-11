@@ -174,6 +174,10 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return a orientation object with new direction
 	 */
 	IOrientation2D setDirection(double angle);
+	
+	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
+		return moveBy(-origin.getX(), -origin.getY(), -origin.getDirection(), DirectionEffect.CHANGED);
+	}
 
 	/**
 	 * Finds the relative coordinates of this Orientation with another one

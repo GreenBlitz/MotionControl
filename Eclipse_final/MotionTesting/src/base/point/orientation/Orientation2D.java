@@ -24,6 +24,10 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 		m_direction = direction;
 	}
 
+	public Orientation2D(IOrientation2D point) {
+		this(point.getX(), point.getY(), point.getDirection());
+	}
+
 	/**
 	 * 
 	 * @param x

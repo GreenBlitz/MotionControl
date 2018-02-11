@@ -3,8 +3,10 @@ package APPC;
 import base.Input;
 import base.IterativeController;
 import base.Output;
+import base.point.orientation.IOrientation2D;
+import base.point.orientation.Orientation2D;
 
-public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
+public class APPController extends IterativeController<IOrientation2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.03;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
@@ -13,14 +15,13 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	/**
 	 * the path the controller is following
 	 */
-	private Path.PathIterator m_path;
 	private ArenaMap m_map;
-	
+
 	/**
 	 * Look ahead distance
 	 */
 	private double m_lookAhead;
-	
+
 	/**
 	 * starts slowing down when the distance to the end of path is shorter than
 	 * this
@@ -44,8 +45,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map) {
-		this(in, out, DEFAULT_PERIOD, map, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,DEFAULT_SLOWDOWN);
+	public APPController(Input<IOrientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map) {
+		this(in, out, DEFAULT_PERIOD, map, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
+				DEFAULT_SLOWDOWN);
 	}
 
 	/**
@@ -58,8 +60,8 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @param minOnTargetTime
 	 * @param slowDownDistance
 	 */
-	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map, double lookAhead,
-			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
+	public APPController(Input<IOrientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map,
+			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		this(in, out, DEFAULT_PERIOD, map, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
 
@@ -82,7 +84,7 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<Orientation2D> in, Output<APPController.APPDriveData> out, double period, ArenaMap map,
+	public APPController(Input<IOrientation2D> in, Output<APPController.APPDriveData> out, double period, ArenaMap map,
 			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		super(in, out, period, "APPController");
 		m_map = map;
@@ -92,7 +94,7 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 		m_slowDownDistance = slowDownDistance;
 	}
 
-	private Orientation2D updateGoalPoint(Orientation2D loc, ArenaMap map, double lookAhead) {
+	private IOrientation2D updateGoalPoint(IOrientation2D loc, ArenaMap map, double lookAhead) {
 		return map.lastPointInRange(loc, lookAhead);
 	}
 
@@ -105,18 +107,19 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 *            the goal point
 	 * @return the curve coefficient which is 1/R
 	 */
-	public double calculateCurve(Orientation2D loc, Orientation2D goal) {
-		Orientation2D goalVector = goal.changePrespectiveTo(loc);
+	public double calculateCurve(IOrientation2D loc, IOrientation2D goal) {
+		IOrientation2D goalVector = goal.changePrespectiveTo(loc);
 		double angle = Math.atan(goalVector.getX() / goalVector.getY()) / Math.PI * 180;
 		m_environmentPort.putNumber("Angle", angle);
 		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
 	@Override
-	public APPController.APPDriveData calculate(Orientation2D robotLocation) {
-		Orientation2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
+	public APPController.APPDriveData calculate(IOrientation2D robotLocation) {
+		IOrientation2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
 		System.out.println("next goal point: " + goal);
-		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance), calculateCurve(robotLocation, goal));
+		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance),
+				calculateCurve(robotLocation, goal));
 	}
 
 	public class AbsoluteTimedTolerance extends TimedTolerance {
@@ -170,9 +173,9 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 
 	}
 
-	protected double calculatePower(Orientation2D robotLoc, Orientation2D endPoint, double slowDownDistance) {
+	protected double calculatePower(IOrientation2D robotLoc, IOrientation2D endPoint, double slowDownDistance) {
 		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
-		int sign = endPoint.changePrespectiveTo(robotLoc).getY()>=0 ? 1:-1;
+		int sign = endPoint.changePrespectiveTo(robotLoc).getY() >= 0 ? 1 : -1;
 		if (distanceOverSlowDown > 1)
 			return sign;
 		if (distanceOverSlowDown > 0.4)
@@ -181,8 +184,8 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	}
 
 	@Override
-	public Orientation2D getError(Orientation2D loc, Orientation2D dest) {
-		return new Orientation2D(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
+	public Orientation2D getError(IOrientation2D loc, IOrientation2D dest) {
+		return Orientation2D.immutable(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				loc.getDirection() - dest.getDirection());
 	}
 
@@ -203,7 +206,8 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 	 *            that distance
 	 */
 	public void setLocationMaxLength(double length) {
-		setInputConstrain(input -> input.length() <= length ? input : input.scale(length / input.length()));
+		setInputConstrain(
+				input -> input.length() <= length ? input : (IOrientation2D) input.scale(length / input.length()));
 	}
 
 	/**
