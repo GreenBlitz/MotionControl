@@ -57,4 +57,37 @@ public abstract class Point2D implements IPoint2D {
 	public double getY() {
 		return m_y;
 	}
+
+	@Override
+	public String toString() {
+		return "Point2D [m_x=" + m_x + ", m_y=" + m_y + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(m_x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(m_y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Point2D other = (Point2D) obj;
+		if (Double.doubleToLongBits(m_x) != Double.doubleToLongBits(other.m_x))
+			return false;
+		if (Double.doubleToLongBits(m_y) != Double.doubleToLongBits(other.m_y))
+			return false;
+		return true;
+	}
 }

@@ -15,7 +15,6 @@ public class PathFactory {
 	}
 
 	/**
-	 * 
 	 * @param origin
 	 */
 	public PathFactory(Orientation2D origin) {
@@ -23,7 +22,6 @@ public class PathFactory {
 	}
 
 	/**
-	 * 
 	 * @param path
 	 */
 	public PathFactory(Path path) {

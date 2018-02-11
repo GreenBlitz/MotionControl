@@ -82,4 +82,23 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	public IPoint2D _apply(Matrix transformation) {
 		return apply(transformation, DirectionEffect.IGNORED);
 	}
+
+	@Override
+	public String toString() {
+		return "Orientation2D [m_direction=" + m_direction + ", m_x=" + m_x + ", m_y=" + m_y + "]";
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode() * 31 ^ Double.hashCode(m_direction);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (!(o instanceof Orientation2D)) return false;
+		
+		Orientation2D obj = (Orientation2D) o;
+		return super.equals(obj) && m_direction == obj.getDirection();
+	}
 }
