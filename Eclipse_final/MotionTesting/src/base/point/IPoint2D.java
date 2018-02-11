@@ -4,7 +4,18 @@ import org.la4j.Matrix;
 
 import base.Tuple;
 
-public interface IPoint2D extends ILocation {
+/**
+ * So, here's the point... (HAHAHAHA GREAT PUN LOLLL XDDDDD)
+ * <p>
+ * Come on, this is dead simple.
+ * <p />
+ * <b>THIS IS A 2-DIMENSIONAL POINT. IT HAS 2 COORDINATES- NAMELY X AND Y. GOT
+ * IT? GOOD. KEEP WORKING!</b>
+ * </p>
+ * 
+ * @author karlo
+ */
+public interface IPoint2D {
 	/**
 	 * Coordinate System
 	 * <p>
@@ -34,12 +45,12 @@ public interface IPoint2D extends ILocation {
 	 * @author karlo
 	 *
 	 */
-	static final class Point2DOrigin implements IPoint2D {
+	static class Point2DOrigin implements IPoint2D {
 		public static final IPoint2D ORIGIN = new Point2DOrigin();
 
 		private static final String errorMsg = "can't move origin";
 
-		private Point2DOrigin() {
+		protected Point2DOrigin() {
 		}
 
 		@Override
@@ -78,6 +89,10 @@ public interface IPoint2D extends ILocation {
 	 * has it's own type- {@link IPoint2D.Point2DOrigin Point2DOrigin}
 	 */
 	static final IPoint2D GLOBAL_ORIGIN = Point2DOrigin.ORIGIN;
+
+	double getX();
+
+	double getY();
 
 	/**
 	 * 
@@ -207,5 +222,23 @@ public interface IPoint2D extends ILocation {
 	 */
 	default IPoint2D moveBy(IPoint2D other) {
 		return moveBy(other.getX(), other.getY());
+	}
+
+	/**
+	 * 
+	 * @param other
+	 * @return distance between this and other
+	 */
+	default double distance(IPoint2D other) {
+		return Math.hypot(getX() - other.getX(), getY() - other.getY());
+	}
+
+	/**
+	 * 
+	 * @param other
+	 * @return distance <i>squared</i> between this to other
+	 */
+	default double distanceSquared(IPoint2D other) {
+		return (getX() - other.getX()) * (getX() - other.getX()) + (getY() - other.getY()) * (getY() - other.getY());
 	}
 }

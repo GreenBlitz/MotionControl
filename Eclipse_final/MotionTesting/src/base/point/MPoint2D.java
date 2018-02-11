@@ -5,9 +5,11 @@ import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * Mutable 2-dimensional point. Each call to a method of this class changes the
- * x and y values, than returns {@code this}
+ * Mutable Point2D. each method will affect {@code this} and than return
+ * it.
  * 
+ * @see Point2D
+ * @see IPoint2D
  * @author karlo
  */
 public class MPoint2D extends Point2D {

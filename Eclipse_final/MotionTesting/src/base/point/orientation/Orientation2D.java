@@ -5,6 +5,12 @@ import org.la4j.Matrix;
 import base.point.IPoint2D;
 import base.point.Point2D;
 
+/**
+ * This is a Orientation2D basic implementation.
+ * 
+ * @see IOrientation2D
+ * @author karlo
+ */
 public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	protected double m_direction;
 
@@ -17,6 +23,36 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 		m_direction = direction;
 	}
 
+	/**
+	 * 
+	 * @param x
+	 *            x value
+	 * @param y
+	 *            y value
+	 * @param direction
+	 *            direction value
+	 * @return mutable Orientation2D object
+	 * @see MOrientation2D
+	 */
+	public static Orientation2D mutable(double x, double y, double direction) {
+		return new MOrientation2D(x, y, direction);
+	}
+
+	/**
+	 * 
+	 * @param x
+	 *            x value
+	 * @param y
+	 *            y value
+	 * @param direction
+	 *            direction value
+	 * @return immutable Orientation2D object
+	 * @see ImOrientation2D
+	 */
+	public static Orientation2D immutable(double x, double y, double direction) {
+		return new ImOrientation2D(x, y, direction);
+	}
+
 	@Override
 	public double getDirection() {
 		return m_direction;
@@ -24,20 +60,21 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 
 	@Override
 	public IPoint2D moveBy(double x, double y) {
-		return (Orientation2D) moveBy(x, y, 0, DirectionEffect.IGNORED);
+		return moveBy(x, y, 0, DirectionEffect.IGNORED);
 	}
 
 	@Override
 	public IPoint2D rotate(double angle) {
-		return (Orientation2D) rotate(angle, DirectionEffect.IGNORED);
+		return rotate(angle, DirectionEffect.IGNORED);
 	}
 
+	@Override
 	public IPoint2D scale(double scale) {
-		return (Orientation2D) multiply(scale);
+		return scale(scale, DirectionEffect.IGNORED);
 	}
 
 	@Override
 	public IPoint2D _apply(Matrix transformation) {
-		return (Orientation2D) apply(transformation, DirectionEffect.IGNORED);
+		return apply(transformation, DirectionEffect.IGNORED);
 	}
 }

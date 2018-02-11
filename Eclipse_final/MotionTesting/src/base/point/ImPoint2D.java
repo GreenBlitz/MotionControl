@@ -5,11 +5,12 @@ import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * Immutable 2-dimensional point. The x and y values of this class won't change
- * from any method defined here.
+ * Immutable Point2D. Each method will return a new instance leaving
+ * {@code this} unchanged.
  * 
+ * @see Point2D
+ * @see IPoint2D
  * @author karlo
- *
  */
 public class ImPoint2D extends Point2D {
 

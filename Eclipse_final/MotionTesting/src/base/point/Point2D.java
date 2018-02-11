@@ -1,10 +1,10 @@
 package base.point;
 
 /**
- * General 2-dimensional point
- * 
- * @author karlo
+ * This is a Point2D basic implementation.
  *
+ * @see IPoint2D
+ * @author karlo
  */
 public abstract class Point2D implements IPoint2D {	
 
