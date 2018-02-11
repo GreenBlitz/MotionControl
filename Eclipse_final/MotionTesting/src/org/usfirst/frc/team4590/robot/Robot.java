@@ -12,8 +12,6 @@ import APPC.APPCOutput;
 import APPC.APPController;
 import APPC.APPController.APPDriveData;
 import APPC.Localizer;
-import APPC.Orientation2D;
-import APPC.Path;
 import APPC.PathFactory;
 import base.DrivePort;
 import base.ScaledEncoder;
@@ -29,12 +27,16 @@ import edu.wpi.first.wpilibj.SPI;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	public static final double DEFUALT_ARENA_MAP_ACC = 0.1;
+	public static final double DEFUALT_ARENA_LENGTH = 16.4592;
+	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
 
 	private Localizer loc;
 	private APPCOutput out;
 	private DrivePort rd;
 	private APPController controller = null;
 	private CSVLogger logger;
+	private APPC.ArenaMap m_arenaMap;
 
 	// sensors
 	ScaledEncoder left;
@@ -82,7 +84,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledInit() {
 		logger.disable();
-		System.out.println("Disabled");
+		System.out.println("Am I Disabled?");
 		if (controller != null) {
 			controller = null;
 		}
@@ -92,9 +94,9 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		logger.enable();
 		loc.reset();
-		Path myPath = new PathFactory().conncetLine(0, 8, 0.001).construct();
-		controller = new APPController(loc, out, myPath, 0.5, 0.03, 0.02, 2);
-		controller.setOutputConstrain(data -> new APPDriveData(data.power, data.curve));
+		new PathFactory().genStraightLine(1, 0, 0.005).construct(m_arenaMap);
+		controller = new APPController(loc, out, m_arenaMap);
+		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
 		controller.start();
 	}
 	// 0.49 m
@@ -136,12 +138,7 @@ public class Robot extends IterativeRobot {
 		loc = Localizer.of(left, right, 0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
-		loc = Localizer.of(
-				new ScaledEncoder(RobotMap.CHASSIS_LEFT_ENCODER_PORT_A, RobotMap.CHASSIS_LEFT_ENCODER_PORT_B, 
-						RobotStats.CHASSIS_LEFT_ENCODER_INVERT, scale), 
-				new ScaledEncoder(RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A, RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B,
-						RobotStats.CHASSIS_RIGHT_ENCODER_INVERT, scale),
-				0.68);
+		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACC, DEFUALT_ARENA_LENGTH, DEFUALT_ARENA_WIDTH);
 	}
 
 	// getters for sensors
