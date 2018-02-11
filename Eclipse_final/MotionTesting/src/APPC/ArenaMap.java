@@ -3,6 +3,7 @@ package APPC;
 import java.util.LinkedList;
 import java.util.List;
 
+import base.point.IPoint2D;
 import base.point.orientation.IOrientation2D;
 
 /**
@@ -28,7 +29,7 @@ public class ArenaMap {
 	}
 
 	// the hash function
-	private int[] getLoc(IOrientation2D point) {
+	private int[] getLoc(IPoint2D point) {
 		return new int[] { (int) (point.getX() / m_mapAccuracy), (int) (point.getY() / m_mapAccuracy) };
 	}
 
@@ -65,11 +66,11 @@ public class ArenaMap {
 	 * @param loc
 	 * @return
 	 */
-	private IOrientation2D findClosest(LinkedList<? extends IOrientation2D> list, IOrientation2D loc) {
+	private IPoint2D findClosest(LinkedList<? extends IPoint2D> list, IPoint2D loc) {
 		if (list.isEmpty())
 			return null;
-		IOrientation2D close = list.getFirst();
-		for (IOrientation2D point : list)
+		IPoint2D close = list.getFirst();
+		for (IPoint2D point : list)
 			if (point.distanceSquared(loc) < close.distanceSquared(loc))
 				close = point;
 		return close;
@@ -84,7 +85,7 @@ public class ArenaMap {
 	 * @param maxRadius
 	 * @return
 	 */
-	private LinkedList<IndexedPoint2D> pointsInRange(IOrientation2D loc, double minRadius, double maxRadius) {
+	private LinkedList<IndexedPoint2D> pointsInRange(IPoint2D loc, double minRadius, double maxRadius) {
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		LinkedList<IndexedPoint2D> inRange = new LinkedList<IndexedPoint2D>();
@@ -102,7 +103,7 @@ public class ArenaMap {
 		return inRange;
 	}
 
-	public IndexedPoint2D lastPointInRange(IOrientation2D loc, double minRadius, double maxRadius) {
+	public IndexedPoint2D lastPointInRange(IPoint2D loc, double minRadius, double maxRadius) {
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		IndexedPoint2D ret = null;
@@ -132,14 +133,14 @@ public class ArenaMap {
 	 * @param radius
 	 * @return
 	 */
-	private IOrientation2D closestPoint(IOrientation2D loc) {
+	private IPoint2D closestPoint(IOrientation2D loc) {
 		return closestPoint(loc, 1);
 	}
 
-	private IOrientation2D closestPoint(IOrientation2D loc, double radius) {
+	private IPoint2D closestPoint(IPoint2D loc, double radius) {
 		if (radius > 2 * m_mapAccuracy * (m_map.length + m_map[0].length))
 			return null;
-		IOrientation2D ret = findClosest(pointsInRange(loc, 0, 2 * radius), loc);
+		IPoint2D ret = findClosest(pointsInRange(loc, 0, 2 * radius), loc);
 		if (ret != null)
 			return ret;
 		return closestPoint(loc, 2 * radius);
@@ -155,9 +156,9 @@ public class ArenaMap {
 	 * @return
 	 */
 
-	public IOrientation2D lastPointInRange(IOrientation2D loc, double radius) {
+	public IPoint2D lastPointInRange(IPoint2D loc, double radius) {
 
-		IOrientation2D ret = lastPointInRange(loc, 0, radius);
+		IPoint2D ret = lastPointInRange(loc, 0, radius);
 
 		if (ret == null) {
 			ret = closestPoint(loc, radius);
@@ -166,7 +167,7 @@ public class ArenaMap {
 	}
 
 	// returns the last point in the path
-	public IOrientation2D getLast() {
+	public IPoint2D getLast() {
 		return m_path.getLast();
 	}
 

@@ -4,7 +4,7 @@ import base.point.IPoint2D;
 import base.point.ImPoint2D;
 
 /**
- * Orientation2D with an index
+ * Point2D with an index
  *
  */
 public class IndexedPoint2D extends ImPoint2D {
