@@ -3,10 +3,11 @@ package APPC;
 import base.Input;
 import base.IterativeController;
 import base.Output;
+import base.point.IPoint2D;
 import base.point.orientation.IOrientation2D;
 import base.point.orientation.Orientation2D;
 
-public class APPController extends IterativeController<IOrientation2D, APPController.APPDriveData> {
+public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.03;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
@@ -45,7 +46,7 @@ public class APPController extends IterativeController<IOrientation2D, APPContro
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<IOrientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map) {
+	public APPController(Input<IPoint2D> in, Output<APPController.APPDriveData> out, ArenaMap map) {
 		this(in, out, DEFAULT_PERIOD, map, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
 				DEFAULT_SLOWDOWN);
 	}
@@ -60,7 +61,7 @@ public class APPController extends IterativeController<IOrientation2D, APPContro
 	 * @param minOnTargetTime
 	 * @param slowDownDistance
 	 */
-	public APPController(Input<IOrientation2D> in, Output<APPController.APPDriveData> out, ArenaMap map,
+	public APPController(Input<IPoint2D> in, Output<APPController.APPDriveData> out, ArenaMap map,
 			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		this(in, out, DEFAULT_PERIOD, map, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
@@ -84,7 +85,7 @@ public class APPController extends IterativeController<IOrientation2D, APPContro
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
 	 */
-	public APPController(Input<IOrientation2D> in, Output<APPController.APPDriveData> out, double period, ArenaMap map,
+	public APPController(Input<IPoint2D> in, Output<APPController.APPDriveData> out, double period, ArenaMap map,
 			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		super(in, out, period, "APPController");
 		m_map = map;
@@ -94,7 +95,7 @@ public class APPController extends IterativeController<IOrientation2D, APPContro
 		m_slowDownDistance = slowDownDistance;
 	}
 
-	private IOrientation2D updateGoalPoint(IOrientation2D loc, ArenaMap map, double lookAhead) {
+	private IPoint2D updateGoalPoint(IPoint2D loc, ArenaMap map, double lookAhead) {
 		return map.lastPointInRange(loc, lookAhead);
 	}
 
@@ -115,11 +116,11 @@ public class APPController extends IterativeController<IOrientation2D, APPContro
 	}
 
 	@Override
-	public APPController.APPDriveData calculate(IOrientation2D robotLocation) {
-		IOrientation2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
+	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
+		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
 		System.out.println("next goal point: " + goal);
 		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance),
-				calculateCurve(robotLocation, goal));
+				calculateCurve((IOrientation2D) robotLocation, (IOrientation2D) goal));
 	}
 
 	public class AbsoluteTimedTolerance extends TimedTolerance {
@@ -173,9 +174,9 @@ public class APPController extends IterativeController<IOrientation2D, APPContro
 
 	}
 
-	protected double calculatePower(IOrientation2D robotLoc, IOrientation2D endPoint, double slowDownDistance) {
+	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
 		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
-		int sign = endPoint.changePrespectiveTo(robotLoc).getY() >= 0 ? 1 : -1;
+		int sign = ((IOrientation2D) endPoint).changePrespectiveTo((IOrientation2D) robotLoc).getY() >= 0 ? 1 : -1;
 		if (distanceOverSlowDown > 1)
 			return sign;
 		if (distanceOverSlowDown > 0.4)
@@ -184,9 +185,9 @@ public class APPController extends IterativeController<IOrientation2D, APPContro
 	}
 
 	@Override
-	public Orientation2D getError(IOrientation2D loc, IOrientation2D dest) {
+	public Orientation2D getError(IPoint2D loc, IPoint2D dest) {
 		return Orientation2D.immutable(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
-				loc.getDirection() - dest.getDirection());
+				((IOrientation2D) loc).getDirection() - ((IOrientation2D) dest).getDirection());
 	}
 
 	/**
