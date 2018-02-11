@@ -5,13 +5,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import base.point.IPoint2D;
 import base.point.orientation.IOrientation2D;
 
 /**
  *
  * Represents a path of points
  */
-public class Path implements Iterable<IOrientation2D> {
+public class Path implements Iterable<IPoint2D> {
 	protected List<IOrientation2D> m_path;
 
 	/**
@@ -104,7 +105,7 @@ public class Path implements Iterable<IOrientation2D> {
 		return "Path [m_path=" + m_path + "]";
 	}
 
-	public class PathIterator implements Iterator<IOrientation2D>, Iterable<IOrientation2D> {
+	public class PathIterator implements Iterator<IPoint2D>, Iterable<IPoint2D> {
 		private int currentIndex = 0;
 
 		public PathIterator(int currentIndex) {

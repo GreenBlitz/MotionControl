@@ -9,10 +9,11 @@ import base.Input;
 import base.IterativeController;
 import base.ScaledEncoder;
 import base.point.orientation.Orientation2D;
+import base.point.IPoint2D;
 import base.point.orientation.IOrientation2D;
 import base.point.orientation.IOrientation2D.DirectionEffect;
 
-public class Localizer implements Input<IOrientation2D> {
+public class Localizer implements Input<IPoint2D> {
 	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;
 	public static final Object LOCK = new Object();
 
@@ -141,7 +142,7 @@ public class Localizer implements Input<IOrientation2D> {
 	}
 
 	@Override
-	public IOrientation2D recieve() {
+	public IPoint2D recieve() {
 		synchronized (LOCK) {
 			return m_location;
 		}
