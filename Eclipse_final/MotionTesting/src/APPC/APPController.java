@@ -3,11 +3,12 @@ package APPC;
 import base.Input;
 import base.IterativeController;
 import base.Output;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class APPController extends IterativeController<Orientation2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
-	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.03;
+	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 
 	/**
@@ -87,7 +88,7 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 		super(in, out, period, "APPController");
 		m_path = path.iterator();
 		m_lookAhead = lookAhead;
-		setTolerance(new AbsoluteTolerance(toleranceDist));
+		setTolerance(new AbsoluteTimedTolerance(toleranceDist, minOnTargetTime));
 		setDestination(path.getLast());
 		m_slowDownDistance = slowDownDistance;
 	}
@@ -114,6 +115,10 @@ public class APPController extends IterativeController<Orientation2D, APPControl
 				close = point;
 			}
 		}
+		
+		SmartDashboard.putNumber("X-pos GP", close.getX());
+		SmartDashboard.putNumber("Y-pos GP", close.getY());
+		
 		return close;
 	}
 
