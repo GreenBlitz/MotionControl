@@ -75,13 +75,17 @@ public class ImOrientation2D extends Orientation2D {
 			break;
 		case CHANGED:
 			dir = m_direction + angle;
+			break;
 		default:
 			throw new IllegalArgumentException(
 					"It's dangerous to go alone! take this!" + "Oh wait, this is an exception. try again next time!");
 		}
-
-		sin = Math.sin(angle + m_direction);
-		cos = Math.cos(angle + m_direction);
+//
+//		sin = Math.sin(angle + m_direction);
+//		cos = Math.cos(angle + m_direction);
+		
+		sin = Math.sin(angle);
+		cos = Math.cos(angle);
 
 		x = cos * m_x - sin * m_y;
 		y = sin * m_x + cos * m_y;

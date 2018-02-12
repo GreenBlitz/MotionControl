@@ -176,7 +176,11 @@ public interface IOrientation2D extends IPoint2D {
 	IOrientation2D setDirection(double angle);
 	
 	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
-		return moveByReversed(origin.getX(), origin.getY(), origin.getDirection(), DirectionEffect.CHANGED);
+		return (IOrientation2D) moveByReversed(origin, DirectionEffect.IGNORED)
+				.rotate(origin.getDirection() - getDirection(), DirectionEffect.CHANGED);
+		//double xVal = origin.getX() == 0 ? 0.000001 : origin.getX();
+		//double yVal = origin.getY() == 0 ? 0.000001 : origin.getY();
+		//return moveByReversed(xVal, yVal, origin.getDirection(), DirectionEffect.CHANGED);
 	}
 
 	/**

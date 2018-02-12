@@ -5,6 +5,7 @@ import base.IterativeController;
 import base.Output;
 import base.point.IPoint2D;
 import base.point.orientation.IOrientation2D;
+import base.point.orientation.IOrientation2D.DirectionEffect;
 import base.point.orientation.Orientation2D;
 
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
@@ -61,8 +62,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 * @param minOnTargetTime
 	 * @param slowDownDistance
 	 */
-	public APPController(Input<IPoint2D> in, Output<APPController.APPDriveData> out, ArenaMap map,
-			double lookAhead, double toleranceDist, double minOnTargetTime, double slowDownDistance) {
+	public APPController(Input<IPoint2D> in, Output<APPController.APPDriveData> out, ArenaMap map, double lookAhead,
+			double toleranceDist, double minOnTargetTime, double slowDownDistance) {
 		this(in, out, DEFAULT_PERIOD, map, lookAhead, toleranceDist, minOnTargetTime, slowDownDistance);
 	}
 
@@ -119,7 +120,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
 		System.out.println("next goal point: " + goal);
-		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance),
+		return new APPController.APPDriveData(calculatePower1(robotLocation, m_map.getLast(), m_slowDownDistance),
 				calculateCurve((IOrientation2D) robotLocation, (IOrientation2D) goal));
 	}
 
@@ -172,6 +173,33 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			return APPController.this.getInput().distance(m_destination) <= m_toleranceDist;
 		}
 
+	}
+
+	public static void main(String[] args) {
+		Orientation2D robot = Orientation2D.immutable(0, 0, Math.PI / 2);
+//		Orientation2D dicks = Orientation2D.immutable(0, 1, 0);
+//		dicks = (Orientation2D) dicks.rotate(Math.PI / 2, DirectionEffect.CHANGED);
+//		System.out.println(dicks.getX());
+//		System.out.println(dicks.getY());
+//		System.out.println("");
+		Orientation2D endMyMisery = Orientation2D.immutable(1, -1, 0);
+		int theFall = 2;
+		double thePride = (double) theFall;
+		System.out.println(calculatePower1(robot, endMyMisery, thePride));
+	}
+
+	public static double calculatePower1(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
+		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
+		IOrientation2D prespective = ((IOrientation2D) endPoint).changePrespectiveTo((IOrientation2D) robotLoc);
+		System.out.println(prespective.getX());
+		System.out.println(prespective.getY());
+		System.out.println("");
+		int sign = ((IOrientation2D) endPoint).changePrespectiveTo((IOrientation2D) robotLoc).getY() >= 0 ? 1 : -1;
+		if (distanceOverSlowDown > 1)
+			return sign;
+		if (distanceOverSlowDown > 0.4)
+			return distanceOverSlowDown * sign;
+		return 0.4 * sign;
 	}
 
 	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
