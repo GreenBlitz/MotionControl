@@ -14,7 +14,7 @@ import base.point.IPoint2D;
  * <b>notes:</b><blockquote>1) the direction should be in
  * <a href = "https://en.wikipedia.org/wiki/Radian">radians</a></blockquote>
  * <blockquote>2) every angle and direction is counter-clock wise</blockquote>
- * <blockquote>3) positive x value is to the left of the point.</blockquote>
+ * <blockquote>3) positive x value is to the right of the point.</blockquote>
  * <blockquote>4) positive y value is forward of the point.</blockquote>
  * <p>
  * 
@@ -174,7 +174,7 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return a orientation object with new direction
 	 */
 	IOrientation2D setDirection(double angle);
-	
+
 	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
 		return moveByReversed(origin.getX(), origin.getY(), origin.getDirection(), DirectionEffect.CHANGED);
 	}
@@ -189,12 +189,13 @@ public interface IOrientation2D extends IPoint2D {
 	 *            coordinate system type
 	 * @return the relative coordinates of this orientation to given origin
 	 */
-	default Tuple<Double, Double> relativeCordsTo(IOrientation2D origin, IPoint2D.CordSystem sys) {
+	default Tuple<Double, Double> relativeCordsTo(IOrientation2D origin, IPoint2D.CordSystem sys, boolean direction) {
 		switch (sys) {
 		case CARTESIAN:
 			return Tuple.of(getX() - origin.getX(), getY() - origin.getY());
 		case POLAR:
-			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()) + getDirection());
+			return Tuple.of(distance(origin),
+					Math.atan2(getY() - origin.getY(), getX() - origin.getX()) + (direction ? getDirection() : 0));
 		default:
 			throw new IllegalArgumentException(
 					"so here we are again, it's always such a pleasure... what did you even do to get to here?");
@@ -231,23 +232,19 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return this point rotated as described above
 	 */
 	default IOrientation2D rotateAround(IOrientation2D origin, double angle, DirectionEffect effect) {
-		DirectionEffect ignore = DirectionEffect.IGNORED;
-
 		if (origin.equals(GLOBAL_ORIGIN) || angle == 0)
 			return rotate(angle, effect);
-
-		if (effect == DirectionEffect.CHANGED) {
-			setDirection(angle + getDirection());
-			return moveByReversed(origin, ignore).rotate(angle, ignore).moveBy(origin, ignore);
+		switch (effect) {
+		case CHANGED:
+			return moveByReversed(origin, DirectionEffect.CHANGED).rotate(angle, effect).
+					moveBy(origin, DirectionEffect.CHANGED).setDirection(angle + getDirection());
+		case RESERVED: case IGNORED:
+			return moveByReversed(origin, DirectionEffect.CHANGED).rotate(angle, effect).moveBy(origin,
+					DirectionEffect.CHANGED);
+		default:
+			throw new IllegalArgumentException("'There's a starrrrrmaaaaaaaaaaaan, waiting in the sky!'. "
+					+ "what a shame- we can't even run properly, and you are talking about flying???");
 		}
-
-		if (effect == DirectionEffect.CHANGED) {
-			IOrientation2D ret = moveByReversed(origin, ignore).rotate(angle, ignore).moveBy(origin, ignore);
-			setDirection(angle + getDirection());
-			return ret;
-		}
-
-		return moveByReversed(origin, ignore).rotate(angle, effect).moveBy(origin, ignore);
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package base.point.orientation;
 
+import java.text.DecimalFormat;
+
 import org.la4j.Matrix;
 
 import base.point.IPoint2D;
@@ -85,8 +87,11 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 
 	@Override
 	public String toString() {
-		return "Orientation2D [m_direction=" + m_direction + ", m_x=" + m_x + ", m_y=" + m_y + "]";
-	}
+		DecimalFormat format = new DecimalFormat("#0.0000");
+		return "Orientation2D [x=" + format.format(m_x) +
+				", y=" + format.format(m_y) +
+				", direction=" + format.format(180 / Math.PI * m_direction) + "]";
+	}	
 	
 	@Override
 	public int hashCode() {

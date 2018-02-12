@@ -27,7 +27,7 @@ public class ImOrientation2D extends Orientation2D {
 	public ImOrientation2D(IPoint2D point, double direction) {
 		super(point, direction);
 	}
-	
+
 	public ImOrientation2D(IOrientation2D point) {
 		super(point);
 	}
@@ -44,12 +44,12 @@ public class ImOrientation2D extends Orientation2D {
 			break;
 		case RESERVED:
 			dir = m_direction;
-			break;	
+			break;
 		default:
 			throw new IllegalArgumentException(
 					"Oh, the places you'll go! wait, how did we got here? this souldn't be possible!");
 		}
-		
+
 		cos = Math.cos(m_direction + direction);
 		sin = Math.sin(m_direction + direction);
 
@@ -72,16 +72,20 @@ public class ImOrientation2D extends Orientation2D {
 			return new ImOrientation2D(x, y, m_direction);
 		case RESERVED:
 			dir = m_direction;
+
+			sin = Math.sin(dir + angle);
+			cos = Math.cos(dir + angle);
 			break;
 		case CHANGED:
-			dir = m_direction + angle;
+			dir = (m_direction + angle) % TAU;
+
+			sin = Math.sin(dir + angle);
+			cos = Math.cos(dir + angle);
+			break;
 		default:
 			throw new IllegalArgumentException(
-					"It's dangerous to go alone! take this!" + "Oh wait, this is an exception. try again next time!");
+					"It's dangerous to go alone! take this!" + " Oh wait, this is an exception. try again next time!");
 		}
-
-		sin = Math.sin(angle + m_direction);
-		cos = Math.cos(angle + m_direction);
 
 		x = cos * m_x - sin * m_y;
 		y = sin * m_x + cos * m_y;
@@ -117,5 +121,10 @@ public class ImOrientation2D extends Orientation2D {
 	@Override
 	public IOrientation2D setDirection(double angle) {
 		return new ImOrientation2D(m_x, m_y, angle);
+	}
+
+	@Override
+	public String toString() {
+		return "Immutable " + super.toString();
 	}
 }

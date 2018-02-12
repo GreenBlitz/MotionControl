@@ -55,12 +55,12 @@ public interface IPoint2D {
 
 		@Override
 		public double getX() {
-			throw new UnsupportedOperationException(errorMsg);
+			return 0;
 		}
 
 		@Override
 		public double getY() {
-			throw new UnsupportedOperationException(errorMsg);
+			return 0;
 		}
 
 		@Override
@@ -144,8 +144,15 @@ public interface IPoint2D {
 	 * @return
 	 */
 	default Tuple<Double, Double> relativeCordsTo(IPoint2D origin, CordSystem sys) {
-		return sys == CordSystem.CARTESIAN ? Tuple.of(getX() - origin.getX(), getY() - origin.getY())
-				: Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()));
+		switch(sys) {
+		case CARTESIAN:
+			return Tuple.of(getX() - origin.getX(), getY() - origin.getY());
+		case POLAR:
+			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()));
+		default:
+			throw new IllegalArgumentException(
+					"Toto, I've a feeling we're not in Kansas anymore.");
+		}
 	}
 
 	/**

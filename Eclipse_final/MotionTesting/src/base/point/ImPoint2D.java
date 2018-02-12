@@ -47,4 +47,9 @@ public class ImPoint2D extends Point2D {
 		Vector vec = mat.multiply(new BasicVector(new double[] { m_x, m_y }));
 		return new ImPoint2D(vec.get(0), vec.get(1));
 	}
+	
+	@Override
+	public String toString() {
+		return "Immutable " + super.toString();
+	}
 }

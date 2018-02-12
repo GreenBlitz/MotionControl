@@ -38,7 +38,7 @@ public class MPoint2D extends Point2D {
 	}
 	
 	@Override
-	public IPoint2D rotate(double angle) {
+	public IPoint2D rotate(double angle) {		
 		if (angle == 0)
 			return this;
 
@@ -67,5 +67,10 @@ public class MPoint2D extends Point2D {
 		m_x = vec.get(0);
 		m_y = vec.get(1);
 		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return "Mutable " + super.toString();
 	}
 }

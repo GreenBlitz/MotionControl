@@ -30,12 +30,12 @@ public class MOrientation2D extends Orientation2D {
 	@Override
 	public IOrientation2D moveBy(double x, double y, double direction, DirectionEffect effect) {
 		double cos, sin;
-		
+
 		switch (effect) {
 		case IGNORED:
 			m_x += x;
 			m_y += y;
-			
+
 		case RESERVED:
 			cos = Math.cos(m_direction + direction);
 			sin = Math.sin(m_direction + direction);
@@ -43,19 +43,18 @@ public class MOrientation2D extends Orientation2D {
 			m_x += x * cos - y * sin;
 			m_y += x * sin + y * cos;
 			break;
-			
+
 		case CHANGED:
 			m_direction = direction;
 			cos = Math.cos(m_direction);
 			sin = Math.sin(m_direction);
-			
+
 			m_x += x * cos - y * sin;
 			m_y += x * sin + y * cos;
 			break;
-			
+
 		default:
-			throw new IllegalArgumentException(
-					"for the night is dark and full of terrors. Just like here.");
+			throw new IllegalArgumentException("for the night is dark and full of terrors. Just like here.");
 		}
 
 		return this;
@@ -85,11 +84,17 @@ public class MOrientation2D extends Orientation2D {
 			return this;
 		case CHANGED:
 			m_direction = (m_direction + angle) % TAU;
-			return rotate(angle, DirectionEffect.RESERVED);
+			sin = Math.sin(m_direction);
+			cos = Math.cos(m_direction);
+
+			m_x = cos * x - sin * y;
+			m_y = sin * x + cos * y;
+
+			return this;
 
 		default:
 			throw new IllegalArgumentException(
-					"'madness?'" + "'THIS IS SPARTA!' he said as he throw the code of the runtime environment");
+					"'madness? THIS IS DEFAULT!' he yelled as he threw the code off the runtime environment");
 		}
 	}
 
@@ -128,5 +133,10 @@ public class MOrientation2D extends Orientation2D {
 	public IOrientation2D setDirection(double angle) {
 		m_direction = angle;
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		return "Mutable " + super.toString();
 	}
 }

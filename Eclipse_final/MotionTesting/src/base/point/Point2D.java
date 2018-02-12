@@ -1,5 +1,7 @@
 package base.point;
 
+import java.text.DecimalFormat;
+
 /**
  * This is a Point2D basic implementation.
  *
@@ -60,7 +62,8 @@ public abstract class Point2D implements IPoint2D {
 
 	@Override
 	public String toString() {
-		return "Point2D [m_x=" + m_x + ", m_y=" + m_y + "]";
+		DecimalFormat format = new DecimalFormat("#0.0000");
+		return "Point2D [m_x=" + format.format(m_x) + ", m_y=" + format.format(m_y) + "]";
 	}
 
 	@Override
