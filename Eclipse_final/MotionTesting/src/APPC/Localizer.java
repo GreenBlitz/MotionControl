@@ -117,7 +117,7 @@ public class Localizer implements Input<IPoint2D> {
 
 				if (leftDistDiff == rightDistDiff) {
 					synchronized (LOCK) {
-						m_location = (Orientation2D) m_location.moveBy(0, leftDistDiff, 0, DirectionEffect.RESERVED);
+						m_location.moveBy(0, leftDistDiff, 0, DirectionEffect.RESERVED);
 						return;
 					}
 				}
@@ -129,10 +129,10 @@ public class Localizer implements Input<IPoint2D> {
 
 				double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
 				double adjustedRadiusFromCenter = radiusFromCenter;
-				IOrientation2D rotationOrigin = 
-						(Orientation2D) m_location.moveBy(adjustedRadiusFromCenter, 0, 0, DirectionEffect.RESERVED);
+				IOrientation2D rotationOrigin = Orientation2D.immutable(
+						(Orientation2D) m_location.moveBy(adjustedRadiusFromCenter, 0, 0, DirectionEffect.RESERVED));
 				synchronized (LOCK) {
-					m_location = m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
+					m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
 				}
 				System.out.println("WARNING - robot location: " + m_location);
 			} else {
@@ -144,7 +144,7 @@ public class Localizer implements Input<IPoint2D> {
 	@Override
 	public IPoint2D recieve() {
 		synchronized (LOCK) {
-			return m_location;
+			return Orientation2D.mutable(m_location);
 		}
 	}
 
@@ -158,7 +158,7 @@ public class Localizer implements Input<IPoint2D> {
 		for (ScaledEncoder enc : m_rightWrappedEncoders)
 			enc.reset();
 
-		m_location = IOrientation2D.GLOBAL_ORIGIN;
+		m_location = Orientation2D.mutable(0, 0, 0);
 	}
 
 	public void setEnvironmentPort(EnvironmentPort ePort) {

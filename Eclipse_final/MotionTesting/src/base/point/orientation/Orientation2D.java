@@ -44,6 +44,15 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	public static final Orientation2D mutable(double x, double y, double direction) {
 		return new MOrientation2D(x, y, direction);
 	}
+	
+	/**
+	 * @see Orientation2D#mutable(double, double, double)
+	 * @param other shifts as Orientation2D object
+	 * @return mutable Oreitnation2D
+	 */
+	public static final Orientation2D mutable(IOrientation2D other) {
+		return Orientation2D.mutable(other.getX(), other.getY(), other.getDirection());
+	}
 
 	/**
 	 * 
@@ -58,6 +67,15 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	 */
 	public static final Orientation2D immutable(double x, double y, double direction) {
 		return new ImOrientation2D(x, y, direction);
+	}
+	
+	/**
+	 * @see Orientation2D#immutable(double, double, double)
+	 * @param other shifts as Orientation2D object
+	 * @return immutable Orientaiton2D object
+	 */
+	public static final Orientation2D immutable(IOrientation2D other) {
+		return Orientation2D.immutable(other.getX(), other.getY(), other.getDirection());
 	}
 
 	@Override
