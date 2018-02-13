@@ -8,7 +8,6 @@ import base.point.orientation.IOrientation2D;
 import base.point.orientation.IOrientation2D.DirectionEffect;
 import base.point.orientation.Orientation2D;
 
-
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.03;
@@ -178,16 +177,19 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	}
 
 	public static void main(String[] args) {
-		Orientation2D meme = Orientation2D.immutable(3, 2, 0); // point to rotate
-		Orientation2D pipi = Orientation2D.immutable(1.945, 3.339, 0); // rotate around
+		Orientation2D meme = Orientation2D.immutable(3, 2, 0); // point to
+																// rotate
+		Orientation2D pipi = Orientation2D.immutable(1.945, 3.339, 0); // rotate
+																		// around
 		double magnumDong = 3.1415926;
-	//	Orientation2D or1 = Orientation2D.immutable(3, 2, 0);
-	//	Orientation2D or2 = Orientation2D.immutable(-1.055, 1.339, 0);
-	//	Orientation2D or3 = Orientation2D.immutable(1.945, 3.339, 0);
-		//System.out.println(or1.rotateAround(or3, 1, DirectionEffect.CHANGED));
-		//System.out.println(or2.rotate(-1).moveBy(or3));
-		//System.out.println(or2.rotate(-1));
-		
+		// Orientation2D or1 = Orientation2D.immutable(3, 2, 0);
+		// Orientation2D or2 = Orientation2D.immutable(-1.055, 1.339, 0);
+		// Orientation2D or3 = Orientation2D.immutable(1.945, 3.339, 0);
+		// System.out.println(or1.rotateAround(or3, 1,
+		// DirectionEffect.CHANGED));
+		// System.out.println(or2.rotate(-1).moveBy(or3));
+		// System.out.println(or2.rotate(-1));
+
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~");
 		Orientation2D maymay = (Orientation2D) meme.rotateAround(pipi, magnumDong, DirectionEffect.CHANGED);
 		System.out.println(meme);

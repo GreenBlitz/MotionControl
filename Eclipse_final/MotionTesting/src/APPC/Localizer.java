@@ -8,10 +8,10 @@ import base.EnvironmentPort;
 import base.Input;
 import base.IterativeController;
 import base.ScaledEncoder;
-import base.point.orientation.Orientation2D;
 import base.point.IPoint2D;
 import base.point.orientation.IOrientation2D;
 import base.point.orientation.IOrientation2D.DirectionEffect;
+import base.point.orientation.Orientation2D;
 
 public class Localizer implements Input<IPoint2D> {
 	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;

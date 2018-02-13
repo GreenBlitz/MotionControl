@@ -51,14 +51,14 @@ public class ImOrientation2D extends Orientation2D {
 			throw new IllegalArgumentException(
 					"Oh, the places you'll go! wait, how did we got here? this souldn't be possible!");
 		}
-		
+
 		cos = Math.cos(direction);
 		sin = Math.sin(direction);
 
-		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, dir);
+		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, dir % TAU);
 
 	}
-	
+
 	@Override
 	public IOrientation2D rotate(double angle, DirectionEffect effect) {
 		double sin, cos, x, y, dir;
@@ -85,20 +85,21 @@ public class ImOrientation2D extends Orientation2D {
 			throw new IllegalArgumentException(
 					"It's dangerous to go alone! take this!" + " Oh wait, this is an exception. try again next time!");
 		}
-		
+
 		sin = Math.sin(angle);
 		cos = Math.cos(angle);
 
 		x = cos * m_x - sin * m_y;
 		y = sin * m_x + cos * m_y;
 
-		return new ImOrientation2D(x, y, dir);
+		return new ImOrientation2D(x, y, dir % TAU);
 
 	}
 
 	@Override
 	public IOrientation2D scale(double scale, DirectionEffect effect) {
-		return new ImOrientation2D(m_x * scale, m_y * scale, effect.changed() ? m_direction * scale : m_direction);
+		return new ImOrientation2D(m_x * scale, m_y * scale,
+				(effect.changed() ? m_direction * scale : m_direction) % TAU);
 	}
 
 	@Override
@@ -115,14 +116,14 @@ public class ImOrientation2D extends Orientation2D {
 		double x = vec.get(0);
 		double y = vec.get(1);
 
-		double direction = effect.changed() ? vec.get(2) : m_direction;
+		double direction = (effect.changed() ? vec.get(2) : m_direction) % TAU;
 
 		return new ImOrientation2D(x, y, direction);
 	}
 
 	@Override
 	public IOrientation2D setDirection(double angle) {
-		return new ImOrientation2D(m_x, m_y, angle);
+		return new ImOrientation2D(m_x, m_y, angle % TAU);
 	}
 
 	@Override

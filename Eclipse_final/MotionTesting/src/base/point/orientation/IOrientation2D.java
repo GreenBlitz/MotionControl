@@ -241,14 +241,12 @@ public interface IOrientation2D extends IPoint2D {
 
 		switch (effect) {
 		case CHANGED:
-			return moveByReversed(origin, DirectionEffect.IGNORED).
-					rotate(-angle, effect).
-					moveBy(origin, DirectionEffect.IGNORED).
-					setDirection(-angle + getDirection());
-		case RESERVED: case IGNORED:
-			return moveByReversed(origin, DirectionEffect.IGNORED).
-					rotate(-angle, effect).
-					moveBy(origin, DirectionEffect.IGNORED);
+			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-angle, effect)
+					.moveBy(origin, DirectionEffect.IGNORED).setDirection(-angle + getDirection());
+		case RESERVED:
+		case IGNORED:
+			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-angle, effect).moveBy(origin,
+					DirectionEffect.IGNORED);
 		default:
 			throw new IllegalArgumentException("'There's a starrrrrmaaaaaaaaaaaan, waiting in the sky!'. "
 					+ "what a shame- we can't even run properly, and you are talking about flying???");
@@ -269,7 +267,6 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return this point, subtracted by given coordinates
 	 */
 	default IOrientation2D moveByReversed(double x, double y, double direction, DirectionEffect effect) {
-		System.out.println("MyX = " + x + " MyY = " + y);
 		return moveBy(-x, -y, effect.changed() ? -direction : direction, effect);
 	}
 

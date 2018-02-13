@@ -18,12 +18,12 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 
 	public Orientation2D(double x, double y, double direction) {
 		super(x, y);
-		m_direction = direction;
+		m_direction = direction % TAU;
 	}
 
 	public Orientation2D(IPoint2D point, double direction) {
 		super(point);
-		m_direction = direction;
+		m_direction = direction % TAU;
 	}
 
 	public Orientation2D(IOrientation2D point) {
@@ -44,10 +44,11 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	public static final Orientation2D mutable(double x, double y, double direction) {
 		return new MOrientation2D(x, y, direction);
 	}
-	
+
 	/**
 	 * @see Orientation2D#mutable(double, double, double)
-	 * @param other shifts as Orientation2D object
+	 * @param other
+	 *            shifts as Orientation2D object
 	 * @return mutable Oreitnation2D
 	 */
 	public static final Orientation2D mutable(IOrientation2D other) {
@@ -68,10 +69,11 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	public static final Orientation2D immutable(double x, double y, double direction) {
 		return new ImOrientation2D(x, y, direction);
 	}
-	
+
 	/**
 	 * @see Orientation2D#immutable(double, double, double)
-	 * @param other shifts as Orientation2D object
+	 * @param other
+	 *            shifts as Orientation2D object
 	 * @return immutable Orientaiton2D object
 	 */
 	public static final Orientation2D immutable(IOrientation2D other) {
@@ -106,21 +108,22 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	@Override
 	public String toString() {
 		DecimalFormat format = new DecimalFormat("#0.0000");
-		return "Orientation2D [x=" + format.format(m_x) +
-				", y=" + format.format(m_y) +
-				", direction=" + format.format(180 / Math.PI * m_direction) + "]";
-	}	
-	
+		return "Orientation2D [x=" + format.format(m_x) + ", y=" + format.format(m_y) + ", direction="
+				+ format.format(180 / Math.PI * m_direction) + "]";
+	}
+
 	@Override
 	public int hashCode() {
 		return super.hashCode() * 31 ^ Double.hashCode(m_direction);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
-		if (o == null) return false;
-		if (!(o instanceof Orientation2D)) return false;
-		
+		if (o == null)
+			return false;
+		if (!(o instanceof Orientation2D))
+			return false;
+
 		Orientation2D obj = (Orientation2D) o;
 		return super.equals(obj) && m_direction == obj.getDirection();
 	}

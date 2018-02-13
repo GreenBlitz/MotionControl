@@ -45,9 +45,9 @@ public class MOrientation2D extends Orientation2D {
 			break;
 
 		case CHANGED:
-			m_direction = direction;
-			cos = Math.cos(m_direction);
-			sin = Math.sin(m_direction);
+			m_direction = (m_direction + direction) % TAU;
+			cos = Math.cos(direction);
+			sin = Math.sin(direction);
 
 			m_x += x * cos - y * sin;
 			m_y += x * sin + y * cos;
@@ -62,40 +62,15 @@ public class MOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D rotate(double angle, DirectionEffect effect) {
-		double sin, cos;
+		double sin = Math.sin(angle), cos = Math.cos(angle);
 		double x = m_x, y = m_y;
 
-		switch (effect) {
-		case IGNORED:
-			sin = Math.sin(angle);
-			cos = Math.cos(angle);
+		m_x = cos * x - sin * y;
+		m_y = sin * x + cos * y;
 
-			m_x = cos * x - sin * y;
-			m_y = sin * x + cos * y;
+		m_direction = effect.changed() ? (m_direction + angle) % TAU : m_direction;
 
-			return this;
-		case RESERVED:
-			sin = Math.sin(angle + m_direction);
-			cos = Math.cos(angle + m_direction);
-
-			m_x = cos * x - sin * y;
-			m_y = sin * x + cos * y;
-
-			return this;
-		case CHANGED:
-			m_direction = (m_direction + angle) % TAU;
-			sin = Math.sin(m_direction);
-			cos = Math.cos(m_direction);
-
-			m_x = cos * x - sin * y;
-			m_y = sin * x + cos * y;
-
-			return this;
-
-		default:
-			throw new IllegalArgumentException(
-					"'madness? THIS IS DEFAULT!' he yelled as he threw the code off the runtime environment");
-		}
+		return this;
 	}
 
 	@Override
