@@ -174,13 +174,10 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return a orientation object with new direction
 	 */
 	IOrientation2D setDirection(double angle);
-	
+
 	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
-		return (IOrientation2D) moveByReversed(origin, DirectionEffect.IGNORED)
-				.rotate(origin.getDirection() - getDirection(), DirectionEffect.CHANGED);
-		//double xVal = origin.getX() == 0 ? 0.000001 : origin.getX();
-		//double yVal = origin.getY() == 0 ? 0.000001 : origin.getY();
-		//return moveByReversed(xVal, yVal, origin.getDirection(), DirectionEffect.CHANGED);
+		return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-origin.getDirection(), DirectionEffect.CHANGED);
+		// return moveByReversed(origin, DirectionEffect.CHANGED);
 	}
 
 	/**
@@ -198,7 +195,8 @@ public interface IOrientation2D extends IPoint2D {
 		case CARTESIAN:
 			return Tuple.of(getX() - origin.getX(), getY() - origin.getY());
 		case POLAR:
-			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()) + getDirection());
+			return Tuple.of(distance(origin),
+					Math.atan2(getY() - origin.getY(), getX() - origin.getX()) + getDirection());
 		default:
 			throw new IllegalArgumentException(
 					"so here we are again, it's always such a pleasure... what did you even do to get to here?");
@@ -225,7 +223,7 @@ public interface IOrientation2D extends IPoint2D {
 	/**
 	 * Rotates this Orientation around origin
 	 * 
-	 * @see IPoint2D#rotateAround(IPoint2D, double)
+	 * @see IPoint2D#round(IPoint2D, double)
 	 * @param origin
 	 *            origin of rotation
 	 * @param angle
@@ -235,23 +233,31 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return this point rotated as described above
 	 */
 	default IOrientation2D rotateAround(IOrientation2D origin, double angle, DirectionEffect effect) {
-		DirectionEffect ignore = DirectionEffect.IGNORED;
+		if (origin.equals(GLOBAL_ORIGIN))
+			return rotate(-angle, effect);
 
-		if (origin.equals(GLOBAL_ORIGIN) || angle == 0)
-			return rotate(angle, effect);
+		if (angle == 0)
+			return this;
 
-		if (effect == DirectionEffect.CHANGED) {
-			setDirection(angle + getDirection());
-			return moveByReversed(origin, ignore).rotate(angle, ignore).moveBy(origin, ignore);
+		switch (effect) {
+		case CHANGED:
+			Orientation2D o1 = (Orientation2D) moveByReversed(origin, DirectionEffect.IGNORED);
+			Orientation2D o2 = (Orientation2D) o1.rotate(-angle, effect);
+			Orientation2D o3 = (Orientation2D) o2.moveBy(origin, DirectionEffect.IGNORED);
+			Orientation2D o4 = (Orientation2D) o3.setDirection(-angle + getDirection());
+			System.out.println("O1 " + o1);
+			System.out.println("O2 " + o2);
+			System.out.println("O3 " + o3);
+			System.out.println("O4 " + o4);
+			return o4;
+		case RESERVED:
+		case IGNORED:
+			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-angle, effect).moveBy(origin,
+						DirectionEffect.IGNORED);
+		default:
+			throw new IllegalArgumentException("'There's a starrrrrmaaaaaaaaaaaan, waiting in the sky!'. "
+					+ "what a shame- we can't even run properly, and you are talking about flying???");
 		}
-
-		if (effect == DirectionEffect.CHANGED) {
-			IOrientation2D ret = moveByReversed(origin, ignore).rotate(angle, ignore).moveBy(origin, ignore);
-			setDirection(angle + getDirection());
-			return ret;
-		}
-
-		return moveByReversed(origin, ignore).rotate(angle, effect).moveBy(origin, ignore);
 	}
 
 	/**
@@ -268,6 +274,7 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return this point, subtracted by given coordinates
 	 */
 	default IOrientation2D moveByReversed(double x, double y, double direction, DirectionEffect effect) {
+		System.out.println("MyX = " + x + " MyY = " + y);
 		return moveBy(-x, -y, effect.changed() ? -direction : direction, effect);
 	}
 

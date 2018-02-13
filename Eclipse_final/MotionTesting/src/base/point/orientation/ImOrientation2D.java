@@ -22,6 +22,8 @@ public class ImOrientation2D extends Orientation2D {
 
 	public ImOrientation2D(double x, double y, double direction) {
 		super(x, y, direction);
+		new Throwable().printStackTrace();
+		System.out.println("x=" + x + ", y=" + y);
 	}
 
 	public ImOrientation2D(IPoint2D point, double direction) {
@@ -50,13 +52,13 @@ public class ImOrientation2D extends Orientation2D {
 					"Oh, the places you'll go! wait, how did we got here? this souldn't be possible!");
 		}
 		
-		cos = Math.cos(m_direction + direction);
-		sin = Math.sin(m_direction + direction);
+		cos = Math.cos(direction);
+		sin = Math.sin(direction);
 
 		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, dir);
 
 	}
-
+	
 	@Override
 	public IOrientation2D rotate(double angle, DirectionEffect effect) {
 		double sin, cos, x, y, dir;
