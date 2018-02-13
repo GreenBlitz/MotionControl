@@ -2,8 +2,6 @@ package APPC;
 
 import base.point.orientation.IOrientation2D;
 import base.point.orientation.IOrientation2D.DirectionEffect;
-import base.Tuple;
-import base.point.IPoint2D.CordSystem;
 import base.point.orientation.Orientation2D;
 
 public class PathFactory {
@@ -63,16 +61,17 @@ public class PathFactory {
 	}
 
 	/**
-	 * Like {@link PathFactory#connectLine(Orientation2D, double)} but with different parameters
+	 * Like {@link PathFactory#connectLine(Orientation2D, double)} but with
+	 * different parameters
+	 * 
 	 * @param x
 	 * @param y
 	 * @param metersPerPoint
 	 * @return
 	 */
-	public PathFactory conncetLine(double x, double y, double metersPerPoint){
+	public PathFactory conncetLine(double x, double y, double metersPerPoint) {
 		return connectLine(Orientation2D.immutable(x, y, 0), metersPerPoint);
 	}
-	
 
 	/**
 	 * Generate a straight line from the last path point to a point a certain
@@ -90,7 +89,8 @@ public class PathFactory {
 	public PathFactory genStraightLine(double len, double rotation, double metersPerPoint) {
 		IOrientation2D origin = m_path.getLast();
 		for (double i = metersPerPoint; i < len + metersPerPoint; i += metersPerPoint) {
-			m_path.add(Orientation2D.immutable(0, i, 0).rotate(rotation, DirectionEffect.IGNORED).moveBy(origin, DirectionEffect.RESERVED));
+			m_path.add(Orientation2D.immutable(0, i, 0).rotate(rotation, DirectionEffect.IGNORED).moveBy(origin,
+					DirectionEffect.RESERVED));
 		}
 		return this;
 	}

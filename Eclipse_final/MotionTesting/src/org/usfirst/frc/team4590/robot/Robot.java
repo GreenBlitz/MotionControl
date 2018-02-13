@@ -94,7 +94,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		logger.enable();
 		loc.reset();
-		new PathFactory().genStraightLine(1, 0, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(3, 0, 0.005).construct(m_arenaMap);
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
 		controller.start();
@@ -141,7 +141,6 @@ public class Robot extends IterativeRobot {
 		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACC, DEFUALT_ARENA_LENGTH, DEFUALT_ARENA_WIDTH);
 	}
 
-	// getters for sensors
 	public double getDistance() {
 		return (left.getDistance() - right.getDistance()) / 2;
 	}

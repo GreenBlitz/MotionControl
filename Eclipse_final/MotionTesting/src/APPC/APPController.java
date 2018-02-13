@@ -5,7 +5,6 @@ import base.IterativeController;
 import base.Output;
 import base.point.IPoint2D;
 import base.point.orientation.IOrientation2D;
-import base.point.orientation.IOrientation2D.DirectionEffect;
 import base.point.orientation.Orientation2D;
 
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
@@ -109,11 +108,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 *            the goal point
 	 * @return the curve coefficient which is 1/R
 	 */
-	public double calculateCurve(IOrientation2D loc, IOrientation2D goal) {
-		IOrientation2D goalVector = goal.changePrespectiveTo(loc);
-		// double angle = Math.atan(goalVector.getX() / goalVector.getY()) /
-		// Math.PI * 180;
-		// m_environmentPort.putNumber("Angle", angle);
+	public double calculateCurve(IOrientation2D loc, IPoint2D goal) {
+		IPoint2D goalVector = goal.changePrespectiveTo(loc);
 		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
@@ -122,7 +118,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
 		System.out.println("next goal point: " + goal);
 		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance),
-				calculateCurve((IOrientation2D) robotLocation, (IOrientation2D) goal));
+				calculateCurve((IOrientation2D) robotLocation, goal));
 	}
 
 	public class AbsoluteTimedTolerance extends TimedTolerance {
@@ -176,30 +172,9 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 
 	}
 
-	public static void main(String[] args) {
-		Orientation2D meme = Orientation2D.immutable(3, 2, 0); // point to
-																// rotate
-		Orientation2D pipi = Orientation2D.immutable(1.945, 3.339, 0); // rotate
-																		// around
-		double magnumDong = 3.1415926;
-		// Orientation2D or1 = Orientation2D.immutable(3, 2, 0);
-		// Orientation2D or2 = Orientation2D.immutable(-1.055, 1.339, 0);
-		// Orientation2D or3 = Orientation2D.immutable(1.945, 3.339, 0);
-		// System.out.println(or1.rotateAround(or3, 1,
-		// DirectionEffect.CHANGED));
-		// System.out.println(or2.rotate(-1).moveBy(or3));
-		// System.out.println(or2.rotate(-1));
-
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~");
-		Orientation2D maymay = (Orientation2D) meme.rotateAround(pipi, magnumDong, DirectionEffect.CHANGED);
-		System.out.println(meme);
-		System.out.println(pipi);
-		System.out.println(maymay);
-	}
-
 	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
 		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
-		int sign = ((IOrientation2D) endPoint).changePrespectiveTo((IOrientation2D) robotLoc).getY() >= 0 ? 1 : -1;
+		int sign = endPoint.changePrespectiveTo((IOrientation2D) robotLoc).getY() >= 0 ? 1 : -1;
 		if (distanceOverSlowDown > 1)
 			return sign;
 		if (distanceOverSlowDown > 0.4)

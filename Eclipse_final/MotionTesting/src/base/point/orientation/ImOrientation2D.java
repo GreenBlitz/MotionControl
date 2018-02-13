@@ -22,8 +22,6 @@ public class ImOrientation2D extends Orientation2D {
 
 	public ImOrientation2D(double x, double y, double direction) {
 		super(x, y, direction);
-		new Throwable().printStackTrace();
-		System.out.println("x=" + x + ", y=" + y);
 	}
 
 	public ImOrientation2D(IPoint2D point, double direction) {
@@ -93,7 +91,6 @@ public class ImOrientation2D extends Orientation2D {
 		y = sin * m_x + cos * m_y;
 
 		return new ImOrientation2D(x, y, dir % TAU);
-
 	}
 
 	@Override

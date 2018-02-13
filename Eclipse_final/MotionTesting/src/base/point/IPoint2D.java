@@ -3,6 +3,8 @@ package base.point;
 import org.la4j.Matrix;
 
 import base.Tuple;
+import base.point.orientation.IOrientation2D;
+import base.point.orientation.IOrientation2D.DirectionEffect;
 
 /**
  * So, here's the point... (HAHAHAHA GREAT PUN LOLLL XDDDDD)
@@ -249,11 +251,15 @@ public interface IPoint2D {
 		return (getX() - other.getX()) * (getX() - other.getX()) + (getY() - other.getY()) * (getY() - other.getY());
 	}
 	
+	default IPoint2D changePrespectiveTo(IOrientation2D origin) {
+		return moveByReversed(origin).rotate(-origin.getDirection());
+	}
+	
 	default double length() {
 		return Math.hypot(getX(), getY());
 	}
 	
-	default double legnth() {
+	default double lengthSquared() {
 		return getX() * getX() + getY() * getY();
 	}
 }

@@ -35,7 +35,8 @@ public class MOrientation2D extends Orientation2D {
 		case IGNORED:
 			m_x += x;
 			m_y += y;
-
+			break;
+			
 		case RESERVED:
 			cos = Math.cos(direction);
 			sin = Math.sin(direction);

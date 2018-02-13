@@ -49,7 +49,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		double ratio;
 		ratio = (R - d / 2) / (R + d / 2);
 		ePort.putNumber("Ratio", ratio);
-		System.out.println("ratio:" + ratio + " power:" + power);
+		System.out.println("ratio: " + ratio + ", power: " + power);
 		if (curve < 0) {
 			r.tankDrive(power, power * ratio, false);
 			ePort.putNumber("powerL", power);
