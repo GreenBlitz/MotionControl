@@ -111,7 +111,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	public double calculateCurve(IOrientation2D loc, IPoint2D goal) {
 		IPoint2D goalVector = goal.changePrespectiveTo(loc);
-		return (2 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
+		return (2.0 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
 	@Override
