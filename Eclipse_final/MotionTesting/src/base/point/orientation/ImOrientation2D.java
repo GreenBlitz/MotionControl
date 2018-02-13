@@ -47,13 +47,13 @@ public class ImOrientation2D extends Orientation2D {
 			break;
 		default:
 			throw new IllegalArgumentException(
-					"Oh, the places you'll go! wait, how did we got here? this souldn't be possible!");
+					"Oh, the places you'll go! Wait, how did we got here? This shouldn't be possible!");
 		}
 
 		cos = Math.cos(direction);
 		sin = Math.sin(direction);
 
-		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, dir % TAU);
+		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, normalizeAngle(dir));
 
 	}
 
@@ -81,7 +81,7 @@ public class ImOrientation2D extends Orientation2D {
 			break;
 		default:
 			throw new IllegalArgumentException(
-					"It's dangerous to go alone! take this!" + " Oh wait, this is an exception. try again next time!");
+					"It's dangerous to go alone! Take this! Oh wait, this is an exception. Try again next time!");
 		}
 
 		sin = Math.sin(angle);
@@ -90,13 +90,13 @@ public class ImOrientation2D extends Orientation2D {
 		x = cos * m_x - sin * m_y;
 		y = sin * m_x + cos * m_y;
 
-		return new ImOrientation2D(x, y, dir % TAU);
+		return new ImOrientation2D(x, y, normalizeAngle(dir));
 	}
 
 	@Override
 	public IOrientation2D scale(double scale, DirectionEffect effect) {
 		return new ImOrientation2D(m_x * scale, m_y * scale,
-				(effect.changed() ? m_direction * scale : m_direction) % TAU);
+				normalizeAngle((effect.changed() ? m_direction * scale : m_direction)));
 	}
 
 	@Override
@@ -113,16 +113,28 @@ public class ImOrientation2D extends Orientation2D {
 		double x = vec.get(0);
 		double y = vec.get(1);
 
-		double direction = (effect.changed() ? vec.get(2) : m_direction) % TAU;
+		double direction = normalizeAngle(effect.changed() ? vec.get(2) : m_direction);
 
 		return new ImOrientation2D(x, y, direction);
 	}
 
 	@Override
 	public IOrientation2D setDirection(double angle) {
-		return new ImOrientation2D(m_x, m_y, angle % TAU);
+		return new ImOrientation2D(m_x, m_y, normalizeAngle(angle));
 	}
 
+	@Override
+	public IPoint2D moveBy(double x, double y) {
+		IOrientation2D rotated = Orientation2D.immutable(this).rotate(-getDirection(), DirectionEffect.IGNORED);
+		return Orientation2D.immutable(rotated.getX() + x, rotated.getY() + y, rotated.getDirection()).rotate(getDirection(),
+				DirectionEffect.IGNORED);
+	}
+
+	@Override
+	public IOrientation2D copy(double x, double y, double direction) {
+		return new ImOrientation2D(x, y, direction);
+	}
+	
 	@Override
 	public String toString() {
 		return "Immutable " + super.toString();

@@ -46,7 +46,7 @@ public class MOrientation2D extends Orientation2D {
 			break;
 
 		case CHANGED:
-			m_direction = (m_direction + direction) % TAU;
+			m_direction = normalizeAngle(m_direction + direction);
 			cos = Math.cos(direction);
 			sin = Math.sin(direction);
 
@@ -69,7 +69,7 @@ public class MOrientation2D extends Orientation2D {
 		m_x = cos * x - sin * y;
 		m_y = sin * x + cos * y;
 
-		m_direction = effect.changed() ? (m_direction + angle) % TAU : m_direction;
+		m_direction = effect.changed() ? normalizeAngle(m_direction + angle) : m_direction;
 
 		return this;
 	}
@@ -107,10 +107,28 @@ public class MOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D setDirection(double angle) {
-		m_direction = angle;
+		m_direction = normalizeAngle(angle);
+		return this;
+	}
+	
+	@Override
+	public IPoint2D moveBy(double x, double y) {
+		IOrientation2D rotated = Orientation2D.immutable(this).rotate(-getDirection(), DirectionEffect.IGNORED);
+		rotated = Orientation2D.immutable(rotated.getX() + x, rotated.getY() + y, rotated.getDirection()).rotate(getDirection(), DirectionEffect.IGNORED);
+		m_x = rotated.getX();
+		m_y = rotated.getY();
+		m_direction = rotated.getDirection();
 		return this;
 	}
 
+	@Override
+	public IOrientation2D copy(double x, double y, double direction) {
+		m_x = x;
+		m_y = y;
+		m_direction = direction;
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		return "Mutable " + super.toString();

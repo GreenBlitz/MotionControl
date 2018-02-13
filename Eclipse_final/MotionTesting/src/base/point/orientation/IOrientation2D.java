@@ -36,7 +36,7 @@ public interface IOrientation2D extends IPoint2D {
 		RESERVED(false),
 
 		/**
-		 * The method changes the direction before doing anything else
+		 * The method changes the direction
 		 */
 		CHANGED(true),
 
@@ -102,10 +102,14 @@ public interface IOrientation2D extends IPoint2D {
 		public IOrientation2D setDirection(double angle) {
 			throw new UnsupportedOperationException(errorMsg);
 		}
+
+		@Override
+		public IOrientation2D copy(double x, double y, double direction) {
+			throw new UnsupportedOperationException(errorMsg);
+		}
 	}
 
 	static final IOrientation2D GLOBAL_ORIGIN = Orientation2DOrigin.ORIGIN;
-	static final double TAU = 2 * Math.PI;
 
 	double getX();
 
@@ -144,7 +148,8 @@ public interface IOrientation2D extends IPoint2D {
 	/**
 	 * Resizes this point as a vector
 	 * <p>
-	 * Direction won't be affected by this
+	 * Using this will affect direction only if {@code effect =}
+	 * {@link IOrientation2D.DirectionEffect#CHANGED}
 	 * </p>
 	 * 
 	 * @see IPoint2D#scale(double)
@@ -174,7 +179,9 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return a orientation object with new direction
 	 */
 	IOrientation2D setDirection(double angle);
-	
+
+	IOrientation2D copy(double x, double y, double direction);
+
 	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
 		return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-origin.getDirection(), DirectionEffect.CHANGED);
 	}
@@ -240,8 +247,9 @@ public interface IOrientation2D extends IPoint2D {
 
 		switch (effect) {
 		case CHANGED:
-			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-angle, effect)
-					.moveBy(origin, DirectionEffect.IGNORED).setDirection(-angle + getDirection());
+			IOrientation2D relative = (IOrientation2D) Orientation2D
+					.immutable(getX() - origin.getX(), getY() - origin.getY(), getDirection()).rotate(angle);
+			return copy(relative.getX() + origin.getX(), relative.getY() + origin.getY(), getDirection() - angle);
 		case RESERVED:
 		case IGNORED:
 			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-angle, effect).moveBy(origin,
@@ -295,14 +303,24 @@ public interface IOrientation2D extends IPoint2D {
 	}
 
 	/**
-	 * Moves the point with direction = 0 and ignored
-	 * 
-	 * @see IOrientation2D#moveBy(double, double, double, DirectionEffect)
+	 * @see IOrientation2D#relativeCordsTo(IOrientation2D,
+	 *      base.point.IPoint2D.CordSystem)
 	 */
-	@Deprecated
 	@Override
-	default IPoint2D moveBy(double x, double y) {
-		return moveBy(x, y, 0, DirectionEffect.IGNORED);
+	default Tuple<Double, Double> relativeCordsTo(IPoint2D origin, CordSystem sys) {
+		switch (sys) {
+		case CARTESIAN:
+			return Tuple.of(getX() - origin.getX(), getY() - origin.getY());
+		case POLAR:
+			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()));
+		default:
+			throw new IllegalArgumentException(
+					"so here we are again, it's always such a pleasure... what did you even do to get to here?");
+		}
+	}
+
+	default double normalizeAngle(double angle) {
+		return angle > 0 ? angle % (Math.PI * 2) : Math.PI * 2 - (Math.abs(angle) % (Math.PI * 2));
 	}
 
 	/**
@@ -332,23 +350,6 @@ public interface IOrientation2D extends IPoint2D {
 	@Override
 	default IPoint2D apply(Matrix transformation) {
 		return apply(transformation, DirectionEffect.IGNORED);
-	}
-
-	/**
-	 * @see IOrientation2D#relativeCordsTo(IOrientation2D,
-	 *      base.point.IPoint2D.CordSystem)
-	 */
-	@Override
-	default Tuple<Double, Double> relativeCordsTo(IPoint2D origin, CordSystem sys) {
-		switch (sys) {
-		case CARTESIAN:
-			return Tuple.of(getX() - origin.getX(), getY() - origin.getY());
-		case POLAR:
-			return Tuple.of(distance(origin), Math.atan2(getY() - origin.getY(), getX() - origin.getX()));
-		default:
-			throw new IllegalArgumentException(
-					"so here we are again, it's always such a pleasure... what did you even do to get to here?");
-		}
 	}
 
 	/**

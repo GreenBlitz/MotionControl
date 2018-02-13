@@ -18,12 +18,12 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 
 	public Orientation2D(double x, double y, double direction) {
 		super(x, y);
-		m_direction = direction % TAU;
+		m_direction = normalizeAngle(direction);
 	}
 
 	public Orientation2D(IPoint2D point, double direction) {
 		super(point);
-		m_direction = direction % TAU;
+		m_direction = normalizeAngle(direction);
 	}
 
 	public Orientation2D(IOrientation2D point) {
@@ -76,18 +76,13 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	 *            shifts as Orientation2D object
 	 * @return immutable Orientaiton2D object
 	 */
-	public static final Orientation2D immutable(IOrientation2D other) {
-		return Orientation2D.immutable(other.getX(), other.getY(), other.getDirection());
+	public static final Orientation2D immutable(IOrientation2D orientation) {
+		return Orientation2D.immutable(orientation.getX(), orientation.getY(), orientation.getDirection());
 	}
 
 	@Override
 	public double getDirection() {
 		return m_direction;
-	}
-
-	@Override
-	public IPoint2D moveBy(double x, double y) {
-		return moveBy(x, y, 0, DirectionEffect.IGNORED);
 	}
 
 	@Override

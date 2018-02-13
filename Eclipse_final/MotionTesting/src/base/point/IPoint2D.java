@@ -168,9 +168,13 @@ public interface IPoint2D {
 	 * @return this point, rotated around another with {@code angle}
 	 */
 	default IPoint2D rotateAround(IPoint2D origin, double angle) {
-		if (origin.equals(GLOBAL_ORIGIN) || angle == 0)
-			return rotate(angle);
-		return moveByReversed(origin).rotate(angle).moveBy(origin);
+		if (origin.equals(GLOBAL_ORIGIN))
+			return rotate(-angle);
+		
+		if (angle == 0)
+			return this;
+			
+		return moveByReversed(origin).rotate(-angle).moveBy(origin);
 	}
 
 	/**

@@ -173,13 +173,15 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	}
 
 	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
-		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
+		/*double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
 		int sign = endPoint.changePrespectiveTo((IOrientation2D) robotLoc).getY() >= 0 ? 1 : -1;
 		if (distanceOverSlowDown > 1)
 			return sign;
 		if (distanceOverSlowDown > 0.4)
 			return distanceOverSlowDown * sign;
-		return 0.4 * sign;
+		return 0.4 * sign;*/
+		return 0;
+		
 	}
 
 	@Override

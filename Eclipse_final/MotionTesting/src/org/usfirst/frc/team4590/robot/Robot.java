@@ -93,11 +93,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		logger.enable();
-		loc.reset();
 		new PathFactory().genStraightLine(3, 0, 0.005).construct(m_arenaMap);
-		controller = new APPController(loc, out, m_arenaMap);
-		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
-		controller.start();
+		loc.reset();
+		//controller = new APPController(loc, out, m_arenaMap);
+		//controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
+		//controller.start();
 	}
 	// 0.49 m
 
