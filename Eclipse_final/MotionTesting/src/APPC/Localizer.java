@@ -134,7 +134,7 @@ public class Localizer implements Input<IPoint2D> {
 				synchronized (LOCK) {
 					m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
 				}
-				System.out.println("WARNING - robot location: " + m_location);
+				System.out.println("robot location: " + m_location);
 			} else {
 				reset();
 			}

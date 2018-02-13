@@ -95,9 +95,9 @@ public class Robot extends IterativeRobot {
 		logger.enable();
 		new PathFactory().genStraightLine(3, 0, 0.005).construct(m_arenaMap);
 		loc.reset();
-		//controller = new APPController(loc, out, m_arenaMap);
-		//controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
-		//controller.start();
+		controller = new APPController(loc, out, m_arenaMap);
+		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
+		controller.start();
 	}
 	// 0.49 m
 

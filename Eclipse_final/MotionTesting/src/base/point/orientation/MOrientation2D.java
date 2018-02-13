@@ -58,8 +58,8 @@ public class MOrientation2D extends Orientation2D {
 		double sin = Math.sin(angle), cos = Math.cos(angle);
 		double x = m_x, y = m_y;
 
-		m_x = cos * x - sin * y;
-		m_y = sin * x + cos * y;
+		m_x = cos * x + sin * y;
+		m_y = sin * x - cos * y;
 
 		m_direction = effect.changed() ? normalizeAngle(m_direction + angle) : m_direction;
 

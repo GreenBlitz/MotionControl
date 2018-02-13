@@ -28,6 +28,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 * this
 	 */
 	private double m_slowDownDistance;
+	private boolean isLastRunForwards = true;
 
 	/**
 	 *
@@ -116,7 +117,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	@Override
 	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
-		System.out.println("next goal point: " + goal);
+		System.out.println("WARNING next goal point: " + goal);
 		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance),
 				calculateCurve((IOrientation2D) robotLocation, goal));
 	}
@@ -173,15 +174,18 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	}
 
 	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
-		/*double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
-		int sign = endPoint.changePrespectiveTo((IOrientation2D) robotLoc).getY() >= 0 ? 1 : -1;
+		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
+		IPoint2D tmp = endPoint.changePrespectiveTo((IOrientation2D) robotLoc);
+		int sign;
+		if(isLastRunForwards)
+			sign = tmp.getY() >= -m_lookAhead ? 1 : -1;
+		else
+			sign = tmp.getY() <= m_lookAhead ? -1 : 1;
 		if (distanceOverSlowDown > 1)
 			return sign;
 		if (distanceOverSlowDown > 0.4)
 			return distanceOverSlowDown * sign;
-		return 0.4 * sign;*/
-		return 0;
-		
+		return 0.4 * sign;		
 	}
 
 	@Override

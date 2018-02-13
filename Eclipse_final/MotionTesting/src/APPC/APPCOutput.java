@@ -7,7 +7,7 @@ import base.EnvironmentPort;
 import base.Output;
 
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static double fullPower = 0;
+	private static double fullPower = 0.8;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 	private DrivePort dPort = DrivePort.DEFAULT;
@@ -69,8 +69,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	@Override
 	public void use(APPController.APPDriveData output) {
 		System.out.println("power: " + output.power + ", curve: " + output.curve);
-		//curveDrive(dPort, output.power * fullPower, output.curve * fullPower);
-		dPort.tankDrive(0, 0, false);
+		curveDrive(dPort, output.power * fullPower, output.curve * fullPower);
 	}
 
 	@Override
