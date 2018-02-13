@@ -22,6 +22,8 @@ public class ImOrientation2D extends Orientation2D {
 
 	public ImOrientation2D(double x, double y, double direction) {
 		super(x, y, direction);
+		new Throwable().printStackTrace();
+		System.out.println("x=" + x + ", y=" + y);
 	}
 
 	public ImOrientation2D(IPoint2D point, double direction) {
@@ -49,14 +51,14 @@ public class ImOrientation2D extends Orientation2D {
 			throw new IllegalArgumentException(
 					"Oh, the places you'll go! wait, how did we got here? this souldn't be possible!");
 		}
-
-		cos = Math.cos(m_direction + direction);
-		sin = Math.sin(m_direction + direction);
+		
+		cos = Math.cos(direction);
+		sin = Math.sin(direction);
 
 		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, dir);
 
 	}
-
+	
 	@Override
 	public IOrientation2D rotate(double angle, DirectionEffect effect) {
 		double sin, cos, x, y, dir;
@@ -77,15 +79,15 @@ public class ImOrientation2D extends Orientation2D {
 			cos = Math.cos(dir + angle);
 			break;
 		case CHANGED:
-			dir = (m_direction + angle) % TAU;
-
-			sin = Math.sin(dir + angle);
-			cos = Math.cos(dir + angle);
+			dir = m_direction + angle;
 			break;
 		default:
 			throw new IllegalArgumentException(
 					"It's dangerous to go alone! take this!" + " Oh wait, this is an exception. try again next time!");
 		}
+		
+		sin = Math.sin(angle);
+		cos = Math.cos(angle);
 
 		x = cos * m_x - sin * m_y;
 		y = sin * m_x + cos * m_y;

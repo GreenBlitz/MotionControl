@@ -176,7 +176,8 @@ public interface IOrientation2D extends IPoint2D {
 	IOrientation2D setDirection(double angle);
 
 	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
-		return moveByReversed(origin.getX(), origin.getY(), origin.getDirection(), DirectionEffect.CHANGED);
+		return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-origin.getDirection(), DirectionEffect.CHANGED);
+		// return moveByReversed(origin, DirectionEffect.CHANGED);
 	}
 
 	/**
@@ -222,7 +223,7 @@ public interface IOrientation2D extends IPoint2D {
 	/**
 	 * Rotates this Orientation around origin
 	 * 
-	 * @see IPoint2D#rotateAround(IPoint2D, double)
+	 * @see IPoint2D#round(IPoint2D, double)
 	 * @param origin
 	 *            origin of rotation
 	 * @param angle
@@ -232,15 +233,22 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return this point rotated as described above
 	 */
 	default IOrientation2D rotateAround(IOrientation2D origin, double angle, DirectionEffect effect) {
-		if (origin.equals(GLOBAL_ORIGIN) || angle == 0)
-			return rotate(angle, effect);
+		if (origin.equals(GLOBAL_ORIGIN))
+			return rotate(-angle, effect);
+
+		if (angle == 0)
+			return this;
+
 		switch (effect) {
 		case CHANGED:
-			return moveByReversed(origin, DirectionEffect.CHANGED).rotate(angle, effect).
-					moveBy(origin, DirectionEffect.CHANGED).setDirection(angle + getDirection());
+			return moveByReversed(origin, DirectionEffect.IGNORED).
+					rotate(-angle, effect).
+					moveBy(origin, DirectionEffect.IGNORED).
+					setDirection(-angle + getDirection());
 		case RESERVED: case IGNORED:
-			return moveByReversed(origin, DirectionEffect.CHANGED).rotate(angle, effect).moveBy(origin,
-					DirectionEffect.CHANGED);
+			return moveByReversed(origin, DirectionEffect.IGNORED).
+					rotate(-angle, effect).
+					moveBy(origin, DirectionEffect.IGNORED);
 		default:
 			throw new IllegalArgumentException("'There's a starrrrrmaaaaaaaaaaaan, waiting in the sky!'. "
 					+ "what a shame- we can't even run properly, and you are talking about flying???");
@@ -261,6 +269,7 @@ public interface IOrientation2D extends IPoint2D {
 	 * @return this point, subtracted by given coordinates
 	 */
 	default IOrientation2D moveByReversed(double x, double y, double direction, DirectionEffect effect) {
+		System.out.println("MyX = " + x + " MyY = " + y);
 		return moveBy(-x, -y, effect.changed() ? -direction : direction, effect);
 	}
 
