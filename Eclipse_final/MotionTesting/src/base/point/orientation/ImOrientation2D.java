@@ -132,7 +132,7 @@ public class ImOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D copy(double x, double y, double direction) {
-		return new ImOrientation2D(x, y, direction);
+		return new ImOrientation2D(x, y, normalizeAngle(direction));
 	}
 	
 	@Override

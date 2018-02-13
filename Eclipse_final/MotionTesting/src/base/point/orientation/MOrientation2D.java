@@ -125,7 +125,7 @@ public class MOrientation2D extends Orientation2D {
 	public IOrientation2D copy(double x, double y, double direction) {
 		m_x = x;
 		m_y = y;
-		m_direction = direction;
+		m_direction = normalizeAngle(direction);
 		return this;
 	}
 	

@@ -89,7 +89,6 @@ public class Localizer implements Input<IPoint2D> {
 	 */
 	public double getRightDistance() {
 		return Arrays.stream(m_rightWrappedEncoders).map(ScaledEncoder::getDistance).reduce((a, b) -> a + b).orElse(.0)
-
 				/ m_rightWrappedEncoders.length;
 	}
 
@@ -109,16 +108,16 @@ public class Localizer implements Input<IPoint2D> {
 				ePort.putNumber("X-pos R", m_location.getX());
 				ePort.putNumber("Y-pos R", m_location.getY());
 
-				/*double rightDistDiff = -rightDist;
+				double rightDistDiff = -rightDist;
 				double leftDistDiff = -leftDist;
-				rightDist = getRightDistance();
 				leftDist = getLeftDistance();
+				rightDist = getRightDistance();
 				rightDistDiff += rightDist;
 				leftDistDiff += leftDist;
 
-				if (leftDistDiff == rightDistDiff) {
+				if (Math.abs(leftDistDiff - rightDistDiff) < 10e-7) {
 					synchronized (LOCK) {
-						m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
+						m_location.moveBy(0, leftDistDiff, 0, DirectionEffect.RESERVED);
 						return;
 					}
 				}
@@ -130,39 +129,10 @@ public class Localizer implements Input<IPoint2D> {
 
 				double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
 				double adjustedRadiusFromCenter = radiusFromCenter;
-				IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(adjustedRadiusFromCenter, 0, m_location.getDirection(), DirectionEffect.RESERVED);
+				IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(adjustedRadiusFromCenter, 0, 0, DirectionEffect.RESERVED);
 				synchronized (LOCK) {
-					m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);					
-				}*/
-				
-				double rightDistDiff = -rightDist;
-	            double leftDistDiff = -leftDist;
-	            leftDist = getLeftDistance();
-	        	rightDist = getRightDistance();
-	        	rightDistDiff += rightDist;
-	        	leftDistDiff += leftDist;
-	        	
-
-	            if (leftDistDiff == rightDistDiff) {
-	                synchronized (LOCK) {
-	                    m_location.moveBy(0, leftDistDiff);
-	                    return;
-	                }
-	            }
-	            
-	        	
-	    		boolean leftIsLong = leftDistDiff > rightDistDiff;
-	    		double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
-	    		
-	    		 
-	    		double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
-
-	    		double radiusFromCenter = -(shortDist/angle + Math.signum(angle) * m_wheelDistance/2);
-	    		double adjustedRadiusFromCenter = radiusFromCenter;
-	    		IOrientation2D rotationOrigin = (IOrientation2D) Orientation2D.immutable(m_location).moveBy(adjustedRadiusFromCenter, 0);
-	            synchronized (LOCK){
-	                m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
-	            }
+					m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
+				}
 				System.out.println("WARNING - robot location: " + m_location);
 			} else {
 				reset();
