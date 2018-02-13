@@ -240,7 +240,7 @@ public interface IOrientation2D extends IPoint2D {
 	 */
 	default IOrientation2D rotateAround(IOrientation2D origin, double angle, DirectionEffect effect) {
 		if (origin.equals(GLOBAL_ORIGIN))
-			return rotate(-angle, effect);
+			return rotate(angle, effect);
 
 		if (angle == 0)
 			return this;
@@ -249,10 +249,9 @@ public interface IOrientation2D extends IPoint2D {
 		case CHANGED:
 			IOrientation2D relative = (IOrientation2D) Orientation2D
 					.immutable(getX() - origin.getX(), getY() - origin.getY(), getDirection()).rotate(angle);
-			return copy(relative.getX() + origin.getX(), relative.getY() + origin.getY(), getDirection() - angle);
-		case RESERVED:
-		case IGNORED:
-			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-angle, effect).moveBy(origin,
+			return copy(relative.getX() + origin.getX(), relative.getY() + origin.getY(), getDirection() + angle);
+		case RESERVED: case IGNORED:
+			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(angle, effect).moveBy(origin,
 					DirectionEffect.IGNORED);
 		default:
 			throw new IllegalArgumentException("'There's a starrrrrmaaaaaaaaaaaan, waiting in the sky!'. "
