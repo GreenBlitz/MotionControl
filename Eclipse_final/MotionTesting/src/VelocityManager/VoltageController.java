@@ -33,7 +33,7 @@ public class VoltageController {
 	 * target="_blank"><img src=
 	 * "https://latex.codecogs.com/gif.latex?k_v&space;=&space;\frac{a&space;&plus;&space;k_u&space;\cdot&space;U}{V}"
 	 * title="k_v = \frac{a + k_u \cdot U}{V}" /></a> where a is the actuator
-	 * acceleration, U the actuator velocity, Ku is m_Ku and V is the voltage
+	 * acceleration, U the actuator velocity, Ku is <code>m_Ku</code> and V is the voltage
 	 * passed.
 	 */
 	protected double m_Kv;
@@ -70,8 +70,9 @@ public class VoltageController {
 	 *            {@link VoltageController#m_Ka}
 	 * @param pastTimeImportance
 	 *            {@link VoltageController#m_pastTimeImportace}
-	 *            
-	 * @throws RuntimeException when Ku or Kv are equal to 0
+	 * 
+	 * @throws RuntimeException
+	 *             when Ku or Kv are equal to 0
 	 */
 	public VoltageController(double Ku, double Kv, double Ka, int pastTimeImportance) {
 		m_Ka = Ka;
@@ -115,7 +116,7 @@ public class VoltageController {
 	public VoltageController(double Ku, double Kv) {
 		this(Ku, Kv, DEFAULT_KA, DEFAULT_PAST_IMP);
 	}
-	
+
 	/**
 	 * @see {@link VoltageController#m_Ka}
 	 * @param val
@@ -133,7 +134,8 @@ public class VoltageController {
 	}
 
 	/**
-	 * Reset the avarage call time and the time last called, must be called before start of program.
+	 * Reset the avarage call time and the time last called, must be called
+	 * before start of program.
 	 */
 	public void resetTimeInterval() {
 		m_avarageCallTime = -1;
@@ -143,9 +145,12 @@ public class VoltageController {
 	/**
 	 * 
 	 * @param desiredVelocity
-	 * @param currentVelocity as measured from sensors
+	 * @param currentVelocity
+	 *            as measured from sensors
 	 * @return the voltage that should be supplied to the actuator
-	 * @throws NullPointerException {@link VoltageController#resetTimeInterval()} wasn't called prior to this.
+	 * @throws NullPointerException
+	 *             {@link VoltageController#resetTimeInterval()} wasn't called
+	 *             prior to this.
 	 */
 	public double getVoltage(double desiredVelocity, double currentVelocity) throws NullPointerException {
 		return (getStartAcceleration(desiredVelocity, currentVelocity) + m_Ku * currentVelocity) / m_Kv;
@@ -154,7 +159,8 @@ public class VoltageController {
 	/**
 	 * 
 	 * @param desiredVelocity
-	 * @param currentVelocity as measured from sensors
+	 * @param currentVelocity
+	 *            as measured from sensors
 	 * @return The desired average acceleration
 	 */
 	protected double getDesiredAcceleration(double desiredVelocity, double currentVelocity) {
@@ -164,9 +170,12 @@ public class VoltageController {
 	/**
 	 * 
 	 * @param desiredVelocity
-	 * @param currentVelocity as measured from sensors
+	 * @param currentVelocity
+	 *            as measured from sensors
 	 * @return The desired start acceleration
-	 * @throws NullPointerException {@link VoltageController#resetTimeInterval()} wasn't called prior to this.
+	 * @throws NullPointerException
+	 *             {@link VoltageController#resetTimeInterval()} wasn't called
+	 *             prior to this.
 	 */
 	protected double getStartAcceleration(double desiredVelocity, double currentVelocity) throws NullPointerException {
 		Date currDate = new Date();
@@ -182,8 +191,8 @@ public class VoltageController {
 		double da = getDesiredAcceleration(desiredVelocity, currentVelocity);
 		if (da == 0)
 			return 0;
-		if (milisecsPasses == 0)
-			return da;
+		if (m_Ku * m_avarageCallTime == 3)
+			m_avarageCallTime += 0.0001;
 		return 3 / (da * (3 - m_Ku * m_avarageCallTime));
 	}
 }
