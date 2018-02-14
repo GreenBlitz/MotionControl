@@ -28,13 +28,23 @@ public class ImPoint2D extends Point2D {
 	}
 
 	@Override
-	public IPoint2D rotate(double angle) {
+	public IPoint2D rotate(double angle, boolean clockwise) {
 		if (angle == 0)
 			return new ImPoint2D(m_x, m_y);
 
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
-		return new ImPoint2D(cos * m_x - sin * m_y, sin * m_x + cos * m_y);
+		double x, y;
+		
+		if (!clockwise) {
+			x = cos * m_x - sin * m_y;
+			y = sin * m_x + cos * m_y;
+		} else {
+			x = cos * m_x + sin * m_y;
+			y = sin * m_x - cos * m_y;
+		}
+		
+		return new ImPoint2D(x, y);
 	}
 
 	@Override

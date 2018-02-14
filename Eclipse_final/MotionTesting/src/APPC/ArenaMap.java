@@ -108,17 +108,16 @@ public class ArenaMap {
 		IndexedPoint2D ret = null;
 		int[] mapLoc = getLoc(loc);
 		int x0 = Math.max(mapLoc[0] - radInSqrs, 0);
-		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length);
+		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length-1);
 		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
-		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map.length);
+		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map.length-1);
 		double dontCollectGC;
-		int bestIndex = -1;
 		for (int x = x0; x < x1; x++)
 			for (int y = y0; y < y1; y++)
 				for (IndexedPoint2D point : (List<IndexedPoint2D>) m_map[x][y]) {
 					dontCollectGC = point.distanceSquared(loc);
 					if (minRadiusSq <= dontCollectGC && dontCollectGC <= maxRadiusSq
-							&& (ret == null || bestIndex < point.index))
+							&& (ret == null || ret.getIndex() < point.index))
 						ret = point;
 				}
 		return ret;

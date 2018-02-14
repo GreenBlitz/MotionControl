@@ -7,7 +7,7 @@ import base.EnvironmentPort;
 import base.Output;
 
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static double fullPower = 0.8;
+	private static double fullPower = 0.8 * 0.8; // fullPower 0.8 safteyFactor 0.8
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 	private DrivePort dPort = DrivePort.DEFAULT;
@@ -61,6 +61,26 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		}
 	}
 
+	public static void cordDrive(DrivePort r, double maxPower, double power, double[] dXdY) {
+		cordDrive(r, maxPower, power, dXdY[0], dXdY[1]);
+	}
+	
+	public static double[] calculateCordDrive(double maxPower, double power, double dX, double dY){
+		double left = power * (dY - dX);
+		double right = power * (dY + dX);
+
+		if (Math.abs(left) > maxPower || Math.abs(right) > maxPower) {
+			double ratio = maxPower / Math.max(Math.abs(right), Math.abs(left));
+			left *= ratio;
+			right *= ratio;
+		}
+		return new double[]{left, right};
+	}
+	public static void cordDrive(DrivePort r, double maxPower, double power, double dX, double dY) {
+		double[] values = calculateCordDrive(maxPower, power, dX, dY);
+		tankDrive(r, values[0], values[1]);
+	}
+
 	/**
 	 * @param output
 	 *            the output to use on the engines. output[0]- power, output[1]-
@@ -68,13 +88,13 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 */
 	@Override
 	public void use(APPController.APPDriveData output) {
-		System.out.println("power: " + output.power + ", curve: " + output.curve);
-		curveDrive(dPort, output.power * fullPower, output.curve * fullPower);
+		System.out.println("power: " + output.power + ", x diff: " + output.dx + ", y diff: " + output.dy);
+		cordDrive(dPort, fullPower, output.power, output.dx, output.dy);
 	}
 
 	@Override
 	public APPController.APPDriveData noPower() {
-		return new APPController.APPDriveData(.0, .0);
+		return APPController.APPDriveData.of(.0, .0, .0);
 	}
 
 	/**
@@ -83,7 +103,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 * @param left
 	 * @param right
 	 */
-	public void tankDrive(DrivePort d, double left, double right) {
+	public static void tankDrive(DrivePort d, double left, double right) {
 		d.tankDrive(fullPower * left, fullPower * right, false);
 	}
 
@@ -107,4 +127,5 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	public void arcadeDrive(DrivePort d, double magnitude, double curve) {
 		d.arcadeDrive(fullPower * magnitude, fullPower * curve);
 	}
+	
 }

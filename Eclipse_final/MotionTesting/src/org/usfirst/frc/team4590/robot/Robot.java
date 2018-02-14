@@ -37,6 +37,7 @@ public class Robot extends IterativeRobot {
 	private APPController controller = null;
 	private CSVLogger logger;
 	private APPC.ArenaMap m_arenaMap;
+	public static boolean shouldIDie = false;
 
 	// sensors
 	ScaledEncoder left;
@@ -93,10 +94,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		logger.enable();
-		new PathFactory().genStraightLine(3, 0, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(1.5, 0, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
-		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
+		controller.setOutputConstrain(data -> new APPDriveData(data.power, data.dx, data.dy));
 		controller.start();
 	}
 	// 0.49 m
@@ -117,13 +118,16 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
+		if (shouldIDie)
+			throw new RuntimeException();
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		logAllSensors();
 		Joystick dispairStick = new Joystick(0);
-		rd.arcadeDrive(dispairStick.getRawAxis(1), dispairStick.getRawAxis(4));
+		final double SAFETY = 0.7;
+		rd.arcadeDrive(SAFETY * dispairStick.getRawAxis(1), SAFETY * dispairStick.getRawAxis(4));
 	}
 
 	public Robot() {

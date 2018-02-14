@@ -10,6 +10,7 @@ import events.EventManager;
 /**
  * Abstract controller with input and output
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractController<IN, OUT> implements IController {
 	public static final Input NO_INPUT = () -> null;
 	public static final NullTolerance NO_TOLERANCE = NullTolerance.INSTANCE;
@@ -84,7 +85,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 		m_inputConstrain = inputConstrain;
 		m_outputConstrain = outputConstrain;
-		
+
 		m_input = () -> inputConstrain.apply(in.recieve());
 		m_output = new Output<OUT>() {
 			@Override
@@ -147,7 +148,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * @param destination
 	 * @param name
 	 */
-	@SuppressWarnings("unchecked")
 	public AbstractController(Output<OUT> out, IN destination, String name) {
 		this(NO_INPUT, out, destination, name);
 	}
@@ -169,7 +169,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * @param out
 	 * @param name
 	 */
-	@SuppressWarnings("unchecked")
 	public AbstractController(Output<OUT> out, String name) {
 		this(NO_INPUT, out, name);
 	}
