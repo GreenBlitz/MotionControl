@@ -4,7 +4,14 @@ import java.util.Date;
 
 /**
  * Controls the voltage of an actuator using desired velocity.
- * 
+ * <br> base equations:
+ * <br><a href="https://www.codecogs.com/eqnedit.php?latex=a_\omega&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_\omega&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" title="a_\omega = k_v \cdot V + k_\omega \cdot \omega" /></a>
+ * <br> <br>
+ * <a href="https://www.codecogs.com/eqnedit.php?latex=a_s&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_s&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" title="a_s = k_v \cdot V + k_\omega \cdot \omega" /></a>
+ * <br>
+ * <a href="https://www.codecogs.com/eqnedit.php?latex=a_e&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;(\omega&space;&plus;&space;a_s&space;\cdot&space;\Delta&space;t)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_e&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;(\omega&space;&plus;&space;a_s&space;\cdot&space;\Delta&space;t)" title="a_e = k_v \cdot V + k_\omega \cdot (\omega + a_s \cdot \Delta t)" /></a>
+ * <br>
+ * <a href="https://www.codecogs.com/eqnedit.php?latex=a_a&space;=&space;a_d&space;=&space;\frac{2\cdot&space;a_s&space;&plus;&space;a_e}{3}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_a&space;=&space;a_d&space;=&space;\frac{2\cdot&space;a_s&space;&plus;&space;a_e}{3}" title="a_a = a_d = \frac{2\cdot a_s + a_e}{3}" /></a>
  * @author Alexey
  *
  */
