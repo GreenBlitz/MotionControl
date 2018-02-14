@@ -36,6 +36,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	private double m_slowDownDistance;
 
+	private boolean isLastRunForwards;
+	
 	/**
 	 *
 	 * @param in
@@ -238,6 +240,33 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			}
 			return APPController.this.getError().length() <= m_toleranceDist;
 		}
+	}
+
+	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
+		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
+		IPoint2D tmp = endPoint.changePrespectiveTo((IOrientation2D) robotLoc);
+		int sign;
+		if(isLastRunForwards)
+			if(tmp.getY() >= -m_lookAhead){
+				sign =  1;
+				//isLastRunForwards = true;
+			}else{
+				sign = -1;
+				isLastRunForwards = false;
+			}
+		else
+			if(tmp.getY() <= m_lookAhead){
+				sign =  1;
+				isLastRunForwards = true;
+			}else{
+				sign = -1;
+				//isLastRunForwards=false;
+			}
+		if (distanceOverSlowDown > 1)
+			return sign;
+		if (distanceOverSlowDown > 0.4)
+			return distanceOverSlowDown * sign;
+		return 0.4 * sign;		
 	}
 
 	@Override
