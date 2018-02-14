@@ -5,8 +5,7 @@ import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 /**
- * Mutable Point2D. each method will affect {@code this} and than return
- * it.
+ * Mutable Point2D. each method will affect {@code this} and than return it.
  * 
  * @see Point2D
  * @see IPoint2D
@@ -36,9 +35,9 @@ public class MPoint2D extends Point2D {
 		m_y += y;
 		return this;
 	}
-	
+
 	@Override
-	public IPoint2D rotate(double angle) {		
+	public IPoint2D rotate(double angle, boolean clockwise) {
 		if (angle == 0)
 			return this;
 
@@ -48,8 +47,13 @@ public class MPoint2D extends Point2D {
 		double x = m_x;
 		double y = m_y;
 
-		m_x = cos * x - sin * y;
-		m_y = sin * x + cos * y;
+		if (!clockwise) {
+			m_x = cos * x - sin * y;
+			m_y = sin * x + cos * y;
+		} else {
+			m_x = cos * x + sin * y;
+			m_y = sin * x - cos * y;
+		}
 
 		return this;
 	}
@@ -68,7 +72,7 @@ public class MPoint2D extends Point2D {
 		m_y = vec.get(1);
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Mutable " + super.toString();

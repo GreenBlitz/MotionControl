@@ -9,9 +9,10 @@ import base.point.orientation.Orientation2D;
 
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.03;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
+	protected static final double SPEED_FACTOR = 2;
 
 	/**
 	 * the path the controller is following
@@ -28,7 +29,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 * this
 	 */
 	private double m_slowDownDistance;
-	private boolean isLastRunForwards = true;
 
 	/**
 	 *
@@ -111,15 +111,24 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	public double calculateCurve(IOrientation2D loc, IPoint2D goal) {
 		IPoint2D goalVector = goal.changePrespectiveTo(loc);
+		loc.toDashboard("Robot");
+		goal.toDashboard("Goal point");
+		if (goalVector.length() == 0)
+			return 0;
 		return (2.0 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
+	}
+
+	public double[] calculateMovmentXY(IOrientation2D loc, IPoint2D goal) {
+		IPoint2D goalVector = goal.changePrespectiveTo(loc);
+		return new double[] { goalVector.getX(), goalVector.getY() };
 	}
 
 	@Override
 	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
-		System.out.println("WARNING next goal point: " + goal);
-		return new APPController.APPDriveData(calculatePower(robotLocation, m_map.getLast(), m_slowDownDistance),
-				calculateCurve((IOrientation2D) robotLocation, goal));
+		// System.out.println("WARNING next goal point: " + goal);
+		return new APPController.APPDriveData(1/m_slowDownDistance,
+				calculateMovmentXY((IOrientation2D) robotLocation, goal));
 	}
 
 	public class AbsoluteTimedTolerance extends TimedTolerance {
@@ -170,22 +179,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		public boolean onTarget() {
 			return APPController.this.getInput().distance(m_destination) <= m_toleranceDist;
 		}
-
-	}
-
-	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
-		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
-		IPoint2D tmp = endPoint.changePrespectiveTo((IOrientation2D) robotLoc);
-		int sign;
-		if(isLastRunForwards)
-			sign = tmp.getY() >= -m_lookAhead ? 1 : -1;
-		else
-			sign = tmp.getY() <= m_lookAhead ? -1 : 1;
-		if (distanceOverSlowDown > 1)
-			return sign;
-		if (distanceOverSlowDown > 0.4)
-			return distanceOverSlowDown * sign;
-		return 0.4 * sign;		
 	}
 
 	@Override
@@ -216,37 +209,53 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	}
 
 	/**
-	 * @param power
-	 * @param curve
-	 * @return DriveDate with given variables
-	 */
-	public APPController.APPDriveData of(double power, double curve) {
-		return new APPController.APPDriveData(power, curve);
-	}
-
-	/**
 	 * Set maximum power to be sent to m_output
 	 * 
 	 * @param min
 	 * @param max
 	 */
 	public void setPowerRange(double min, double max) {
-		setOutputConstrain(
-				data -> data.power >= min ? (data.power <= max ? data : of(max, data.curve)) : of(min, data.curve));
+		setOutputConstrain(data -> data.power >= min ? (data.power <= max ? data : APPDriveData.of(max, data.dx, data.dy))
+				: APPDriveData.of(min, data.dx, data.dy));
 	}
 
 	public static class APPDriveData {
 		public double power;
-		public double curve;
+		public double dx;
+		public double dy;
 
-		public APPDriveData(double power, double curve) {
-			this.power = power;
-			this.curve = curve;
+		public APPDriveData(double power, double x, double y) {
+			this.power = power * SPEED_FACTOR;
+			this.dx = x;
+			this.dy = y;
+		}
+
+		public APPDriveData(double power, double[] xy) {
+			this.power = power * SPEED_FACTOR;
+			try {
+				this.dx = xy[0];
+				this.dy = xy[1];
+			} catch (ArrayIndexOutOfBoundsException e) {
+				throw new IllegalArgumentException("xy array has to have at least 2 values");
+			}
+		}
+	
+		/**
+		 * @param power
+		 * @param curve
+		 * @return DriveDate with given variables
+		 */
+		public static APPDriveData of(double power, double[] xy) {
+			return new APPDriveData(power, xy[0], xy[1]);
+		}
+
+		public static APPDriveData of(double power, double x, double y) {
+			return new APPDriveData(power, x, y);
 		}
 
 		@Override
 		public String toString() {
-			return "[power=" + power + ", curve=" + curve + "]";
+			return "APPDriveData [power= " + power + ", x diff= " + dx + ", y diff= " + dy + "]";
 		}
 
 		@Override
@@ -254,7 +263,9 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			final int prime = 31;
 			int result = 1;
 			long temp;
-			temp = Double.doubleToLongBits(curve);
+			temp = Double.doubleToLongBits(dx);
+			result = prime * result + (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(dy);
 			result = prime * result + (int) (temp ^ (temp >>> 32));
 			temp = Double.doubleToLongBits(power);
 			result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -263,17 +274,25 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+			if (obj == null) {
 				return false;
-			if (getClass() != obj.getClass())
+			}
+			if (!(obj instanceof APPDriveData)) {
 				return false;
-			APPController.APPDriveData other = (APPController.APPDriveData) obj;
-			if (Double.doubleToLongBits(curve) != Double.doubleToLongBits(other.curve))
+			}
+			APPDriveData other = (APPDriveData) obj;
+			if (Double.doubleToLongBits(dx) != Double.doubleToLongBits(other.dx)) {
 				return false;
-			if (Double.doubleToLongBits(power) != Double.doubleToLongBits(other.power))
+			}
+			if (Double.doubleToLongBits(dy) != Double.doubleToLongBits(other.dy)) {
 				return false;
+			}
+			if (Double.doubleToLongBits(power) != Double.doubleToLongBits(other.power)) {
+				return false;
+			}
 			return true;
 		}
 	}

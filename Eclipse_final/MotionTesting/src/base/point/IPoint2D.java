@@ -4,7 +4,7 @@ import org.la4j.Matrix;
 
 import base.Tuple;
 import base.point.orientation.IOrientation2D;
-import base.point.orientation.IOrientation2D.DirectionEffect;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * So, here's the point... (HAHAHAHA GREAT PUN LOLLL XDDDDD)
@@ -71,7 +71,7 @@ public interface IPoint2D {
 		}
 
 		@Override
-		public IPoint2D rotate(double angle) {
+		public IPoint2D rotate(double angle, boolean clockwise) {
 			throw new UnsupportedOperationException(errorMsg);
 		}
 
@@ -117,7 +117,7 @@ public interface IPoint2D {
 	 * @return this point, rotated by angle around {@link IPoint2D.GLOBAL_ORIGIN
 	 *         (0,0)}
 	 */
-	IPoint2D rotate(double angle);
+	IPoint2D rotate(double angle, boolean clockwise);
 
 	/**
 	 * Resizes this point by {@code scale}
@@ -255,8 +255,12 @@ public interface IPoint2D {
 		return (getX() - other.getX()) * (getX() - other.getX()) + (getY() - other.getY()) * (getY() - other.getY());
 	}
 	
+	default IPoint2D changePrespectiveTo(IOrientation2D origin, boolean clockwise) {
+		return moveByReversed(origin).rotate(-origin.getDirection(), clockwise);
+	}
+	
 	default IPoint2D changePrespectiveTo(IOrientation2D origin) {
-		return moveByReversed(origin).rotate(-origin.getDirection());
+		return moveByReversed(origin).rotate(-origin.getDirection(), false);
 	}
 	
 	default double length() {
@@ -265,5 +269,14 @@ public interface IPoint2D {
 	
 	default double lengthSquared() {
 		return getX() * getX() + getY() * getY();
+	}
+	
+	default IPoint2D rotate(double angle) {
+		return rotate(angle, false);
+	}
+	
+	default void toDashboard(String name) {
+		SmartDashboard.putNumber(name + " X coordinate", getX());
+		SmartDashboard.putNumber(name + " Y coordinate", getY());
 	}
 }

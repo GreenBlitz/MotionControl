@@ -4,6 +4,7 @@ import org.la4j.Matrix;
 
 import base.Tuple;
 import base.point.IPoint2D;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * So, we meet again...
@@ -84,7 +85,7 @@ public interface IOrientation2D extends IPoint2D {
 		}
 
 		@Override
-		public IOrientation2D rotate(double angle, DirectionEffect effect) {
+		public IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect) {
 			throw new UnsupportedOperationException(errorMsg);
 		}
 
@@ -139,11 +140,13 @@ public interface IOrientation2D extends IPoint2D {
 	 * @see IPoint2D#rotate(double)
 	 * @param angle
 	 *            angle of rotation
+	 * @param clockwise
+	 *            rotation direction
 	 * @param effect
 	 *            effect of calling this on direction
 	 * @return this point rotated as described
 	 */
-	IOrientation2D rotate(double angle, DirectionEffect effect);
+	IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect);
 
 	/**
 	 * Resizes this point as a vector
@@ -250,7 +253,8 @@ public interface IOrientation2D extends IPoint2D {
 			IOrientation2D relative = (IOrientation2D) Orientation2D
 					.immutable(getX() - origin.getX(), getY() - origin.getY(), getDirection()).rotate(angle);
 			return copy(relative.getX() + origin.getX(), relative.getY() + origin.getY(), getDirection() + angle);
-		case RESERVED: case IGNORED:
+		case RESERVED:
+		case IGNORED:
 			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(angle, effect).moveBy(origin,
 					DirectionEffect.IGNORED);
 		default:
@@ -397,5 +401,20 @@ public interface IOrientation2D extends IPoint2D {
 	@Override
 	default IPoint2D moveBy(IPoint2D other) {
 		return moveBy(other.getX(), other.getY(), 0, DirectionEffect.IGNORED);
+	}
+	
+	@Override
+	default IPoint2D rotate(double angle, boolean clockwise) {
+		return rotate(angle, clockwise, DirectionEffect.IGNORED);
+	}
+
+	default void toDashboard(String name) {
+		SmartDashboard.putNumber(name + " X coordinate", getDirection());
+		SmartDashboard.putNumber(name + " Y coordinate", getDirection());
+		SmartDashboard.putNumber(name + " direction", getDirection());
+	}
+	
+	default IOrientation2D rotate(double angle, DirectionEffect effect) {
+		return rotate(angle, true, effect);
 	}
 }

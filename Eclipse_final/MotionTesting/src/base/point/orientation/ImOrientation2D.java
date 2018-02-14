@@ -58,39 +58,21 @@ public class ImOrientation2D extends Orientation2D {
 	}
 
 	@Override
-	public IOrientation2D rotate(double angle, DirectionEffect effect) {
-		double sin, cos, x, y, dir;
+	public IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect) {
+		double sin = Math.sin(angle), cos = Math.cos(angle);
+		double x, y, dir;
 
-		switch (effect) {
-		case IGNORED:
-			sin = Math.sin(angle);
-			cos = Math.cos(angle);
-
+		if (!clockwise) {
+			x = cos * m_x + sin * m_y;
+			y = sin * m_x - cos * m_y;
+		} else {
 			x = cos * m_x - sin * m_y;
 			y = sin * m_x + cos * m_y;
-
-			return new ImOrientation2D(x, y, m_direction);
-		case RESERVED:
-			dir = m_direction;
-
-			sin = Math.sin(dir + angle);
-			cos = Math.cos(dir + angle);
-			break;
-		case CHANGED:
-			dir = m_direction + angle;
-			break;
-		default:
-			throw new IllegalArgumentException(
-					"It's dangerous to go alone! Take this! Oh wait, this is an exception. Try again next time!");
 		}
 
-		sin = Math.sin(angle);
-		cos = Math.cos(angle);
+		dir = effect.changed() ? normalizeAngle(m_direction + angle) : m_direction;
 
-		x = cos * m_x - sin * m_y;
-		y = sin * m_x + cos * m_y;
-
-		return new ImOrientation2D(x, y, normalizeAngle(dir));
+		return new ImOrientation2D(x, y, dir);
 	}
 
 	@Override
@@ -126,15 +108,15 @@ public class ImOrientation2D extends Orientation2D {
 	@Override
 	public IPoint2D moveBy(double x, double y) {
 		IOrientation2D rotated = Orientation2D.immutable(this).rotate(-getDirection(), DirectionEffect.IGNORED);
-		return Orientation2D.immutable(rotated.getX() + x, rotated.getY() + y, rotated.getDirection()).rotate(getDirection(),
-				DirectionEffect.IGNORED);
+		return Orientation2D.immutable(rotated.getX() + x, rotated.getY() + y, rotated.getDirection())
+				.rotate(getDirection(), DirectionEffect.IGNORED);
 	}
 
 	@Override
 	public IOrientation2D copy(double x, double y, double direction) {
 		return new ImOrientation2D(x, y, normalizeAngle(direction));
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Immutable " + super.toString();

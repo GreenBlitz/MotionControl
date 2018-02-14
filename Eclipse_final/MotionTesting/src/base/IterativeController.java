@@ -9,7 +9,7 @@ import java.util.TimerTask;
  */
 public abstract class IterativeController<IN, OUT> extends AbstractController<IN, OUT> {
 	public static final double DEFAULT_PERIOD = .025;
-
+	
 	protected final double m_period;
 
 	protected Timer m_controllerLoop; // the loop which will calculate the
@@ -156,6 +156,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 	protected Tuple<IN, OUT> act() {
 		IN input = getInput();
+		System.out.println("controller input - " + input);
 		OUT output = calculate(input);
 		useOutput(output);
 		return new Tuple<IN, OUT>(input, output);
