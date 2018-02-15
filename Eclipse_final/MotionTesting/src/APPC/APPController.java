@@ -1,5 +1,7 @@
 package APPC;
 
+import java.util.function.Function;
+
 import org.usfirst.frc.team4590.robot.Robot;
 import org.usfirst.frc.team4590.robot.RobotStats;
 
@@ -199,7 +201,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 * set the maximum and minimum power to be passed to m_output
 	 * 
 	 * @param limit
-	 *            the maximum power and the lower limit (absaloute value)
+	 *            the maximum power and the lower limit (absolute value)
 	 */
 	public void setPowerLimit(double limit) {
 		setPowerRange(-limit, limit);
@@ -215,6 +217,10 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		setOutputConstrain(
 				(data) -> data.power >= min ? (data.power <= max ? data : APPDriveData.of(max, data.dx, data.dy))
 						: APPDriveData.of(min, data.dx, data.dy));
+	}
+	
+	public void setPowerConstrain(Function<Double, Double> constrain) {
+		setOutputConstrain(data -> new APPDriveData(constrain.apply(data.power), data.dx, data.dy));
 	}
 
 	public static class APPDriveData {

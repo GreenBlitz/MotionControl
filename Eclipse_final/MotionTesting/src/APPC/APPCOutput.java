@@ -8,10 +8,8 @@ import base.EnvironmentPort;
 import base.Output;
 
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static final double FULL_POWER = 0.8 * 0.5; // fullPower 0.8
-														// safteyFactor 0.8
+	private static final double FULL_POWER = 0.8 * 0.6; // fullPower = 0.8 * safteyFactor 
 	private static final double ROTATION_FACTOR = RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
-	private static final double SPEED_FACTOR = 10;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 	private DrivePort dPort = DrivePort.DEFAULT;
@@ -39,6 +37,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 * @param power
 	 * @param curve
 	 */
+	@Deprecated
 	public void curveDrive(DrivePort r, double power, double curve) {
 		ePort.putNumber("Curve", curve);
 		if (curve == 0) {
@@ -66,10 +65,10 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	}
 
 	public static void cordDrive(DrivePort r, double maxPower, double power, double[] dXdY) {
-		cordDrive(r, maxPower, power, dXdY[0], dXdY[1]);
+		cordDrive(r, maxPower, dXdY[0], dXdY[1]);
 	}
 
-	public static double[] calculateCordDrive(double maxPower, double power, double dX, double dY) {
+	public static double[] calculatePelegDrive(double maxPower, double dX, double dY) {
 		// needs a good angular velocity manager
 		// dX *= ROTATION_FACTOR; // should be removed if possible
 		double left, right;
@@ -82,26 +81,31 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		 */
 		double rotationPowerLeft = dX * ROTATION_FACTOR;
 		double rotationPowerRight = -rotationPowerLeft;
-		double powerUnscaledLeft = dY + rotationPowerLeft;
-		double powerUnscaledRight = dY + rotationPowerRight;
+		//double powerUnscaledLeft = dY + rotationPowerLeft;
+		//double powerUnscaledRight = dY + rotationPowerRight;
+		
+		double powerUnscaledLeft = dY + Math.signum(dY) * rotationPowerLeft;
+		double powerUnscaledRight = dY + Math.signum(dY) * rotationPowerRight;
 
 		if (Math.abs(powerUnscaledLeft) > Math.abs(powerUnscaledRight)) {
-			left = maxPower;
+			left = maxPower * Math.signum(powerUnscaledLeft);
 			right = left * powerUnscaledRight / powerUnscaledLeft;
 		} else if (Math.abs(powerUnscaledLeft) < Math.abs(powerUnscaledRight)) {
-			right = maxPower;
+			right = maxPower * Math.signum(powerUnscaledRight);
 			left = right * powerUnscaledLeft / powerUnscaledRight;
 		} else {
-			right = powerUnscaledRight != 0 ? maxPower : 0;
-			left = powerUnscaledLeft != 0 ? maxPower : 0;
+			//right = powerUnscaledRight != 0 ? maxPower : 0; 
+			//left = powerUnscaledLeft != 0 ? maxPower : 0;
+			left = maxPower * Math.signum(powerUnscaledLeft);
+			right = maxPower * Math.signum(powerUnscaledRight);
 		}
 
 		Robot.p.warnln(APPCOutput.class, "power: left = " + left + ", right = " + right);
 		return new double[] { left, right };
 	}
 
-	public static void cordDrive(DrivePort r, double maxPower, double power, double dX, double dY) {
-		double[] values = calculateCordDrive(maxPower, power, dX, dY);
+	public static void cordDrive(DrivePort r, double maxPower, double dX, double dY) {
+		double[] values = calculatePelegDrive(maxPower, dX, dY);
 		r.tankDrive(values[0], values[1], false);
 	}
 
@@ -113,7 +117,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	@Override
 	public void use(APPController.APPDriveData output) {
 		Robot.p.println(getClass(), "power: " + output.power + ", x diff: " + output.dx + ", y diff: " + output.dy);
-		cordDrive(dPort, FULL_POWER, output.power * SPEED_FACTOR, output.dx, output.dy);
+		cordDrive(dPort, output.power * FULL_POWER, output.dx, output.dy);
 	}
 
 	@Override

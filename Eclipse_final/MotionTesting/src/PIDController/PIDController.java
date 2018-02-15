@@ -24,7 +24,7 @@ public class PIDController extends IterativeController<Double, Double> {
 	 * @param kd
 	 * @param kf
 	 * @param name
-	 */
+	 */	
 	public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double kd,
 			double kf, String name) {
 		super(in, out, destination, name);

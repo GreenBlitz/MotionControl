@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public interface IOrientation2D extends IPoint2D {
 	public static final double TAU = 2 * Math.PI;
-	
+
 	/**
 	 * Indicates if a method should preserve the direction after being called or
 	 * not
@@ -403,7 +403,7 @@ public interface IOrientation2D extends IPoint2D {
 	default IPoint2D moveBy(IPoint2D other) {
 		return moveBy(other.getX(), other.getY(), 0, DirectionEffect.IGNORED);
 	}
-	
+
 	@Override
 	default IPoint2D rotate(double angle, boolean clockwise) {
 		return rotate(angle, clockwise, DirectionEffect.IGNORED);
@@ -414,7 +414,7 @@ public interface IOrientation2D extends IPoint2D {
 		SmartDashboard.putNumber(name + " Y coordinate", getDirection());
 		SmartDashboard.putNumber(name + " direction", getDirection());
 	}
-	
+
 	default IOrientation2D rotate(double angle, DirectionEffect effect) {
 		return rotate(angle, true, effect);
 	}
