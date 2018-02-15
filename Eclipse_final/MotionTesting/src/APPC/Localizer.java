@@ -135,8 +135,7 @@ public class Localizer implements Input<IPoint2D> {
 						m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
 					}
 				}
-				Robot.p.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location)/*.moveBy(0,
-						RobotStats.HORIZONTAL_WHEEL_DIST / 2, m_location.getDirection(), DirectionEffect.RESERVED)*/);
+				Robot.p.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
 			} else {
 				reset();
 			}
@@ -146,8 +145,7 @@ public class Localizer implements Input<IPoint2D> {
 	@Override
 	public IPoint2D recieve() {
 		synchronized (LOCK) {
-			return Orientation2D.immutable(m_location)/*.moveBy(0, RobotStats.HORIZONTAL_WHEEL_DIST / 2,
-					m_location.getDirection(), DirectionEffect.RESERVED)*/;
+			return Orientation2D.immutable(m_location);
 		}
 	}
 

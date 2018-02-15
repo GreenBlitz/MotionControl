@@ -14,7 +14,7 @@ import base.point.orientation.Orientation2D;
 
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.15;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 	protected static final Orientation2D FRONT_RELATIVE_TO_CENTER = Orientation2D.immutable(0,
@@ -30,6 +30,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	private double m_lookAhead;
 
+	private double m_slowDownDistance;
+	
 	/**
 	 *
 	 * @param in
@@ -46,7 +48,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 *            Minimal time on target required for the controller
 	 * @param slowDownDistance
 	 *            Distance from path end point in which the robot will slow down
-	 */
+	 */	
 	public APPController(Input<IPoint2D> in, Output<APPController.APPDriveData> out, ArenaMap map) {
 		this(in, out, DEFAULT_PERIOD, map, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,
 				DEFAULT_SLOWDOWN);
@@ -93,6 +95,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		m_lookAhead = lookAhead;
 		setTolerance(new AbsoluteTolerance(toleranceDist));
 		setDestination(map.getLast());
+		m_slowDownDistance = DEFAULT_SLOWDOWN;
 	}
 
 	private IPoint2D updateGoalPoint(IPoint2D loc, ArenaMap map, double lookAhead) {
@@ -128,7 +131,16 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
 		Robot.p.println(getClass(), "WARNING next goal point: " + goal);
-		return new APPController.APPDriveData(1, calculateMovmentXY((IOrientation2D) robotLocation, goal));
+		return new APPController.APPDriveData(calculatePower(robotLocation), calculateMovmentXY((IOrientation2D) robotLocation, goal));
+	}
+	
+	protected double calculatePower(IPoint2D robotLoc) {
+		double distanceOverSlowDown = robotLoc.distance(m_destination) / m_slowDownDistance;
+		if (distanceOverSlowDown > 1)
+			return 1;
+		if (distanceOverSlowDown > 0.4)
+			return distanceOverSlowDown;
+		return 0.4;		
 	}
 
 	public class AbsoluteTimedTolerance extends TimedTolerance {
