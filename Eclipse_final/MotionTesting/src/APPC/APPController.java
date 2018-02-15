@@ -135,18 +135,13 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	}
 	
 	public double[] calculateMovmentXY(IOrientation2D loc, IPoint2D goal) {
-		// IOrientation2D front = Orientation2D.mutable(loc);
-		// front.moveBy(FRONT_RELATIVE_TO_CENTER.rotate(loc.getDirection()),
-		// IOrientation2D.DirectionEffect.CHANGED);
 		IPoint2D goalVector = goal.changePrespectiveTo(loc);
-		// Robot.p.println(getClass(), goalVector);
 		return new double[] { goalVector.getX(), goalVector.getY() };
 	}
 
 	@Override
 	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
-		// Robot.p.println(getClass(), "WARNING next goal point: " + goal);
 		return new APPController.APPDriveData(1, calculateMovmentXY((IOrientation2D) robotLocation, goal));
 	}
 
@@ -234,7 +229,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 
 	@Override
 	public Orientation2D getError(IPoint2D loc, IPoint2D dest) {
-		Robot.managedPrinter.warnln(getClass(), loc);
 		return Orientation2D.immutable(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				((IOrientation2D) loc).getDirection());
 	}
