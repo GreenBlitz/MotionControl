@@ -13,10 +13,8 @@ import APPC.APPController;
 import APPC.Localizer;
 import APPC.PathFactory;
 import base.DrivePort;
-import base.IterativeController;
 import base.Printer;
 import base.ScaledEncoder;
-import base.point.orientation.IOrientation2D;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
@@ -60,7 +58,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		//new PathFactory().genStraightLine(1.414, Math.PI / 4, 0.005).construct(m_arenaMap);
-		new PathFactory().genStraightLine(1, Math.PI* 3/4 , 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(1, 0, 0.005).genStraightLine(1, Math.PI / 4, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -113,7 +111,7 @@ public class Robot extends IterativeRobot {
 		//p.registerPrintable(IterativeController.IterativeCalculationTask.class);
 		//p.registerPrintable(Localizer.LocalizeTimerTask.class);
 		//p.registerPrintable(APPCOutput.class);
-		//p.registerPrintable(APPController.class);
+		p.registerPrintable(APPController.class);
 	}
 
 	public double getDistance() {
