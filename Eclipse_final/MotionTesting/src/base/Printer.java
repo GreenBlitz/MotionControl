@@ -35,7 +35,7 @@ public class Printer {
 	}
 
 	public void println(Class<?> cls, PrintType t, Object o) {
-		print(cls, t, o + "\n");
+		print(cls, t, o + System.lineSeparator());
 	}
 
 	public void printf(Class<?> cls, PrintType t, String s, Object... o) {
@@ -47,7 +47,7 @@ public class Printer {
 	}
 
 	public void warnln(Class<?> cls, PrintType t, String sep, Object s) {
-		println(cls, t, "WARNING" + sep + s + "\n");
+		println(cls, t, "WARNING" + sep + s + System.lineSeparator());
 	}
 
 	public void warnf(Class<?> cls, PrintType t, String sep, String s, Object... o) {

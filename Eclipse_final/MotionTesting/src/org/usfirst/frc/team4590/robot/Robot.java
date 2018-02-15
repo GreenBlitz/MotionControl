@@ -57,8 +57,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		//new PathFactory().genStraightLine(1.414, Math.PI / 4, 0.005).construct(m_arenaMap);
-		new PathFactory().genStraightLine(1, 0, 0.005).genStraightLine(1, Math.PI / 4, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(1, 0, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -109,7 +108,7 @@ public class Robot extends IterativeRobot {
 	private void initPrintables() {
 		//p.registerPrintable(APPController.AbsoluteTolerance.class);
 		//p.registerPrintable(IterativeController.IterativeCalculationTask.class);
-		//p.registerPrintable(Localizer.LocalizeTimerTask.class);
+		p.registerPrintable(Localizer.LocalizeTimerTask.class);
 		//p.registerPrintable(APPCOutput.class);
 		p.registerPrintable(APPController.class);
 	}
