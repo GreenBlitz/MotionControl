@@ -264,7 +264,7 @@ public interface IPoint2D {
 	}
 	
 	default double length() {
-		return Math.hypot(getX(), getY());
+		return Math.sqrt(getX() * getX() + getY() *getY());
 	}
 	
 	default double lengthSquared() {

@@ -1,7 +1,10 @@
 package base;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.usfirst.frc.team4590.robot.Robot;
 
 /**
  * Represents a controller which has the basic structure of a loop which calls
@@ -9,7 +12,7 @@ import java.util.TimerTask;
  */
 public abstract class IterativeController<IN, OUT> extends AbstractController<IN, OUT> {
 	public static final double DEFAULT_PERIOD = .025;
-	
+
 	protected final double m_period;
 
 	protected Timer m_controllerLoop; // the loop which will calculate the
@@ -93,13 +96,30 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 * 
 	 * @author karlo
 	 */
-	protected class IterativeCalculationTask extends TimerTask {
+	public class IterativeCalculationTask extends TimerTask {
 		public IterativeCalculationTask() {
 		}
 
+		private boolean m_hasInit = false;
+
 		@Override
 		public void run() {
+			if (!m_hasInit) {
+				m_hasInit = true;
+				init();
+			}
 			IterativeController.this.run(m_controllerState, m_destination, m_tolerance, m_environmentPort);
+		}
+
+		public void init() {
+			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+				@Override
+				public void uncaughtException(Thread arg0, Throwable arg1) {
+					arg1.printStackTrace();
+					Robot.kms = true;
+					System.exit(arg1.hashCode());
+				}
+			});
 		}
 	}
 
@@ -132,12 +152,13 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 				}
 				if (!tolerance.onTarget()) {
 					Tuple<IN, OUT> IO = act();
-					System.out.printf("%s #%d:\n%s\n", m_name, this.hashCode(),
+					System.out.printf("\n%s #%d:\n%s\n", m_name, IterativeController.this.hashCode(),
 							IterativeController.this.generateActivityDescription(IO._1, IO._2));
 				} else {
 					m_controllerState = State.END;
 					outputStop();
-					System.out.printf("WARNING: %s #%d has finished running\n", m_name, this.hashCode());
+					System.out.printf("WARNING: %s #%d has finished running\n", m_name,
+							IterativeController.this.hashCode());
 				}
 			}
 		} else {
@@ -156,7 +177,6 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 	protected Tuple<IN, OUT> act() {
 		IN input = getInput();
-		System.out.println("controller input - " + input);
 		OUT output = calculate(input);
 		useOutput(output);
 		return new Tuple<IN, OUT>(input, output);

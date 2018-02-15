@@ -10,7 +10,7 @@ import events.EventManager;
 /**
  * Abstract controller with input and output
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractController<IN, OUT> implements IController {
 	public static final Input NO_INPUT = () -> null;
 	public static final NullTolerance NO_TOLERANCE = NullTolerance.INSTANCE;
@@ -406,8 +406,8 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	/**
-	 * Destroys the controller. <b> DO NOT TRY TO DO ANTHING WITH THE IT AFTER
-	 * <code>free</code> WAS CALLED!!!</b>
+	 * Destroys the controller. <b> DO NOT TRY TO DO ANTHING WITH THE IT
+	 * AFTER </b><code>free</code><b> WAS CALLED!!!</b>
 	 */
 	public void free() {
 		System.out.printf("%s object #%d is now freed\n", m_name, this.hashCode());
@@ -420,7 +420,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	public final IN getError() {
-		return getError(m_input.recieve());
+		return getError(getInput());
 	}
 
 	public final IN getError(IN input) {
