@@ -3,7 +3,6 @@ package APPC;
 import java.util.function.Function;
 
 import org.usfirst.frc.team4590.robot.Robot;
-import org.usfirst.frc.team4590.robot.RobotStats;
 
 import base.Input;
 import base.IterativeController;
@@ -21,8 +20,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
-	protected static final Orientation2D FRONT_RELATIVE_TO_CENTER = Orientation2D.immutable(0,
-			RobotStats.VERTICAL_WHEEL_DIST / 2, 0);
 
 	/**
 	 * the path the controller is following
@@ -34,6 +31,9 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	private double m_lookAhead;
 
+	/**
+	 * Radius from destination in which slow down begins
+	 */
 	private double m_slowDownDistance;
 
 	/**
@@ -137,6 +137,13 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		return (2.0 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
 
+	/**
+	 * @param loc
+	 *            robot location
+	 * @param goal
+	 *            current goal point
+	 * @return Point2D containing the difference between given points
+	 */
 	public double[] calculateMovmentXY(IOrientation2D loc, IPoint2D goal) {
 		IPoint2D goalVector = goal.changePrespectiveTo(loc);
 		return new double[] { goalVector.getX(), goalVector.getY() };
@@ -149,6 +156,14 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 				calculateMovmentXY((IOrientation2D) robotLocation, goal));
 	}
 
+	/**
+	 * Calculates the maximal power to be used on the engines, effectively
+	 * slowing down near the destination and improves accuracy
+	 * 
+	 * @param robotLoc
+	 *            current robot location
+	 * @return calculated power
+	 */
 	protected double calculatePower(IPoint2D robotLoc) {
 		double distanceOverSlowDown = robotLoc.distance(m_destination) / m_slowDownDistance;
 		if (distanceOverSlowDown > 1)
@@ -196,7 +211,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	public class AbsoluteTolerance implements ITolerance {
 
-		double m_toleranceDist;
+		private double m_toleranceDist;
 		private int calls = 0;
 
 		/**
@@ -241,19 +256,23 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	/**
 	 * Set maximum power to be sent to m_output
 	 * 
-	 * @param min
-	 * @param max
+	 * @param min minimal power
+	 * @param max maximal power
 	 */
 	public void setPowerRange(double min, double max) {
-		setOutputConstrain(
-				(data) -> data.power >= min ? (data.power <= max ? data : APPDriveData.of(max, data.dx, data.dy))
-						: APPDriveData.of(min, data.dx, data.dy));
+		setOutputRange(new APPDriveData(min, 0, 0), new APPDriveData(max, 0, 0),
+				(data1, data2) -> Double.compare(data1.power, data2.power));
 	}
 
 	public void setPowerConstrain(Function<Double, Double> constrain) {
 		setOutputConstrain(data -> new APPDriveData(constrain.apply(data.power), data.dx, data.dy));
 	}
 
+	/**
+	 * APPController drive data used in APPCOutput
+	 * @see APPCOutput
+	 * @author karlo
+	 */
 	public static class APPDriveData {
 		public double power;
 		public double dx;
@@ -274,12 +293,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 				throw new IllegalArgumentException("xy array has to have at least 2 values");
 			}
 		}
-
-		/**
-		 * @param power
-		 * @param curve
-		 * @return DriveDate with given variables
-		 */
+		
 		public static APPDriveData of(double power, double[] xy) {
 			return new APPDriveData(power, xy[0], xy[1]);
 		}
