@@ -8,7 +8,7 @@ import base.EnvironmentPort;
 import base.Output;
 
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static final double FULL_POWER = 0.8 * 0.6; // fullPower = 0.8 * safteyFactor 
+	private static final double FULL_POWER = 0.8 * 0.6;
 	private static final double ROTATION_FACTOR = RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
@@ -81,21 +81,21 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		 */
 		double rotationPowerLeft = dX * ROTATION_FACTOR;
 		double rotationPowerRight = -rotationPowerLeft;
-		//double powerUnscaledLeft = dY + rotationPowerLeft;
-		//double powerUnscaledRight = dY + rotationPowerRight;
-		
-		double powerUnscaledLeft = dY + Math.signum(dY) * rotationPowerLeft;
-		double powerUnscaledRight = dY + Math.signum(dY) * rotationPowerRight;
+		// double powerUnscaledLeft = dY + rotationPowerLeft;
+		// double powerUnscaledRight = dY + rotationPowerRight;
+
+		double powerUnscaledLeft = dY + sign(dY) * rotationPowerLeft;
+		double powerUnscaledRight = dY + sign(dY) * rotationPowerRight;
 
 		if (Math.abs(powerUnscaledLeft) > Math.abs(powerUnscaledRight)) {
-			left = maxPower * Math.signum(powerUnscaledLeft);
+			left = maxPower * sign(powerUnscaledLeft);
 			right = left * powerUnscaledRight / powerUnscaledLeft;
 		} else if (Math.abs(powerUnscaledLeft) < Math.abs(powerUnscaledRight)) {
-			right = maxPower * Math.signum(powerUnscaledRight);
+			right = maxPower * sign(powerUnscaledRight);
 			left = right * powerUnscaledLeft / powerUnscaledRight;
 		} else {
-			//right = powerUnscaledRight != 0 ? maxPower : 0; 
-			//left = powerUnscaledLeft != 0 ? maxPower : 0;
+			// right = powerUnscaledRight != 0 ? maxPower : 0;
+			// left = powerUnscaledLeft != 0 ? maxPower : 0;
 			left = maxPower * Math.signum(powerUnscaledLeft);
 			right = maxPower * Math.signum(powerUnscaledRight);
 		}
@@ -155,5 +155,13 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	public void arcadeDrive(DrivePort d, double magnitude, double curve) {
 		d.arcadeDrive(FULL_POWER * magnitude, FULL_POWER * curve);
 	}
-
+	
+	/**
+	 * Sometimes we just prefer this version over usual {@link Math#signum(double)}
+	 * @param num 
+	 * @return {@code num}'s sign
+	 */
+	private static int sign(double num) {
+		return num < 0 ? -1 : 1;
+	}
 }

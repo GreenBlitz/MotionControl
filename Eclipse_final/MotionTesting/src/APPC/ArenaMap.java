@@ -29,7 +29,8 @@ public class ArenaMap {
 
 	// the hash function
 	private int[] getLoc(IPoint2D point) {
-		return new int[] { (int) (point.getX() / m_mapAccuracy) + (m_map.length/2), (int) (point.getY() / m_mapAccuracy) + (m_map[0].length/2)};
+		return new int[] { (int) (point.getX() / m_mapAccuracy) + (m_map.length / 2),
+				(int) (point.getY() / m_mapAccuracy) + (m_map[0].length / 2) };
 	}
 
 	/**
@@ -108,9 +109,9 @@ public class ArenaMap {
 		IndexedPoint2D ret = null;
 		int[] mapLoc = getLoc(loc);
 		int x0 = Math.max(mapLoc[0] - radInSqrs, 0);
-		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length-1);
+		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length - 1);
 		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
-		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map.length-1);
+		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map.length - 1);
 		double dontCollectGC;
 		for (int x = x0; x < x1; x++)
 			for (int y = y0; y < y1; y++)
