@@ -176,6 +176,10 @@ public interface IPoint2D {
 			
 		return moveByReversed(origin).rotate(-angle).moveBy(origin);
 	}
+	
+	default IPoint2D rotate(double angle) {
+		return rotate(angle, false);
+	}
 
 	/**
 	 * Subtracting {@code x,y} from this point
@@ -271,12 +275,8 @@ public interface IPoint2D {
 		return getX() * getX() + getY() * getY();
 	}
 	
-	default IPoint2D rotate(double angle) {
-		return rotate(angle, false);
-	}
-	
-	default void toDashboard(String name) {
-		SmartDashboard.putNumber(name + " X coordinate", getX());
-		SmartDashboard.putNumber(name + " Y coordinate", getY());
+	default void toDashboard(String s) {
+		SmartDashboard.putNumber(s + " x coordinate", getX());
+		SmartDashboard.putNumber(s + " y coordinate", getY());
 	}
 }

@@ -145,7 +145,12 @@ public class Localizer implements Input<IPoint2D> {
 	@Override
 	public IPoint2D recieve() {
 		synchronized (LOCK) {
+<<<<<<< HEAD
 			return Orientation2D.immutable(m_location);
+=======
+			return Orientation2D.immutable(m_location)/*.moveBy(0, RobotStats.HORIZONTAL_WHEEL_DIST / 2,
+					m_location.getDirection(), DirectionEffect.RESERVED)*/;
+>>>>>>> known bugs- continue moving after controller ended, is pretty inaccurate (15 cm tolerance dist)
 		}
 	}
 

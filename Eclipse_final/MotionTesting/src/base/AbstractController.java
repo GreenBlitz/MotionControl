@@ -9,6 +9,7 @@ import events.EventManager;
 
 /**
  * Abstract controller with input and output
+<<<<<<< HEAD
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractController<IN, OUT> implements IController {

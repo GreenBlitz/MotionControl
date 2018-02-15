@@ -1,8 +1,7 @@
 package APPC;
 
-import java.util.function.Function;
-
 import org.usfirst.frc.team4590.robot.Robot;
+import org.usfirst.frc.team4590.robot.RobotStats;
 
 import base.Input;
 import base.IterativeController;
@@ -17,9 +16,11 @@ import base.point.orientation.Orientation2D;
  */
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.15;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
+	protected static final Orientation2D FRONT_RELATIVE_TO_CENTER = Orientation2D.immutable(0,
+			RobotStats.VERTICAL_WHEEL_DIST / 2, 0);
 
 	/**
 	 * the path the controller is following
@@ -31,13 +32,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	private double m_lookAhead;
 
-	/**
-	 * Radius from destination in which slow down begins
-	 */
-	private double m_slowDownDistance;
-
-	private boolean isLastRunForwards;
-	
 	/**
 	 *
 	 * @param in
@@ -101,7 +95,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		m_lookAhead = lookAhead;
 		setTolerance(new AbsoluteTolerance(toleranceDist));
 		setDestination(map.getLast());
-		m_slowDownDistance = DEFAULT_SLOWDOWN;
 	}
 
 	/**
@@ -138,25 +131,21 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			return 0;
 		return (2.0 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
-
-	/**
-	 * @param loc
-	 *            robot location
-	 * @param goal
-	 *            current goal point
-	 * @return Point2D containing the difference between given points
-	 */
+	
 	public double[] calculateMovmentXY(IOrientation2D loc, IPoint2D goal) {
+		// IOrientation2D front = Orientation2D.mutable(loc);
+		// front.moveBy(FRONT_RELATIVE_TO_CENTER.rotate(loc.getDirection()),
+		// IOrientation2D.DirectionEffect.CHANGED);
 		IPoint2D goalVector = goal.changePrespectiveTo(loc);
+		// Robot.p.println(getClass(), goalVector);
 		return new double[] { goalVector.getX(), goalVector.getY() };
 	}
 
 	@Override
 	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
-		Robot.managedPrinter.println(getClass(), "WARNING next goal point: " + goal);
-		return new APPController.APPDriveData(calculatePower(robotLocation),
-				calculateMovmentXY((IOrientation2D) robotLocation, goal));
+		// Robot.p.println(getClass(), "WARNING next goal point: " + goal);
+		return new APPController.APPDriveData(1, calculateMovmentXY((IOrientation2D) robotLocation, goal));
 	}
 
 	/**
@@ -168,7 +157,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 * @return calculated power
 	 */
 	protected double calculatePower(IPoint2D robotLoc) {
-		double distanceOverSlowDown = robotLoc.distance(m_destination) / m_slowDownDistance;
+		double distanceOverSlowDown = robotLoc.distance(m_destination) / DEFAULT_SLOWDOWN;
 		if (distanceOverSlowDown > 1)
 			return 1;
 		if (distanceOverSlowDown > 0.4)
@@ -216,7 +205,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	public class AbsoluteTolerance implements ITolerance {
 
-		private double m_toleranceDist;
+		double m_toleranceDist;
 		private int calls = 0;
 
 		/**
@@ -234,43 +223,16 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		@Override
 		public boolean onTarget() {
 			if ((calls++) % 400 == 0) {
-				Robot.managedPrinter.printf(getClass(), "actual error: %s, tolerance distance: %f",
-						APPController.this.getError().length(), m_toleranceDist);
+				Robot.p.printf(getClass(), "actual error: %s, tolerance distance: %f", APPController.this.getError().length(), m_toleranceDist);
 				calls = 0;
 			}
 			return APPController.this.getError().length() <= m_toleranceDist;
 		}
 	}
 
-	protected double calculatePower(IPoint2D robotLoc, IPoint2D endPoint, double slowDownDistance) {
-		double distanceOverSlowDown = robotLoc.distance(endPoint) / slowDownDistance;
-		IPoint2D tmp = endPoint.changePrespectiveTo((IOrientation2D) robotLoc);
-		int sign;
-		if(isLastRunForwards)
-			if(tmp.getY() >= -m_lookAhead){
-				sign =  1;
-				//isLastRunForwards = true;
-			}else{
-				sign = -1;
-				isLastRunForwards = false;
-			}
-		else
-			if(tmp.getY() <= m_lookAhead){
-				sign =  1;
-				isLastRunForwards = true;
-			}else{
-				sign = -1;
-				//isLastRunForwards=false;
-			}
-		if (distanceOverSlowDown > 1)
-			return sign;
-		if (distanceOverSlowDown > 0.4)
-			return distanceOverSlowDown * sign;
-		return 0.4 * sign;		
-	}
-
 	@Override
 	public Orientation2D getError(IPoint2D loc, IPoint2D dest) {
+		Robot.p.warnln(getClass(), loc);
 		return Orientation2D.immutable(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				((IOrientation2D) loc).getDirection());
 	}
@@ -288,23 +250,15 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	/**
 	 * Set maximum power to be sent to m_output
 	 * 
-	 * @param min minimal power
-	 * @param max maximal power
+	 * @param min
+	 * @param max
 	 */
 	public void setPowerRange(double min, double max) {
-		setOutputRange(new APPDriveData(min, 0, 0), new APPDriveData(max, 0, 0),
-				(data1, data2) -> Double.compare(data1.power, data2.power));
+		setOutputConstrain(
+				(data) -> data.power >= min ? (data.power <= max ? data : APPDriveData.of(max, data.dx, data.dy))
+						: APPDriveData.of(min, data.dx, data.dy));
 	}
 
-	public void setPowerConstrain(Function<Double, Double> constrain) {
-		setOutputConstrain(data -> new APPDriveData(constrain.apply(data.power), data.dx, data.dy));
-	}
-
-	/**
-	 * APPController drive data used in APPCOutput
-	 * @see APPCOutput
-	 * @author karlo
-	 */
 	public static class APPDriveData {
 		public double power;
 		public double dx;
@@ -325,7 +279,12 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 				throw new IllegalArgumentException("xy array has to have at least 2 values");
 			}
 		}
-		
+
+		/**
+		 * @param power
+		 * @param curve
+		 * @return DriveDate with given variables
+		 */
 		public static APPDriveData of(double power, double[] xy) {
 			return new APPDriveData(power, xy[0], xy[1]);
 		}
@@ -336,7 +295,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 
 		@Override
 		public String toString() {
-			return "APPDriveData [power= " + power + ", x diff= " + dx + ", y diff= " + dy + "]";
+			return "APPDriveData [power=" + power + ", dx=" + dx + ", dy=" + dy + "]";
 		}
 
 		@Override
@@ -376,5 +335,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			}
 			return true;
 		}
+		
+		
 	}
 }
