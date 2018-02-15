@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.usfirst.frc.team4590.robot.Robot;
+
 import base.EnvironmentPort;
 import base.Input;
 import base.IterativeController;
@@ -92,7 +94,7 @@ public class Localizer implements Input<IPoint2D> {
 				/ m_rightWrappedEncoders.length;
 	}
 
-	private class LocalizeTimerTask extends TimerTask {
+	public class LocalizeTimerTask extends TimerTask {
 
 		private double leftDist;
 		private double rightDist;
@@ -118,22 +120,23 @@ public class Localizer implements Input<IPoint2D> {
 				if (leftDistDiff == rightDistDiff) {
 					synchronized (LOCK) {
 						m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
-						return;
+					}
+				} else {
+					boolean leftIsLong = leftDistDiff > rightDistDiff;
+					double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
+
+					double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
+
+					double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
+					double adjustedRadiusFromCenter = radiusFromCenter;
+					IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(adjustedRadiusFromCenter,
+							0, m_location.getDirection(), DirectionEffect.RESERVED);
+					synchronized (LOCK) {
+						m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
 					}
 				}
-
-				boolean leftIsLong = leftDistDiff > rightDistDiff;
-				double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
-
-				double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
-
-				double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
-				double adjustedRadiusFromCenter = radiusFromCenter;
-				IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(adjustedRadiusFromCenter, 0,
-						m_location.getDirection(), DirectionEffect.RESERVED);
-				synchronized (LOCK) {
-					m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
-				}
+				Robot.p.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location)/*.moveBy(0,
+						RobotStats.HORIZONTAL_WHEEL_DIST / 2, m_location.getDirection(), DirectionEffect.RESERVED)*/);
 			} else {
 				reset();
 			}
@@ -143,7 +146,8 @@ public class Localizer implements Input<IPoint2D> {
 	@Override
 	public IPoint2D recieve() {
 		synchronized (LOCK) {
-			return Orientation2D.mutable(m_location);
+			return Orientation2D.immutable(m_location)/*.moveBy(0, RobotStats.HORIZONTAL_WHEEL_DIST / 2,
+					m_location.getDirection(), DirectionEffect.RESERVED)*/;
 		}
 	}
 
@@ -157,7 +161,7 @@ public class Localizer implements Input<IPoint2D> {
 		for (ScaledEncoder enc : m_rightWrappedEncoders)
 			enc.reset();
 
-		m_location = Orientation2D.mutable(0, 0, 0);
+		m_location.set(0, 0, 0);
 	}
 
 	public void setEnvironmentPort(EnvironmentPort ePort) {

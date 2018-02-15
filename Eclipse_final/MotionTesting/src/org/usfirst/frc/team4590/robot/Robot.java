@@ -10,11 +10,13 @@ import com.kauailabs.navx.frc.AHRS;
 
 import APPC.APPCOutput;
 import APPC.APPController;
-import APPC.APPController.APPDriveData;
 import APPC.Localizer;
 import APPC.PathFactory;
 import base.DrivePort;
+import base.IterativeController;
+import base.Printer;
 import base.ScaledEncoder;
+import base.point.orientation.IOrientation2D;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
@@ -31,56 +33,20 @@ public class Robot extends IterativeRobot {
 	public static final double DEFUALT_ARENA_LENGTH = 16.4592;
 	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
 
+	public static final Printer p = new Printer();
+
 	private Localizer loc;
 	private APPCOutput out;
 	private DrivePort rd;
 	private APPController controller = null;
 	private CSVLogger logger;
 	private APPC.ArenaMap m_arenaMap;
-	public static boolean shouldIDie = false;
+	public static boolean kms = false;
 
 	// sensors
 	ScaledEncoder left;
 	ScaledEncoder right;
 	AHRS gyro;
-
-	public void logAllSensors() {
-		logger.log("Gyro angle", gyro.getAngle());
-		logger.log("Gyro yaw", gyro.getYaw());
-		logger.log("Gyro pitch", gyro.getPitch());
-		logger.log("Gyro roll", gyro.getRoll());
-
-		logger.log("Gyro accel x", gyro.getWorldLinearAccelX());
-		logger.log("Gyro accel y", gyro.getWorldLinearAccelY());
-		logger.log("Gyro accel z", gyro.getWorldLinearAccelZ());
-
-		logger.log("Gyro disp x (bad)", gyro.getDisplacementX());
-		logger.log("Gyro disp y (bad)", gyro.getDisplacementY());
-		logger.log("Gyro disp z (bad)", gyro.getDisplacementZ());
-
-		logger.log("Gyro orr dick", 1);
-
-		logger.log("Gyro bar pressure", gyro.getBarometricPressure());
-		logger.log("Robot altitude", gyro.getAltitude());
-
-		logger.log("Gyro RAW accel x", gyro.getRawAccelX());
-		logger.log("Gyro RAW accel z", gyro.getRawAccelZ());
-		logger.log("Gyro RAW accel y", gyro.getRawAccelY());
-		logger.log("Gyro RAW gyro x", gyro.getRawGyroX());
-		logger.log("Gyro RAW gyro y", gyro.getRawGyroY());
-		logger.log("Gyro RAW gyro z", gyro.getRawGyroZ());
-
-		logger.log("Gyro rotation rate", gyro.getRate());
-
-		logger.log("Encoder speed left", getSpeedL());
-		logger.log("Encoder speed right", getSpeedR());
-		logger.log("Encoder distsance left", left.getDistance());
-		logger.log("Encoder distance right", right.getDistance());
-		logger.log("Encoder RAW left", left.getRaw());
-		logger.log("Encoder RAW right", right.getRaw());
-		logger.log("Encoder distance", getDistance());
-		logger.log("Encoder speed", getSpeed());
-	}
 
 	@Override
 	public void disabledInit() {
@@ -93,14 +59,11 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		logger.enable();
-		new PathFactory().genStraightLine(1.5, 0, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(1.414, Math.PI / 4, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
-		controller.setOutputConstrain(data -> new APPDriveData(data.power, data.dx, data.dy));
 		controller.start();
 	}
-	// 0.49 m
 
 	@Override
 	public void teleopInit() {
@@ -118,16 +81,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		if (shouldIDie)
-			throw new RuntimeException();
+		if (kms)
+			System.exit(1 + Math.abs(Boolean.hashCode(kms)));
 	}
 
 	@Override
 	public void teleopPeriodic() {
-		logAllSensors();
 		Joystick dispairStick = new Joystick(0);
-		final double SAFETY = 0.7;
-		rd.arcadeDrive(SAFETY * dispairStick.getRawAxis(1), SAFETY * dispairStick.getRawAxis(4));
+		rd.arcadeDrive(dispairStick.getRawAxis(1), dispairStick.getRawAxis(4));
 	}
 
 	public Robot() {
@@ -143,6 +104,15 @@ public class Robot extends IterativeRobot {
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACC, DEFUALT_ARENA_LENGTH, DEFUALT_ARENA_WIDTH);
+		initPrintables();
+	}
+
+	private void initPrintables() {
+		//p.registerPrintable(APPController.AbsoluteTolerance.class);
+		//p.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		//p.registerPrintable(Localizer.LocalizeTimerTask.class);
+		//p.registerPrintable(APPCOutput.class);
+		//p.registerPrintable(APPController.class);
 	}
 
 	public double getDistance() {

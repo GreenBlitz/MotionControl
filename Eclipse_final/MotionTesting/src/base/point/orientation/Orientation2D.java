@@ -86,7 +86,7 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 	}
 
 	@Override
-	public IPoint2D rotate(double angle) {
+	public IOrientation2D rotate(double angle) {
 		return rotate(angle, DirectionEffect.IGNORED);
 	}
 

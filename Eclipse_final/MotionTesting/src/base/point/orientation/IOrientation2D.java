@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @author karlo
  */
 public interface IOrientation2D extends IPoint2D {
-
+	public static final double TAU = 2 * Math.PI;
+	
 	/**
 	 * Indicates if a method should preserve the direction after being called or
 	 * not
@@ -105,7 +106,7 @@ public interface IOrientation2D extends IPoint2D {
 		}
 
 		@Override
-		public IOrientation2D copy(double x, double y, double direction) {
+		public IOrientation2D set(double x, double y, double direction) {
 			throw new UnsupportedOperationException(errorMsg);
 		}
 	}
@@ -140,13 +141,13 @@ public interface IOrientation2D extends IPoint2D {
 	 * @see IPoint2D#rotate(double)
 	 * @param angle
 	 *            angle of rotation
-	 * @param clockwise
+	 * @param counterClockwise
 	 *            rotation direction
 	 * @param effect
 	 *            effect of calling this on direction
 	 * @return this point rotated as described
 	 */
-	IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect);
+	IOrientation2D rotate(double angle, boolean counterClockwise, DirectionEffect effect);
 
 	/**
 	 * Resizes this point as a vector
@@ -183,7 +184,7 @@ public interface IOrientation2D extends IPoint2D {
 	 */
 	IOrientation2D setDirection(double angle);
 
-	IOrientation2D copy(double x, double y, double direction);
+	IOrientation2D set(double x, double y, double direction);
 
 	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
 		return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-origin.getDirection(), DirectionEffect.CHANGED);
@@ -252,7 +253,7 @@ public interface IOrientation2D extends IPoint2D {
 		case CHANGED:
 			IOrientation2D relative = (IOrientation2D) Orientation2D
 					.immutable(getX() - origin.getX(), getY() - origin.getY(), getDirection()).rotate(angle);
-			return copy(relative.getX() + origin.getX(), relative.getY() + origin.getY(), getDirection() + angle);
+			return set(relative.getX() + origin.getX(), relative.getY() + origin.getY(), getDirection() + angle);
 		case RESERVED:
 		case IGNORED:
 			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(angle, effect).moveBy(origin,
@@ -323,7 +324,7 @@ public interface IOrientation2D extends IPoint2D {
 	}
 
 	default double normalizeAngle(double angle) {
-		return angle > 0 ? angle % (Math.PI * 2) : Math.PI * 2 - (Math.abs(angle) % (Math.PI * 2));
+		return angle > 0 ? angle % TAU : TAU - (Math.abs(angle) % TAU);
 	}
 
 	/**

@@ -26,6 +26,10 @@ public class MOrientation2D extends Orientation2D {
 	public MOrientation2D(IPoint2D point, double direction) {
 		super(point, direction);
 	}
+	
+	public MOrientation2D(IOrientation2D orientation) {
+		super(orientation);
+	}
 
 	@Override
 	public IOrientation2D moveBy(double x, double y, double direction, DirectionEffect effect) {
@@ -120,7 +124,7 @@ public class MOrientation2D extends Orientation2D {
 	}
 
 	@Override
-	public IOrientation2D copy(double x, double y, double direction) {
+	public IOrientation2D set(double x, double y, double direction) {
 		m_x = x;
 		m_y = y;
 		m_direction = normalizeAngle(direction);

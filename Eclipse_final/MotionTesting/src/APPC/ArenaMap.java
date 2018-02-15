@@ -29,7 +29,7 @@ public class ArenaMap {
 
 	// the hash function
 	private int[] getLoc(IPoint2D point) {
-		return new int[] { (int) (point.getX() / m_mapAccuracy), (int) (point.getY() / m_mapAccuracy) };
+		return new int[] { (int) (point.getX() / m_mapAccuracy) + (m_map.length/2), (int) (point.getY() / m_mapAccuracy) + (m_map[0].length/2)};
 	}
 
 	/**
