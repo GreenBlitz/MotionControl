@@ -18,7 +18,7 @@ import base.point.orientation.Orientation2D;
  */
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
-	protected static final double DEFAULT_TOLERANCE_DIST = 0.15;
+	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
 	protected static final double DEFAULT_SLOWDOWN = 0.5;
 	protected static final Orientation2D FRONT_RELATIVE_TO_CENTER = Orientation2D.immutable(0,
@@ -33,6 +33,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 * Look ahead distance
 	 */
 	private double m_lookAhead;
+
+	private double m_slowDownDistance;
 
 	/**
 	 *
@@ -97,6 +99,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		m_lookAhead = lookAhead;
 		setTolerance(new AbsoluteTolerance(toleranceDist));
 		setDestination(map.getLast());
+		m_slowDownDistance = DEFAULT_SLOWDOWN;
 	}
 
 	/**
@@ -133,7 +136,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			return 0;
 		return (2.0 * goalVector.getX()) / Math.pow(goalVector.length(), 2);
 	}
-	
+
 	public double[] calculateMovmentXY(IOrientation2D loc, IPoint2D goal) {
 		IPoint2D goalVector = goal.changePrespectiveTo(loc);
 		return new double[] { goalVector.getX(), goalVector.getY() };
@@ -142,24 +145,15 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	@Override
 	public APPController.APPDriveData calculate(IPoint2D robotLocation) {
 		IPoint2D goal = updateGoalPoint(robotLocation, m_map, m_lookAhead);
-		return new APPController.APPDriveData(1, calculateMovmentXY((IOrientation2D) robotLocation, goal));
+		return new APPController.APPDriveData(calculatePower(robotLocation),
+				calculateMovmentXY((IOrientation2D) robotLocation, goal));
 	}
 
-	/**
-	 * Calculates the maximal power to be used on the engines, effectively
-	 * slowing down near the destination and improves accuracy
-	 * 
-	 * @param robotLoc
-	 *            current robot location
-	 * @return calculated power
-	 */
 	protected double calculatePower(IPoint2D robotLoc) {
-		double distanceOverSlowDown = robotLoc.distance(m_destination) / DEFAULT_SLOWDOWN;
+		double distanceOverSlowDown = robotLoc.distance(m_destination) / m_slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
-		if (distanceOverSlowDown > 0.4)
-			return distanceOverSlowDown;
-		return 0.4;
+		return Math.max(distanceOverSlowDown, 0.4);
 	}
 
 	/**
@@ -220,7 +214,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		@Override
 		public boolean onTarget() {
 			if ((calls++) % 400 == 0) {
-				Robot.managedPrinter.printf(getClass(), "actual error: %s, tolerance distance: %f", APPController.this.getError().length(), m_toleranceDist);
+				Robot.managedPrinter.printf(getClass(), "actual error: %s, tolerance distance: %f",
+						APPController.this.getError().length(), m_toleranceDist);
 				calls = 0;
 			}
 			return APPController.this.getError().length() <= m_toleranceDist;
@@ -254,7 +249,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 				(data) -> data.power >= min ? (data.power <= max ? data : APPDriveData.of(max, data.dx, data.dy))
 						: APPDriveData.of(min, data.dx, data.dy));
 	}
-	
+
 	public void setPowerConstrain(Function<Double, Double> constrain) {
 		setOutputConstrain(data -> new APPDriveData(constrain.apply(data.power), data.dx, data.dy));
 	}
@@ -335,7 +330,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			}
 			return true;
 		}
-		
-		
+
 	}
 }
