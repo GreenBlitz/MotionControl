@@ -39,6 +39,7 @@ public class Robot extends IterativeRobot {
 	private APPController controller = null;
 	private CSVLogger logger;
 	private APPC.ArenaMap m_arenaMap;
+	public static boolean kms = false;
 
 	ScaledEncoder left;
 	ScaledEncoder right;
@@ -77,6 +78,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
+		if (kms)
+			System.exit(1 + Math.abs(Boolean.hashCode(kms)));
 	}
 
 	@Override
@@ -102,7 +105,11 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void initPrintables() {
-		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
+		Robot.managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
+		//p.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		//p.registerPrintable(Localizer.LocalizeTimerTask.class);
+		//p.registerPrintable(APPCOutput.class);
+		//p.registerPrintable(APPController.class);
 	}
 
 	public double getDistance() {

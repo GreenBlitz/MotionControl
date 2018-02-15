@@ -58,11 +58,11 @@ public class MOrientation2D extends Orientation2D {
 	}
 
 	@Override
-	public IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect) {
+	public IOrientation2D rotate(double angle, boolean clockWise, DirectionEffect effect) {
 		double sin = Math.sin(angle), cos = Math.cos(angle);
 		double x = m_x, y = m_y;
 
-		if (!clockwise) {
+		if (clockWise) {
 			m_x = cos * x + sin * y;
 			m_y = sin * x - cos * y;
 		} else {
@@ -114,8 +114,8 @@ public class MOrientation2D extends Orientation2D {
 
 	@Override
 	public IPoint2D moveBy(double x, double y) {
-		IOrientation2D rotated = Orientation2D.immutable(this).rotate(-getDirection(), DirectionEffect.IGNORED);
-		rotated = Orientation2D.immutable(rotated.getX() + x, rotated.getY() + y, rotated.getDirection())
+		IOrientation2D rotated = (IOrientation2D) Orientation2D.immutable(this).rotate(-getDirection(), DirectionEffect.IGNORED);
+		rotated = (IOrientation2D) Orientation2D.immutable(rotated.getX() + x, rotated.getY() + y, rotated.getDirection())
 				.rotate(getDirection(), DirectionEffect.IGNORED);
 		m_x = rotated.getX();
 		m_y = rotated.getY();

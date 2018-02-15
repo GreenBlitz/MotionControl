@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public interface IOrientation2D extends IPoint2D {
 	public static final double TAU = 2 * Math.PI;
-
 	/**
 	 * Indicates if a method should preserve the direction after being called or
 	 * not
@@ -187,9 +186,9 @@ public interface IOrientation2D extends IPoint2D {
 	IOrientation2D set(double x, double y, double direction);
 
 	default IOrientation2D changePrespectiveTo(IOrientation2D origin) {
-		return moveByReversed(origin, DirectionEffect.IGNORED).rotate(-origin.getDirection(), DirectionEffect.CHANGED);
+		return (IOrientation2D) moveByReversed(origin, DirectionEffect.IGNORED).rotate(-origin.getDirection(), DirectionEffect.CHANGED);
 	}
-
+	
 	/**
 	 * Finds the relative coordinates of this Orientation with another one
 	 * 
@@ -244,7 +243,7 @@ public interface IOrientation2D extends IPoint2D {
 	 */
 	default IOrientation2D rotateAround(IOrientation2D origin, double angle, DirectionEffect effect) {
 		if (origin.equals(GLOBAL_ORIGIN))
-			return rotate(angle, effect);
+			return (IOrientation2D) rotate(angle, effect);
 
 		if (angle == 0)
 			return this;
@@ -254,9 +253,8 @@ public interface IOrientation2D extends IPoint2D {
 			IOrientation2D relative = (IOrientation2D) Orientation2D
 					.immutable(getX() - origin.getX(), getY() - origin.getY(), getDirection()).rotate(angle);
 			return set(relative.getX() + origin.getX(), relative.getY() + origin.getY(), getDirection() + angle);
-		case RESERVED:
-		case IGNORED:
-			return moveByReversed(origin, DirectionEffect.IGNORED).rotate(angle, effect).moveBy(origin,
+		case RESERVED: case IGNORED:
+			return ((IOrientation2D) moveByReversed(origin, DirectionEffect.IGNORED).rotate(angle, effect)).moveBy(origin,
 					DirectionEffect.IGNORED);
 		default:
 			throw new IllegalArgumentException("'There's a starrrrrmaaaaaaaaaaaan, waiting in the sky!'. "
@@ -363,7 +361,7 @@ public interface IOrientation2D extends IPoint2D {
 	@Override
 	default IPoint2D rotateAround(IPoint2D origin, double angle) {
 		DirectionEffect effect = DirectionEffect.IGNORED;
-		return moveByReversed(origin.getX(), origin.getY(), 0, effect).rotate(angle, effect).moveBy(origin.getX(),
+		return ((IOrientation2D) moveByReversed(origin.getX(), origin.getY(), 0, effect).rotate(angle, effect)).moveBy(origin.getX(),
 				origin.getY(), 0, effect);
 	}
 
@@ -408,14 +406,14 @@ public interface IOrientation2D extends IPoint2D {
 	default IPoint2D rotate(double angle, boolean clockwise) {
 		return rotate(angle, clockwise, DirectionEffect.IGNORED);
 	}
-
-	default void toDashboard(String name) {
-		SmartDashboard.putNumber(name + " X coordinate", getDirection());
-		SmartDashboard.putNumber(name + " Y coordinate", getDirection());
-		SmartDashboard.putNumber(name + " direction", getDirection());
+	
+	default IPoint2D rotate(double angle, DirectionEffect effect) {
+		return rotate(angle, false, effect);
 	}
-
-	default IOrientation2D rotate(double angle, DirectionEffect effect) {
-		return rotate(angle, true, effect);
+	
+	default void toDashboard(String s) {
+		SmartDashboard.putNumber(s + " x coordinate", getX());
+		SmartDashboard.putNumber(s + " y coordinate", getY());
+		SmartDashboard.putNumber(s + " direction", getDirection());
 	}
 }

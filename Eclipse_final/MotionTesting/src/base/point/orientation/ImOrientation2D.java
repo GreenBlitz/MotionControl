@@ -59,6 +59,7 @@ public class ImOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect) {
+
 		double sin = Math.sin(angle), cos = Math.cos(angle);
 		double x, y, dir;
 
@@ -73,6 +74,10 @@ public class ImOrientation2D extends Orientation2D {
 		dir = effect.changed() ? normalizeAngle(m_direction + angle) : m_direction;
 
 		return new ImOrientation2D(x, y, dir);
+	}
+	
+	public IOrientation2D eotate(double angle, boolean clockwise) {
+		return rotate(angle, clockwise, DirectionEffect.RESERVED);
 	}
 
 	@Override
@@ -107,7 +112,7 @@ public class ImOrientation2D extends Orientation2D {
 
 	@Override
 	public IPoint2D moveBy(double x, double y) {
-		IOrientation2D rotated = Orientation2D.immutable(this).rotate(-getDirection(), DirectionEffect.IGNORED);
+		IOrientation2D rotated = (IOrientation2D) Orientation2D.immutable(this).rotate(-getDirection(), DirectionEffect.IGNORED);
 		return Orientation2D.immutable(rotated.getX() + x, rotated.getY() + y, rotated.getDirection())
 				.rotate(getDirection(), DirectionEffect.IGNORED);
 	}
