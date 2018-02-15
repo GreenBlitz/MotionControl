@@ -12,11 +12,17 @@ import base.point.IPoint2D;
  */
 @SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 public class ArenaMap {
-	// the map
+	
+	/**
+	 *  The map
+	 */
 	private LinkedList<IndexedPoint2D>[][] m_map;
-	// a list of the points inserted, used to clear the map
+	
+	/**
+	 *  A list of the points inserted, used to clear the map
+	 */
 	private LinkedList<IndexedPoint2D> m_path = new LinkedList<IndexedPoint2D>();
-	//
+	
 	private final double m_mapAccuracy;
 
 	public ArenaMap(double acc, double arenaXLength, double arenaYLength) {
@@ -27,8 +33,12 @@ public class ArenaMap {
 				m_map[x][y] = new LinkedList();
 	}
 
-	// the hash function
-	private int[] getLoc(IPoint2D point) {
+	/**
+	 * the hash function
+	 * @param point
+	 * @return calculated hash value of the point
+	 */
+	private int[] hash(IPoint2D point) {
 		return new int[] { (int) (point.getX() / m_mapAccuracy) + (m_map.length / 2),
 				(int) (point.getY() / m_mapAccuracy) + (m_map[0].length / 2) };
 	}
@@ -36,10 +46,10 @@ public class ArenaMap {
 	/**
 	 * inserts a point to the map
 	 * 
-	 * @param point
+	 * @param point point which will be inserted
 	 */
 	public void insert(IPoint2D point) {
-		int[] loc = getLoc(point);
+		int[] loc = hash(point);
 		IndexedPoint2D IPoint = new IndexedPoint2D(point, m_path.size());
 		m_map[loc[0]][loc[1]].add(IPoint);
 		m_path.add(IPoint);
@@ -49,7 +59,7 @@ public class ArenaMap {
 	/**
 	 * takes a path (usually of type PathFactory) and draws it on the map
 	 * 
-	 * @param path
+	 * @param path the path which will be inserted to the map
 	 */
 	public void construct(Iterable<IPoint2D> path) {
 		clear();
@@ -59,8 +69,7 @@ public class ArenaMap {
 	}
 
 	/**
-	 * finds the closest point to a given point (loc) from a list of points
-	 * (list)
+	 * finds the closest point to a given point ({@code loc}) from a list of points ({@code list})
 	 * 
 	 * @param list
 	 * @param loc
@@ -78,7 +87,7 @@ public class ArenaMap {
 
 	/**
 	 * generates a list of all the points in a given range of distances
-	 * (minRadius, maxRadius) from a given point (loc)
+	 * ({@code minRadius}, {@code maxRadius}) from a given point ({@code loc})
 	 * 
 	 * @param loc
 	 * @param minRadius
@@ -89,7 +98,7 @@ public class ArenaMap {
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		LinkedList<IndexedPoint2D> inRange = new LinkedList<IndexedPoint2D>();
-		int[] mapLoc = getLoc(loc);
+		int[] mapLoc = hash(loc);
 		int x0 = Math.max(mapLoc[0] - radInSqrs, 0);
 		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length);
 		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
@@ -107,7 +116,7 @@ public class ArenaMap {
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		IndexedPoint2D ret = null;
-		int[] mapLoc = getLoc(loc);
+		int[] mapLoc = hash(loc);
 		int x0 = Math.max(mapLoc[0] - radInSqrs, 0);
 		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length - 1);
 		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
@@ -125,7 +134,7 @@ public class ArenaMap {
 	}
 
 	/**
-	 * finds the closest point to a given point (loc) uses the param radius for
+	 * finds the closest point to a given point ({@code loc}) uses {@code radius} for
 	 * recursive search
 	 * 
 	 * @param loc
@@ -165,7 +174,9 @@ public class ArenaMap {
 		return ret;
 	}
 
-	// returns the last point in the path
+	/**
+	 * @return last point in the path
+	 */
 	public IPoint2D getLast() {
 		return m_path.getLast();
 	}
@@ -176,11 +187,10 @@ public class ArenaMap {
 	public void clear() {
 		int[] loc;
 		for (IndexedPoint2D point : m_path) {
-			loc = getLoc(point);
+			loc = hash(point);
 			if (!m_map[loc[0]][loc[1]].isEmpty())
 				m_map[loc[0]][loc[1]] = new LinkedList();
 		}
 		m_path = new LinkedList<IndexedPoint2D>();
 	}
-
 }

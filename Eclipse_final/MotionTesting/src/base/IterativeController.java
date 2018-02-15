@@ -15,8 +15,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 
 	protected final double m_period;
 
-	protected Timer m_controllerLoop; // the loop which will calculate the
-										// controller
+	protected Timer m_controllerLoop;
 
 	/**
 	 * 
@@ -116,7 +115,6 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 				@Override
 				public void uncaughtException(Thread arg0, Throwable arg1) {
 					arg1.printStackTrace();
-					Robot.kms = true;
 					System.exit(arg1.hashCode());
 				}
 			});
@@ -152,12 +150,13 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 				}
 				if (!tolerance.onTarget()) {
 					Tuple<IN, OUT> IO = act();
-					System.out.printf("\n%s #%d:\n%s\n", m_name, IterativeController.this.hashCode(),
+					Robot.managedPrinter.printf(getClass(), "\n%s #%d:\n%s\n", m_name,
+							IterativeController.this.hashCode(),
 							IterativeController.this.generateActivityDescription(IO._1, IO._2));
 				} else {
 					m_controllerState = State.END;
 					outputStop();
-					System.out.printf("WARNING: %s #%d has finished running\n", m_name,
+					Robot.managedPrinter.printf(getClass(), "WARNING: %s #%d has finished running\n", m_name,
 							IterativeController.this.hashCode());
 				}
 			}
@@ -175,6 +174,10 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		}
 	}
 
+	/**
+	 * Acquires the input, calls {@link IterativeController#calculate(IN)} with it and uses the output
+	 * @return {@link Tuple} containing the input and output gained during the process
+	 */
 	protected Tuple<IN, OUT> act() {
 		IN input = getInput();
 		OUT output = calculate(input);
@@ -190,7 +193,6 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 *         after {@link IterativeController#calculate}
 	 */
 	protected String generateActivityDescription(IN input, OUT output) {
-		// Beep Boop! I'm a robot and this is what i just did!
-		return String.format("\tLocation: %s\n\tOutput: %s\n", input.toString(), output.toString());
+		return String.format("\tinput: %s\n\tOutput: %s\n", input.toString(), output.toString());
 	}
 }

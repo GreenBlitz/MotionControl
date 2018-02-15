@@ -3,7 +3,7 @@ package base;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Printer {
+public class PrintManager {
 	private final Set<Class<?>> printable = new HashSet<Class<?>>();
 
 	public enum PrintType {

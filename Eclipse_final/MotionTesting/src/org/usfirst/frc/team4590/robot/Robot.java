@@ -13,7 +13,7 @@ import APPC.APPController;
 import APPC.Localizer;
 import APPC.PathFactory;
 import base.DrivePort;
-import base.Printer;
+import base.PrintManager;
 import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -31,7 +31,7 @@ public class Robot extends IterativeRobot {
 	public static final double DEFUALT_ARENA_LENGTH = 16.4592;
 	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
 
-	public static final Printer p = new Printer();
+	public static final PrintManager managedPrinter = new PrintManager();
 
 	private Localizer loc;
 	private APPCOutput out;
@@ -39,9 +39,7 @@ public class Robot extends IterativeRobot {
 	private APPController controller = null;
 	private CSVLogger logger;
 	private APPC.ArenaMap m_arenaMap;
-	public static boolean kms = false;
 
-	// sensors
 	ScaledEncoder left;
 	ScaledEncoder right;
 	AHRS gyro;
@@ -79,8 +77,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		if (kms)
-			System.exit(1 + Math.abs(Boolean.hashCode(kms)));
 	}
 
 	@Override
@@ -106,11 +102,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void initPrintables() {
-		//p.registerPrintable(APPController.AbsoluteTolerance.class);
-		//p.registerPrintable(IterativeController.IterativeCalculationTask.class);
-		p.registerPrintable(Localizer.LocalizeTimerTask.class);
-		//p.registerPrintable(APPCOutput.class);
-		p.registerPrintable(APPController.class);
+		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
 	}
 
 	public double getDistance() {
