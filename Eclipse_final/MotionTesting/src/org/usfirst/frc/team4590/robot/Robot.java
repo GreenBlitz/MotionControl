@@ -59,7 +59,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().genStraightLine(1.414, Math.PI / 4, 0.005).construct(m_arenaMap);
+		//new PathFactory().genStraightLine(1.414, Math.PI / 4, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(1, Math.PI* 3/4 , 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
