@@ -73,15 +73,6 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		}
 	}
 
-	public static void cordDrive(DrivePort r, double maxPower, double power, double[] dXdY) {
-		cordDrive(r, maxPower, dXdY[0], dXdY[1]);
-	}
-
-	public static void cordDrive(DrivePort r, double maxPower, double dX, double dY) {
-		double[] values = calculatePelegDrive(maxPower, dX, dY);
-		r.tankDrive(values[0], values[1], false);
-	}
-
 	/**
 	 * @see APPCOutput#calculatePelegDrive(double, double, double)
 	 * @param maxPower
@@ -156,7 +147,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	public void use(APPController.APPDriveData output) {
 		Robot.managedPrinter.println(getClass(),
 				"power: " + output.power + ", x diff: " + output.dx + ", y diff: " + output.dy);
-		cordDrive(dPort, output.power * FULL_POWER, output.dx, output.dy);
+		cordDrive(output.power, output.dx, output.dy);
 	}
 
 	@Override
@@ -165,7 +156,6 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	}
 
 	/**
-	 * 
 	 * @param left
 	 *            left engines power
 	 * @param right

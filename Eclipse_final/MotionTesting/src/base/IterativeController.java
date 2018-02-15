@@ -4,6 +4,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.usfirst.frc.team4590.robot.Robot;
+
 /**
  * Represents a controller which has the basic structure of a loop which calls
  * it's input and output
@@ -101,6 +103,16 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		public void run() {
 			IterativeController.this.run(m_controllerState, m_destination, m_tolerance, m_environmentPort);
 		}
+
+		public void init() {
+			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+				@Override
+				public void uncaughtException(Thread arg0, Throwable arg1) {
+					arg1.printStackTrace();
+					System.exit(arg1.hashCode());
+				}
+			});
+		}
 	}
 
 	/**
@@ -132,16 +144,15 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 				}
 				if (!tolerance.onTarget()) {
 					Tuple<IN, OUT> IO = act();
-					System.out.printf("\n%s #%d:\n%s\n", m_name, IterativeController.this.hashCode(),
+					Robot.managedPrinter.printf(getClass(), "\n%s #%d:\n%s\n", m_name,
+							IterativeController.this.hashCode(),
 							IterativeController.this.generateActivityDescription(IO._1, IO._2));
-				} else
-
-				{
+				} else {
 					m_controllerState = State.END;
 					outputStop();
-					System.out.printf("WARNING: %s #%d has finished running\n", m_name, IterativeController.this.hashCode());
+					Robot.managedPrinter.printf(getClass(), "WARNING: %s #%d has finished running\n", m_name,
+							IterativeController.this.hashCode());
 				}
-
 			}
 		} else {
 			free();
@@ -158,11 +169,15 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	}
 
 	/**
-	 * Acquires the input, calls {@link IterativeController#calculate(IN)} with
-	 * it and uses the output
+	 * <<<<<<< HEAD Acquires the input, calls
+	 * {@link IterativeController#calculate(IN)} with it and uses the output
 	 * 
 	 * @return {@link Tuple} containing the input and output gained during the
-	 *         process
+	 *         process ======= Acquires the input, calls
+	 *         {@link IterativeController#calculate(IN)} with it and uses the
+	 *         output
+	 * @return {@link Tuple} containing the input and output gained during the
+	 *         process >>>>>>> dfd4dd6... can't do complex pathes
 	 */
 	protected Tuple<IN, OUT> act() {
 		IN input = getInput();

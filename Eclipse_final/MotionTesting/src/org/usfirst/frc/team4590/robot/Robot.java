@@ -39,7 +39,6 @@ public class Robot extends IterativeRobot {
 	private APPController controller = null;
 	private CSVLogger logger;
 	private APPC.ArenaMap m_arenaMap;
-	public static boolean kms = false;
 
 	ScaledEncoder left;
 	ScaledEncoder right;
@@ -78,8 +77,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		if (kms)
-			System.exit(1 + Math.abs(Boolean.hashCode(kms)));
 	}
 
 	@Override
