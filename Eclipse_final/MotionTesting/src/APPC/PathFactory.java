@@ -13,7 +13,8 @@ public class PathFactory {
 	}
 
 	/**
-	 * @param origin path origin
+	 * @param origin
+	 *            path origin
 	 */
 	public PathFactory(Orientation2D origin) {
 		m_path.add(origin);
@@ -89,8 +90,8 @@ public class PathFactory {
 	public PathFactory genStraightLine(double len, double rotation, double metersPerPoint) {
 		IOrientation2D origin = m_path.getLast();
 		for (double i = metersPerPoint; i < len + metersPerPoint; i += metersPerPoint) {
-			m_path.add(Orientation2D.immutable(0, i, 0).rotate(rotation, DirectionEffect.IGNORED).moveBy(origin,
-					DirectionEffect.RESERVED));
+			m_path.add(((IOrientation2D) Orientation2D.immutable(0, i, 0).rotate(rotation, DirectionEffect.IGNORED))
+					.moveBy(origin, DirectionEffect.RESERVED));
 		}
 		return this;
 	}
