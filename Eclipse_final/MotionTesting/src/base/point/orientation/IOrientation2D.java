@@ -401,19 +401,18 @@ public interface IOrientation2D extends IPoint2D {
 	default IPoint2D moveBy(IPoint2D other) {
 		return moveBy(other.getX(), other.getY(), 0, DirectionEffect.IGNORED);
 	}
-
-	@Override
+	
 	default IPoint2D rotate(double angle, boolean clockwise) {
 		return rotate(angle, clockwise, DirectionEffect.IGNORED);
 	}
 	
 	default IPoint2D rotate(double angle, DirectionEffect effect) {
-		return rotate(angle, false, effect);
+		return rotate(angle, true, effect);
 	}
-	
-	default void toDashboard(String s) {
-		SmartDashboard.putNumber(s + " x coordinate", getX());
-		SmartDashboard.putNumber(s + " y coordinate", getY());
-		SmartDashboard.putNumber(s + " direction", getDirection());
+
+	default void toDashboard(String name) {
+		SmartDashboard.putNumber(name + " X coordinate", getDirection());
+		SmartDashboard.putNumber(name + " Y coordinate", getDirection());
+		SmartDashboard.putNumber(name + " direction", getDirection());
 	}
 }

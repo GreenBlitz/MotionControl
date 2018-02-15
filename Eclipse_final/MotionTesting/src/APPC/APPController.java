@@ -1,5 +1,7 @@
 package APPC;
 
+import java.util.function.Function;
+
 import org.usfirst.frc.team4590.robot.Robot;
 import org.usfirst.frc.team4590.robot.RobotStats;
 
@@ -223,7 +225,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		@Override
 		public boolean onTarget() {
 			if ((calls++) % 400 == 0) {
-				Robot.p.printf(getClass(), "actual error: %s, tolerance distance: %f", APPController.this.getError().length(), m_toleranceDist);
+				Robot.managedPrinter.printf(getClass(), "actual error: %s, tolerance distance: %f", APPController.this.getError().length(), m_toleranceDist);
 				calls = 0;
 			}
 			return APPController.this.getError().length() <= m_toleranceDist;
@@ -232,7 +234,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 
 	@Override
 	public Orientation2D getError(IPoint2D loc, IPoint2D dest) {
-		Robot.p.warnln(getClass(), loc);
+		Robot.managedPrinter.warnln(getClass(), loc);
 		return Orientation2D.immutable(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
 				((IOrientation2D) loc).getDirection());
 	}
@@ -257,6 +259,10 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		setOutputConstrain(
 				(data) -> data.power >= min ? (data.power <= max ? data : APPDriveData.of(max, data.dx, data.dy))
 						: APPDriveData.of(min, data.dx, data.dy));
+	}
+	
+	public void setPowerConstrain(Function<Double, Double> constrain) {
+		setOutputConstrain(data -> new APPDriveData(constrain.apply(data.power), data.dx, data.dy));
 	}
 
 	public static class APPDriveData {
