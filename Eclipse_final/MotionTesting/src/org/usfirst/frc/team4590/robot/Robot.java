@@ -105,11 +105,11 @@ public class Robot extends IterativeRobot {
 	}
 
 	private void initPrintables() {
-		Robot.managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
-		//p.registerPrintable(IterativeController.IterativeCalculationTask.class);
-		//p.registerPrintable(Localizer.LocalizeTimerTask.class);
-		//p.registerPrintable(APPCOutput.class);
-		//p.registerPrintable(APPController.class);
+		managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
+		// p.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		// p.registerPrintable(Localizer.LocalizeTimerTask.class);
+		// p.registerPrintable(APPCOutput.class);
+		managedPrinter.registerPrintable(APPController.class);
 	}
 
 	public double getDistance() {

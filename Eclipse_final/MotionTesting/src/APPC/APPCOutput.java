@@ -14,8 +14,7 @@ import base.Output;
  * @author karlo
  */
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static final double FULL_POWER = 0.8 * 0.6; // fullPower = 0.8 *
-														// safteyFactor
+	private static final double FULL_POWER = 0.8 * 0.6;
 	private static final double ROTATION_FACTOR = RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
