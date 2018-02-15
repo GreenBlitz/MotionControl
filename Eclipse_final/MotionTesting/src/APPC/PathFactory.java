@@ -13,7 +13,7 @@ public class PathFactory {
 	}
 
 	/**
-	 * @param origin
+	 * @param origin path origin
 	 */
 	public PathFactory(Orientation2D origin) {
 		m_path.add(origin);

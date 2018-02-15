@@ -7,6 +7,11 @@ import base.DrivePort;
 import base.EnvironmentPort;
 import base.Output;
 
+/**
+ * Output object used in APPC
+ * @see APPController
+ * @author karlo
+ */
 public class APPCOutput implements Output<APPController.APPDriveData> {
 	private static final double FULL_POWER = 0.8 * 0.6;
 	private static final double ROTATION_FACTOR = RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
@@ -34,8 +39,11 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 * Drive by curve and max power
 	 * 
 	 * @param r
+	 *            DrivePort object
 	 * @param power
+	 *            maximal power possible
 	 * @param curve
+	 *            turning curvature
 	 */
 	@Deprecated
 	public void curveDrive(DrivePort r, double power, double curve) {
@@ -52,7 +60,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		double ratio;
 		ratio = (R - d / 2) / (R + d / 2);
 		ePort.putNumber("Ratio", ratio);
-		Robot.p.println(getClass(), "ratio: " + ratio + ", power: " + power);
+		Robot.managedPrinter.println(getClass(), "ratio: " + ratio + ", power: " + power);
 		if (curve < 0) {
 			r.tankDrive(power, power * ratio, false);
 			ePort.putNumber("powerL", power);
@@ -64,25 +72,35 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		}
 	}
 
-	public static void cordDrive(DrivePort r, double maxPower, double power, double[] dXdY) {
-		cordDrive(r, maxPower, dXdY[0], dXdY[1]);
+	/**
+	 * @see APPCOutput#calculatePelegDrive(double, double, double)
+	 * @param maxPower
+	 *            maximal power possible
+	 * @param dXdY
+	 *            x and y difference as an array
+	 */
+	public void cordDrive(double maxPower, double[] dXdY) {
+		cordDrive(maxPower, dXdY[0], dXdY[1]);
 	}
 
+	/**
+	 * Calculates the power to the engines by using the intuitive method
+	 * (calculates correct ratio between engines and applies it to
+	 * {@code maxPower}
+	 * 
+	 * @param maxPower
+	 *            maximal power possible (will be used)
+	 * @param dX
+	 *            x axis difference
+	 * @param dY
+	 *            y axis difference
+	 * @return the power that should be used on the left and right engines
+	 */
 	public static double[] calculatePelegDrive(double maxPower, double dX, double dY) {
-		// needs a good angular velocity manager
-		// dX *= ROTATION_FACTOR; // should be removed if possible
 		double left, right;
 
-		/*
-		 * left = power * (dY - dX); right = power * (dY + dX); if
-		 * (Math.abs(left) > maxPower || Math.abs(right) > maxPower) { double
-		 * ratio = maxPower / Math.max(Math.abs(right), Math.abs(left)); left *=
-		 * ratio; right *= ratio;
-		 */
 		double rotationPowerLeft = dX * ROTATION_FACTOR;
 		double rotationPowerRight = -rotationPowerLeft;
-		// double powerUnscaledLeft = dY + rotationPowerLeft;
-		// double powerUnscaledRight = dY + rotationPowerRight;
 
 		double powerUnscaledLeft = dY + sign(dY) * rotationPowerLeft;
 		double powerUnscaledRight = dY + sign(dY) * rotationPowerRight;
@@ -94,19 +112,29 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 			right = maxPower * sign(powerUnscaledRight);
 			left = right * powerUnscaledLeft / powerUnscaledRight;
 		} else {
-			// right = powerUnscaledRight != 0 ? maxPower : 0;
-			// left = powerUnscaledLeft != 0 ? maxPower : 0;
 			left = maxPower * Math.signum(powerUnscaledLeft);
 			right = maxPower * Math.signum(powerUnscaledRight);
 		}
 
-		Robot.p.warnln(APPCOutput.class, "power: left = " + left + ", right = " + right);
+		Robot.managedPrinter.warnln(APPCOutput.class, "power: left = " + left + ", right = " + right);
 		return new double[] { left, right };
 	}
 
-	public static void cordDrive(DrivePort r, double maxPower, double dX, double dY) {
+	/**
+	 * Applies the values gained by
+	 * {@link APPCOutput#cordDrive(double, double, double)}
+	 * 
+	 * @see APPCOutput#calculatePelegDrive(double, double, double)
+	 * @param maxPower
+	 *            maximal power possible
+	 * @param dX
+	 *            x axis difference
+	 * @param dY
+	 *            y axis difference
+	 */
+	public void cordDrive(double maxPower, double dX, double dY) {
 		double[] values = calculatePelegDrive(maxPower, dX, dY);
-		r.tankDrive(values[0], values[1], false);
+		tankDrive(values[0], values[1], false);
 	}
 
 	/**
@@ -116,8 +144,9 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 */
 	@Override
 	public void use(APPController.APPDriveData output) {
-		Robot.p.println(getClass(), "power: " + output.power + ", x diff: " + output.dx + ", y diff: " + output.dy);
-		cordDrive(dPort, output.power * FULL_POWER, output.dx, output.dy);
+		Robot.managedPrinter.println(getClass(),
+				"power: " + output.power + ", x diff: " + output.dx + ", y diff: " + output.dy);
+		cordDrive(output.power, output.dx, output.dy);
 	}
 
 	@Override
@@ -127,39 +156,36 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 
 	/**
 	 * 
-	 * @param d
-	 * @param left
-	 * @param right
+	 * @param left left engines power
+	 * @param right right engines power
 	 */
-	public static void tankDrive(DrivePort d, double left, double right) {
-		d.tankDrive(FULL_POWER * left, FULL_POWER * right, false);
+	public void tankDrive(double left, double right) {
+		dPort.tankDrive(FULL_POWER * left, FULL_POWER * right, false);
 	}
 
 	/**
-	 * 
-	 * @param d
-	 * @param left
-	 * @param right
-	 * @param squared
+	 * @param left left engines power
+	 * @param right right engines power
+	 * @param squared squared inputs
 	 */
-	public void tankDrive(DrivePort d, double left, double right, boolean squared) {
-		d.tankDrive(FULL_POWER * left, FULL_POWER * right, squared);
+	public void tankDrive(double left, double right, boolean squared) {
+		dPort.tankDrive(FULL_POWER * left, FULL_POWER * right, squared);
 	}
 
 	/**
-	 * 
-	 * @param d
-	 * @param magnitude
-	 * @param curve
+	 * @param magnitude drive power
+	 * @param curve drive curve
 	 */
-	public void arcadeDrive(DrivePort d, double magnitude, double curve) {
-		d.arcadeDrive(FULL_POWER * magnitude, FULL_POWER * curve);
+	public void arcadeDrive(double magnitude, double curve) {
+		dPort.arcadeDrive(FULL_POWER * magnitude, curve);
 	}
-	
+
 	/**
-	 * Sometimes we just prefer this version over usual {@link Math#signum(double)}
-	 * @param num 
-	 * @return {@code num}'s sign
+	 * Sometimes we just prefer this version over usual
+	 * {@link Math#signum(double)}
+	 * 
+	 * @param num
+	 * @return -1 if {@code num < 0}, 1 otherwise
 	 */
 	private static int sign(double num) {
 		return num < 0 ? -1 : 1;

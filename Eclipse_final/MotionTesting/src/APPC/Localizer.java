@@ -135,7 +135,7 @@ public class Localizer implements Input<IPoint2D> {
 						m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
 					}
 				}
-				Robot.p.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
+				Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
 			} else {
 				reset();
 			}
