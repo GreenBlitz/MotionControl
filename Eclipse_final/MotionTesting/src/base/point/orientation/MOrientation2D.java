@@ -58,11 +58,11 @@ public class MOrientation2D extends Orientation2D {
 	}
 
 	@Override
-	public IOrientation2D rotate(double angle, boolean clockWise, DirectionEffect effect) {
+	public IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect) {
 		double sin = Math.sin(angle), cos = Math.cos(angle);
 		double x = m_x, y = m_y;
 
-		if (clockWise) {
+		if (!clockwise) {
 			m_x = cos * x + sin * y;
 			m_y = sin * x - cos * y;
 		} else {

@@ -59,7 +59,6 @@ public class ImOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D rotate(double angle, boolean clockwise, DirectionEffect effect) {
-
 		double sin = Math.sin(angle), cos = Math.cos(angle);
 		double x, y, dir;
 

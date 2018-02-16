@@ -169,15 +169,11 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	}
 
 	/**
-	 * <<<<<<< HEAD Acquires the input, calls
-	 * {@link IterativeController#calculate(IN)} with it and uses the output
+	 * Acquires the input, calls {@link IterativeController#calculate(IN)} with
+	 * it and uses the output
 	 * 
 	 * @return {@link Tuple} containing the input and output gained during the
-	 *         process ======= Acquires the input, calls
-	 *         {@link IterativeController#calculate(IN)} with it and uses the
-	 *         output
-	 * @return {@link Tuple} containing the input and output gained during the
-	 *         process >>>>>>> dfd4dd6... can't do complex pathes
+	 *         process
 	 */
 	protected Tuple<IN, OUT> act() {
 		IN input = getInput();
