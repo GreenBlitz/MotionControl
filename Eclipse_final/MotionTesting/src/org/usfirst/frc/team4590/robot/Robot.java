@@ -10,12 +10,10 @@ import com.kauailabs.navx.frc.AHRS;
 
 import APPC.APPCOutput;
 import APPC.APPController;
-import APPC.APPController.APPDriveData;
 import APPC.Localizer;
-import APPC.Orientation2D;
-import APPC.Path;
 import APPC.PathFactory;
 import base.DrivePort;
+import base.PrintManager;
 import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -29,55 +27,22 @@ import edu.wpi.first.wpilibj.SPI;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	public static final double DEFUALT_ARENA_MAP_ACC = 0.1;
+	public static final double DEFUALT_ARENA_LENGTH = 16.4592;
+	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
+
+	public static final PrintManager managedPrinter = new PrintManager();
 
 	private Localizer loc;
 	private APPCOutput out;
 	private DrivePort rd;
 	private APPController controller = null;
 	private CSVLogger logger;
+	private APPC.ArenaMap m_arenaMap;
 
-	// sensors
 	ScaledEncoder left;
 	ScaledEncoder right;
 	AHRS gyro;
-
-	public void logAllSensors() {
-		logger.log("Gyro angle", gyro.getAngle());
-		logger.log("Gyro yaw", gyro.getYaw());
-		logger.log("Gyro pitch", gyro.getPitch());
-		logger.log("Gyro roll", gyro.getRoll());
-
-		logger.log("Gyro accel x", gyro.getWorldLinearAccelX());
-		logger.log("Gyro accel y", gyro.getWorldLinearAccelY());
-		logger.log("Gyro accel z", gyro.getWorldLinearAccelZ());
-
-		logger.log("Gyro disp x (bad)", gyro.getDisplacementX());
-		logger.log("Gyro disp y (bad)", gyro.getDisplacementY());
-		logger.log("Gyro disp z (bad)", gyro.getDisplacementZ());
-
-		logger.log("Gyro orr dick", 1);
-
-		logger.log("Gyro bar pressure", gyro.getBarometricPressure());
-		logger.log("Robot altitude", gyro.getAltitude());
-
-		logger.log("Gyro RAW accel x", gyro.getRawAccelX());
-		logger.log("Gyro RAW accel z", gyro.getRawAccelZ());
-		logger.log("Gyro RAW accel y", gyro.getRawAccelY());
-		logger.log("Gyro RAW gyro x", gyro.getRawGyroX());
-		logger.log("Gyro RAW gyro y", gyro.getRawGyroY());
-		logger.log("Gyro RAW gyro z", gyro.getRawGyroZ());
-
-		logger.log("Gyro rotation rate", gyro.getRate());
-
-		logger.log("Encoder speed left", getSpeedL());
-		logger.log("Encoder speed right", getSpeedR());
-		logger.log("Encoder distsance left", left.getDistance());
-		logger.log("Encoder distance right", right.getDistance());
-		logger.log("Encoder RAW left", left.getRaw());
-		logger.log("Encoder RAW right", right.getRaw());
-		logger.log("Encoder distance", getDistance());
-		logger.log("Encoder speed", getSpeed());
-	}
 
 	@Override
 	public void disabledInit() {
@@ -90,14 +55,11 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		logger.enable();
+		new PathFactory().genStraightLine(1, 0, 0.005).construct(m_arenaMap);
 		loc.reset();
-		Path myPath = new PathFactory().genStraightLine(1, 0, 0.005).construct();
-		controller = new APPController(loc, out, myPath);
-		controller.setOutputConstrain(data -> new APPDriveData(data.power * 0.5, data.curve));
+		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
 	}
-	// 0.49 m
 
 	@Override
 	public void teleopInit() {
@@ -119,7 +81,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		logAllSensors();
 		Joystick dispairStick = new Joystick(0);
 		rd.arcadeDrive(dispairStick.getRawAxis(1), dispairStick.getRawAxis(4));
 	}
@@ -136,9 +97,18 @@ public class Robot extends IterativeRobot {
 		loc = Localizer.of(left, right, 0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
+		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACC, DEFUALT_ARENA_LENGTH, DEFUALT_ARENA_WIDTH);
+		initPrintables();
 	}
 
-	// getters for sensors
+	private void initPrintables() {
+		// p.registerPrintable(APPController.AbsoluteTolerance.class);
+		// p.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
+		// p.registerPrintable(APPCOutput.class);
+		managedPrinter.registerPrintable(APPController.class);
+	}
+
 	public double getDistance() {
 		return (left.getDistance() - right.getDistance()) / 2;
 	}

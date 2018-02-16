@@ -1,30 +1,33 @@
 package APPC;
 
+import base.point.orientation.IOrientation2D;
+import base.point.orientation.IOrientation2D.DirectionEffect;
+import base.point.orientation.Orientation2D;
+
 public class PathFactory {
 
 	private Path m_path = new Path();
 
 	public PathFactory() {
-		m_path.add(new Orientation2D(0, 0, 0));
+		m_path.add(Orientation2D.immutable(0, 0, 0));
 	}
 
 	/**
-	 * 
 	 * @param origin
+	 *            path origin
 	 */
 	public PathFactory(Orientation2D origin) {
 		m_path.add(origin);
 	}
 
 	/**
-	 * 
 	 * @param path
 	 */
 	public PathFactory(Path path) {
 		m_path = path;
 		if (path.getTotalLength() == 0) {
 			System.err.println("No origin supplied to path, setting default");
-			m_path.add(new Orientation2D(0, 0, 0));
+			m_path.add(Orientation2D.immutable(0, 0, 0));
 		}
 	}
 
@@ -39,36 +42,37 @@ public class PathFactory {
 	 * @return the factory
 	 */
 	public PathFactory connectLine(Orientation2D connectTo, double metersPerPoint) {
-		Orientation2D origin = m_path.getLast();
-		Orientation2D distance = origin.distanceVector(connectTo);
-		if (distance.length() == 0)
+		IOrientation2D origin = m_path.getLast();
+		double length = origin.distance(connectTo);
+		if (length == 0)
 			return this;
-		double totalPoints = distance.length() / metersPerPoint;
+		double totalPoints = length / metersPerPoint;
 
-		double xJump = distance.getX() / totalPoints, yJump = distance.getY() / totalPoints;
+		double xJump = (connectTo.getX() - origin.getX()) / totalPoints,
+				yJump = (connectTo.getY() - origin.getY()) / totalPoints;
 
 		while (m_path.getLast().distance(connectTo) > 0) {
 			if (m_path.getLast().distance(connectTo) <= metersPerPoint) {
-				// Code almost done, finish it off
 				m_path.add(connectTo);
 				break;
 			}
-			m_path.add(m_path.getLast().add(xJump, yJump));
+			m_path.add((Orientation2D) m_path.getLast().moveBy(xJump, yJump));
 		}
 		return this;
 	}
 
 	/**
-	 * Like {@link PathFactory#connectLine(Orientation2D, double)} but with different parameters
+	 * Like {@link PathFactory#connectLine(Orientation2D, double)} but with
+	 * different parameters
+	 * 
 	 * @param x
 	 * @param y
 	 * @param metersPerPoint
 	 * @return
 	 */
-	public PathFactory conncetLine(double x, double y, double metersPerPoint){
-		return connectLine(new Orientation2D(x, y, 0), metersPerPoint);
+	public PathFactory conncetLine(double x, double y, double metersPerPoint) {
+		return connectLine(Orientation2D.immutable(x, y, 0), metersPerPoint);
 	}
-	
 
 	/**
 	 * Generate a straight line from the last path point to a point a certain
@@ -84,16 +88,17 @@ public class PathFactory {
 	 * @return the factory
 	 */
 	public PathFactory genStraightLine(double len, double rotation, double metersPerPoint) {
-		Orientation2D origin = m_path.getLast();
+		IOrientation2D origin = m_path.getLast();
 		for (double i = metersPerPoint; i < len + metersPerPoint; i += metersPerPoint) {
-			m_path.add(new Orientation2D(0, i, 0).rotate(rotation).add(origin));
-			// System.out.println(m_path.getLast());
+			m_path.add(((IOrientation2D) Orientation2D.immutable(0, i, 0).rotate(rotation, DirectionEffect.IGNORED))
+					.moveBy(origin, DirectionEffect.RESERVED));
 		}
 		return this;
 	}
 
-	public Path construct() {
-		return m_path;
+	public ArenaMap construct(ArenaMap map) {
+		map.construct(m_path);
+		return map;
 	}
 
 	/**
@@ -107,8 +112,8 @@ public class PathFactory {
 		if (invert)
 			metersPerPoint = -metersPerPoint;
 		for (double i = metersPerPoint; Math.abs(i) < length; i += metersPerPoint)
-			m_path.add(new Orientation2D(i, 0, 0));
-		m_path.add(new Orientation2D(invert ? -length : length, 0, 0));
+			m_path.add(Orientation2D.immutable(i, 0, 0));
+		m_path.add(Orientation2D.immutable(invert ? -length : length, 0, 0));
 		return this;
 	}
 
@@ -123,9 +128,8 @@ public class PathFactory {
 		if (invert)
 			metersPerPoint = -metersPerPoint;
 		for (double i = metersPerPoint; Math.abs(i) < length; i += metersPerPoint)
-			m_path.add(new Orientation2D(0, i, 0));
-		m_path.add(new Orientation2D(0, invert ? -length : length, 0));
+			m_path.add(Orientation2D.immutable(0, i, 0));
+		m_path.add(Orientation2D.immutable(0, invert ? -length : length, 0));
 		return this;
 	}
-
 }

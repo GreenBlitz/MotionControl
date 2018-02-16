@@ -10,6 +10,7 @@ import events.EventManager;
 /**
  * Abstract controller with input and output
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractController<IN, OUT> implements IController {
 	public static final Input NO_INPUT = () -> null;
 	public static final NullTolerance NO_TOLERANCE = NullTolerance.INSTANCE;
@@ -45,24 +46,70 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		END
 	}
 
+	/**
+	 * Current output object
+	 */
 	private Output<OUT> m_output;
+
+	/**
+	 * Original output object
+	 */
 	private Output<OUT> m_originalOutput;
+
+	/**
+	 * Current input object
+	 */
 	private Input<IN> m_input = NO_INPUT;
+
+	/**
+	 * Original input object
+	 */
 	private Input<IN> m_originalInput = NO_INPUT;
+
+	/**
+	 * Current controller destination
+	 */
 	protected IN m_destination;
 
+	/**
+	 * Output constrain
+	 */
 	protected Function<OUT, OUT> m_outputConstrain;
+
+	/**
+	 * Input constrain
+	 */
 	protected Function<IN, IN> m_inputConstrain;
 
+	/**
+	 * Current controller state
+	 * 
+	 * @see AbstractController.State
+	 */
 	protected State m_controllerState = State.DISABLED;
+
+	/**
+	 * Has the controller been freed
+	 */
 	protected boolean m_free = false;
 
+	/**
+	 * Current tolerance object
+	 * 
+	 * @see AbstractController.ITolerance
+	 */
 	protected ITolerance m_tolerance = NO_TOLERANCE;
 
 	protected final Object LOCK = new Object();
 
+	/**
+	 * Controller name
+	 */
 	protected String m_name;
 
+	/**
+	 * Portability with {@code DriverStation} and {@code SmartDashboard}
+	 */
 	protected EnvironmentPort m_environmentPort = EnvironmentPort.DEFAULT;
 
 	/**
@@ -84,7 +131,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 
 		m_inputConstrain = inputConstrain;
 		m_outputConstrain = outputConstrain;
-		
+
 		m_input = () -> inputConstrain.apply(in.recieve());
 		m_output = new Output<OUT>() {
 			@Override
@@ -147,7 +194,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * @param destination
 	 * @param name
 	 */
-	@SuppressWarnings("unchecked")
 	public AbstractController(Output<OUT> out, IN destination, String name) {
 		this(NO_INPUT, out, destination, name);
 	}
@@ -169,7 +215,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * @param out
 	 * @param name
 	 */
-	@SuppressWarnings("unchecked")
 	public AbstractController(Output<OUT> out, String name) {
 		this(NO_INPUT, out, name);
 	}
@@ -210,6 +255,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 * <p>
 	 * The various implementations of this class such as PercentageTolerance and
 	 * AbsoluteTolerance specify types of tolerance specifications to use.
+	 * </p>
 	 */
 	@FunctionalInterface
 	public interface ITolerance {
@@ -234,7 +280,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		/**
 		 * Override this to create the immediate on Target
 		 * 
-		 * @return
+		 * @return is the destination reached at that moment
 		 */
 		protected abstract boolean onInstantTimeTarget();
 
@@ -272,6 +318,10 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		}
 	}
 
+	/**
+	 * 
+	 * @return current controller state
+	 */
 	public State getControllerState() {
 		return m_controllerState;
 	}
@@ -386,9 +436,33 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		setOutputConstrain(outputConstrain);
 	}
 
+	public Input<IN> getInputObject() {
+		return m_input;
+	}
+
+	public Output<OUT> getOutputObject() {
+		return m_output;
+	}
+
+	public Input<IN> getOriginalInput() {
+		return m_originalInput;
+	}
+
+	public Output<OUT> getOriginOutput() {
+		return m_originalOutput;
+	}
+
+	public Function<IN, IN> getInputConstrain() {
+		return m_inputConstrain;
+	}
+
+	public Function<OUT, OUT> getOutputConstrain() {
+		return m_outputConstrain;
+	}
+
 	/**
-	 * 
 	 * @param dest
+	 *            new destination
 	 */
 	public synchronized void setDestination(IN dest) {
 		m_destination = dest;
@@ -407,8 +481,8 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	/**
-	 * Destroys the controller. <b> DO NOT TRY TO DO ANTHING WITH THE IT AFTER
-	 * <code>free</code> WAS CALLED!!!</b>
+	 * Destroys the controller. <b> DO NOT TRY TO DO ANTHING WITH THE IT
+	 * AFTER </b><code>free</code><b> WAS CALLED!!!</b>
 	 */
 	public void free() {
 		System.out.printf("%s object #%d is now freed\n", m_name, this.hashCode());
@@ -421,7 +495,7 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	}
 
 	public final IN getError() {
-		return getError(m_input.recieve());
+		return getError(getInput());
 	}
 
 	public final IN getError(IN input) {

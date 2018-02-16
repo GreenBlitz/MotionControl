@@ -4,16 +4,22 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.usfirst.frc.team4590.robot.Robot;
+
 import base.EnvironmentPort;
 import base.Input;
 import base.IterativeController;
 import base.ScaledEncoder;
+import base.point.IPoint2D;
+import base.point.orientation.IOrientation2D;
+import base.point.orientation.IOrientation2D.DirectionEffect;
+import base.point.orientation.Orientation2D;
 
-public class Localizer implements Input<Orientation2D> {
+public class Localizer implements Input<IPoint2D> {
 	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;
 	public static final Object LOCK = new Object();
 
-	private Orientation2D m_location;
+	private IOrientation2D m_location;
 
 	private ScaledEncoder[] m_leftWrappedEncoders;
 	private ScaledEncoder[] m_rightWrappedEncoders;
@@ -67,11 +73,10 @@ public class Localizer implements Input<Orientation2D> {
 	 * @return new localizer
 	 */
 	public static Localizer of(ScaledEncoder left, ScaledEncoder right, double wheelDist) {
-		return new Localizer(left, right, new Orientation2D(0, 0, 0), wheelDist);
+		return new Localizer(left, right, Orientation2D.mutable(0, 0, 0), wheelDist);
 	}
 
 	/**
-	 * 
 	 * @return distance traveled by left encoders
 	 */
 	public double getLeftDistance() {
@@ -80,7 +85,6 @@ public class Localizer implements Input<Orientation2D> {
 	}
 
 	/**
-	 * 
 	 * @return distance traveled by right encoders
 	 */
 	public double getRightDistance() {
@@ -88,7 +92,7 @@ public class Localizer implements Input<Orientation2D> {
 				/ m_rightWrappedEncoders.length;
 	}
 
-	private class LocalizeTimerTask extends TimerTask {
+	public class LocalizeTimerTask extends TimerTask {
 
 		private double leftDist;
 		private double rightDist;
@@ -113,24 +117,23 @@ public class Localizer implements Input<Orientation2D> {
 
 				if (leftDistDiff == rightDistDiff) {
 					synchronized (LOCK) {
-						m_location = m_location.add(0, leftDistDiff);
-						System.out.println("WARNING - robot location: " + m_location);
-						return;
+						m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
+					}
+				} else {
+					boolean leftIsLong = leftDistDiff > rightDistDiff;
+					double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
+
+					double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
+
+					double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
+					double adjustedRadiusFromCenter = radiusFromCenter;
+					IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(adjustedRadiusFromCenter,
+							0, m_location.getDirection(), DirectionEffect.RESERVED);
+					synchronized (LOCK) {
+						m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
 					}
 				}
-
-				boolean leftIsLong = leftDistDiff > rightDistDiff;
-				double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
-
-				double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
-
-				double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
-				double adjustedRadiusFromCenter = radiusFromCenter;
-				Orientation2D rotationOrigin = m_location.add(adjustedRadiusFromCenter, 0);
-				synchronized (LOCK) {
-					m_location = m_location.rotateRelativeToChange(rotationOrigin, angle);
-				}
-				System.out.println("WARNING - robot location: " + m_location);
+				Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
 			} else {
 				reset();
 			}
@@ -138,14 +141,14 @@ public class Localizer implements Input<Orientation2D> {
 	}
 
 	@Override
-	public Orientation2D recieve() {
+	public IPoint2D recieve() {
 		synchronized (LOCK) {
-			return m_location;
+			return Orientation2D.immutable(m_location);
 		}
 	}
 
 	/**
-	 * reset the encoders and the localizer saved location.
+	 * Reset the encoders and the localizer saved location.
 	 */
 	public void reset() {
 		for (ScaledEncoder enc : m_leftWrappedEncoders)
@@ -154,7 +157,7 @@ public class Localizer implements Input<Orientation2D> {
 		for (ScaledEncoder enc : m_rightWrappedEncoders)
 			enc.reset();
 
-		m_location = Orientation2D.GLOBAL_ORIGIN;
+		m_location.set(0, 0, 0);
 	}
 
 	public void setEnvironmentPort(EnvironmentPort ePort) {
