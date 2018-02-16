@@ -9,7 +9,6 @@ import events.EventManager;
 
 /**
  * Abstract controller with input and output
-<<<<<<< HEAD
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractController<IN, OUT> implements IController {
@@ -436,27 +435,27 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		};
 		setOutputConstrain(outputConstrain);
 	}
-	
+
 	public Input<IN> getInputObject() {
 		return m_input;
 	}
-	
+
 	public Output<OUT> getOutputObject() {
 		return m_output;
 	}
-	
+
 	public Input<IN> getOriginalInput() {
 		return m_originalInput;
 	}
-	
+
 	public Output<OUT> getOriginOutput() {
 		return m_originalOutput;
 	}
-	
+
 	public Function<IN, IN> getInputConstrain() {
 		return m_inputConstrain;
 	}
-	
+
 	public Function<OUT, OUT> getOutputConstrain() {
 		return m_outputConstrain;
 	}

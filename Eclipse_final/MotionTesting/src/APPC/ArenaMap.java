@@ -12,17 +12,17 @@ import base.point.IPoint2D;
  */
 @SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 public class ArenaMap {
-	
+
 	/**
-	 *  The map
+	 * The map
 	 */
 	private LinkedList<IndexedPoint2D>[][] m_map;
-	
+
 	/**
-	 *  A list of the points inserted, used to clear the map
+	 * A list of the points inserted, used to clear the map
 	 */
 	private LinkedList<IndexedPoint2D> m_path = new LinkedList<IndexedPoint2D>();
-	
+
 	private final double m_mapAccuracy;
 
 	public ArenaMap(double acc, double arenaXLength, double arenaYLength) {
@@ -35,6 +35,7 @@ public class ArenaMap {
 
 	/**
 	 * the hash function
+	 * 
 	 * @param point
 	 * @return calculated hash value of the point
 	 */
@@ -46,7 +47,8 @@ public class ArenaMap {
 	/**
 	 * inserts a point to the map
 	 * 
-	 * @param point point which will be inserted
+	 * @param point
+	 *            point which will be inserted
 	 */
 	public void insert(IPoint2D point) {
 		int[] loc = hash(point);
@@ -59,7 +61,8 @@ public class ArenaMap {
 	/**
 	 * takes a path (usually of type PathFactory) and draws it on the map
 	 * 
-	 * @param path the path which will be inserted to the map
+	 * @param path
+	 *            the path which will be inserted to the map
 	 */
 	public void construct(Iterable<IPoint2D> path) {
 		clear();
@@ -69,7 +72,8 @@ public class ArenaMap {
 	}
 
 	/**
-	 * finds the closest point to a given point ({@code loc}) from a list of points ({@code list})
+	 * finds the closest point to a given point ({@code loc}) from a list of
+	 * points ({@code list})
 	 * 
 	 * @param list
 	 * @param loc
@@ -86,8 +90,8 @@ public class ArenaMap {
 	}
 
 	/**
-	 * generates a list of all the points in a given range of distances
-	 * ({@code minRadius}, {@code maxRadius}) from a given point ({@code loc})
+	 * generates a list of all the points in a given range of distances (
+	 * {@code minRadius}, {@code maxRadius}) from a given point ({@code loc})
 	 * 
 	 * @param loc
 	 * @param minRadius
@@ -134,8 +138,8 @@ public class ArenaMap {
 	}
 
 	/**
-	 * finds the closest point to a given point ({@code loc}) uses {@code radius} for
-	 * recursive search
+	 * finds the closest point to a given point ({@code loc}) uses
+	 * {@code radius} for recursive search
 	 * 
 	 * @param loc
 	 * @param radius

@@ -77,7 +77,6 @@ public class Localizer implements Input<IPoint2D> {
 	}
 
 	/**
-	 * 
 	 * @return distance traveled by left encoders
 	 */
 	public double getLeftDistance() {
@@ -86,7 +85,6 @@ public class Localizer implements Input<IPoint2D> {
 	}
 
 	/**
-	 * 
 	 * @return distance traveled by right encoders
 	 */
 	public double getRightDistance() {
@@ -150,7 +148,7 @@ public class Localizer implements Input<IPoint2D> {
 	}
 
 	/**
-	 * reset the encoders and the localizer saved location.
+	 * Reset the encoders and the localizer saved location.
 	 */
 	public void reset() {
 		for (ScaledEncoder enc : m_leftWrappedEncoders)
