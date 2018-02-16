@@ -74,10 +74,6 @@ public class ImOrientation2D extends Orientation2D {
 
 		return new ImOrientation2D(x, y, dir);
 	}
-	
-	public IOrientation2D eotate(double angle, boolean clockwise) {
-		return rotate(angle, clockwise, DirectionEffect.RESERVED);
-	}
 
 	@Override
 	public IOrientation2D scale(double scale, DirectionEffect effect) {
