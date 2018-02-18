@@ -120,8 +120,6 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		Robot.managedPrinter.warnln(APPCOutput.class, "power: left = " + left + ", right = " + right);
 		return new double[] { left, right };
 	}
-	
-	//public static int getRotatiomFactor(int )
 
 	/**
 	 * Applies the values gained by

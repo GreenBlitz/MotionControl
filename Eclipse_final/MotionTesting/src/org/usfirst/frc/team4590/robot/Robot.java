@@ -56,7 +56,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().genStraightLine(1, 0, 0.005).genStraightLine(1, Math.PI * 1/6, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(1, 0, 0.005).genStraightLine(1, Math.PI / 2, 0.005)
+				.genStraightLine(1, Math.PI, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -83,7 +84,15 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Joystick dispairStick = new Joystick(0);
-		rd.arcadeDrive(dispairStick.getRawAxis(1), dispairStick.getRawAxis(4));
+		final double FULL_POWER = 0.8;
+		rd.arcadeDrive(regulate(dispairStick.getRawAxis(1), FULL_POWER),
+				regulate(dispairStick.getRawAxis(4), FULL_POWER));
+	}
+	
+	private static double regulate(double velocity, final double FULL_POWER) {
+		if (velocity < 0) velocity = Math.max(velocity, -FULL_POWER);
+		else if (velocity > 0) velocity = Math.min(velocity, FULL_POWER);
+		return velocity;
 	}
 
 	public Robot() {
@@ -92,6 +101,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		logger = new CSVLogger();
+		
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
 		gyro = new AHRS(SPI.Port.kMXP);
@@ -104,10 +114,10 @@ public class Robot extends IterativeRobot {
 
 	private void initPrintables() {
 		// p.registerPrintable(APPController.AbsoluteTolerance.class);
-		managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
-		//managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
+		//managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
 		// p.registerPrintable(APPCOutput.class);
-		managedPrinter.registerPrintable(APPController.class);
+		//managedPrinter.registerPrintable(APPController.class);
 	}
 
 	public double getDistance() {
