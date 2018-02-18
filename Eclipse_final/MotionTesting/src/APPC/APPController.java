@@ -168,7 +168,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		double distanceOverSlowDown = robotLoc.distance(m_destination) / m_slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
-		return Math.max(distanceOverSlowDown, 0.4);
+		return Math.max(distanceOverSlowDown, 0.8);
 	}
 
 	/**

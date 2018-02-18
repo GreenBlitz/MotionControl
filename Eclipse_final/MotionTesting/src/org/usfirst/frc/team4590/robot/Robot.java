@@ -13,6 +13,7 @@ import APPC.APPController;
 import APPC.Localizer;
 import APPC.PathFactory;
 import base.DrivePort;
+import base.IterativeController;
 import base.PrintManager;
 import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -55,7 +56,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().genStraightLine(1, 0, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(1, 0, 0.005).genStraightLine(1, Math.PI * 1/6, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -103,8 +104,8 @@ public class Robot extends IterativeRobot {
 
 	private void initPrintables() {
 		// p.registerPrintable(APPController.AbsoluteTolerance.class);
-		// p.registerPrintable(IterativeController.IterativeCalculationTask.class);
-		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
+		managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		//managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
 		// p.registerPrintable(APPCOutput.class);
 		managedPrinter.registerPrintable(APPController.class);
 	}

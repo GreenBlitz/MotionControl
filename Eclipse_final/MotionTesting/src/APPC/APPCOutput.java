@@ -15,7 +15,7 @@ import base.Output;
  */
 public class APPCOutput implements Output<APPController.APPDriveData> {
 	private static final double FULL_POWER = 0.8 * 0.6;
-	private static final double ROTATION_FACTOR = RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
+	private static final double ROTATION_FACTOR = 2;//RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 	private DrivePort dPort = DrivePort.DEFAULT;
@@ -120,6 +120,8 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		Robot.managedPrinter.warnln(APPCOutput.class, "power: left = " + left + ", right = " + right);
 		return new double[] { left, right };
 	}
+	
+	//public static int getRotatiomFactor(int )
 
 	/**
 	 * Applies the values gained by
