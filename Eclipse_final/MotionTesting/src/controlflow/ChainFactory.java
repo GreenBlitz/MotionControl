@@ -119,6 +119,12 @@ public class ChainFactory {
 
 		private Function<List<S>, C> lambda;
 		
+		
+		/**
+		 * Do not call yourself
+		 * @param inputCount number of connectors
+		 * @param lamb a lamb(ToSlaughter)da method to run for the connector conversion
+		 */
 		public FactoryConnector(int inputCount, Function<List<S>, C> lamb/*ToSlaughter*/) {
 			super(inputCount);
 			lambda = lamb;
@@ -150,6 +156,11 @@ public class ChainFactory {
 				m_allConsumerNodes = new LinkedList<>();
 			}
 			
+			/**
+			 * Sets a conversion method for this connection from a multiple input type connection to a single output one
+			 * @param lambda the conversion method (aka lambda method)
+			 * @return this AssembledConnection
+			 */
 			public AssembledConnection conversion(Function<List<?>, ?> lambda){
 				m_lambda = lambda;
 				return this;
@@ -157,34 +168,68 @@ public class ChainFactory {
 			
 			
 			
+			/**
+			 * Creates a node in the parent ChainAssembly with a given consumer and adds it as a consumer for this connection
+			 * @param consumer the consumer to create a node for in the parent ChainAssembly
+			 * @return this connection
+			 */
 			public AssembledConnection consumer(IChainConsumer<?, ?> consumer){ 
 				FactoryNode node = new FactoryNode(consumer);
 				m_allConsumerNodes.add(node); 
 				m_nodes.add(node);
 				return this; }
 			
+			/**
+			 * Creates a node in the parent ChainAssembly with a given supplier and adds it as a supplier for this connection
+			 * @param supplier the supplier to create a node for in the parent ChainAssembly
+			 * @return this connection
+			 */
 			public AssembledConnection supplier(IChainSupplier<?> supplier){ 
 				FactoryNode node = new FactoryNode(supplier);
 				m_allSupplierNodes.add(node);
 				m_nodes.add(node);
 				return this; }
 			
+			/**
+			 * Creates a named node in the parent ChainAssembly with a given consumer and adds it as a consumer for this connection
+			 * @param consumer the consumer to create a node for in the parent ChainAssembly
+			 * @param name the name of the created node
+			 * @return this connection
+			 */
 			public AssembledConnection namedConsumer(IChainConsumer<?, ?> consumer, String name){ 
 				FactoryNode node = new FactoryNode(consumer, name);
 				m_allConsumerNodes.add(node); 
 				m_nodes.add(node);
 				return this; }
 			
+			/**
+			 * Creates a named node in the parent ChainAssembly with a given supplier and adds it as a supplier for this connection
+			 * @param supplier the supplier to create a node for in the parent ChainAssembly
+			 * @param name the name of the created node
+			 * @return this connection
+			 */
 			public AssembledConnection namedSupplier(IChainSupplier<?> supplier, String name){ 
 				FactoryNode node = new FactoryNode(supplier, name);
 				m_allSupplierNodes.add(node); 
 				m_nodes.add(node);
 				return this; }
 			
+			
+			/**
+			 * Connects a named node which is contained in the parent ChainAssembly as a consumer of this connection
+			 * @param node the name of the node which should be marked as a consumer for this connector
+			 * @return this connection
+			 */
 			public AssembledConnection consumerFor(String node){
 				m_allConsumerNodes.add(node(node)); 
 				return this; }
 			
+			
+			/**
+			 * Connects a named node which is contained in the parent ChainAssembly as a supplier for this connection
+			 * @param node the name of the node which should be marked as a supplier for this connector
+			 * @return this connection
+			 */
 			public AssembledConnection supplierFor(String node){
 				m_allSupplierNodes.add(node(node)); 
 				return this; }
@@ -198,6 +243,11 @@ public class ChainFactory {
 			
 			public List<FactoryNode> getAllSuppliers(){ return m_allSupplierNodes; }
 			
+			/**
+			 * You stupid you should have saved an instance of the assembly when you created it;
+			 * BAKA! BAKA!
+			 * @return the parent ChainAssembly
+			 */
 			public ChainAssembly assembly(){
 				return ChainAssembly.this;
 			}
@@ -233,6 +283,11 @@ public class ChainFactory {
 			m_conns = new HashMap<>();
 		}
 		
+		/**
+		 * Selects an IChainable node by a given name in the assembled context
+		 * @param name the node name
+		 * @return the node; null if not found
+		 */
 		public FactoryNode node(String name){
 			for (FactoryNode cur : m_nodes){
 				if (cur.m_name != null && cur.m_name.equals(name)){
@@ -242,20 +297,42 @@ public class ChainFactory {
 			return null;
 		}
 		
+		/**
+		 * Find a node by index
+		 * @param index the node's index in the assembled context
+		 * @return the node; null if not found
+		 */
 		public FactoryNode node(int index){
 			return m_nodes.get(index < 0 ? index + m_nodes.size() : index);
 		}
 		
+		@Deprecated
+		/**
+		 * Creates a new node - saves it only by its creation index
+		 * @param node the IChainable to create a node from
+		 * @return this assembly
+		 */
 		public ChainAssembly newNode(IChainable node){
 			m_nodes.add(new FactoryNode(node));
 			return this;
 		}
 		
+		/**
+		 * Creates a new node - saves it by its creation index and a given name
+		 * @param node the IChainable to create a node from
+		 * @param name the name by which it will be saved
+		 * @return this assembly
+		 */
 		public ChainAssembly newNode(IChainable node, String name){
 			m_nodes.add(new FactoryNode(node, name));
 			return this;
 		}
 		
+		/**
+		 * Creates a new connection in the assembled context which will be saved by its name
+		 * @param name the name to save the connection by
+		 * @return the assembled connection if a connection by the given name does not exist; else it will return the already existing connection
+		 */
 		public AssembledConnection connection(String name){
 			if (!m_conns.containsKey(name)){
 				AssembledConnection con = new AssembledConnection();
@@ -267,7 +344,10 @@ public class ChainFactory {
 		
 		
 		
-		
+		/**
+		 * Creates the actual chain - WARNING - IS VERY BRUTE FORCE - DO NOT CALL MORE THAN YOU "ABSOLUTELY NEED"
+		 * @return a chain representation of this ChainAssembly
+		 */
 		public FactoryChain toChain(){
 			List<FactoryNode> pureInputs = new LinkedList<>();
 			List<FactoryNode> pureOutputs = new LinkedList<>();
@@ -391,7 +471,9 @@ public class ChainFactory {
 		
 		
 	}
-	
+	/**
+	 * This enum is absolutely necessary - will be changed in the future
+	 */
 	public static enum ChainOperationType{
 		MOVE_VALUE
 	}
@@ -399,7 +481,6 @@ public class ChainFactory {
 	public static final class FactoryChainOperation{
 		private List<IChainable> m_nodes;
 		private ChainOperationType m_type;
-		private Object value;
 		public FactoryChainOperation(List<IChainable> nodes, ChainOperationType type){
 			m_nodes = nodes;
 			m_type = type;
