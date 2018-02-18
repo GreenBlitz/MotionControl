@@ -35,7 +35,7 @@ public class ConsumerSupplier1 implements IChainConsumer<Double, Boolean>, IChai
 		simInp = true; //He got his simulated input so he should return true
 		return true;
 	}
-
+	
 	@Override
 	public boolean hasSimulatedInput() {
 		//For multiple Input controllers use a set and add each chainable node - return true when the set size is equal to the amount of inputs

@@ -492,7 +492,11 @@ public class ChainFactory {
 		
 	}
 	
-	
+	/**
+	 * Create a chain assembly
+	 * @param sup The first supplier, referenced as "root".
+	 * @return
+	 */
 	public static final ChainAssembly create(IChainSupplier<?> sup) {
 		return new ChainAssembly(sup);
 	}

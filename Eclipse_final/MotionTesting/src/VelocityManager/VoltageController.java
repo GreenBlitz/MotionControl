@@ -1,6 +1,11 @@
 package VelocityManager;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
+import controlflow.IChainIO;
+import controlflow.IChainable;
 
 /**
  * Controls the voltage of an actuator using desired velocity. <br>
@@ -32,8 +37,18 @@ import java.util.Date;
  * @author Alexey
  *
  */
-public class VoltageController {
-
+public class VoltageController implements IChainIO<Double, List<Double>, Boolean>{
+		
+	/**
+	 * Used to signfy when we dont have data on velocity,
+	 * larger than the speed of light
+	 */
+	private final double NULL_VELOCITY = Double.POSITIVE_INFINITY;
+	
+	protected double value;
+	protected double desiredVelocity = NULL_VELOCITY;
+	protected double currentVelocity = NULL_VELOCITY;
+	
 	/**
 	 * The constant that determines how quickly we converge to the desired
 	 * velocity. Should be 1 at all times in theory, but could be changed.
@@ -217,4 +232,50 @@ public class VoltageController {
 			return 0;
 		return (ad * 3) / (3 - m_Ku * m_avarageCallTime);
 	}
+	
+	public HashSet<IChainable> simulatedSet = new HashSet<>();
+
+	@Override
+	public void finalizeSimulation() {
+		simulatedSet = new HashSet<>();
+	}
+
+	@Override
+	public Double getValue() {
+		return value;
+	}
+
+	@Override
+	public boolean simulateOutput(IChainable Node) {
+		return hasSimulatedInput();
+	}
+
+	@Override
+	public boolean isCustomConsumer() {
+		return false;
+	}
+
+	@Override
+	public Boolean processData(List<Double> value) {
+		currentVelocity = value.get(0);
+		desiredVelocity = value.get(1);
+		this.value = getVoltage(desiredVelocity, currentVelocity);
+		return true;
+	}
+
+	@Override
+	public boolean simulateInput(IChainable node) {
+		return simulatedSet.add(node);
+	}
+
+	@Override
+	public boolean hasSimulatedInput() {
+		return simulatedSet.size() == 2;
+	}
+
+	@Override
+	public boolean hasInput() {
+		return currentVelocity != NULL_VELOCITY && desiredVelocity != NULL_VELOCITY;
+	}
+
 }
