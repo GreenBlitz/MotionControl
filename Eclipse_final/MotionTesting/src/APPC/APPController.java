@@ -8,8 +8,8 @@ import base.Input;
 import base.IterativeController;
 import base.Output;
 import base.point.IPoint2D;
+import base.point.Point2D;
 import base.point.orientation.IOrientation2D;
-import base.point.orientation.Orientation2D;
 
 /**
  * 
@@ -238,9 +238,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	}
 
 	@Override
-	public Orientation2D getError(IPoint2D loc, IPoint2D dest) {
-		return Orientation2D.immutable(loc.getX() - dest.getX(), loc.getY() - dest.getY(),
-				((IOrientation2D) loc).getDirection());
+	public Point2D getError(IPoint2D loc, IPoint2D dest) {
+		return Point2D.immutable(loc.getX() - dest.getX(), loc.getY() - dest.getY());
 	}
 
 	/**

@@ -3,15 +3,32 @@ package VelocityManager;
 import java.util.Date;
 
 /**
- * Controls the voltage of an actuator using desired velocity.
- * <br> base equations:
- * <br><a href="https://www.codecogs.com/eqnedit.php?latex=a_\omega&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_\omega&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" title="a_\omega = k_v \cdot V + k_\omega \cdot \omega" /></a>
- * <br> <br>
- * <a href="https://www.codecogs.com/eqnedit.php?latex=a_s&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_s&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega" title="a_s = k_v \cdot V + k_\omega \cdot \omega" /></a>
+ * Controls the voltage of an actuator using desired velocity. <br>
+ * base equations: <br>
+ * <a href=
+ * "https://www.codecogs.com/eqnedit.php?latex=a_\omega&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega"
+ * target="_blank"><img src=
+ * "https://latex.codecogs.com/gif.latex?a_\omega&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega"
+ * title="a_\omega = k_v \cdot V + k_\omega \cdot \omega" /></a> <br>
  * <br>
- * <a href="https://www.codecogs.com/eqnedit.php?latex=a_e&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;(\omega&space;&plus;&space;a_s&space;\cdot&space;\Delta&space;t)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_e&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;(\omega&space;&plus;&space;a_s&space;\cdot&space;\Delta&space;t)" title="a_e = k_v \cdot V + k_\omega \cdot (\omega + a_s \cdot \Delta t)" /></a>
+ * <a href=
+ * "https://www.codecogs.com/eqnedit.php?latex=a_s&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega"
+ * target="_blank"><img src=
+ * "https://latex.codecogs.com/gif.latex?a_s&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;\omega"
+ * title="a_s = k_v \cdot V + k_\omega \cdot \omega" /></a> <br>
+ * <a href=
+ * "https://www.codecogs.com/eqnedit.php?latex=a_e&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;(\omega&space;&plus;&space;a_s&space;\cdot&space;\Delta&space;t)"
+ * target="_blank"><img src=
+ * "https://latex.codecogs.com/gif.latex?a_e&space;=&space;k_v&space;\cdot&space;V&space;&plus;&space;k_\omega&space;\cdot&space;(\omega&space;&plus;&space;a_s&space;\cdot&space;\Delta&space;t)"
+ * title=
+ * "a_e = k_v \cdot V + k_\omega \cdot (\omega + a_s \cdot \Delta t)" /></a>
  * <br>
- * <a href="https://www.codecogs.com/eqnedit.php?latex=a_a&space;=&space;a_d&space;=&space;\frac{2\cdot&space;a_s&space;&plus;&space;a_e}{3}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?a_a&space;=&space;a_d&space;=&space;\frac{2\cdot&space;a_s&space;&plus;&space;a_e}{3}" title="a_a = a_d = \frac{2\cdot a_s + a_e}{3}" /></a>
+ * <a href=
+ * "https://www.codecogs.com/eqnedit.php?latex=a_a&space;=&space;a_d&space;=&space;\frac{2\cdot&space;a_s&space;&plus;&space;a_e}{3}"
+ * target="_blank"><img src=
+ * "https://latex.codecogs.com/gif.latex?a_a&space;=&space;a_d&space;=&space;\frac{2\cdot&space;a_s&space;&plus;&space;a_e}{3}"
+ * title="a_a = a_d = \frac{2\cdot a_s + a_e}{3}" /></a>
+ * 
  * @author Alexey
  *
  */
@@ -24,7 +41,7 @@ public class VoltageController {
 	protected double m_Ka;
 
 	/**
-	 * The velocity constant of this actuator. When voltage passes is 0 and the
+	 * The velocity constant of this actuator. When voltage passed is 0 and the
 	 * robot is moving, you can calculate the constant as: <a href=
 	 * "https://www.codecogs.com/eqnedit.php?latex=k_u&space;=&space;-&space;\frac{a}{U}"
 	 * target="_blank"><img src=
@@ -40,17 +57,17 @@ public class VoltageController {
 	 * target="_blank"><img src=
 	 * "https://latex.codecogs.com/gif.latex?k_v&space;=&space;\frac{a&space;&plus;&space;k_u&space;\cdot&space;U}{V}"
 	 * title="k_v = \frac{a + k_u \cdot U}{V}" /></a> where a is the actuator
-	 * acceleration, U the actuator velocity, Ku is <code>m_Ku</code> and V is the voltage
-	 * passed.
+	 * acceleration, U the actuator velocity, Ku is <code>m_Ku</code> and V is
+	 * the voltage passed.
 	 */
 	protected double m_Kv;
 
 	/**
 	 * In the calculation of the average time passed, how much importance is put
-	 * on previous values compared to new ones. <br>
-	 * 0 - no importance to past values <br>
+	 * on previous values compared to new ones. for example<br>
+	 * <blockquote> 0 - no importance to past values <br>
 	 * 1 - same importace as current calue <br>
-	 * 20 - low importance to current values
+	 * 20 - low importance to current values</blockquote>
 	 */
 	protected int m_pastTimeImportace;
 
@@ -89,14 +106,14 @@ public class VoltageController {
 
 		if (m_Ku == 0)
 			throw new RuntimeException(
-					"m_Kv was set to 0, are you implying the velocity has no affect over the acceleration?");
+					"m_Ku was set to 0, are you implying the velocity has no affect over the acceleration?");
 		if (m_Kv == 0)
 			throw new RuntimeException(
-					"m_Kv was set to 0, are you implying the voltage has no affect over the velocity?");
+					"m_Kv was set to 0, are you implying the voltage has no affect over the acceleration?");
 	}
 
 	/**
-	 * @see {@link VoltageController#VoltageController(double, double, double, int)}
+	 * @see VoltageController#VoltageController(double, double, double, int)
 	 * @param Ku
 	 * @param Kv
 	 * @param pastTimeImportance
@@ -106,7 +123,7 @@ public class VoltageController {
 	}
 
 	/**
-	 * @see {@link VoltageController#VoltageController(double, double, double, int)}
+	 * @see VoltageController#VoltageController(double, double, double, int)
 	 * @param Ku
 	 * @param Kv
 	 * @param Ka
@@ -116,7 +133,7 @@ public class VoltageController {
 	}
 
 	/**
-	 * @see {@link VoltageController#VoltageController(double, double, double, int)}
+	 * @see VoltageController#VoltageController(double, double, double, int)
 	 * @param Ku
 	 * @param Kv
 	 */
@@ -125,7 +142,7 @@ public class VoltageController {
 	}
 
 	/**
-	 * @see {@link VoltageController#m_Ka}
+	 * @see VoltageController#m_Ka
 	 * @param val
 	 */
 	public void setKa(double val) {
@@ -133,7 +150,7 @@ public class VoltageController {
 	}
 
 	/**
-	 * @see {@link VoltageController#m_pastTimeImportace}
+	 * @see VoltageController#m_pastTimeImportace
 	 * @param val
 	 */
 	public void setPastTimeImportance(int val) {
@@ -141,7 +158,7 @@ public class VoltageController {
 	}
 
 	/**
-	 * Reset the avarage call time and the time last called, must be called
+	 * Reset the average call time and the time last called, must be called
 	 * before start of program.
 	 */
 	public void resetTimeInterval() {
@@ -195,11 +212,9 @@ public class VoltageController {
 		}
 		m_lastCalled = currDate;
 
-		double da = getDesiredAcceleration(desiredVelocity, currentVelocity);
-		if (da == 0)
+		double ad = getDesiredAcceleration(desiredVelocity, currentVelocity);
+		if (m_Ku * m_avarageCallTime == 3) 
 			return 0;
-		if (m_Ku * m_avarageCallTime == 3)
-			m_avarageCallTime += 0.0001;
-		return 3 / (da * (3 - m_Ku * m_avarageCallTime));
+		return (ad * 3) / (3 - m_Ku * m_avarageCallTime);
 	}
 }
