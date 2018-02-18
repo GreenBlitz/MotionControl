@@ -109,7 +109,7 @@ public class VoltageController {
 					"m_Ku was set to 0, are you implying the velocity has no affect over the acceleration?");
 		if (m_Kv == 0)
 			throw new RuntimeException(
-					"m_Kv was set to 0, are you implying the voltage has no affect over the velocity?");
+					"m_Kv was set to 0, are you implying the voltage has no affect over the acceleration?");
 	}
 
 	/**
