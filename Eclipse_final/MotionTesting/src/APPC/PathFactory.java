@@ -2,7 +2,6 @@ package APPC;
 
 import base.point.IPoint2D;
 import base.point.Point2D;
-import base.point.orientation.Orientation2D;
 
 public class PathFactory {
 
@@ -21,7 +20,7 @@ public class PathFactory {
 	}
 
 	/**
-	 * @param path
+	 * @param path1
 	 */
 	public PathFactory(Path path) {
 		m_path = path;
