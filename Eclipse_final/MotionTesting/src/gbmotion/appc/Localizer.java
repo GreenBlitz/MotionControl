@@ -1,191 +1,144 @@
 package gbmotion.appc;
 
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import org.usfirst.frc.team4590.robot.Robot;
 
-import com.kauailabs.navx.frc.AHRS;
-
 import gbmotion.base.EnvironmentPort;
-import gbmotion.base.ScaledEncoder;
-import gbmotion.base.controller.Input;
-import gbmotion.base.controller.IterativeController;
-import gbmotion.base.point.IPoint2D;
 import gbmotion.base.point.orientation.IOrientation2D;
 import gbmotion.base.point.orientation.IOrientation2D.DirectionEffect;
 import gbmotion.base.point.orientation.Orientation2D;
+import gbmotion.controlflow.IChainConsumer;
+import gbmotion.controlflow.IChainable;
+import gbmotion.util.Tuple;
 
-public class Localizer implements Input<IPoint2D> {
-	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;
+public class Localizer implements IChainConsumer<Tuple<List<Double>, Map<EnvironmentPort.ePortFunctions,Boolean>>, Boolean> {
 	public static final double ENCODER_VALID_TOLERANCE = 10e-6;
 	public static final Object LOCK = new Object();
 
 	private IOrientation2D m_location;
 
-	private ScaledEncoder[] m_leftWrappedEncoders;
-	private ScaledEncoder[] m_rightWrappedEncoders;
-
-	private AHRS m_navx;
-	
 	private double m_lastGyroAngle;
 
 	private double m_wheelDistance;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
+	private Map<EnvironmentPort.ePortFunctions, Boolean> m_ePortFuncs;
+
+	double leftDist = 0;
+	double rightDist = 0;
 
 	/**
 	 * 
-	 * @param left
-	 *            left encoders
-	 * @param right
-	 *            right encoders
 	 * @param location
 	 *            the initial location
 	 * @param wheelDistance
 	 *            distance between the wheels (right left)
-	 * @param navx
 	 */
-	public Localizer(ScaledEncoder[] left, ScaledEncoder[] right, Orientation2D location, double wheelDistance,
-			AHRS navx) {
+	public Localizer(Orientation2D location, double wheelDistance) {
 		m_location = location;
-		m_leftWrappedEncoders = left;
-		m_rightWrappedEncoders = right;
 		m_wheelDistance = wheelDistance;
-		Timer m_timer = new Timer();
-		m_timer.schedule(new LocalizeTimerTask(), 0, (long) (1000 * PERIOD));
-		m_navx = navx;
 	}
+
 
 	/**
 	 * 
-	 * @param left
-	 *            left encoders
-	 * @param right
-	 *            right encoders
-	 * @param location
-	 *            the initial location
-	 * @param wheelDistance
-	 *            distance between the wheels (right left)
-	 * @param navx
-	 */
-	public Localizer(ScaledEncoder left, ScaledEncoder right, Orientation2D location, double wheelDistance, AHRS navx) {
-		this(new ScaledEncoder[] { left }, new ScaledEncoder[] { right }, location, wheelDistance, navx);
-	}
-
-	/**
-	 * 
-	 * @param left
-	 *            left encoder
-	 * @param right
-	 *            right encoder
 	 * @param wheelDist
 	 *            distance between the wheels (right left)
-	 * @param navx
 	 * @return new localizer
 	 */
-	public static Localizer of(ScaledEncoder left, ScaledEncoder right, double wheelDist, AHRS navx) {
-		return new Localizer(left, right, Orientation2D.mutable(0, 0, 0), wheelDist, navx);
+	public static Localizer of(double wheelDist) {
+		return new Localizer(Orientation2D.mutable(0, 0, 0), wheelDist);
 	}
 
-	/**
-	 * @return distance traveled by left encoders
-	 */
-	public double getLeftDistance() {
-		return Arrays.stream(m_leftWrappedEncoders).map(ScaledEncoder::getDistance).reduce((a, b) -> a + b).orElse(.0)
-				/ m_leftWrappedEncoders.length;
-	}
+	private void run(double leftInput, double rightInput, double gyroInput) {
 
-	/**
-	 * @return distance traveled by right encoders
-	 */
-	public double getRightDistance() {
-		return Arrays.stream(m_rightWrappedEncoders).map(ScaledEncoder::getDistance).reduce((a, b) -> a + b).orElse(.0)
-				/ m_rightWrappedEncoders.length;
-	}
+		if (m_ePortFuncs.get(EnvironmentPort.ePortFunctions.IS_ENABLED)) {
+			m_location.toDashboard("Robot location");
 
-	public class LocalizeTimerTask extends TimerTask {
+			double gyroAngleDiff = gyroInput - m_lastGyroAngle;
+			m_lastGyroAngle = gyroInput;
 
-		private double leftDist;
-		private double rightDist;
+			double rightDistDiff = rightInput - rightDist;
+			double leftDistDiff = leftInput - leftDist;
 
-		@Override
-		/**
-		 * Update the robot position
-		 */
-		public void run() {
-			if (ePort.isEnabled()) {
-				m_location.toDashboard("Robot location");
+			ePort.putNumber("RLdiffDifference", rightDistDiff - leftDistDiff);
 
-				double gyroAngle = m_navx.getAngle();
-				double gyroAngleDiff = gyroAngle - m_lastGyroAngle;
-				
-				double rightDistDiff = -rightDist;
-				double leftDistDiff = -leftDist;
-				
-				ePort.putNumber("RLdiffDifference", rightDistDiff - leftDistDiff);
-				
-				leftDist = getLeftDistance();
-				rightDist = getRightDistance();
-				rightDistDiff += rightDist;
-				leftDistDiff += leftDist;
-				double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
-				
-				ePort.putNumber("Left encoder", leftDist);
-				ePort.putNumber("Right encoder", rightDist);
-								
-				angle = isEncoderAngleValid(angle, gyroAngleDiff) ? angle : gyroAngleDiff;
-				m_lastGyroAngle = gyroAngle;
-				ePort.putNumber("angle", angle);
-				
-				if (angle == 0) {
-					synchronized (LOCK) {
-						m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
-					}
-				} else {
-					boolean leftIsLong = leftDistDiff > rightDistDiff;
-					double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
+			leftDist = leftInput;
+			rightDist = rightInput;
+			double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
 
-					double signedRadiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
-					IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(signedRadiusFromCenter,
-							0, m_location.getDirection(), DirectionEffect.RESERVED);
-					synchronized (LOCK) {
-						m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
-					}
+			ePort.putNumber("Left encoder", leftDist);
+			ePort.putNumber("Right encoder", rightDist);
+
+			angle = isEncoderAngleValid(angle, gyroAngleDiff) ? angle : gyroAngleDiff;
+			ePort.putNumber("angle", angle);
+
+			if (angle == 0) {
+				synchronized (LOCK) {
+					m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
 				}
-				Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
 			} else {
-				reset();
+				boolean leftIsLong = leftDistDiff > rightDistDiff;
+				double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
+
+				double signedRadiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
+				IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(signedRadiusFromCenter, 0,
+						m_location.getDirection(), DirectionEffect.RESERVED);
+				synchronized (LOCK) {
+					m_location.rotateAround(rotationOrigin, angle, DirectionEffect.CHANGED);
+				}
 			}
+			Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
+		} else {
+			reset();
 		}
 	}
 
-	@Override
-	public IPoint2D recieve() {
-		synchronized (LOCK) {
-			return Orientation2D.immutable(m_location);
-		}
-	}
-	
 	private boolean isEncoderAngleValid(double encoderDiff, double gyroDiff) {
 		return Math.abs(encoderDiff - gyroDiff) < ENCODER_VALID_TOLERANCE;
 	}
 
 	/**
-	 * Reset the encoders and the localizer saved location.
+	 * Reset the localizer saved location.
 	 */
 	public void reset() {
-		for (ScaledEncoder enc : m_leftWrappedEncoders)
-			enc.reset();
-
-		for (ScaledEncoder enc : m_rightWrappedEncoders)
-			enc.reset();
-
 		m_location = m_location.set(0, 0, 0);
 	}
 
 	public void setEnvironmentPort(EnvironmentPort ePort) {
 		this.ePort = ePort;
 	}
+	
+	private HashSet<IChainable> inputs = new HashSet<>();
+	
+	@Override
+	public void finalizeSimulation() {
+		inputs = new HashSet<>();
+	}
+
+	@Override
+	public boolean isCustomConsumer() {
+		return false;
+	}
+
+	@Override
+	public Boolean processData(Tuple<List<Double>, Map<EnvironmentPort.ePortFunctions, Boolean>> value) {
+		run(value._1.get(0), value._1.get(1), value._1.get(2));
+		m_ePortFuncs = value._2;
+		return true;
+	}
+
+	@Override
+	public boolean simulateInput(IChainable node) {
+		return inputs.add(node);
+	}
+
+	@Override
+	public boolean hasSimulatedInput() {
+		return inputs.size() == 3;
+	}
+	
 }

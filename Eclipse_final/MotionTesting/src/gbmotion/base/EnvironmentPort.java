@@ -228,4 +228,9 @@ public class EnvironmentPort {
 	public void putNumber(String name, double value) {
 		SmartDashboard.putNumber(name, value);
 	}
+	
+	public enum ePortFunctions{
+		IS_ENABLED,
+		IS_DISABLED
+	}
 }
