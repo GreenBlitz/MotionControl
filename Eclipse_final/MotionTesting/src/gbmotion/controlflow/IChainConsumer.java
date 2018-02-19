@@ -1,7 +1,6 @@
 package gbmotion.controlflow;
 
 /**
- * 
  * This interface
  * 
  * @author Memes

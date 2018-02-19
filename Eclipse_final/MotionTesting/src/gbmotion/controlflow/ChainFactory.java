@@ -7,11 +7,10 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.function.Function;
 
+@SuppressWarnings("unchecked")
 public class ChainFactory {
 	
 	protected static final class FactoryChain implements IChain{
-
-		
 		private long m_lastCycleStart = 0;
 		
 		private List<FactoryChainOperation> m_operations;
@@ -60,7 +59,6 @@ public class ChainFactory {
 			}
 		}
 		
-		
 		/**
 		 * tHiS cODe IS exTremly SAfE doNT wOrrY
 		 */
@@ -103,13 +101,11 @@ public class ChainFactory {
 
 		@Override
 		public IChain copy() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public void forceTerminate() {
-			// TODO Auto-generated method stub
 			
 		}
 		
@@ -133,7 +129,6 @@ public class ChainFactory {
 		public FactoryConnector(){
 			super(1);
 			lambda = list -> (C) list.get(0);
-			
 		}
 		
 		public C getValue(){
