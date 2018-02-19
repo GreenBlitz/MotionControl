@@ -14,14 +14,14 @@ import base.point.IPoint2D;
 @SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 public class ArenaMap {
 
-	public static class MapOutOfBoundsException extends IndexOutOfBoundsException {
+	public static class OutOfMapException extends RuntimeException {
 		private static final long serialVersionUID = -8720706204736267096L;
 
-		public MapOutOfBoundsException() {
+		public OutOfMapException() {
 			super();
 		}
 
-		public MapOutOfBoundsException(String message) {
+		public OutOfMapException(String message) {
 			super(message);
 		}
 
@@ -33,10 +33,11 @@ public class ArenaMap {
 		 * @param axisLength
 		 * @param axisOffset
 		 * @param axisName
+		 * @param mapAccuracy
 		 */
-		public MapOutOfBoundsException(double axisValue, double axisLength, double axisOffset, String axisName) {
-			super(String.format("invalid location %f on axis '%s': expected values between %f and %f", round(axisValue),
-					axisName, round(-axisOffset), round(axisLength - axisOffset)));
+		public OutOfMapException(double axisValue, double axisLength, double axisOffset, String axisName, double mapAccuracy) {
+			super(String.format("invalid location %s on axis '%s': expected values between %s and %s", round(axisValue),
+					axisName, round(-axisOffset*mapAccuracy), round((axisLength - axisOffset)*mapAccuracy)));
 		}
 
 		private static final String round(double num) {
@@ -45,6 +46,11 @@ public class ArenaMap {
 		}
 	}
 
+	public static final double DEFAULT_MAP_ACCURACY = 0.1;
+	private static final double METRE_PER_FOOT = .3048;
+	public static final double DEFAULT_HEIGHT = 54 * METRE_PER_FOOT;
+	public static final double DEFAULT_WIDTH = 27 * METRE_PER_FOOT;
+	
 	/**
 	 * The map
 	 */
@@ -55,8 +61,8 @@ public class ArenaMap {
 	 */
 	private LinkedList<IndexedPoint2D> m_path = new LinkedList<IndexedPoint2D>();
 
-	private final double m_xAxisOffset;
-	private final double m_yAxisOffset;
+	private final int m_xAxisOffset;
+	private final int m_yAxisOffset;
 
 	private final double m_mapAccuracy;
 
@@ -78,12 +84,12 @@ public class ArenaMap {
 		for (int x = 0; x < m_map.length; x++)
 			for (int y = 0; y < m_map[x].length; y++)
 				m_map[x][y] = new LinkedList();
-		m_xAxisOffset = xAxisOffset;
-		m_yAxisOffset = yAxisOffset;
+		m_xAxisOffset = (int) (xAxisOffset/accuracy);
+		m_yAxisOffset = (int) (yAxisOffset/accuracy);
 	}
 
 	/**
-	 * Constructs an arena map with offsets 0
+	 * Constructs an arena map with offsets at the middle of the arena
 	 * 
 	 * @see ArenaMap#ArenaMap(double, double, double, double, double)
 	 * @param accuracy
@@ -94,7 +100,11 @@ public class ArenaMap {
 	 *            arena height
 	 */
 	public ArenaMap(double accuracy, double width, double height) {
-		this(accuracy, width, height, 0, 0);
+		this(accuracy, width, height, width / 2, height / 2);
+	}
+	
+	public ArenaMap() {
+		this(DEFAULT_MAP_ACCURACY, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
 	/**
@@ -104,8 +114,8 @@ public class ArenaMap {
 	 * @return calculated hash value of the point
 	 */
 	private int[] hash(IPoint2D point) {
-		return new int[] { (int) ((point.getX() + m_xAxisOffset) / m_mapAccuracy),
-				(int) ((point.getY() + m_yAxisOffset) / m_mapAccuracy) };
+		return new int[] { (int) (point.getX()/ m_mapAccuracy) + m_xAxisOffset,
+				(int) (point.getY()/ m_mapAccuracy) + m_yAxisOffset};
 	}
 
 	/**
@@ -116,20 +126,15 @@ public class ArenaMap {
 	 */
 	public void insert(IPoint2D point) {
 		int[] loc = hash(point);
-		List[] arr = null;
 		IndexedPoint2D iPoint = new IndexedPoint2D(point, m_path.size());
 
-		try {
-			arr = m_map[loc[0]];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new MapOutOfBoundsException(point.getX(), m_map.length, m_xAxisOffset, "x");
-		}
+		if (loc[0] >= m_map.length)
+			throw new OutOfMapException(point.getX(), m_map.length, m_xAxisOffset, "x", m_mapAccuracy);
 
-		try {
-			arr[loc[1]].add(iPoint);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new MapOutOfBoundsException(point.getY(), m_map[0].length, m_yAxisOffset, "y");
-		}
+		if (loc[1] >= m_map[0].length)
+			throw new OutOfMapException(point.getY(), m_map[0].length, m_yAxisOffset, "y", m_mapAccuracy);
+
+		m_map[loc[0]][loc[1]].add(iPoint);
 		m_path.add(iPoint);
 	}
 

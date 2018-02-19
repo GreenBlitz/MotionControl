@@ -27,9 +27,6 @@ import edu.wpi.first.wpilibj.SPI;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	public static final double DEFUALT_ARENA_MAP_ACCURACY = 0.1;
-	public static final double DEFUALT_ARENA_HEIGHT = 16.4592;
-	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
 
 	public static final PrintManager managedPrinter = new PrintManager();
 
@@ -55,7 +52,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().genStraightLine(6, 0, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(323, 0, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -106,7 +103,7 @@ public class Robot extends IterativeRobot {
 		loc = Localizer.of(left, right, 0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
-		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACCURACY, DEFUALT_ARENA_WIDTH, DEFUALT_ARENA_HEIGHT);
+		m_arenaMap = new APPC.ArenaMap();
 		initPrintables();
 	}
 
