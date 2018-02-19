@@ -13,7 +13,6 @@ import APPC.APPController;
 import APPC.Localizer;
 import APPC.PathFactory;
 import base.DrivePort;
-import base.IterativeController;
 import base.PrintManager;
 import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -28,8 +27,8 @@ import edu.wpi.first.wpilibj.SPI;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	public static final double DEFUALT_ARENA_MAP_ACC = 0.1;
-	public static final double DEFUALT_ARENA_LENGTH = 16.4592;
+	public static final double DEFUALT_ARENA_MAP_ACCURACY = 0.1;
+	public static final double DEFUALT_ARENA_HEIGHT = 16.4592;
 	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
 
 	public static final PrintManager managedPrinter = new PrintManager();
@@ -56,8 +55,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().genStraightLine(1, 0, 0.005).genStraightLine(1, Math.PI / 2, 0.005)
-				.genStraightLine(1, Math.PI, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(6, 0, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -108,15 +106,15 @@ public class Robot extends IterativeRobot {
 		loc = Localizer.of(left, right, 0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
-		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACC, DEFUALT_ARENA_LENGTH, DEFUALT_ARENA_WIDTH);
+		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACCURACY, DEFUALT_ARENA_WIDTH, DEFUALT_ARENA_HEIGHT);
 		initPrintables();
 	}
 
 	private void initPrintables() {
-		// p.registerPrintable(APPController.AbsoluteTolerance.class);
+		//managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
 		//managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
 		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
-		// p.registerPrintable(APPCOutput.class);
+		//managedPrinter.registerPrintable(APPCOutput.class);
 		//managedPrinter.registerPrintable(APPController.class);
 	}
 
