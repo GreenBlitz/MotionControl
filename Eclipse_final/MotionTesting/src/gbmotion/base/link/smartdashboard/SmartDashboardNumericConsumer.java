@@ -1,13 +1,12 @@
-package gbmotion.base.link;
+package gbmotion.base.link.smartdashboard;
 
-import edu.wpi.first.wpilibj.NamedSendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import gbmotion.controlflow.IChainConsumer;
 import gbmotion.controlflow.IChainable;
+import gbmotion.util.Tuple;
 
-public class SmartDashboardLink<T extends NamedSendable> implements IChainConsumer<T,Boolean>{
-
-	boolean m_hasSimulatedInput = false;
+public class SmartDashboardNumericConsumer<T extends Number> implements IChainConsumer<Tuple<String, T>, Boolean> {
+	private boolean m_hasSimulatedInput = false;
 	
 	@Override
 	public void finalizeSimulation() {
@@ -20,11 +19,11 @@ public class SmartDashboardLink<T extends NamedSendable> implements IChainConsum
 	}
 
 	@Override
-	public Boolean processData(T value) {
-		SmartDashboard.putData(value);
+	public Boolean processData(Tuple<String, T> value) {
+		SmartDashboard.putNumber(value._1, ((Number) value._2).doubleValue());
 		return Boolean.TRUE;
 	}
-	
+
 	@Override
 	public boolean simulateInput(IChainable node) {
 		m_hasSimulatedInput = true;
@@ -35,5 +34,4 @@ public class SmartDashboardLink<T extends NamedSendable> implements IChainConsum
 	public boolean hasSimulatedInput() {
 		return m_hasSimulatedInput;
 	}
-	
 }
