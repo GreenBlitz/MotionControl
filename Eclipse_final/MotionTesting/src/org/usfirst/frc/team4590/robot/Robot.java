@@ -101,7 +101,7 @@ public class Robot extends IterativeRobot {
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
 		gyro = new AHRS(SPI.Port.kMXP);
-		loc = Localizer.of(left, right, 0.68);
+		loc = Localizer.of(left, right, 0.68, gyro);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 		m_arenaMap = new ArenaMap();
