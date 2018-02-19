@@ -119,11 +119,13 @@ public class Localizer implements Input<IPoint2D> {
 					synchronized (LOCK) {
 						m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
 					}
+					ePort.putNumber("angle", 0);
 				} else {
 					boolean leftIsLong = leftDistDiff > rightDistDiff;
 					double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
 
 					double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
+					ePort.putNumber("angle", angle);
 
 					double radiusFromCenter = -(shortDist / angle + Math.signum(angle) * m_wheelDistance / 2);
 					double adjustedRadiusFromCenter = radiusFromCenter;

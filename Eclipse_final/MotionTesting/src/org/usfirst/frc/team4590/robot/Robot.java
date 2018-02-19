@@ -27,8 +27,8 @@ import edu.wpi.first.wpilibj.SPI;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	public static final double DEFUALT_ARENA_MAP_ACC = 0.1;
-	public static final double DEFUALT_ARENA_LENGTH = 16.4592;
+	public static final double DEFUALT_ARENA_MAP_ACCURACY = 0.1;
+	public static final double DEFUALT_ARENA_HEIGHT = 16.4592;
 	public static final double DEFUALT_ARENA_WIDTH = 8.2296;
 
 	public static final PrintManager managedPrinter = new PrintManager();
@@ -55,7 +55,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().genStraightLine(1, 0, 0.005).construct(m_arenaMap);
+		new PathFactory().genStraightLine(6, 0, 0.005).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -82,7 +82,15 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Joystick dispairStick = new Joystick(0);
-		rd.arcadeDrive(dispairStick.getRawAxis(1), dispairStick.getRawAxis(4));
+		final double FULL_POWER = 0.8;
+		rd.arcadeDrive(regulate(dispairStick.getRawAxis(1), FULL_POWER),
+				regulate(dispairStick.getRawAxis(4), FULL_POWER));
+	}
+	
+	private static double regulate(double velocity, final double FULL_POWER) {
+		if (velocity < 0) velocity = Math.max(velocity, -FULL_POWER);
+		else if (velocity > 0) velocity = Math.min(velocity, FULL_POWER);
+		return velocity;
 	}
 
 	public Robot() {
@@ -91,22 +99,23 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		logger = new CSVLogger();
+		
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
 		gyro = new AHRS(SPI.Port.kMXP);
 		loc = Localizer.of(left, right, 0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
-		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACC, DEFUALT_ARENA_LENGTH, DEFUALT_ARENA_WIDTH);
+		m_arenaMap = new APPC.ArenaMap(DEFUALT_ARENA_MAP_ACCURACY, DEFUALT_ARENA_WIDTH, DEFUALT_ARENA_HEIGHT);
 		initPrintables();
 	}
 
 	private void initPrintables() {
-		// p.registerPrintable(APPController.AbsoluteTolerance.class);
-		// p.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		//managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
+		//managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
 		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
-		// p.registerPrintable(APPCOutput.class);
-		managedPrinter.registerPrintable(APPController.class);
+		//managedPrinter.registerPrintable(APPCOutput.class);
+		//managedPrinter.registerPrintable(APPController.class);
 	}
 
 	public double getDistance() {
