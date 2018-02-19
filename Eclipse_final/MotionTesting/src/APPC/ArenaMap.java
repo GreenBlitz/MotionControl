@@ -14,6 +14,10 @@ import base.point.IPoint2D;
 @SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 public class ArenaMap {
 
+	/**
+	 * Indicates that an attempt was made to place a point outside of the given map
+	 * @author karlo
+	 */
 	public static class OutOfMapException extends RuntimeException {
 		private static final long serialVersionUID = -8720706204736267096L;
 
@@ -30,14 +34,20 @@ public class ArenaMap {
 		 * locations
 		 * 
 		 * @param axisValue
+		 *            value on given axis
 		 * @param axisLength
+		 *            mapped length of given axis
 		 * @param axisOffset
+		 *            map offset at given axis
 		 * @param axisName
+		 *            given axis' name
 		 * @param mapAccuracy
+		 *            given map accuracy
 		 */
-		public OutOfMapException(double axisValue, double axisLength, double axisOffset, String axisName, double mapAccuracy) {
+		public OutOfMapException(double axisValue, double axisLength, double axisOffset, String axisName,
+				double mapAccuracy) {
 			super(String.format("invalid location %s on axis '%s': expected values between %s and %s", round(axisValue),
-					axisName, round(-axisOffset*mapAccuracy), round((axisLength - axisOffset)*mapAccuracy)));
+					axisName, round(-axisOffset * mapAccuracy), round((axisLength - axisOffset) * mapAccuracy)));
 		}
 
 		private static final String round(double num) {
@@ -46,11 +56,23 @@ public class ArenaMap {
 		}
 	}
 
-	public static final double DEFAULT_MAP_ACCURACY = 0.1;
 	private static final double METRE_PER_FOOT = .3048;
+	
+	public static final double DEFAULT_MAP_ACCURACY = 0.1;
 	public static final double DEFAULT_HEIGHT = 54 * METRE_PER_FOOT;
 	public static final double DEFAULT_WIDTH = 27 * METRE_PER_FOOT;
 	
+	/**
+	 * X axis offset (with relation to {@code DEFAULT_WIDTH})
+	 */
+	public static final double DEFAULT_X_OFFSET = DEFAULT_WIDTH / 2;
+	
+	/**
+	 * Y axis offset (with relation to {@code DEFAULT_HEIGHT})
+	 */
+	public static final double DEFAULT_Y_OFFSET = DEFAULT_HEIGHT / 2;
+	
+
 	/**
 	 * The map
 	 */
@@ -61,9 +83,19 @@ public class ArenaMap {
 	 */
 	private LinkedList<IndexedPoint2D> m_path = new LinkedList<IndexedPoint2D>();
 
+	/**
+	 * X axis offset (in map blocks)
+	 */
 	private final int m_xAxisOffset;
+	
+	/**
+	 * Y axis offset (in map blocks)
+	 */
 	private final int m_yAxisOffset;
 
+	/**
+	 * Map accuracy (ratio between an axis' length and amount of blocks on it, identical for both x and y)
+	 */
 	private final double m_mapAccuracy;
 
 	/**
@@ -84,8 +116,8 @@ public class ArenaMap {
 		for (int x = 0; x < m_map.length; x++)
 			for (int y = 0; y < m_map[x].length; y++)
 				m_map[x][y] = new LinkedList();
-		m_xAxisOffset = (int) (xAxisOffset/accuracy);
-		m_yAxisOffset = (int) (yAxisOffset/accuracy);
+		m_xAxisOffset = (int) (xAxisOffset / accuracy);
+		m_yAxisOffset = (int) (yAxisOffset / accuracy);
 	}
 
 	/**
@@ -102,9 +134,12 @@ public class ArenaMap {
 	public ArenaMap(double accuracy, double width, double height) {
 		this(accuracy, width, height, width / 2, height / 2);
 	}
-	
+
+	/**
+	 * Constructs an arena map using the default parameters noted in this class
+	 */
 	public ArenaMap() {
-		this(DEFAULT_MAP_ACCURACY, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+		this(DEFAULT_MAP_ACCURACY, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 
 	/**
@@ -114,8 +149,8 @@ public class ArenaMap {
 	 * @return calculated hash value of the point
 	 */
 	private int[] hash(IPoint2D point) {
-		return new int[] { (int) (point.getX()/ m_mapAccuracy) + m_xAxisOffset,
-				(int) (point.getY()/ m_mapAccuracy) + m_yAxisOffset};
+		return new int[] { (int) (point.getX() / m_mapAccuracy) + m_xAxisOffset,
+				(int) (point.getY() / m_mapAccuracy) + m_yAxisOffset };
 	}
 
 	/**
