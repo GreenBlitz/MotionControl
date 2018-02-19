@@ -8,16 +8,17 @@ import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT
 
 import com.kauailabs.navx.frc.AHRS;
 
-import APPC.APPCOutput;
-import APPC.APPController;
-import APPC.Localizer;
-import APPC.PathFactory;
-import base.DrivePort;
-import base.PrintManager;
-import base.ScaledEncoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
+import gbmotion.appc.APPCOutput;
+import gbmotion.appc.APPController;
+import gbmotion.appc.Localizer;
+import gbmotion.base.DrivePort;
+import gbmotion.base.ScaledEncoder;
+import gbmotion.path.ArenaMap;
+import gbmotion.path.PathFactory;
+import gbmotion.util.PrintManager;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,7 +36,7 @@ public class Robot extends IterativeRobot {
 	private DrivePort rd;
 	private APPController controller = null;
 	private CSVLogger logger;
-	private APPC.ArenaMap m_arenaMap;
+	private ArenaMap m_arenaMap;
 
 	ScaledEncoder left;
 	ScaledEncoder right;
@@ -103,7 +104,7 @@ public class Robot extends IterativeRobot {
 		loc = Localizer.of(left, right, 0.68);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
-		m_arenaMap = new APPC.ArenaMap();
+		m_arenaMap = new ArenaMap();
 		initPrintables();
 	}
 
