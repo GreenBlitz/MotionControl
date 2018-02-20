@@ -111,6 +111,7 @@ public class Robot extends IterativeRobot {
 		//managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
 		//managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
 		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
+		managedPrinter.registerPrintable(Localizer.class);
 		//managedPrinter.registerPrintable(APPCOutput.class);
 		//managedPrinter.registerPrintable(APPController.class);
 	}
