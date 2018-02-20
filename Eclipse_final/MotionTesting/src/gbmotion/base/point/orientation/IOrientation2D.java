@@ -254,7 +254,7 @@ public interface IOrientation2D extends IPoint2D {
 		case CHANGED:
 			IOrientation2D relative = Orientation2D
 					.mutable(getX() - origin.getX(), getY() - origin.getY(), getDirection()).rotate(angle);
-			return set(relative.getX() + origin.getX(), relative.getY() + origin.getY(), relative.getDirection());
+			return set(relative.getX() + origin.getX(), relative.getY() + origin.getY(), angle + getDirection());
 		case RESERVED:
 		case IGNORED:
 			return ((IOrientation2D) moveByReversed(origin, DirectionEffect.IGNORED).rotate(angle, effect))

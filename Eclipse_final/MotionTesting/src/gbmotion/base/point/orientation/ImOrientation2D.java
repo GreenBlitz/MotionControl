@@ -53,7 +53,7 @@ public class ImOrientation2D extends Orientation2D {
 		cos = Math.cos(direction);
 		sin = Math.sin(direction);
 
-		return new ImOrientation2D(m_x + x * cos + y * sin, m_y + x * sin - y * cos, normalizeAngle(dir));
+		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, normalizeAngle(dir));
 
 	}
 

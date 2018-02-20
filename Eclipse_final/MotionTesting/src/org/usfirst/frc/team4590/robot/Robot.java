@@ -8,9 +8,9 @@ import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SPI;
 import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
 import gbmotion.appc.Localizer;
@@ -40,7 +40,7 @@ public class Robot extends IterativeRobot {
 
 	ScaledEncoder left;
 	ScaledEncoder right;
-	AHRS gyro;
+	public static AHRS gyro = new AHRS(I2C.Port.kMXP);
 
 	@Override
 	public void disabledInit() {
@@ -100,7 +100,6 @@ public class Robot extends IterativeRobot {
 		
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
-		gyro = new AHRS(SPI.Port.kMXP);
 		loc = Localizer.of(left, right, 0.68, gyro);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
