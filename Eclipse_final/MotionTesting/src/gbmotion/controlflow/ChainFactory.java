@@ -586,7 +586,7 @@ public class ChainFactory {
 		}
 
 		public FactoryChainOperation(List<IChainable> nodes, ChainOperationType type) {
-			this(nodes, type, null);
+			this(nodes, type, new Object[] { null });
 		}
 	}
 

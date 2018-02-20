@@ -89,6 +89,10 @@ public class PrintManager {
 	public void warnf(Class<?> cls, String s, Object... o) {
 		warnf(cls, PrintType.OUT, s, o);
 	}
+	
+	public void warnf(Class<?> cls, String sep, String s, Object... o) {
+		warnf(cls, PrintType.OUT, sep, s, o);
+	}
 
 	public boolean contains(Class<?> cls) {
 		return printable.contains(cls);

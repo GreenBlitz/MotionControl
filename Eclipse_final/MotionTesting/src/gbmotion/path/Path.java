@@ -101,7 +101,7 @@ public class Path implements Iterable<IPoint2D> {
 
 	@Override
 	public String toString() {
-		return "Path [m_path=" + m_path + "]";
+		return "Path [" + m_path + "]";
 	}
 
 	public class PathIterator implements Iterator<IPoint2D>, Iterable<IPoint2D> {
@@ -187,6 +187,5 @@ public class Path implements Iterable<IPoint2D> {
 		public int getRemainingLength() {
 			return m_path.size() - currentIndex;
 		}
-
 	}
 }

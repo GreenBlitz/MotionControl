@@ -162,7 +162,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 *            right engines power
 	 */
 	public void tankDrive(double left, double right) {
-		dPort.tankDrive(FULL_POWER * left, FULL_POWER * right, false);
+		tankDrive(left, right, false);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 *            squared inputs
 	 */
 	public void tankDrive(double left, double right, boolean squared) {
-		dPort.tankDrive(0 * FULL_POWER * left, 0 * FULL_POWER * right, squared);
+		dPort.tankDrive(FULL_POWER * left, FULL_POWER * right, squared);
 	}
 
 	/**

@@ -53,7 +53,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().genStraightLine(323, 0, 0.005).construct(m_arenaMap);
+		new PathFactory().conncetLine(0, 1, 0.005).conncetLine(1, 1, 0.1).conncetLine(1, 0, 0.1).construct(m_arenaMap);
 		loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
@@ -97,7 +97,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		logger = new CSVLogger();
-		
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
 		loc = Localizer.of(left, right, 0.68, gyro);
@@ -110,10 +109,12 @@ public class Robot extends IterativeRobot {
 	private void initPrintables() {
 		//managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
 		//managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		//managedPrinter.registerPrintable(IterativeController.class);
 		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
-		managedPrinter.registerPrintable(Localizer.class);
+		//managedPrinter.registerPrintable(Localizer.class);
 		//managedPrinter.registerPrintable(APPCOutput.class);
 		//managedPrinter.registerPrintable(APPController.class);
+		//managedPrinter.registerPrintable(gbmotion.path.ArenaMap.class);
 	}
 
 	public double getDistance() {

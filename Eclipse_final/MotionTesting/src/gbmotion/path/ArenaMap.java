@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.usfirst.frc.team4590.robot.Robot;
+
 import gbmotion.base.point.IPoint2D;
 
 /**
@@ -112,7 +114,7 @@ public class ArenaMap {
 	 */
 	public ArenaMap(double accuracy, double width, double height, double xAxisOffset, double yAxisOffset) {
 		m_mapAccuracy = accuracy;
-		m_map = new LinkedList[(int) Math.ceil(width / accuracy)][(int) Math.ceil(height / accuracy)];
+		m_map = new LinkedList[(int) (width / accuracy)][(int) (height / accuracy)];
 		for (int x = 0; x < m_map.length; x++)
 			for (int y = 0; y < m_map[x].length; y++)
 				m_map[x][y] = new LinkedList();
@@ -139,7 +141,7 @@ public class ArenaMap {
 	 * Constructs an arena map using the default parameters noted in this class
 	 */
 	public ArenaMap() {
-		this(DEFAULT_MAP_ACCURACY, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+		this(DEFAULT_MAP_ACCURACY, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_X_OFFSET, DEFAULT_Y_OFFSET);
 	}
 
 	/**
@@ -239,16 +241,20 @@ public class ArenaMap {
 		int x0 = Math.max(mapLoc[0] - radInSqrs, 0);
 		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length - 1);
 		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
-		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map.length - 1);
+		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map[0].length - 1);
 		double dontCollectGC;
 		for (int x = x0; x < x1; x++)
-			for (int y = y0; y < y1; y++)
+			for (int y = y0; y < y1; y++){
+				Robot.managedPrinter.println(getClass(), "reached square x: " + x + ", y: " + y);
 				for (IndexedPoint2D point : (List<IndexedPoint2D>) m_map[x][y]) {
 					dontCollectGC = point.distanceSquared(loc);
+					Robot.managedPrinter.println(getClass(), "reached");
 					if (minRadiusSq <= dontCollectGC && dontCollectGC <= maxRadiusSq
 							&& (ret == null || ret.getIndex() < point.index))
 						ret = point;
 				}
+			}
+		Robot.managedPrinter.println(getClass(), ret);
 		return ret;
 	}
 
@@ -284,12 +290,13 @@ public class ArenaMap {
 	 */
 
 	public IPoint2D lastPointInRange(IPoint2D loc, double radius) {
-
 		IPoint2D ret = lastPointInRange(loc, 0, radius);
 
 		if (ret == null) {
 			ret = closestPoint(loc, radius);
 		}
+		Robot.managedPrinter.printf(ArenaMap.class, "location: %s, point in range: %s, radius: %f\r\n", loc, ret, radius);
+		Robot.managedPrinter.printf(getClass(), "map x:%d, map y:%d\r\n", m_map.length, m_map[0].length);
 		return ret;
 	}
 

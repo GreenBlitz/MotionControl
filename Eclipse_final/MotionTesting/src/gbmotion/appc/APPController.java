@@ -12,10 +12,7 @@ import gbmotion.base.point.Point2D;
 import gbmotion.base.point.orientation.IOrientation2D;
 import gbmotion.path.ArenaMap;
 
-/**
- * 
- * @author karlo
- */
+
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
@@ -116,6 +113,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 */
 	private IPoint2D updateGoalPoint(IPoint2D loc, ArenaMap map, double lookAhead) {
 		IPoint2D tmp = map.lastPointInRange(loc, lookAhead);
+		Robot.managedPrinter.println(getClass(), "next goal point: " + tmp);
 		tmp.toDashboard("Goal point");
 		return tmp;
 	}

@@ -153,7 +153,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 				} else {
 					m_controllerState = State.END;
 					outputStop();
-					Robot.managedPrinter.printf(getClass(), "WARNING: %s #%d has finished running\n", m_name,
+					Robot.managedPrinter.warnf(getClass(), ": ", "%s #%d has finished running\n", m_name,
 							IterativeController.this.hashCode());
 				}
 			}
