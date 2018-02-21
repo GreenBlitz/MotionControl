@@ -67,7 +67,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		logger.enable();
-		//gyro.reset();
+		gyro.reset();
 	}
 
 	@Override
@@ -105,10 +105,11 @@ public class Robot extends IterativeRobot {
 		logger = new CSVLogger();
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
-		while(gyro.isCalibrating()){}
-		if (!gyro.isConnected()){
-			int i = 1 / 0;
-		}
+		// This break code dont umcomment
+		//while(gyro.isCalibrating()){}
+		//if (!gyro.isConnected()){
+		//	int i = 1 / 0;
+		//}
 		//gyro.reset();
 		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.ENCODER_BASED);
 		rd = DrivePort.DEFAULT;
