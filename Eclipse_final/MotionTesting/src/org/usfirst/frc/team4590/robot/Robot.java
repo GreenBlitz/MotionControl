@@ -6,14 +6,14 @@ import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_LEFT_ENCODER_PORT_
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A;
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B;
 
-import javax.tools.DocumentationTool.Location;
-
 import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS.SerialDataType;
 
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
 import gbmotion.appc.Localizer;
@@ -43,7 +43,7 @@ public class Robot extends IterativeRobot {
 
 	ScaledEncoder left;
 	ScaledEncoder right;
-	public static AHRS gyro = new AHRS(I2C.Port.kMXP);
+	public AHRS gyro;
 
 	
 	
@@ -105,13 +105,14 @@ public class Robot extends IterativeRobot {
 		logger = new CSVLogger();
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
-		// This break code dont umcomment
-		//while(gyro.isCalibrating()){}
-		//if (!gyro.isConnected()){
-		//	int i = 1 / 0;
+		gyro = new AHRS(SPI.Port.kMXP);
+		if (!gyro.isConnected())
+			System.err.println("WARNING: Gyro not connected!!!!");
 		//}
-		//gyro.reset();
-		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.ENCODER_BASED);
+		// This break code don't uncomment
+	//	while(gyro.isCalibrating()){}
+		gyro.reset();
+		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.GYRO_BASED);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 		m_arenaMap = new ArenaMap();

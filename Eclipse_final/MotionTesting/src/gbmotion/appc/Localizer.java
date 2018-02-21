@@ -40,6 +40,8 @@ public class Localizer implements Input<IPoint2D> {
 	private AngleCalculation m_angleCalculationType;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
+	
+	private int printCnt = 0;
 
 	/**
 	 * 
@@ -65,6 +67,7 @@ public class Localizer implements Input<IPoint2D> {
 		m_navx = navx;
 		// TODO change angle calculation type
 		m_angleCalculationType = angleCalculationType;
+		//m_lastGyroAngle = m_navx.getYaw() * Math.PI / 180;
 	}
 
 	/**
@@ -141,8 +144,9 @@ public class Localizer implements Input<IPoint2D> {
 		public void run() {
 			if (ePort.isEnabled()) {
 				m_location.toDashboard("Robot location");
-
-				double gyroAngle = m_navx.getAngle() * Math.PI / 180;
+				
+				System.out.println("Yaw " + m_navx.getYaw() + " Roll " + m_navx.getRoll() + " Pitch " + m_navx.getPitch());
+				double gyroAngle = m_navx.getYaw() * Math.PI / 180;
 				double gyroAngleDiff = gyroAngle - m_lastGyroAngle;
 				m_lastGyroAngle = gyroAngle;
 
@@ -190,7 +194,7 @@ public class Localizer implements Input<IPoint2D> {
 					}
 				}
 				ePort.putNumber("angle", angle);
-				Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
+				if(printCnt++%10==0) Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
 			} else {
 				reset();
 			}
