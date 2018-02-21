@@ -23,7 +23,7 @@ public class Localizer implements Input<IPoint2D> {
 	}
 
 	public static final double PERIOD = IterativeController.DEFAULT_PERIOD / 4;
-	public static final double ENCODER_VALIDITY_TOLERANCE = 10e-2;
+	public static final double ENCODER_VALIDITY_TOLERANCE = 10e-4;
 	public static final Object LOCK = new Object();
 
 	private IOrientation2D m_location;
@@ -33,7 +33,7 @@ public class Localizer implements Input<IPoint2D> {
 
 	private AHRS m_navx;
 
-	private double m_lastGyroAngle;
+	private double m_lastGyroAngle = 0;
 
 	private double m_wheelDistance;
 
@@ -63,6 +63,7 @@ public class Localizer implements Input<IPoint2D> {
 		Timer m_timer = new Timer();
 		m_timer.schedule(new LocalizeTimerTask(), 0, (long) (1000 * PERIOD));
 		m_navx = navx;
+		// TODO change angle calculation type
 		m_angleCalculationType = angleCalculationType;
 	}
 
@@ -98,6 +99,21 @@ public class Localizer implements Input<IPoint2D> {
 	}
 
 	/**
+	 * 
+	 * @param left
+	 *            left encoder
+	 * @param right
+	 *            right encoder
+	 * @param wheelDist
+	 *            distance between the wheels (right left)
+	 * @param navx
+	 * @return new localizer
+	 */
+	public static Localizer of(ScaledEncoder left, ScaledEncoder right, double wheelDist, AHRS navx, AngleCalculation angleCalculationType) {
+		return new Localizer(new ScaledEncoder[] { left }, new ScaledEncoder[] { right }, Orientation2D.mutable(0, 0, 0), wheelDist, navx, angleCalculationType);
+	}
+
+	/**
 	 * @return distance traveled by left encoders
 	 */
 	public double getLeftDistance() {
@@ -128,6 +144,7 @@ public class Localizer implements Input<IPoint2D> {
 
 				double gyroAngle = m_navx.getAngle() * Math.PI / 180;
 				double gyroAngleDiff = gyroAngle - m_lastGyroAngle;
+				m_lastGyroAngle = gyroAngle;
 
 				double rightDistDiff = -rightDist;
 				double leftDistDiff = -leftDist;

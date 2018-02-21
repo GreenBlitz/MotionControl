@@ -6,9 +6,12 @@ import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_LEFT_ENCODER_PORT_
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A;
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B;
 
+import javax.tools.DocumentationTool.Location;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import gbmotion.appc.APPCOutput;
@@ -42,6 +45,8 @@ public class Robot extends IterativeRobot {
 	ScaledEncoder right;
 	public static AHRS gyro = new AHRS(I2C.Port.kMXP);
 
+	
+	
 	@Override
 	public void disabledInit() {
 		logger.disable();
@@ -53,8 +58,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().conncetLine(0, 1, 0.005).conncetLine(1, 1, 0.1).conncetLine(1, 0, 0.1).construct(m_arenaMap);
-		loc.reset();
+		new PathFactory().conncetLine(0, 5, 0.005).construct(m_arenaMap);
+		//loc.reset();
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.start();
 	}
@@ -62,6 +67,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		logger.enable();
+		//gyro.reset();
 	}
 
 	@Override
@@ -99,7 +105,12 @@ public class Robot extends IterativeRobot {
 		logger = new CSVLogger();
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
-		loc = Localizer.of(left, right, 0.68, gyro);
+		while(gyro.isCalibrating()){}
+		if (!gyro.isConnected()){
+			int i = 1 / 0;
+		}
+		//gyro.reset();
+		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.ENCODER_BASED);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 		m_arenaMap = new ArenaMap();
