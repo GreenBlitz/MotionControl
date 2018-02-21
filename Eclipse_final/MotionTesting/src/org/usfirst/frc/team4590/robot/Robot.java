@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
 import gbmotion.appc.Localizer;
+import gbmotion.appc.APPController.APPDriveData;
 import gbmotion.base.DrivePort;
 import gbmotion.base.ScaledEncoder;
 import gbmotion.path.ArenaMap;
@@ -58,9 +59,11 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().conncetLine(0, 5, 0.005).construct(m_arenaMap);
-		//loc.reset();
+		new PathFactory().conncetLine(0, 1, 0.005).construct(m_arenaMap);
+		loc.reset();
+		gyro.zeroYaw();
 		controller = new APPController(loc, out, m_arenaMap);
+		controller.setOutputConstrain((in) -> APPDriveData.of(in.power * 0.5, in.dx, in.dy));
 		controller.start();
 	}
 
