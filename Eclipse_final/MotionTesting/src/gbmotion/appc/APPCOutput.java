@@ -3,6 +3,7 @@ package gbmotion.appc;
 import org.usfirst.frc.team4590.robot.Robot;
 import org.usfirst.frc.team4590.robot.RobotStats;
 
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.DrivePort;
 import gbmotion.base.EnvironmentPort;
 import gbmotion.base.controller.Output;
@@ -14,7 +15,7 @@ import gbmotion.base.controller.Output;
  * @author karlo
  */
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static final double FULL_POWER = 0.8 * 0.6;
+	private static final double FULL_POWER = 0.8 * 0.5;
 	private static final double ROTATION_FACTOR = 2;//RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
@@ -174,6 +175,9 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 *            squared inputs
 	 */
 	public void tankDrive(double left, double right, boolean squared) {
+		NetworkTable motionTable = NetworkTable.getTable("motion");
+		motionTable.putNumber("motorRight", right);
+		motionTable.putNumber("motorLeft", left);
 		dPort.tankDrive(FULL_POWER * left, FULL_POWER * right, squared);
 	}
 

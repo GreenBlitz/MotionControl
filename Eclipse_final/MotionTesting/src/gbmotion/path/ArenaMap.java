@@ -295,8 +295,7 @@ public class ArenaMap {
 		if (ret == null) {
 			ret = closestPoint(loc, radius);
 		}
-		Robot.managedPrinter.printf(ArenaMap.class, "location: %s, point in range: %s, radius: %f\r\n", loc, ret, radius);
-		Robot.managedPrinter.printf(getClass(), "map x:%d, map y:%d\r\n", m_map.length, m_map[0].length);
+		Robot.managedPrinter.printf(getClass(), "location: %s, point in range: %s, radius: %f\r\n", loc, ret, radius);
 		return ret;
 	}
 

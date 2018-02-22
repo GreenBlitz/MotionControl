@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import org.usfirst.frc.team4590.robot.Robot;
 
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.controller.Input;
 import gbmotion.base.controller.IterativeController;
 import gbmotion.base.controller.Output;
@@ -11,6 +12,7 @@ import gbmotion.base.point.IPoint2D;
 import gbmotion.base.point.Point2D;
 import gbmotion.base.point.orientation.IOrientation2D;
 import gbmotion.path.ArenaMap;
+import gbmotion.path.IndexedPoint2D;
 
 
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
@@ -115,6 +117,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		IPoint2D tmp = map.lastPointInRange(loc, lookAhead);
 		Robot.managedPrinter.println(getClass(), "next goal point: " + tmp);
 		tmp.toDashboard("Goal point");
+		if (tmp != null)
+			NetworkTable.getTable("motion").putNumber("pointIdx", ((IndexedPoint2D)tmp).getIndex());
 		return tmp;
 	}
 
@@ -127,6 +131,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 *            the goal point
 	 * @return the curve coefficient which is 1/R
 	 */
+	@Deprecated
 	public double calculateCurve(IOrientation2D loc, IPoint2D goal) {
 		IPoint2D goalVector = goal.changePrespectiveTo(loc);
 		loc.toDashboard("Robot");

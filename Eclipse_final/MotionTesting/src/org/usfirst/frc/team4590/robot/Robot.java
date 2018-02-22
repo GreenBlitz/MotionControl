@@ -6,18 +6,21 @@ import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_LEFT_ENCODER_PORT_
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A;
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B;
 
-import com.kauailabs.navx.frc.AHRS;
-import com.kauailabs.navx.frc.AHRS.SerialDataType;
+import javax.jws.Oneway;
 
-import edu.wpi.first.wpilibj.I2C;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
-import gbmotion.appc.Localizer;
 import gbmotion.appc.APPController.APPDriveData;
+import gbmotion.appc.Localizer;
 import gbmotion.base.DrivePort;
 import gbmotion.base.ScaledEncoder;
 import gbmotion.path.ArenaMap;
@@ -45,16 +48,17 @@ public class Robot extends IterativeRobot {
 	ScaledEncoder left;
 	ScaledEncoder right;
 	public AHRS gyro;
-
 	
 	
 	@Override
 	public void disabledInit() {
+		DrivePort.DEFAULT.tankDrive(0, 0);
 		logger.disable();
 		System.out.println("Am I Disabled?");
 		if (controller != null) {
 			controller = null;
 		}
+		
 	}
 
 	@Override
@@ -63,7 +67,7 @@ public class Robot extends IterativeRobot {
 		loc.reset();
 		gyro.zeroYaw();
 		controller = new APPController(loc, out, m_arenaMap);
-		controller.setOutputConstrain((in) -> APPDriveData.of(in.power * 0.5, in.dx, in.dy));
+		controller.setOutputConstrain((in) -> APPDriveData.of(Math.max(in.power, 0.6), in.dx, in.dy));
 		controller.start();
 	}
 
@@ -71,6 +75,8 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		logger.enable();
 		gyro.reset();
+		NetworkTable motionTable = NetworkTable.getTable("motion");
+		motionTable.putNumber("pathLength", 0);
 	}
 
 	@Override
@@ -88,10 +94,10 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		Joystick dispairStick = new Joystick(0);
+		Scheduler.getInstance().run();
 		final double FULL_POWER = 0.8;
-		rd.arcadeDrive(regulate(dispairStick.getRawAxis(1), FULL_POWER),
-				regulate(dispairStick.getRawAxis(4), FULL_POWER));
+		rd.arcadeDrive(regulate(OI.getInstance().getJoystick().getRawAxis(1), FULL_POWER),
+				regulate(OI.getInstance().getJoystick().getRawAxis(4), FULL_POWER));
 	}
 	
 	private static double regulate(double velocity, final double FULL_POWER) {
@@ -108,18 +114,19 @@ public class Robot extends IterativeRobot {
 		logger = new CSVLogger();
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
-		gyro = new AHRS(SPI.Port.kMXP);
+		gyro = new AHRS(SerialPort.Port.kMXP);
 		if (!gyro.isConnected())
 			System.err.println("WARNING: Gyro not connected!!!!");
 		//}
 		// This break code don't uncomment
 	//	while(gyro.isCalibrating()){}
 		gyro.reset();
-		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.GYRO_BASED);
+		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.ENCODER_BASED);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 		m_arenaMap = new ArenaMap();
 		initPrintables();
+		OI.init(loc);
 	}
 
 	private void initPrintables() {

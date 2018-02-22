@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import org.usfirst.frc.team4590.robot.Robot;
 
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.EnvironmentPort;
 import gbmotion.util.Tuple;
 
@@ -158,6 +159,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 				}
 			}
 		} else {
+			
 			free();
 		}
 

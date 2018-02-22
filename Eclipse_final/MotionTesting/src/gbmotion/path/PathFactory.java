@@ -1,5 +1,6 @@
 package gbmotion.path;
 
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.point.IPoint2D;
 import gbmotion.base.point.Point2D;
 
@@ -96,6 +97,19 @@ public class PathFactory {
 	}
 
 	public ArenaMap construct(ArenaMap map) {
+		NetworkTable motionTable = NetworkTable.getTable("motion");
+		double[] arr = new double[m_path.getTotalLength() * 2];
+		int i = arr.length;
+		for (IPoint2D pt : m_path){
+			arr[--i] = pt.getX();
+			arr[--i] = pt.getY();
+		}
+		for (int j = 0; j < arr.length; j+=255){
+			double[] cur = new double[255];
+			System.arraycopy(arr, j, cur, 0, Math.min(255, arr.length - j));
+			motionTable.putNumberArray("path" + j / 255, cur);
+		}
+		motionTable.putNumber("pathLength", arr.length / 2);
 		map.construct(m_path);
 		return map;
 	}
