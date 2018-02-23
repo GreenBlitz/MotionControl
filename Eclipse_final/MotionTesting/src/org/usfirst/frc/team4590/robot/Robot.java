@@ -8,7 +8,6 @@ import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -56,12 +55,9 @@ public class Robot extends IterativeRobot {
 		if (controller != null) {
 			controller = null;
 		}
-
-		logger.enable();
-
-		loc.reset();
-
 		
+		logger.enable();
+		loc.reset();
 	}
 
 	@Override
@@ -108,10 +104,10 @@ public class Robot extends IterativeRobot {
 	}
 
 	private static double regulate(double velocity, final double FULL_POWER) {
-		if (velocity < 0)
-			velocity = Math.max(velocity, -FULL_POWER);
-		else if (velocity > 0)
-			velocity = Math.min(velocity, FULL_POWER);
+		/*
+		 * if (velocity < 0) velocity = Math.max(velocity, -FULL_POWER); else if
+		 * (velocity > 0) velocity = Math.min(velocity, FULL_POWER);
+		 */
 		return velocity;
 	}
 
@@ -132,7 +128,7 @@ public class Robot extends IterativeRobot {
 			setupFailureMessage = "gyro isn't connected";
 		}
 
-		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.GYRO_BASED);
+		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleDifferenceCalculation.ENCODER_BASED);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 		m_arenaMap = new ArenaMap();
