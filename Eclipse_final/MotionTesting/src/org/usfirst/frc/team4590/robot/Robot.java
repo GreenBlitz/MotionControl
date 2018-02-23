@@ -6,15 +6,11 @@ import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_LEFT_ENCODER_PORT_
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A;
 import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B;
 
-import javax.jws.Oneway;
-
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.appc.APPCOutput;
@@ -48,8 +44,10 @@ public class Robot extends IterativeRobot {
 	ScaledEncoder left;
 	ScaledEncoder right;
 	public AHRS gyro;
-	
-	
+
+	private boolean setupFailed = false;
+	private String setupFailureMessage = "";
+
 	@Override
 	public void disabledInit() {
 		DrivePort.DEFAULT.tankDrive(0, 0);
@@ -58,6 +56,11 @@ public class Robot extends IterativeRobot {
 		if (controller != null) {
 			controller = null;
 		}
+
+		logger.enable();
+
+		loc.reset();
+
 		
 	}
 
@@ -65,7 +68,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		new PathFactory().conncetLine(0, 1, 0.005).construct(m_arenaMap);
 		loc.reset();
-		gyro.zeroYaw();
+
 		controller = new APPController(loc, out, m_arenaMap);
 		controller.setOutputConstrain((in) -> APPDriveData.of(Math.max(in.power, 0.6), in.dx, in.dy));
 		controller.start();
@@ -74,13 +77,17 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		logger.enable();
-		gyro.reset();
+
+		loc.reset();
+
 		NetworkTable motionTable = NetworkTable.getTable("motion");
 		motionTable.putNumber("pathLength", 0);
 	}
 
 	@Override
 	public void robotPeriodic() {
+		if (setupFailed)
+			throw new RuntimeException(setupFailureMessage);
 	}
 
 	@Override
@@ -99,10 +106,12 @@ public class Robot extends IterativeRobot {
 		rd.arcadeDrive(regulate(OI.getInstance().getJoystick().getRawAxis(1), FULL_POWER),
 				regulate(OI.getInstance().getJoystick().getRawAxis(4), FULL_POWER));
 	}
-	
+
 	private static double regulate(double velocity, final double FULL_POWER) {
-		if (velocity < 0) velocity = Math.max(velocity, -FULL_POWER);
-		else if (velocity > 0) velocity = Math.min(velocity, FULL_POWER);
+		if (velocity < 0)
+			velocity = Math.max(velocity, -FULL_POWER);
+		else if (velocity > 0)
+			velocity = Math.min(velocity, FULL_POWER);
 		return velocity;
 	}
 
@@ -112,16 +121,18 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		logger = new CSVLogger();
-		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B, -RobotStats.ENCODER_SCALE);
-		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B, RobotStats.ENCODER_SCALE);
-		gyro = new AHRS(SerialPort.Port.kMXP);
-		if (!gyro.isConnected())
+		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B,
+				-RobotStats.LEFT_ENCODER_SCALE);
+		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B,
+				RobotStats.RIGHT_ENCODER_SCALE);
+		gyro = new AHRS(SPI.Port.kMXP);
+		if (!gyro.isConnected()) {
 			System.err.println("WARNING: Gyro not connected!!!!");
-		//}
-		// This break code don't uncomment
-	//	while(gyro.isCalibrating()){}
-		gyro.reset();
-		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.ENCODER_BASED);
+			setupFailed = true;
+			setupFailureMessage = "gyro isn't connected";
+		}
+
+		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleCalculation.GYRO_BASED);
 		rd = DrivePort.DEFAULT;
 		out = new APPCOutput();
 		m_arenaMap = new ArenaMap();
@@ -129,15 +140,19 @@ public class Robot extends IterativeRobot {
 		OI.init(loc);
 	}
 
+	public static void KillMyself(String suicideLetter) {
+		throw new RuntimeException(suicideLetter);
+	}
+
 	private void initPrintables() {
-		//managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
-		//managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
-		//managedPrinter.registerPrintable(IterativeController.class);
+		// managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
+		// managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
+		// managedPrinter.registerPrintable(IterativeController.class);
 		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
-		//managedPrinter.registerPrintable(Localizer.class);
-		//managedPrinter.registerPrintable(APPCOutput.class);
-		//managedPrinter.registerPrintable(APPController.class);
-		//managedPrinter.registerPrintable(gbmotion.path.ArenaMap.class);
+		// managedPrinter.registerPrintable(Localizer.class);
+		// managedPrinter.registerPrintable(APPCOutput.class);
+		// managedPrinter.registerPrintable(APPController.class);
+		// managedPrinter.registerPrintable(gbmotion.path.ArenaMap.class);
 	}
 
 	public double getDistance() {

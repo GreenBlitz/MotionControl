@@ -7,8 +7,10 @@ public final class RobotStats {
 							   WHEEL_RADIUS = 0.045,
 							   SPEED_GEARS_RATIO = 4.17,
 	                           POWER_GEARS_RATIO = 11.03,
-							   ENCODER_SCALE = 0.0036;
-	
+	                           ENCODER_SCALE = 0.0036,
+							   LEFT_ENCODER_SCALE = 168/45281.0,
+							   RIGHT_ENCODER_SCALE = 168/45321.0;
+							    
 	public static final boolean CHASSIS_LEFT_ENCODER_INVERT = true,
 								CHASSIS_RIGHT_ENCODER_INVERT = false;
 

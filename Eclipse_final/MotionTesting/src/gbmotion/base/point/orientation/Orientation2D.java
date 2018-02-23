@@ -6,6 +6,7 @@ import org.la4j.Matrix;
 
 import gbmotion.base.point.IPoint2D;
 import gbmotion.base.point.Point2D;
+import gbmotion.util.MathUtil;
 
 /**
  * This is a Orientation2D basic implementation.
@@ -18,12 +19,12 @@ public abstract class Orientation2D extends Point2D implements IOrientation2D {
 
 	public Orientation2D(double x, double y, double direction) {
 		super(x, y);
-		m_direction = normalizeAngle(direction);
+		m_direction = MathUtil.normalizeAngle(direction);
 	}
 
 	public Orientation2D(IPoint2D point, double direction) {
 		super(point);
-		m_direction = normalizeAngle(direction);
+		m_direction = MathUtil.normalizeAngle(direction);
 	}
 
 	public Orientation2D(IOrientation2D point) {

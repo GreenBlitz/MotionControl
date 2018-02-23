@@ -22,7 +22,6 @@ import gbmotion.util.Tuple;
  * @author karlo
  */
 public interface IOrientation2D extends IPoint2D {
-	public static final double TAU = 2 * Math.PI;
 
 	/**
 	 * Indicates if a method should preserve the direction after being called or
@@ -322,10 +321,6 @@ public interface IOrientation2D extends IPoint2D {
 			throw new IllegalArgumentException(
 					"so here we are again, it's always such a pleasure... what did you even do to get to here?");
 		}
-	}
-
-	default double normalizeAngle(double angle) {
-		return angle > 0 ? angle % TAU : TAU - (Math.abs(angle) % TAU);
 	}
 
 	/**

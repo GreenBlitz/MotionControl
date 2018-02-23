@@ -5,6 +5,7 @@ import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 import gbmotion.base.point.IPoint2D;
+import gbmotion.util.MathUtil;
 
 /**
  * Immutable Orientation2D. Each method will return a new instance leaving
@@ -40,7 +41,7 @@ public class ImOrientation2D extends Orientation2D {
 		case IGNORED:
 			return new ImOrientation2D(m_x + x, m_y + y, m_direction);
 		case CHANGED:
-			dir = normalizeAngle(m_direction + direction);
+			dir = MathUtil.normalizeAngle(m_direction + direction);
 			break;
 		case RESERVED:
 			dir = m_direction;
@@ -53,7 +54,7 @@ public class ImOrientation2D extends Orientation2D {
 		cos = Math.cos(direction);
 		sin = Math.sin(direction);
 
-		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, normalizeAngle(dir));
+		return new ImOrientation2D(m_x + x * cos - y * sin, m_y + x * sin + y * cos, MathUtil.normalizeAngle(dir));
 
 	}
 
@@ -70,7 +71,7 @@ public class ImOrientation2D extends Orientation2D {
 			y = sin * m_x + cos * m_y;
 		}
 
-		dir = effect.changed() ? normalizeAngle(m_direction + angle) : m_direction;
+		dir = effect.changed() ? MathUtil.normalizeAngle(m_direction + angle) : m_direction;
 
 		return new ImOrientation2D(x, y, dir);
 	}
@@ -78,7 +79,7 @@ public class ImOrientation2D extends Orientation2D {
 	@Override
 	public IOrientation2D scale(double scale, DirectionEffect effect) {
 		return new ImOrientation2D(m_x * scale, m_y * scale,
-				normalizeAngle((effect.changed() ? m_direction * scale : m_direction)));
+				MathUtil.normalizeAngle((effect.changed() ? m_direction * scale : m_direction)));
 	}
 
 	@Override
@@ -95,14 +96,14 @@ public class ImOrientation2D extends Orientation2D {
 		double x = vec.get(0);
 		double y = vec.get(1);
 
-		double direction = normalizeAngle(effect.changed() ? vec.get(2) : m_direction);
+		double direction = MathUtil.normalizeAngle(effect.changed() ? vec.get(2) : m_direction);
 
 		return new ImOrientation2D(x, y, direction);
 	}
 
 	@Override
 	public IOrientation2D setDirection(double angle) {
-		return new ImOrientation2D(m_x, m_y, normalizeAngle(angle));
+		return new ImOrientation2D(m_x, m_y, MathUtil.normalizeAngle(angle));
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class ImOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D set(double x, double y, double direction) {
-		return new ImOrientation2D(x, y, normalizeAngle(direction));
+		return new ImOrientation2D(x, y, MathUtil.normalizeAngle(direction));
 	}
 
 	@Override

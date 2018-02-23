@@ -5,6 +5,7 @@ import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
 import gbmotion.base.point.IPoint2D;
+import gbmotion.util.MathUtil;
 
 /**
  * Mutable Orientation2D. Each method will affect {@code this} and than return
@@ -41,7 +42,7 @@ public class MOrientation2D extends Orientation2D {
 			m_y += y;
 			break;
 		case CHANGED:
-			m_direction = normalizeAngle(m_direction + direction);
+			m_direction = MathUtil.normalizeAngle(m_direction + direction);
 		case RESERVED:
 			cos = Math.cos(direction);
 			sin = Math.sin(direction);
@@ -70,7 +71,7 @@ public class MOrientation2D extends Orientation2D {
 			m_y = sin * x + cos * y;
 		}
 
-		m_direction = effect.changed() ? normalizeAngle(m_direction + angle) : m_direction;
+		m_direction = effect.changed() ? MathUtil.normalizeAngle(m_direction + angle) : m_direction;
 
 		return this;
 	}
@@ -108,7 +109,7 @@ public class MOrientation2D extends Orientation2D {
 
 	@Override
 	public IOrientation2D setDirection(double angle) {
-		m_direction = normalizeAngle(angle);
+		m_direction = MathUtil.normalizeAngle(angle);
 		return this;
 	}
 
@@ -129,7 +130,7 @@ public class MOrientation2D extends Orientation2D {
 	public IOrientation2D set(double x, double y, double direction) {
 		m_x = x;
 		m_y = y;
-		m_direction = normalizeAngle(direction);
+		m_direction = MathUtil.normalizeAngle(direction);
 		return this;
 	}
 
