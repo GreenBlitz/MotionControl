@@ -242,8 +242,8 @@ public class Localizer implements Input<IPoint2D> {
 						m_location.rotateAround(rotationOrigin, angleChange, DirectionEffect.CHANGED);
 						m_location.setDirection(getAngleRadians());
 					}
-					if (MathUtil.normalizeAngle(tmpAngle + angleChange) != m_location.getDirection())
-						Robot.KillMyself("all angles are equal, but some angles are more equal than others");
+					/*if (MathUtil.normalizeAngle(tmpAngle + angleChange) != m_location.getDirection())
+						Robot.KillMyself("all angles are equal, but some angles are more equal than others");*/
 				}
 
 				NetworkTable motionTable = NetworkTable.getTable("motion");
