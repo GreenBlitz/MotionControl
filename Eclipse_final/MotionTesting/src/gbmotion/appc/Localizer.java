@@ -5,6 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.usfirst.frc.team4590.robot.Robot;
+import org.usfirst.frc.team4590.robot.RobotStats;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -207,11 +208,14 @@ public class Localizer implements Input<IPoint2D> {
 						m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
 					}
 				} else {
-					boolean leftIsLong = leftDistDiff > rightDistDiff;
-					double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
-
-					double signedRadiusFromCenter = -(shortDist / angleChange
+					boolean leftLonger = leftDistDiff > rightDistDiff;
+					double shortDist = leftLonger ? rightDistDiff : leftDistDiff;
+					//double longerDist = leftLonger ? leftDistDiff : rightDistDiff;
+					double signedRadiusFromCenter = -(shortDist / angleChange 
 							+ Math.signum(angleChange) * m_wheelDistance / 2);
+					//double wheelDist = RobotStats.HORIZONTAL_WHEEL_DIST;
+					//double signedRadiusFromCenter = -Math.signum(angleChange)
+					//		* ((wheelDist * shortDist) / (longerDist - shortDist) + 0.5 * wheelDist);
 					IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(signedRadiusFromCenter,
 							0, m_location.getDirection(), DirectionEffect.RESERVED);
 					synchronized (LOCK) {

@@ -19,7 +19,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	protected static final double DEFAULT_LOOKAHEAD = 0.5;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
-	protected static final double DEFAULT_SLOWDOWN = 0.5;
+	protected static final double DEFAULT_SLOWDOWN = 1;
 
 	/**
 	 * the path the controller is following
@@ -97,7 +97,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		super(in, out, period, "APPController");
 		m_map = map;
 		m_lookAhead = lookAhead;
-		setTolerance(new AbsoluteTolerance(toleranceDist));
+		setTolerance(new AbsoluteTimedTolerance(toleranceDist, minOnTargetTime));
 		setDestination(map.getLast());
 		m_slowDownDistance = DEFAULT_SLOWDOWN;
 	}

@@ -62,7 +62,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().conncetLine(0, 1, 0.005).construct(m_arenaMap);
+		new PathFactory().conncetLine(0, 3, 0.005).construct(m_arenaMap);
 		loc.reset();
 
 		controller = new APPController(loc, out, m_arenaMap);
@@ -98,7 +98,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		final double FULL_POWER = 0.8;
+		final double FULL_POWER = 0.6;
 		rd.arcadeDrive(regulate(OI.getInstance().getJoystick().getRawAxis(1), FULL_POWER),
 				regulate(OI.getInstance().getJoystick().getRawAxis(4), FULL_POWER));
 	}
