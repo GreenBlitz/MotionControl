@@ -136,7 +136,7 @@ public class VoltageController {
 	 * @throws RuntimeException
 	 *             when Ku or Kv are equal to 0
 	 */
-	public VoltageController(String name, TimeOption to, double Ku, double Kv, double Ka, int pastTimeImportance) {
+	public VoltageController(TimeOption to, double Ku, double Kv, double Ka, int pastTimeImportance) {
 		timeOption = to;
 		m_Ka = Ka;
 		m_Ku = Ku;
@@ -157,8 +157,8 @@ public class VoltageController {
 	 * @param Kv
 	 * @param pastTimeImportance
 	 */
-	public VoltageController(String name, TimeOption to, double Ku, double Kv, int pastTimeImportance) {
-		this(name, to, Ku, Kv, DEFAULT_KA, pastTimeImportance);
+	public VoltageController(TimeOption to, double Ku, double Kv, int pastTimeImportance) {
+		this(to, Ku, Kv, DEFAULT_KA, pastTimeImportance);
 	}
 
 	/**
@@ -167,8 +167,8 @@ public class VoltageController {
 	 * @param Kv
 	 * @param Ka
 	 */
-	public VoltageController(String name, TimeOption to, double Ku, double Kv, double Ka) {
-		this(name, to, Ku, Kv, Ka, DEFAULT_PAST_IMP);
+	public VoltageController(TimeOption to, double Ku, double Kv, double Ka) {
+		this(to, Ku, Kv, Ka, DEFAULT_PAST_IMP);
 	}
 
 	/**
@@ -176,8 +176,8 @@ public class VoltageController {
 	 * @param Ku
 	 * @param Kv
 	 */
-	public VoltageController(String name, TimeOption to, double Ku, double Kv) {
-		this(name, to, Ku, Kv, DEFAULT_KA, DEFAULT_PAST_IMP);
+	public VoltageController(TimeOption to, double Ku, double Kv) {
+		this(to, Ku, Kv, DEFAULT_KA, DEFAULT_PAST_IMP);
 	}
 
 	/**
@@ -215,7 +215,7 @@ public class VoltageController {
 	 *             {@link VoltageController#resetTimeInterval()} wasn't called
 	 *             prior to this.
 	 */
-	public double getOptimalPowerVoltage(double desiredVelocity, double currentVelocity, double due) throws NullPointerException {
+	public double getOptimalPower(double desiredVelocity, double currentVelocity, double due) throws NullPointerException {
 		return ((getStartAcceleration(desiredVelocity, currentVelocity, due) + m_Ku * currentVelocity) / m_Kv) / 12.0;
 	}
 
