@@ -1,11 +1,7 @@
 package gbmotion.VelocityManager;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-
-import gbmotion.controlflow.IChainIO;
-import gbmotion.controlflow.IChainable;
 
 /**
  * Controls the voltage of an actuator using desired velocity. <br>
@@ -37,15 +33,42 @@ import gbmotion.controlflow.IChainable;
  * @author Alexey
  *
  */
-public class VoltageController implements IChainIO<Double, List<Double>, Boolean> {
-
+public class VoltageController {
+	
+	/**
+	 * Indicates on what to base the controller
+	 * @author theem
+	 *
+	 */
+	public static enum TimeOption{
+		/**
+		 * does the maximum possible effort to reach the desired velocity in this cycle, without passing it 
+		 */
+		ASAP,
+		/**
+		 * Tries to reach the desired velocity in the given time
+		 */
+		TIME_GIVEN,
+		/**
+		 * Tries to reach the desired velocity until a certain date (UNIX)
+		 */
+		DATE_GIVEN
+	}
+	
+	public boolean inputBased() { return !timeOption.equals(TimeOption.ASAP); }
+	
+	public static final int currentVelocityIndex = 0,
+							desiredVelocityIndex = 1,
+							timeInputIndex = 2;
+	
+	protected TimeOption timeOption;
+	
 	/**
 	 * Used to signfy when we dont have data on velocity, larger than the speed
 	 * of light
 	 */
 	private final double NULL_VELOCITY = Double.POSITIVE_INFINITY;
 
-	protected double value;
 	protected double desiredVelocity = NULL_VELOCITY;
 	protected double currentVelocity = NULL_VELOCITY;
 
@@ -60,8 +83,8 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 * robot is moving, you can calculate the constant as: <a href=
 	 * "https://www.codecogs.com/eqnedit.php?latex=k_u&space;=&space;-&space;\frac{a}{U}"
 	 * target="_blank"><img src=
-	 * "https://latex.codecogs.com/gif.latex?k_u&space;=&space;-&space;\frac{a}{U}"
-	 * title="k_u = - \frac{a}{U}" /></a> where a is the actuator acceleration
+	 * "https://latex.codecogs.com/gif.latex?k_u&space;=&space;&space;\frac{a}{U}"
+	 * title="k_u = \frac{a}{U}" /></a> where a is the actuator acceleration
 	 * and U the actuator velocity.
 	 */
 	protected double m_Ku;
@@ -70,8 +93,8 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 * The voltage constant of this actuator. can be calculated as: <a href=
 	 * "https://www.codecogs.com/eqnedit.php?latex=k_v&space;=&space;\frac{a&space;&plus;&space;k_u&space;\cdot&space;U}{V}"
 	 * target="_blank"><img src=
-	 * "https://latex.codecogs.com/gif.latex?k_v&space;=&space;\frac{a&space;&plus;&space;k_u&space;\cdot&space;U}{V}"
-	 * title="k_v = \frac{a + k_u \cdot U}{V}" /></a> where a is the actuator
+	 * "https://latex.codecogs.com/gif.latex?k_v&space;=&space;\frac{a&space;-&space;k_u&space;\cdot&space;U}{V}"
+	 * title="k_v = \frac{a - k_u \cdot U}{V}" /></a> where a is the actuator
 	 * acceleration, U the actuator velocity, Ku is <code>m_Ku</code> and V is
 	 * the voltage passed.
 	 */
@@ -113,7 +136,8 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 * @throws RuntimeException
 	 *             when Ku or Kv are equal to 0
 	 */
-	public VoltageController(double Ku, double Kv, double Ka, int pastTimeImportance) {
+	public VoltageController(TimeOption to, double Ku, double Kv, double Ka, int pastTimeImportance) {
+		timeOption = to;
 		m_Ka = Ka;
 		m_Ku = Ku;
 		m_Kv = Kv;
@@ -133,8 +157,8 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 * @param Kv
 	 * @param pastTimeImportance
 	 */
-	public VoltageController(double Ku, double Kv, int pastTimeImportance) {
-		this(Ku, Kv, DEFAULT_KA, pastTimeImportance);
+	public VoltageController(TimeOption to, double Ku, double Kv, int pastTimeImportance) {
+		this(to, Ku, Kv, DEFAULT_KA, pastTimeImportance);
 	}
 
 	/**
@@ -143,8 +167,8 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 * @param Kv
 	 * @param Ka
 	 */
-	public VoltageController(double Ku, double Kv, double Ka) {
-		this(Ku, Kv, Ka, DEFAULT_PAST_IMP);
+	public VoltageController(TimeOption to, double Ku, double Kv, double Ka) {
+		this(to, Ku, Kv, Ka, DEFAULT_PAST_IMP);
 	}
 
 	/**
@@ -152,8 +176,8 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 * @param Ku
 	 * @param Kv
 	 */
-	public VoltageController(double Ku, double Kv) {
-		this(Ku, Kv, DEFAULT_KA, DEFAULT_PAST_IMP);
+	public VoltageController(TimeOption to, double Ku, double Kv) {
+		this(to, Ku, Kv, DEFAULT_KA, DEFAULT_PAST_IMP);
 	}
 
 	/**
@@ -191,8 +215,8 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 *             {@link VoltageController#resetTimeInterval()} wasn't called
 	 *             prior to this.
 	 */
-	public double getVoltage(double desiredVelocity, double currentVelocity) throws NullPointerException {
-		return (getStartAcceleration(desiredVelocity, currentVelocity) + m_Ku * currentVelocity) / m_Kv;
+	public double getOptimalPower(double desiredVelocity, double currentVelocity, double due) throws NullPointerException {
+		return ((getStartAcceleration(desiredVelocity, currentVelocity, due) + m_Ku * currentVelocity) / m_Kv) / 12.0;
 	}
 
 	/**
@@ -202,8 +226,17 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 *            as measured from sensors
 	 * @return The desired average acceleration
 	 */
-	protected double getDesiredAcceleration(double desiredVelocity, double currentVelocity) {
-		return (desiredVelocity - currentVelocity) * m_Ka;
+	protected double getDesiredAcceleration(double desiredVelocity, double currentVelocity, double due) {
+		switch (timeOption){
+		case ASAP:
+			return (desiredVelocity - currentVelocity) * (1 / m_avarageCallTime) * m_Ka;
+		case TIME_GIVEN:
+			return (desiredVelocity - currentVelocity) * (1 / due) * m_Ka;
+		case DATE_GIVEN:
+			return (desiredVelocity - currentVelocity) * (1000 / (due - System.currentTimeMillis())) * m_Ka;
+		default:
+			throw new RuntimeException("Here be dragons");
+		}
 	}
 
 	/**
@@ -216,7 +249,7 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 	 *             {@link VoltageController#resetTimeInterval()} wasn't called
 	 *             prior to this.
 	 */
-	protected double getStartAcceleration(double desiredVelocity, double currentVelocity) throws NullPointerException {
+	protected double getStartAcceleration(double desiredVelocity, double currentVelocity, double due) throws NullPointerException {
 		Date currDate = new Date();
 		long milisecsPasses = currDate.getTime() - m_lastCalled.getTime();
 		if (m_avarageCallTime == -1) {
@@ -227,55 +260,11 @@ public class VoltageController implements IChainIO<Double, List<Double>, Boolean
 		}
 		m_lastCalled = currDate;
 
-		double ad = getDesiredAcceleration(desiredVelocity, currentVelocity);
-		if (m_Ku * m_avarageCallTime == 3)
+		double ad = getDesiredAcceleration(desiredVelocity, currentVelocity, due);
+		if (m_Ku * m_avarageCallTime == -1)
 			return 0;
-		return (ad * 3) / (3 - m_Ku * m_avarageCallTime);
+		return (ad * 3) / (3 + m_Ku * m_avarageCallTime);
 	}
 
-	public HashSet<IChainable> simulatedSet = new HashSet<>();
-
-	@Override
-	public void finalizeSimulation() {
-		simulatedSet = new HashSet<>();
-	}
-
-	@Override
-	public Double getValue() {
-		return value;
-	}
-
-	@Override
-	public boolean simulateOutput(IChainable Node) {
-		return hasSimulatedInput();
-	}
-
-	@Override
-	public boolean isCustomConsumer() {
-		return false;
-	}
-
-	@Override
-	public Boolean processData(List<Double> value) {
-		currentVelocity = value.get(0);
-		desiredVelocity = value.get(1);
-		this.value = getVoltage(desiredVelocity, currentVelocity);
-		return true;
-	}
-
-	@Override
-	public boolean simulateInput(IChainable node) {
-		return simulatedSet.add(node);
-	}
-
-	@Override
-	public boolean hasSimulatedInput() {
-		return simulatedSet.size() == 2;
-	}
-
-	@Override
-	public boolean hasInput() {
-		return currentVelocity != NULL_VELOCITY && desiredVelocity != NULL_VELOCITY;
-	}
 
 }
