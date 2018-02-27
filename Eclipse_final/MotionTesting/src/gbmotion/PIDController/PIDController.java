@@ -9,10 +9,10 @@ public class PIDController extends IterativeController<Double, Double> {
 	private double m_lastError = 0;
 	private double m_totalError = 0;
 
-	double m_kP;
-	double m_kI;
-	double m_kD;
-	double m_kF;
+	private final double m_kP;
+	private final double m_kI;
+	private final double m_kD;
+	private final double m_kF;
 
 	/**
 	 * 
@@ -26,12 +26,13 @@ public class PIDController extends IterativeController<Double, Double> {
 	 * @param name
 	 */
 	public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double kd,
-			double kf, String name) {
-		super(in, out, destination, name);
+			double kf, double toleranceDist) {
+		super(in, out, destination, "PID Controller");
 		m_kP = kp;
 		m_kI = ki;
 		m_kD = kd;
 		m_kF = kf;
+		setTolerance(new AbsoluteTolerance(output -> Math.abs(output), toleranceDist));
 	}
 
 	/**
@@ -42,12 +43,13 @@ public class PIDController extends IterativeController<Double, Double> {
 	 * @param kp
 	 * @param name
 	 */
-	public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, String name) {
-		super(in, out, destination, name);
+	public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, double toleranceDist) {
+		super(in, out, destination, "PID Controller");
 		m_kP = kp;
 		m_kI = 0;
 		m_kD = 0;
 		m_kF = 0;
+		setTolerance(new AbsoluteTolerance(output -> Math.abs(output), toleranceDist));
 	}
 
 	/**
@@ -59,12 +61,13 @@ public class PIDController extends IterativeController<Double, Double> {
 	 * @param ki
 	 * @param name
 	 */
-	public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, String name) {
-		super(in, out, destination, name);
+	public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double toleranceDist) {
+		super(in, out, destination, "PID Controller");
 		m_kP = kp;
 		m_kI = ki;
 		m_kD = 0;
 		m_kF = 0;
+		setTolerance(new AbsoluteTolerance(output -> Math.abs(output), toleranceDist));
 	}
 
 	/**
@@ -78,12 +81,13 @@ public class PIDController extends IterativeController<Double, Double> {
 	 * @param name
 	 */
 	public PIDController(Input<Double> in, Output<Double> out, Double destination, double kp, double ki, double kd,
-			String name) {
-		super(in, out, destination, name);
+			double toleranceDist) {
+		super(in, out, destination, "PID Controller");
 		m_kP = kp;
 		m_kI = ki;
 		m_kD = kd;
 		m_kF = 0;
+		setTolerance(new AbsoluteTolerance(output -> Math.abs(output), toleranceDist));
 	}
 
 	@Override
@@ -116,5 +120,20 @@ public class PIDController extends IterativeController<Double, Double> {
 	public Double getError(Double input, Double dest) {
 		return dest - input;
 	}
-
+	
+	public double getKp() {
+		return m_kP;
+	}
+	
+	public double getKd() {
+		return m_kD;
+	}
+	
+	public double getKi() {
+		return m_kI;
+	}
+	
+	public double getKf() {
+		return m_kF;
+	}
 }

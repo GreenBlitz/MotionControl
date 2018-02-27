@@ -3,10 +3,10 @@ package gbmotion.base.controller;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Function;
 
 import org.usfirst.frc.team4590.robot.Robot;
 
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.EnvironmentPort;
 import gbmotion.util.Tuple;
 
@@ -33,6 +33,17 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 	 */
 	public IterativeController(Input<IN> in, Output<OUT> out, IN destination, double period, String name) {
 		super(in, out, destination, name);
+
+		m_period = period;
+
+		m_controllerLoop = new Timer();
+		m_controllerLoop.schedule(new IterativeCalculationTask(), 0L, (long) (1000 * period));
+	}
+	
+	public IterativeController(Input<IN> in, Output<OUT> out, IN destination, double period, String name, Function<IN, Double> norm, double tolerance) {
+		super(in, out, destination, name);
+		m_tolerance = new AbsoluteTolerance(norm, tolerance);
+		
 		m_period = period;
 
 		m_controllerLoop = new Timer();
@@ -112,8 +123,7 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 				@Override
 				public void uncaughtException(Thread arg0, Throwable arg1) {
-					arg1.printStackTrace();
-					System.exit(arg1.hashCode());
+					Robot.killMySelf(arg1);
 				}
 			});
 		}
@@ -148,18 +158,17 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 				}
 				if (!tolerance.onTarget()) {
 					Tuple<IN, OUT> IO = act();
-					Robot.managedPrinter.printf(getClass(), "\n%s #%d:\n%s\n", m_name,
+					Robot.managedPrinter.printf(getClass(), "\r\n%s #%d:\r\n%s\r\n", m_name,
 							IterativeController.this.hashCode(),
 							IterativeController.this.generateActivityDescription(IO._1, IO._2));
 				} else {
 					m_controllerState = State.END;
 					outputStop();
-					Robot.managedPrinter.warnf(getClass(), ": ", "%s #%d has finished running\n", m_name,
+					Robot.managedPrinter.warnf(getClass(), ": ", "%s #%d has finished running\r\n", m_name,
 							IterativeController.this.hashCode());
 				}
 			}
 		} else {
-			
 			free();
 		}
 

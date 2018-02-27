@@ -175,6 +175,17 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		m_name = name;
 	}
 
+	public AbstractController(Input<IN> in, Output<OUT> out, IN destination, String name, Function<IN, Double> norm,
+			double tolerance) {
+		this(in, out, destination, name);
+		m_tolerance = new AbsoluteTolerance(norm, tolerance);
+	}
+
+	public AbstractController(Input<IN> in, Output<OUT> out, IN destination, String name, ITolerance tolerance) {
+		this(in, out, destination, name);
+		m_tolerance = tolerance;
+	}
+
 	/**
 	 * 
 	 * @param in
@@ -197,6 +208,16 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 */
 	public AbstractController(Output<OUT> out, IN destination, String name) {
 		this(NO_INPUT, out, destination, name);
+	}
+
+	public AbstractController(Input<IN> in, Output<OUT> out, String name, Function<IN, Double> norm, double tolerance) {
+		this(in, out, name);
+		m_tolerance = new AbsoluteTolerance(norm, tolerance);
+	}
+
+	public AbstractController(Input<IN> in, Output<OUT> out, String name, ITolerance tolerance) {
+		this(in, out, name);
+		m_tolerance = tolerance;
 	}
 
 	/**
@@ -316,6 +337,21 @@ public abstract class AbstractController<IN, OUT> implements IController {
 		@Override
 		public boolean onTarget() {
 			throw new NullToleranceException("No tolerance value set when calling onTarget()");
+		}
+	}
+
+	public class AbsoluteTolerance implements ITolerance {
+		private Function<IN, Double> m_norm;
+		private double m_toleranceConstant;
+
+		public AbsoluteTolerance(Function<IN, Double> norm, double toleranceConstant) {
+			m_norm = norm;
+			m_toleranceConstant = toleranceConstant;
+		}
+
+		@Override
+		public boolean onTarget() {
+			return m_norm.apply(getError()) <= m_toleranceConstant;
 		}
 	}
 

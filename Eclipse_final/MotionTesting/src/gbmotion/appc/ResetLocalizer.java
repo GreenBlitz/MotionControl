@@ -1,7 +1,6 @@
-package org.usfirst.frc.team4590.robot;
+package gbmotion.appc;
 
 import edu.wpi.first.wpilibj.command.Command;
-import gbmotion.appc.Localizer;
 
 public class ResetLocalizer extends Command {
 

@@ -3,6 +3,7 @@ package org.usfirst.frc.team4590.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import gbmotion.appc.Localizer;
+import gbmotion.appc.ResetLocalizer;
 
 /**
  * This class is the glue that binds the controls on the physical operator

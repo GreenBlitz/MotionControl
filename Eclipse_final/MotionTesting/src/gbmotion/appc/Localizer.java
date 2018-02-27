@@ -5,7 +5,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.usfirst.frc.team4590.robot.Robot;
-import org.usfirst.frc.team4590.robot.RobotStats;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -17,6 +16,7 @@ import gbmotion.base.controller.IterativeController;
 import gbmotion.base.point.IPoint2D;
 import gbmotion.base.point.orientation.IOrientation2D;
 import gbmotion.base.point.orientation.IOrientation2D.DirectionEffect;
+import gbmotion.util.RobotStats;
 import gbmotion.base.point.orientation.MOrientation2D;
 import gbmotion.base.point.orientation.Orientation2D;
 
@@ -45,7 +45,7 @@ public class Localizer implements Input<IPoint2D> {
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 
-	private int printCnt = 0;
+	//private int printCnt = 0;
 
 	private boolean shouldReset = false;
 
@@ -231,10 +231,10 @@ public class Localizer implements Input<IPoint2D> {
 				motionTable.putNumber("locY", m_location.getY());
 				motionTable.putNumber("locAngle", m_location.getDirection());
 				motionTable.putNumber("gyroAngle", m_lastGyroAngle);
-
+				motionTable.putBoolean("isUpdated", true);
 				ePort.putNumber("angle", angleChange);
-				if (printCnt++ % 100 == 0)
-					Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
+				//if (printCnt++ % 100 == 0)
+				//Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
 			} else {
 				resetSelf();
 			}

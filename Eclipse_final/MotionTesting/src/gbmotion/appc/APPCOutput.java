@@ -1,12 +1,12 @@
 package gbmotion.appc;
 
 import org.usfirst.frc.team4590.robot.Robot;
-import org.usfirst.frc.team4590.robot.RobotStats;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.DrivePort;
 import gbmotion.base.EnvironmentPort;
 import gbmotion.base.controller.Output;
+import gbmotion.util.RobotStats;
 
 /**
  * Output object used in APPC
@@ -57,7 +57,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 			return;
 		}
 
-		double d = RobotStats.HORIZONTAL_WHEEL_DIST;
+		double d = RobotStats.Ragnarok.HORIZONTAL_WHEEL_DIST;
 		double R = 1 / Math.abs(curve);
 		double ratio;
 		ratio = (R - d / 2) / (R + d / 2);

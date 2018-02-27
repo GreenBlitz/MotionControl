@@ -12,15 +12,15 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import gbmotion.PIDController.PIDController;
 import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
-import gbmotion.appc.APPController.APPDriveData;
 import gbmotion.appc.Localizer;
 import gbmotion.base.DrivePort;
 import gbmotion.base.ScaledEncoder;
 import gbmotion.path.ArenaMap;
-import gbmotion.path.PathFactory;
 import gbmotion.util.PrintManager;
+import gbmotion.util.RobotStats;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -33,10 +33,12 @@ public class Robot extends IterativeRobot {
 
 	public static final PrintManager managedPrinter = new PrintManager();
 
+	public static final double FULL_POWER = 0.8;
 	private Localizer loc;
-	private APPCOutput out;
+	private APPCOutput output;
 	private DrivePort rd;
 	private APPController controller = null;
+
 	private CSVLogger logger;
 	private ArenaMap m_arenaMap;
 
@@ -44,30 +46,40 @@ public class Robot extends IterativeRobot {
 	ScaledEncoder right;
 	public AHRS gyro;
 
-	private boolean setupFailed = false;
-	private String setupFailureMessage = "";
+	public static boolean kms = false;
+	public static String suicideLetter = "";
+	public static Throwable suicideCause = null;
+
+	private PIDController m_PID;
 
 	@Override
 	public void disabledInit() {
-		DrivePort.DEFAULT.tankDrive(0, 0);
 		logger.disable();
 		System.out.println("Am I Disabled?");
+		m_PID = null;
 		if (controller != null) {
 			controller = null;
 		}
-		
+
 		logger.enable();
 		loc.reset();
 	}
 
 	@Override
 	public void autonomousInit() {
-		new PathFactory().conncetLine(0, 3, 0.005).construct(m_arenaMap);
-		loc.reset();
+		/*
+		 * new PathFactory().conncetLine(0, 1, 0.005).construct(m_arenaMap);
+		 * loc.reset();
+		 * 
+		 * controller = new APPController(loc, out, m_arenaMap);
+		 * controller.setOutputConstrain((in) ->
+		 * APPDriveData.of(Math.max(in.power, 0.6), in.dx, in.dy));
+		 * controller.start();
+		 */
+		// m_PID = new AngularPID(new GyroSampler(gyro), new AngleOutput(rd),
+		// -Math.PI / 2, 0.5, 1 / 12 * Math.PI);
+		// m_PID.start();
 
-		controller = new APPController(loc, out, m_arenaMap);
-		controller.setOutputConstrain((in) -> APPDriveData.of(Math.max(in.power, 0.6), in.dx, in.dy));
-		controller.start();
 	}
 
 	@Override
@@ -75,20 +87,23 @@ public class Robot extends IterativeRobot {
 		logger.enable();
 
 		loc.reset();
-
+		rd.setMaxOutput(FULL_POWER);
 		NetworkTable motionTable = NetworkTable.getTable("motion");
 		motionTable.putNumber("pathLength", 0);
 	}
 
 	@Override
 	public void robotPeriodic() {
-		if (setupFailed)
-			throw new RuntimeException(setupFailureMessage);
+		if (kms)
+			if (suicideCause == null)
+				throw new RuntimeException(suicideLetter);
+			else
+				throw new RuntimeException(suicideCause);
 	}
 
 	@Override
 	public void disabledPeriodic() {
-
+		DrivePort.DEFAULT.tankDrive(0, 0);
 	}
 
 	@Override
@@ -98,17 +113,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		final double FULL_POWER = 0.6;
-		rd.arcadeDrive(regulate(OI.getInstance().getJoystick().getRawAxis(1), FULL_POWER),
-				regulate(OI.getInstance().getJoystick().getRawAxis(4), FULL_POWER));
-	}
-
-	private static double regulate(double velocity, final double FULL_POWER) {
-		/*
-		 * if (velocity < 0) velocity = Math.max(velocity, -FULL_POWER); else if
-		 * (velocity > 0) velocity = Math.min(velocity, FULL_POWER);
-		 */
-		return velocity;
+		rd.arcadeDrive(OI.getInstance().getJoystick().getRawAxis(1), OI.getInstance().getJoystick().getRawAxis(4),
+				true);
 	}
 
 	public Robot() {
@@ -116,39 +122,40 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
+
 		logger = new CSVLogger();
 		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B,
-				-RobotStats.LEFT_ENCODER_SCALE);
+				-RobotStats.Ragnarok.LEFT_ENCODER_SCALE);
 		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B,
-				RobotStats.RIGHT_ENCODER_SCALE);
+				RobotStats.Ragnarok.RIGHT_ENCODER_SCALE);
 		gyro = new AHRS(SPI.Port.kMXP);
-		if (!gyro.isConnected()) {
-			System.err.println("WARNING: Gyro not connected!!!!");
-			setupFailed = true;
-			setupFailureMessage = "gyro isn't connected";
+		while (gyro.isCalibrating()) {
 		}
-
-		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleDifferenceCalculation.ENCODER_BASED);
+		/*
+		 * if (!gyro.isConnected()) { System.err.println(
+		 * "WARNING: Gyro not connected!!!!"); kms = true; suicideLetter =
+		 * "gyro isn't connected"; }
+		 */
+		gyro.reset();
+		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
 		rd = DrivePort.DEFAULT;
-		out = new APPCOutput();
+		output = new APPCOutput();
 		m_arenaMap = new ArenaMap();
 		initPrintables();
 		OI.init(loc);
 	}
 
-	public static void KillMyself(String suicideLetter) {
-		throw new RuntimeException(suicideLetter);
+	public static void killMySelf(String suicideLetter) {
+		Robot.suicideLetter = suicideLetter;
+		kms = true;
+	}
+
+	public static void killMySelf(Throwable cause) {
+		Robot.suicideCause = cause;
+		kms = true;
 	}
 
 	private void initPrintables() {
-		// managedPrinter.registerPrintable(APPController.AbsoluteTolerance.class);
-		// managedPrinter.registerPrintable(IterativeController.IterativeCalculationTask.class);
-		// managedPrinter.registerPrintable(IterativeController.class);
-		managedPrinter.registerPrintable(Localizer.LocalizeTimerTask.class);
-		// managedPrinter.registerPrintable(Localizer.class);
-		// managedPrinter.registerPrintable(APPCOutput.class);
-		// managedPrinter.registerPrintable(APPController.class);
-		// managedPrinter.registerPrintable(gbmotion.path.ArenaMap.class);
 	}
 
 	public double getDistance() {

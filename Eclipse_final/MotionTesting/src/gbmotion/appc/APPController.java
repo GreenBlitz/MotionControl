@@ -97,7 +97,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		super(in, out, period, "APPController");
 		m_map = map;
 		m_lookAhead = lookAhead;
-		setTolerance(new AbsoluteTimedTolerance(toleranceDist, minOnTargetTime));
+		setTolerance(new AbsoluteTolerance(output -> output.length(), toleranceDist));
 		setDestination(map.getLast());
 		m_slowDownDistance = DEFAULT_SLOWDOWN;
 	}
@@ -206,39 +206,6 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 			return APPController.this.getInput().distance(m_destination) < m_toleranceDist;
 		}
 
-	}
-
-	/**
-	 * Absolute convergence tolerance
-	 * 
-	 * @author karlo
-	 */
-	public class AbsoluteTolerance implements ITolerance {
-
-		private double m_toleranceDist;
-		private int calls = 0;
-
-		/**
-		 * Same as
-		 * {@link APPController.AbsoluteTimedTolerance#AbsoluteTimedTolerance(double, double)}
-		 * except that this doesn't have mintime 1 * @param toleranceDist
-		 */
-		public AbsoluteTolerance(double toleranceDist) {
-			m_toleranceDist = toleranceDist;
-		}
-
-		/**
-		 * return whether or not the path is finished
-		 */
-		@Override
-		public boolean onTarget() {
-			if ((calls++) % 400 == 0) {
-				Robot.managedPrinter.printf(getClass(), "actual error: %s, tolerance distance: %f",
-						APPController.this.getError().length(), m_toleranceDist);
-				calls = 0;
-			}
-			return APPController.this.getError().length() <= m_toleranceDist;
-		}
 	}
 
 	@Override
