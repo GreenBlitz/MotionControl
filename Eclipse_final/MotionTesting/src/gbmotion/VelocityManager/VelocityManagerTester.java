@@ -1,10 +1,9 @@
 package gbmotion.VelocityManager;
 
-import org.usfirst.frc.team4590.robot.RobotStats;
-
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import gbmotion.util.RobotStats;
 import gbmotion.util.Tuple;
 
 public class VelocityManagerTester {
@@ -15,17 +14,25 @@ public class VelocityManagerTester {
 	private VoltageController m_velocityManagerRight;
 	private Tuple<Encoder, Boolean> m_leftEncoder;
 	private Tuple<Encoder, Boolean> m_rightEncoder;
-
+	private double m_leftEncoderTicksPerRadian;
+	private double m_rightEncoderTicksPerRadian;
 	private int lastEncoderValueLeft = 0;
 	private int lastEncoderValueRight = 0;
 	private long lastTest = System.currentTimeMillis();
 	private double deltaTime;
 
 	public VelocityManagerTester(RobotDrive drive, Joystick stick, int pastTimeImportance,
-			Tuple<Encoder, Boolean> encoderLeft, Tuple<Encoder, Boolean> encoderRight) {
+			Tuple<Encoder, Boolean> encoderLeft, Tuple<Encoder, Boolean> encoderRight, RobotStats.Gear gear) {
 		m_drive = drive;
 		m_leftEncoder = encoderLeft;
 		m_rightEncoder = encoderRight;
+		if (gear == RobotStats.Gear.POWER) {
+			m_leftEncoderTicksPerRadian = RobotStats.Guillotine.EncoderRadianScale.LEFT_POWER.value;
+			m_rightEncoderTicksPerRadian = RobotStats.Guillotine.EncoderRadianScale.RIGHT_POWER.value;
+		} else {
+			m_leftEncoderTicksPerRadian = RobotStats.Guillotine.EncoderRadianScale.LEFT_VELOCITY.value;
+			m_rightEncoderTicksPerRadian = RobotStats.Guillotine.EncoderRadianScale.RIGHT_VELOCITY.value;
+		}
 		m_stick = stick;
 		m_velocityManagerLeft = new VoltageController(VoltageController.TimeOption.ASAP, 0, 0, pastTimeImportance);
 		m_velocityManagerRight = m_velocityManagerLeft = new VoltageController(VoltageController.TimeOption.ASAP, 0, 0,
@@ -79,7 +86,7 @@ public class VelocityManagerTester {
 		lastEncoderValueRight = ticks;
 		ticks *= m_rightEncoder._2 ? -1 : 1;
 		
-		return (deltaTicks * RobotStats.ENCODER_TICKS_PER_RADIAN) / deltaTime;
+		return (deltaTicks * m_rightEncoderTicksPerRadian) / deltaTime;
 	}
 
 	private double getLeftRate() {
@@ -88,7 +95,7 @@ public class VelocityManagerTester {
 		lastEncoderValueLeft = ticks;
 		ticks *= m_leftEncoder._2 ? -1 : 1;
 		
-		return (deltaTicks * RobotStats.ENCODER_TICKS_PER_RADIAN) / deltaTime;
+		return (deltaTicks * m_leftEncoderTicksPerRadian) / deltaTime;
 	}
 
 	private void run() {

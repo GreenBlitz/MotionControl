@@ -41,6 +41,21 @@ public final class RobotStats {
 			}
 		}
 		
+		public static enum EncoderRadianScale {
+			LEFT_VELOCITY(, Gear.VELOCITY),
+			LEFT_POWER(, Gear.POWER),
+			RIGHT_VELOCITY(, Gear.VELOCITY),
+			RIGHT_POWER(, Gear.POWER);
+			
+			public final double value;
+			public final Gear gear;
+			
+			private EncoderScale(double val, Gear gear) {
+				this.value = val;
+				this.gear = gear;
+			}
+		}
+		
 		public static enum EncoderInvert {
 			LEFT(),
 			RIGHT();

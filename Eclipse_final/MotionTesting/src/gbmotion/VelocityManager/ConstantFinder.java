@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.usfirst.frc.team4590.robot.Robot;
-import org.usfirst.frc.team4590.robot.RobotStats;
 
 import com.ctre.CANTalon;
 
@@ -35,7 +34,7 @@ public class ConstantFinder {
 
 	private List<Tuple<CANTalon, Boolean>> actuators;
 
-	private List<Tuple<Encoder, Boolean>> encoders;
+	private List<Tuple<Encoder, Double>> encoders;
 	private int lastEncoderValue = 0;
 
 	private long lastTest = System.currentTimeMillis();
@@ -54,7 +53,7 @@ public class ConstantFinder {
 	 *            A list of tuples, each tuple containing a talon and whether to
 	 *            invert the power when running it (for chasis)
 	 */
-	public ConstantFinder(List<Tuple<Encoder, Boolean>> encoders, List<Tuple<CANTalon, Boolean>> actuators) {
+	public ConstantFinder(List<Tuple<Encoder, Double>> encoders, List<Tuple<CANTalon, Boolean>> actuators) {
 		this.encoders = encoders;
 		this.actuators = actuators;
 	}
@@ -68,9 +67,9 @@ public class ConstantFinder {
 	 *            encoder
 	 * @param talon
 	 */
-	public ConstantFinder(Tuple<Encoder, Boolean> enc, Tuple<CANTalon, Boolean> talon) {
+	public ConstantFinder(Tuple<Encoder, Double> enc, Tuple<CANTalon, Boolean> talon) {
 		List<Tuple<CANTalon, Boolean>> useT = new ArrayList<>();
-		List<Tuple<Encoder, Boolean>> useE = new ArrayList<>();
+		List<Tuple<Encoder, Double>> useE = new ArrayList<>();
 		useT.add(talon);
 		useE.add(enc);
 		this.encoders = useE;
@@ -83,8 +82,8 @@ public class ConstantFinder {
 
 	private int getEncoderTicks() {
 		int total = 0;
-		for (Tuple<Encoder, Boolean> encoder : encoders) {
-			total += encoder._2 ? -encoder._1.get() : encoder._1.get();
+		for (Tuple<Encoder, Double> encoder : encoders) {
+			total += Math.signum(encoder._2) * encoder._1.get();
 		}
 		total /= encoders.size();
 		int ret = total - lastEncoderValue;
@@ -106,11 +105,19 @@ public class ConstantFinder {
 	}
 
 	private double getEncoderRate() {
-		int ticks = getEncoderTicks();
-		long timeNow = System.currentTimeMillis();
-		deltaTime = (timeNow - lastTest) / 1000.0;
-		lastTest = timeNow;
-		return ((double) ticks * RobotStats.ENCODER_TICKS_PER_RADIAN) / deltaTime;
+		int total = 0;
+		double ret = 0;
+		for (Tuple<Encoder, Double> encoder : encoders) {
+			total += Math.signum(encoder._2) * encoder._1.get();
+			ret += encoder._2 * encoder._1.get();
+		}
+		total /= encoders.size();
+		lastEncoderValue = total;
+		ret /= encoders.size();
+		long currentTime = System.currentTimeMillis();
+		ret /= currentTime - lastTest;
+		lastTest = currentTime;
+		return ret;
 	}
 
 	private static double regulate(double velocity, final double FULL_POWER) {
