@@ -50,7 +50,7 @@ public final class RobotStats {
 			public final double value;
 			public final Gear gear;
 			
-			private EncoderScale(double val, Gear gear) {
+			private EncoderRadianScale(double val, Gear gear) {
 				this.value = val;
 				this.gear = gear;
 			}
