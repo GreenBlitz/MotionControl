@@ -14,8 +14,26 @@ public final class RobotStats {
 
 	public static final class Guillotine {
 
+		/**
+		 * Chassis size
+		 * 
+		 * @author karlo
+		 */
 		public static enum Chassis {
-			HORIZONTAL_DISTANCE(0.565, "meters"), VERTICAL_DISTANCE(0.65, "meters"), WHEEL_RADIUS(0.7512, "meters");
+			/**
+			 * Distance between parallel wheels
+			 */
+			HORIZONTAL_DISTANCE(0.565, "meters"),
+			
+			/**
+			 * Distance between 2 most radical wheels on same side
+			 */
+			VERTICAL_DISTANCE(0.65, "meters"), 
+			
+			/**
+			 * Radius of chassis wheels
+			 */
+			WHEEL_RADIUS(0.7512, "meters");
 
 			public final double value;
 			public final String units;
@@ -25,7 +43,12 @@ public final class RobotStats {
 				units = unit;
 			}
 		}
-		
+
+		/**
+		 * Encoders tick per metre
+		 * @author karlo
+		 *
+		 */
 		public static enum EncoderScale {
 			LEFT_VELOCITY(, Gear.VELOCITY),
 			LEFT_POWER(, Gear.POWER),
@@ -39,8 +62,25 @@ public final class RobotStats {
 				this.value = val;
 				this.gear = gear;
 			}
+			
+			/**
+			 * 
+			 * @param gear The gear in which the scale was measured
+			 * @param dir Direction- true for right, false for left
+			 * @return Encoder Scale of the encoder which matches given data
+			 */
+			public static EncoderScale of(Gear gear, boolean dir) {
+				if (gear == Gear.POWER)
+					return dir ? RIGHT_POWER : LEFT_POWER;
+				else
+					return dir ? RIGHT_VELOCITY : LEFT_VELOCITY;
+			}
 		}
-		
+
+		/**
+		 * Encoders ticks per Radian
+		 * @author karlo
+		 */
 		public static enum EncoderRadianScale {
 			LEFT_VELOCITY(, Gear.VELOCITY),
 			LEFT_POWER(, Gear.POWER),
@@ -54,15 +94,32 @@ public final class RobotStats {
 				this.value = val;
 				this.gear = gear;
 			}
+
+			/**
+			 * 
+			 * @param gear The gear in which the scale was measured
+			 * @param dir Direction- true for right, false for left
+			 * @return Encoder Radian Scale of the encoder which matches given data
+			 */
+			public static EncoderRadianScale of(Gear gear, boolean dir) {
+				if (gear == Gear.POWER)
+					return dir ? RIGHT_POWER : LEFT_POWER;
+				else
+					return dir ? RIGHT_VELOCITY : LEFT_VELOCITY;
+			}
 		}
-		
+
+		/**
+		 * Which encoder is inverted
+		 * 
+		 * @author karlo
+		 */
 		public static enum EncoderInvert {
-			LEFT(),
-			RIGHT();
-				
+			LEFT(), RIGHT();
+
 			public final int invert;
 			public final boolean inverted;
-			
+
 			private EncoderInvert(boolean invert) {
 				inverted = invert;
 				this.invert = inverted ? -1 : 1;

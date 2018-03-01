@@ -5,10 +5,9 @@ import java.util.List;
 
 import org.usfirst.frc.team4590.robot.Robot;
 
-import com.ctre.CANTalon;
-
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
+import gbmotion.util.SmartTalon;
 import gbmotion.util.Tuple;
 
 /**
@@ -32,7 +31,7 @@ public class ConstantFinder {
 	private Joystick dispairStick = new Joystick(0);
 	private final double FULL_POWER = 0.8;
 
-	private List<Tuple<CANTalon, Boolean>> actuators;
+	private List<Tuple<SmartTalon, Boolean>> actuators;
 
 	private List<Tuple<Encoder, Double>> encoders;
 	private int lastEncoderValue = 0;
@@ -53,7 +52,7 @@ public class ConstantFinder {
 	 *            A list of tuples, each tuple containing a talon and whether to
 	 *            invert the power when running it (for chasis)
 	 */
-	public ConstantFinder(List<Tuple<Encoder, Double>> encoders, List<Tuple<CANTalon, Boolean>> actuators) {
+	public ConstantFinder(List<Tuple<Encoder, Double>> encoders, List<Tuple<SmartTalon, Boolean>> actuators) {
 		this.encoders = encoders;
 		this.actuators = actuators;
 	}
@@ -67,8 +66,8 @@ public class ConstantFinder {
 	 *            encoder
 	 * @param talon
 	 */
-	public ConstantFinder(Tuple<Encoder, Double> enc, Tuple<CANTalon, Boolean> talon) {
-		List<Tuple<CANTalon, Boolean>> useT = new ArrayList<>();
+	public ConstantFinder(Tuple<Encoder, Double> enc, Tuple<SmartTalon, Boolean> talon) {
+		List<Tuple<SmartTalon, Boolean>> useT = new ArrayList<>();
 		List<Tuple<Encoder, Double>> useE = new ArrayList<>();
 		useT.add(talon);
 		useE.add(enc);
@@ -154,7 +153,7 @@ public class ConstantFinder {
 			case FIND_KU:
 
 				m_power = regulate(dispairStick.getRawAxis(1), FULL_POWER);
-				for (Tuple<CANTalon, Boolean> canTalon : actuators) {
+				for (Tuple<SmartTalon, Boolean> canTalon : actuators) {
 					canTalon._1.set(canTalon._2 ? -m_power : m_power);
 				}
 				if (Math.abs(m_power) < 0.0001 && Math.abs(m_currentVelocity) > 0.0001) {
@@ -177,7 +176,7 @@ public class ConstantFinder {
 				m_currentStage = CurrentStage.FIND_KV;
 			case FIND_KV:
 				m_power = regulate(dispairStick.getRawAxis(1), FULL_POWER);
-				for (Tuple<CANTalon, Boolean> canTalon : actuators) {
+				for (Tuple<SmartTalon, Boolean> canTalon : actuators) {
 					canTalon._1.set(canTalon._2 ? -m_power : m_power);
 				}
 
@@ -197,7 +196,7 @@ public class ConstantFinder {
 				break;
 
 			case DONE_PRINT:
-				for (Tuple<CANTalon, Boolean> canTalon : actuators) {
+				for (Tuple<SmartTalon, Boolean> canTalon : actuators) {
 					canTalon._1.set(0);
 				}
 				Robot.managedPrinter.warn(this.getClass(), " You are DONE, ku: " + m_ku + " kv:" + m_kv);

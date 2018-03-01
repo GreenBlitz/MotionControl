@@ -2,23 +2,26 @@ package gbmotion.base;
 
 import org.usfirst.frc.team4590.robot.RobotMap;
 
-import com.ctre.CANTalon;
-
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.RobotDrive.MotorType;
-import edu.wpi.first.wpilibj.SpeedController;
+import gbmotion.util.CANRobotDrive;
+import gbmotion.util.CANRobotDrive.TalonID;
+import gbmotion.util.RobotStats;
+import gbmotion.util.SmartEncoder;
+import gbmotion.util.SmartTalon;
 
 public class DrivePort {
-	public static final DrivePort DEFAULT = new DrivePort(new CANTalon(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT),
-			new CANTalon(RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT), new CANTalon(RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT),
-			new CANTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT));
 
-	protected RobotDrive m_robotDrive;
+	public static final DrivePort DEFAULT = new DrivePort(new SmartTalon(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT),
+			new SmartTalon(RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT),
+			new SmartTalon(RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT),
+			new SmartTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT));
+
+	protected CANRobotDrive m_robotDrive;
+	private SmartEncoder m_leftEncoder;
+	private SmartEncoder m_rightEncoder;
 
 	protected DrivePort() {
 	}
-	
+
 	/**
 	 * 
 	 * @param frontLeftMotor
@@ -26,67 +29,19 @@ public class DrivePort {
 	 * @param frontRightMotor
 	 * @param rearRightMotor
 	 */
-	public DrivePort(SpeedController frontLeftMotor, SpeedController rearLeftMotor, SpeedController frontRightMotor,
-			SpeedController rearRightMotor) {
-		m_robotDrive = new RobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
+	public DrivePort(SmartTalon frontLeftMotor, SmartTalon rearLeftMotor, SmartTalon frontRightMotor,
+			SmartTalon rearRightMotor) {
+		m_robotDrive = new CANRobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
+		m_leftEncoder = new SmartEncoder(rearLeftMotor, RobotStats.Guillotine.EncoderScale.LEFT_POWER.value,
+				RobotStats.Guillotine.EncoderScale.LEFT_VELOCITY.value);
+		m_rightEncoder = new SmartEncoder(rearRightMotor, RobotStats.Guillotine.EncoderScale.RIGHT_POWER.value,
+				RobotStats.Guillotine.EncoderScale.RIGHT_VELOCITY.value);
 	}
 
-	/**
-	 * @param outputMagnitude
-	 * @param curve
-	 * @see edu.wpi.first.wpilibj.RobotDrive#drive(double, double)
-	 */
-	public void drive(double outputMagnitude, double curve) {
-		m_robotDrive.drive(outputMagnitude, curve);
+	public SmartEncoder getEncoder(boolean dir) {
+		return dir ? m_rightEncoder : m_leftEncoder;
 	}
-
-	/**
-	 * @param leftStick
-	 * @param rightStick
-	 * @see edu.wpi.first.wpilibj.RobotDrive#tankDrive(edu.wpi.first.wpilibj.GenericHID,
-	 *      edu.wpi.first.wpilibj.GenericHID)
-	 */
-	public void tankDrive(GenericHID leftStick, GenericHID rightStick) {
-		m_robotDrive.tankDrive(leftStick, rightStick);
-	}
-
-	/**
-	 * @param leftStick
-	 * @param rightStick
-	 * @param squaredInputs
-	 * @see edu.wpi.first.wpilibj.RobotDrive#tankDrive(edu.wpi.first.wpilibj.GenericHID,
-	 *      edu.wpi.first.wpilibj.GenericHID, boolean)
-	 */
-	public void tankDrive(GenericHID leftStick, GenericHID rightStick, boolean squaredInputs) {
-		m_robotDrive.tankDrive(leftStick, rightStick, squaredInputs);
-	}
-
-	/**
-	 * @param leftStick
-	 * @param leftAxis
-	 * @param rightStick
-	 * @param rightAxis
-	 * @see edu.wpi.first.wpilibj.RobotDrive#tankDrive(edu.wpi.first.wpilibj.GenericHID,
-	 *      int, edu.wpi.first.wpilibj.GenericHID, int)
-	 */
-	public void tankDrive(GenericHID leftStick, int leftAxis, GenericHID rightStick, int rightAxis) {
-		m_robotDrive.tankDrive(leftStick, leftAxis, rightStick, rightAxis);
-	}
-
-	/**
-	 * @param leftStick
-	 * @param leftAxis
-	 * @param rightStick
-	 * @param rightAxis
-	 * @param squaredInputs
-	 * @see edu.wpi.first.wpilibj.RobotDrive#tankDrive(edu.wpi.first.wpilibj.GenericHID,
-	 *      int, edu.wpi.first.wpilibj.GenericHID, int, boolean)
-	 */
-	public void tankDrive(GenericHID leftStick, int leftAxis, GenericHID rightStick, int rightAxis,
-			boolean squaredInputs) {
-		m_robotDrive.tankDrive(leftStick, leftAxis, rightStick, rightAxis, squaredInputs);
-	}
-
+	
 	/**
 	 * @param leftValue
 	 * @param rightValue
@@ -104,50 +59,6 @@ public class DrivePort {
 	 */
 	public void tankDrive(double leftValue, double rightValue) {
 		m_robotDrive.tankDrive(leftValue, rightValue);
-	}
-
-	/**
-	 * @param stick
-	 * @param squaredInputs
-	 * @see edu.wpi.first.wpilibj.RobotDrive#arcadeDrive(edu.wpi.first.wpilibj.GenericHID,
-	 *      boolean)
-	 */
-	public void arcadeDrive(GenericHID stick, boolean squaredInputs) {
-		m_robotDrive.arcadeDrive(stick, squaredInputs);
-	}
-
-	/**
-	 * @param stick
-	 * @see edu.wpi.first.wpilibj.RobotDrive#arcadeDrive(edu.wpi.first.wpilibj.GenericHID)
-	 */
-	public void arcadeDrive(GenericHID stick) {
-		m_robotDrive.arcadeDrive(stick);
-	}
-
-	/**
-	 * @param moveStick
-	 * @param moveAxis
-	 * @param rotateStick
-	 * @param rotateAxis
-	 * @param squaredInputs
-	 * @see edu.wpi.first.wpilibj.RobotDrive#arcadeDrive(edu.wpi.first.wpilibj.GenericHID,
-	 *      int, edu.wpi.first.wpilibj.GenericHID, int, boolean)
-	 */
-	public void arcadeDrive(GenericHID moveStick, int moveAxis, GenericHID rotateStick, int rotateAxis,
-			boolean squaredInputs) {
-		m_robotDrive.arcadeDrive(moveStick, moveAxis, rotateStick, rotateAxis, squaredInputs);
-	}
-
-	/**
-	 * @param moveStick
-	 * @param moveAxis
-	 * @param rotateStick
-	 * @param rotateAxis
-	 * @see edu.wpi.first.wpilibj.RobotDrive#arcadeDrive(edu.wpi.first.wpilibj.GenericHID,
-	 *      int, edu.wpi.first.wpilibj.GenericHID, int)
-	 */
-	public void arcadeDrive(GenericHID moveStick, int moveAxis, GenericHID rotateStick, int rotateAxis) {
-		m_robotDrive.arcadeDrive(moveStick, moveAxis, rotateStick, rotateAxis);
 	}
 
 	/**
@@ -180,29 +91,6 @@ public class DrivePort {
 	}
 
 	/**
-	 * @param x
-	 * @param y
-	 * @param rotation
-	 * @param gyroAngle
-	 * @see edu.wpi.first.wpilibj.RobotDrive#mecanumDrive_Cartesian(double,
-	 *      double, double, double)
-	 */
-	public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle) {
-		m_robotDrive.mecanumDrive_Cartesian(x, y, rotation, gyroAngle);
-	}
-
-	/**
-	 * @param magnitude
-	 * @param direction
-	 * @param rotation
-	 * @see edu.wpi.first.wpilibj.RobotDrive#mecanumDrive_Polar(double, double,
-	 *      double)
-	 */
-	public void mecanumDrive_Polar(double magnitude, double direction, double rotation) {
-		m_robotDrive.mecanumDrive_Polar(magnitude, direction, rotation);
-	}
-
-	/**
 	 * @param leftOutput
 	 * @param rightOutput
 	 * @see edu.wpi.first.wpilibj.RobotDrive#setLeftRightMotorOutputs(double,
@@ -218,96 +106,23 @@ public class DrivePort {
 	 * @see edu.wpi.first.wpilibj.RobotDrive#setInvertedMotor(edu.wpi.first.wpilibj.RobotDrive.MotorType,
 	 *      boolean)
 	 */
-	public void setInvertedMotor(MotorType motor, boolean isInverted) {
-		m_robotDrive.setInvertedMotor(motor, isInverted);
-	}
-
-	/**
-	 * @param sensitivity
-	 * @see edu.wpi.first.wpilibj.RobotDrive#setSensitivity(double)
-	 */
-	public void setSensitivity(double sensitivity) {
-		m_robotDrive.setSensitivity(sensitivity);
+	public void setInvertedMotor(TalonID motor, boolean isInverted) {
+		m_robotDrive.setInvetedMotor(motor, isInverted);
 	}
 
 	/**
 	 * @param maxOutput
 	 * @see edu.wpi.first.wpilibj.RobotDrive#setMaxOutput(double)
 	 */
-	public void setMaxOutput(double maxOutput) {
-		m_robotDrive.setMaxOutput(maxOutput);
+	public void setPowerLimit(double maxOutput) {
+		m_robotDrive.setPowerLimit(maxOutput);
 	}
 
-	/**
-	 * 
-	 * @see edu.wpi.first.wpilibj.RobotDrive#free()
-	 */
-	public void free() {
-		m_robotDrive.free();
-	}
-
-	/**
-	 * @param timeout
-	 * @see edu.wpi.first.wpilibj.RobotDrive#setExpiration(double)
-	 */
-	public void setExpiration(double timeout) {
-		m_robotDrive.setExpiration(timeout);
-	}
-
-	/**
-	 * @return
-	 * @see edu.wpi.first.wpilibj.RobotDrive#getExpiration()
-	 */
-	public double getExpiration() {
-		return m_robotDrive.getExpiration();
-	}
-
-	/**
-	 * @return
-	 * @see edu.wpi.first.wpilibj.RobotDrive#isSafetyEnabled()
-	 */
-	public boolean isSafetyEnabled() {
-		return m_robotDrive.isSafetyEnabled();
-	}
-
-	/**
-	 * @return
-	 * @see edu.wpi.first.wpilibj.RobotDrive#getDescription()
-	 */
-	public String getDescription() {
-		return m_robotDrive.getDescription();
-	}
-
-	/**
-	 * @return
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		return m_robotDrive.hashCode();
-	}
-
-	/**
-	 * @return
-	 * @see edu.wpi.first.wpilibj.RobotDrive#isAlive()
-	 */
-	public boolean isAlive() {
-		return m_robotDrive.isAlive();
-	}
-
-	/**
-	 * @param enabled
-	 * @see edu.wpi.first.wpilibj.RobotDrive#setSafetyEnabled(boolean)
-	 */
-	public void setSafetyEnabled(boolean enabled) {
-		m_robotDrive.setSafetyEnabled(enabled);
-	}
-
-	/**
-	 * 
-	 * @see edu.wpi.first.wpilibj.RobotDrive#stopMotor()
-	 */
-	public void stopMotor() {
-		m_robotDrive.stopMotor();
+	public SmartEncoder getEndoder(boolean dir) {
+		if (dir)
+			return m_rightEncoder;
+		else
+			return m_leftEncoder;
 	}
 
 	/**
@@ -317,5 +132,4 @@ public class DrivePort {
 	public String toString() {
 		return m_robotDrive.toString();
 	}
-
 }

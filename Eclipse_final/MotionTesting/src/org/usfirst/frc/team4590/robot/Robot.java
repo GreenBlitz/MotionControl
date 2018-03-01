@@ -1,26 +1,19 @@
 
 package org.usfirst.frc.team4590.robot;
 
-import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_LEFT_ENCODER_PORT_A;
-import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_LEFT_ENCODER_PORT_B;
-import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_A;
-import static org.usfirst.frc.team4590.robot.RobotMap.CHASSIS_RIGHT_ENCODER_PORT_B;
-
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.PIDController.PIDController;
 import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
 import gbmotion.appc.Localizer;
 import gbmotion.base.DrivePort;
-import gbmotion.base.ScaledEncoder;
 import gbmotion.path.ArenaMap;
 import gbmotion.util.PrintManager;
-import gbmotion.util.RobotStats;
+import gbmotion.util.SmartEncoder;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -42,8 +35,8 @@ public class Robot extends IterativeRobot {
 	private CSVLogger logger;
 	private ArenaMap m_arenaMap;
 
-	ScaledEncoder left;
-	ScaledEncoder right;
+	SmartEncoder left;
+	SmartEncoder right;
 	public AHRS gyro;
 
 	public static boolean kms = false;
@@ -84,12 +77,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
-		logger.enable();
-
 		loc.reset();
-		rd.setMaxOutput(FULL_POWER);
-		NetworkTable motionTable = NetworkTable.getTable("motion");
-		motionTable.putNumber("pathLength", 0);
+		rd.setPowerLimit(FULL_POWER);
 	}
 
 	@Override
@@ -124,10 +113,8 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 
 		logger = new CSVLogger();
-		left = new ScaledEncoder(CHASSIS_LEFT_ENCODER_PORT_A, CHASSIS_LEFT_ENCODER_PORT_B,
-				-RobotStats.Ragnarok.LEFT_ENCODER_SCALE);
-		right = new ScaledEncoder(CHASSIS_RIGHT_ENCODER_PORT_A, CHASSIS_RIGHT_ENCODER_PORT_B,
-				RobotStats.Ragnarok.RIGHT_ENCODER_SCALE);
+		left = rd.getEncoder(false);
+		right = rd.getEncoder(true);
 		gyro = new AHRS(SPI.Port.kMXP);
 		while (gyro.isCalibrating()) {
 		}
@@ -163,14 +150,14 @@ public class Robot extends IterativeRobot {
 	}
 
 	public double getSpeed() {
-		return (left.getRate() - right.getRate()) / 2;
+		return (left.getSpeed() - right.getSpeed()) / 2;
 	}
 
 	public double getSpeedL() {
-		return -right.getRate();
+		return -right.getSpeed();
 	}
 
 	public double getSpeedR() {
-		return left.getRate();
+		return left.getSpeed();
 	}
 }

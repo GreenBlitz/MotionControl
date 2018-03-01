@@ -4,21 +4,18 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.usfirst.frc.team4590.robot.Robot;
-
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.EnvironmentPort;
-import gbmotion.base.ScaledEncoder;
 import gbmotion.base.controller.Input;
 import gbmotion.base.controller.IterativeController;
 import gbmotion.base.point.IPoint2D;
 import gbmotion.base.point.orientation.IOrientation2D;
 import gbmotion.base.point.orientation.IOrientation2D.DirectionEffect;
-import gbmotion.util.RobotStats;
 import gbmotion.base.point.orientation.MOrientation2D;
 import gbmotion.base.point.orientation.Orientation2D;
+import gbmotion.util.SmartEncoder;
 
 public class Localizer implements Input<IPoint2D> {
 	public enum AngleDifferenceCalculation {
@@ -31,8 +28,8 @@ public class Localizer implements Input<IPoint2D> {
 
 	private IOrientation2D m_location;
 
-	private ScaledEncoder[] m_leftEncoders;
-	private ScaledEncoder[] m_rightEncoders;
+	private SmartEncoder[] m_leftEncoders;
+	private SmartEncoder[] m_rightEncoders;
 
 	private AHRS m_navx;
 	private double referenceAngle = 0;
@@ -62,7 +59,7 @@ public class Localizer implements Input<IPoint2D> {
 	 * @param navx
 	 * @param angleCalculationType
 	 */
-	public Localizer(ScaledEncoder[] left, ScaledEncoder[] right, Orientation2D location, double wheelDistance,
+	public Localizer(SmartEncoder[] left, SmartEncoder[] right, Orientation2D location, double wheelDistance,
 			AHRS navx, AngleDifferenceCalculation angleCalculationType) {
 		m_location = location;
 		m_leftEncoders = left;
@@ -87,8 +84,8 @@ public class Localizer implements Input<IPoint2D> {
 	 *            distance between the wheels (right left)
 	 * @param navx
 	 */
-	public Localizer(ScaledEncoder left, ScaledEncoder right, Orientation2D location, double wheelDistance, AHRS navx) {
-		this(new ScaledEncoder[] { left }, new ScaledEncoder[] { right }, location, wheelDistance, navx,
+	public Localizer(SmartEncoder left, SmartEncoder right, Orientation2D location, double wheelDistance, AHRS navx) {
+		this(new SmartEncoder[] { left }, new SmartEncoder[] { right }, location, wheelDistance, navx,
 				AngleDifferenceCalculation.ENCODER_BASED);
 	}
 
@@ -103,7 +100,7 @@ public class Localizer implements Input<IPoint2D> {
 	 * @param navx
 	 * @return new localizer
 	 */
-	public static Localizer of(ScaledEncoder left, ScaledEncoder right, double wheelDist, AHRS navx) {
+	public static Localizer of(SmartEncoder left, SmartEncoder right, double wheelDist, AHRS navx) {
 		return new Localizer(left, right, Orientation2D.mutable(0, 0, 0), wheelDist, navx);
 	}
 
@@ -118,19 +115,19 @@ public class Localizer implements Input<IPoint2D> {
 	 * @param navx
 	 * @return new localizer
 	 */
-	public static Localizer of(ScaledEncoder left, ScaledEncoder right, double wheelDist, AHRS navx,
+	public static Localizer of(SmartEncoder left, SmartEncoder right, double wheelDist, AHRS navx,
 			AngleDifferenceCalculation angleCalculationType) {
-		return new Localizer(new ScaledEncoder[] { left }, new ScaledEncoder[] { right },
+		return new Localizer(new SmartEncoder[] { left }, new SmartEncoder[] { right },
 				Orientation2D.mutable(0, 0, 0), wheelDist, navx, angleCalculationType);
 	}
 
 	public int getLeftTicks() {
-		return Arrays.stream(m_leftEncoders).map(ScaledEncoder::getRaw).reduce((a, b) -> a + b).orElse(0)
+		return Arrays.stream(m_leftEncoders).map(SmartEncoder::getTicks).reduce((a, b) -> a + b).orElse(0)
 				/ m_leftEncoders.length;
 	}
 
 	public int getRightTicks() {
-		return Arrays.stream(m_rightEncoders).map(ScaledEncoder::getRaw).reduce((a, b) -> a + b).orElse(0)
+		return Arrays.stream(m_rightEncoders).map(SmartEncoder::getTicks).reduce((a, b) -> a + b).orElse(0)
 				/ m_rightEncoders.length;
 	}
 
@@ -138,7 +135,7 @@ public class Localizer implements Input<IPoint2D> {
 	 * @return distance traveled by left encoders
 	 */
 	public double getLeftDistance() {
-		return Arrays.stream(m_leftEncoders).map(ScaledEncoder::getDistance).reduce((a, b) -> a + b).orElse(.0)
+		return Arrays.stream(m_leftEncoders).map(SmartEncoder::getDistance).reduce((a, b) -> a + b).orElse(.0)
 				/ m_leftEncoders.length;
 	}
 
@@ -146,7 +143,7 @@ public class Localizer implements Input<IPoint2D> {
 	 * @return distance traveled by right encoders
 	 */
 	public double getRightDistance() {
-		return Arrays.stream(m_rightEncoders).map(ScaledEncoder::getDistance).reduce((a, b) -> a + b).orElse(.0)
+		return Arrays.stream(m_rightEncoders).map(SmartEncoder::getDistance).reduce((a, b) -> a + b).orElse(.0)
 				/ m_rightEncoders.length;
 	}
 
@@ -262,10 +259,10 @@ public class Localizer implements Input<IPoint2D> {
 	 */
 	private void resetSelf() {
 		synchronized (LOCK) {
-			for (ScaledEncoder enc : m_leftEncoders)
+			for (SmartEncoder enc : m_leftEncoders)
 				enc.reset();
 
-			for (ScaledEncoder enc : m_rightEncoders)
+			for (SmartEncoder enc : m_rightEncoders)
 				enc.reset();
 
 			m_location = m_location.set(0, 0, 0);

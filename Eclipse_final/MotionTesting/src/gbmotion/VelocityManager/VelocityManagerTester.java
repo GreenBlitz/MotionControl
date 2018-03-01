@@ -2,13 +2,13 @@ package gbmotion.VelocityManager;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
+import gbmotion.util.CANRobotDrive;
 import gbmotion.util.RobotStats;
 import gbmotion.util.Tuple;
 
 public class VelocityManagerTester {
 
-	private RobotDrive m_drive;
+	private CANRobotDrive m_drive;
 	private Joystick m_stick;
 	private VoltageController m_velocityManagerLeft;
 	private VoltageController m_velocityManagerRight;
@@ -21,7 +21,7 @@ public class VelocityManagerTester {
 	private long lastTest = System.currentTimeMillis();
 	private double deltaTime;
 
-	public VelocityManagerTester(RobotDrive drive, Joystick stick, int pastTimeImportance,
+	public VelocityManagerTester(CANRobotDrive drive, Joystick stick, int pastTimeImportance,
 			Tuple<Encoder, Boolean> encoderLeft, Tuple<Encoder, Boolean> encoderRight, RobotStats.Gear gear) {
 		m_drive = drive;
 		m_leftEncoder = encoderLeft;
