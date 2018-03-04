@@ -32,12 +32,17 @@ public class DrivePort {
 	public DrivePort(SmartTalon frontLeftMotor, SmartTalon rearLeftMotor, SmartTalon frontRightMotor,
 			SmartTalon rearRightMotor) {
 		m_robotDrive = new CANRobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
-		m_leftEncoder = new SmartEncoder(rearLeftMotor, RobotStats.Guillotine.EncoderScale.LEFT_POWER.value,
-				RobotStats.Guillotine.EncoderScale.LEFT_VELOCITY.value);
-		m_rightEncoder = new SmartEncoder(rearRightMotor, RobotStats.Guillotine.EncoderScale.RIGHT_POWER.value,
-				RobotStats.Guillotine.EncoderScale.RIGHT_VELOCITY.value);
+		m_leftEncoder = new SmartEncoder(rearLeftMotor, RobotStats.Guillotine.EncoderMetreScale.LEFT_POWER.value,
+				RobotStats.Guillotine.EncoderMetreScale.LEFT_VELOCITY.value);
+		m_rightEncoder = new SmartEncoder(rearRightMotor, RobotStats.Guillotine.EncoderMetreScale.RIGHT_POWER.value,
+				RobotStats.Guillotine.EncoderMetreScale.RIGHT_VELOCITY.value);
 	}
 
+	/**
+	 * Right encoder is the closer to the robot safety switch, Left is the other
+	 * @param dir Direction- true for right, false for left
+	 * @return The encoder in given direction
+	 */
 	public SmartEncoder getEncoder(boolean dir) {
 		return dir ? m_rightEncoder : m_leftEncoder;
 	}

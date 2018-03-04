@@ -18,6 +18,8 @@ public class OI {
 	private static Localizer fuckmetosend;
 	
 	public static OI getInstance() {
+		if (instance == null)
+			instance = new OI();
 		return instance;
 	}
 	
@@ -37,33 +39,4 @@ public class OI {
 		
 		A.whenPressed(new ResetLocalizer(fuckmetosend));
 	}
-	/*
-	private static OI instance;
-	
-	private Joystick MainJS = new Joystick(RobotMap.MAINJS_ID);
-	
-	private OI() {
-		MainJS.addBinding(XboxButtons.R1, new WhenPressedkeyHandler(), new Collect());
-		MainJS.addBinding(XboxButtons.L1, new WhenPressedkeyHandler(), new ShootToSwitch());
-	}
-
-	public static final void init() {
-		instance = new OI();
-	}
-
-	public static final OI getInstance() {
-		return instance;
-	}
-	
-	public void updateSticks(){
-		MainJS.updateKeys();
-	}
-	
-	public static double getRawAxis(XboxJoystick stick,  XboxAxis axis) {
-		return stick.key(axis).getState().getState();
-	}
-	
-	public XboxJoystick getMainJS() {
-		return MainJS;
-	}*/
 }

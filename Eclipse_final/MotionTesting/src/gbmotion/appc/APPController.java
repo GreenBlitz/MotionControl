@@ -42,16 +42,8 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 *            The input object
 	 * @param out
 	 *            The motor manager object
-	 * @param path
-	 *            The path the robot will follow
-	 * @param lookAhead
-	 *            Look Ahead distance
-	 * @param toleranceDist
-	 *            Absolute tolerance distance
-	 * @param minOnTargetTime
-	 *            Minimal time on target required for the controller
-	 * @param slowDownDistance
-	 *            Distance from path end point in which the robot will slow down
+	 * @param map
+	 * 			  The arena map object containing the path
 	 */
 	public APPController(Input<IPoint2D> in, Output<APPController.APPDriveData> out, ArenaMap map) {
 		this(in, out, DEFAULT_PERIOD, map, DEFAULT_LOOKAHEAD, DEFAULT_TOLERANCE_DIST, DEFAULT_MIN_ON_TARGET_TIME,

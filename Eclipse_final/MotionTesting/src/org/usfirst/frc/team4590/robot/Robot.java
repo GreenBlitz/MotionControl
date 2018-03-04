@@ -6,13 +6,13 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import gbmotion.PIDController.PIDController;
 import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
 import gbmotion.appc.Localizer;
 import gbmotion.base.DrivePort;
 import gbmotion.path.ArenaMap;
 import gbmotion.util.PrintManager;
+import gbmotion.util.RobotStats;
 import gbmotion.util.SmartEncoder;
 
 /**
@@ -32,7 +32,6 @@ public class Robot extends IterativeRobot {
 	private DrivePort rd;
 	private APPController controller = null;
 
-	private CSVLogger logger;
 	private ArenaMap m_arenaMap;
 
 	SmartEncoder left;
@@ -43,42 +42,23 @@ public class Robot extends IterativeRobot {
 	public static String suicideLetter = "";
 	public static Throwable suicideCause = null;
 
-	private PIDController m_PID;
-
 	@Override
 	public void disabledInit() {
-		logger.disable();
 		System.out.println("Am I Disabled?");
-		m_PID = null;
-		if (controller != null) {
-			controller = null;
-		}
-
-		logger.enable();
-		loc.reset();
+		resetEncoders();
+		loc.stop();
 	}
 
 	@Override
 	public void autonomousInit() {
-		/*
-		 * new PathFactory().conncetLine(0, 1, 0.005).construct(m_arenaMap);
-		 * loc.reset();
-		 * 
-		 * controller = new APPController(loc, out, m_arenaMap);
-		 * controller.setOutputConstrain((in) ->
-		 * APPDriveData.of(Math.max(in.power, 0.6), in.dx, in.dy));
-		 * controller.start();
-		 */
-		// m_PID = new AngularPID(new GyroSampler(gyro), new AngleOutput(rd),
-		// -Math.PI / 2, 0.5, 1 / 12 * Math.PI);
-		// m_PID.start();
-
+		reset();
+		loc.start();
 	}
 
 	@Override
 	public void teleopInit() {
-		loc.reset();
-		rd.setPowerLimit(FULL_POWER);
+		reset();
+		loc.start();
 	}
 
 	@Override
@@ -97,12 +77,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
+		logGyro();
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		rd.arcadeDrive(OI.getInstance().getJoystick().getRawAxis(1), OI.getInstance().getJoystick().getRawAxis(4),
+		logGyro();
+		rd.arcadeDrive(-OI.getInstance().getJoystick().getRawAxis(1), OI.getInstance().getJoystick().getRawAxis(4),
 				true);
 	}
 
@@ -111,25 +93,20 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
-
-		logger = new CSVLogger();
+		rd = DrivePort.DEFAULT;
+		rd.setPowerLimit(FULL_POWER);
 		left = rd.getEncoder(false);
 		right = rd.getEncoder(true);
 		gyro = new AHRS(SPI.Port.kMXP);
-		while (gyro.isCalibrating()) {
-		}
+		reset();
+		loc = Localizer.of(left, right, RobotStats.Guillotine.Chassis.WHEEL_RADIUS.value, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
 		/*
-		 * if (!gyro.isConnected()) { System.err.println(
-		 * "WARNING: Gyro not connected!!!!"); kms = true; suicideLetter =
-		 * "gyro isn't connected"; }
-		 */
-		gyro.reset();
-		loc = Localizer.of(left, right, 0.68, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
-		rd = DrivePort.DEFAULT;
 		output = new APPCOutput();
 		m_arenaMap = new ArenaMap();
+		controller = new APPController(loc, output, m_arenaMap);
 		initPrintables();
 		OI.init(loc);
+		*/
 	}
 
 	public static void killMySelf(String suicideLetter) {
@@ -159,5 +136,38 @@ public class Robot extends IterativeRobot {
 
 	public double getSpeedR() {
 		return left.getSpeed();
+	}
+	
+	public void resetEncoders() {
+		if (left != null) left.reset();
+		if (right != null) right.reset();
+	}
+	
+	private void printTicks() {
+		System.out.println("left ticks: " + left.getTicks());
+		System.out.println("right ticks: " + right.getTicks());
+		System.out.println("------------------------------------");
+	}
+	
+	private void printDistances() {
+		System.out.println("left distance: " + left.getDistance());
+		System.out.println("right distance: " + right.getDistance());
+		System.out.println("------------------------------------");
+	}
+	
+	private void logGyro() {
+		System.out.println("yaw: " + gyro.getYaw());
+		System.out.println("pitch: " + gyro.getPitch());
+		System.out.println("roll: " + gyro.getRoll());
+	}
+	
+	private void resetGyro() {
+		gyro.reset();
+		while (gyro.isCalibrating()) {}
+	}
+	
+	private void reset() {
+		resetGyro();
+		resetEncoders();
 	}
 }

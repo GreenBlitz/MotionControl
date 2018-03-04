@@ -7,6 +7,7 @@ public class SmartTalon extends TalonSRX {
 
 	public SmartTalon(int deviceNumber) {
 		super(deviceNumber);
+		configContinuousCurrentLimit(2, 100);
 	}
 
 	public void set(double power) {

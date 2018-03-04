@@ -6,7 +6,6 @@ import java.util.TimerTask;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import gbmotion.base.EnvironmentPort;
 import gbmotion.base.controller.Input;
 import gbmotion.base.controller.IterativeController;
@@ -42,9 +41,9 @@ public class Localizer implements Input<IPoint2D> {
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 
-	//private int printCnt = 0;
+	private volatile boolean m_enabled = false;
 
-	private boolean shouldReset = false;
+	private volatile boolean shouldReset = false;
 
 	/**
 	 * 
@@ -59,8 +58,8 @@ public class Localizer implements Input<IPoint2D> {
 	 * @param navx
 	 * @param angleCalculationType
 	 */
-	public Localizer(SmartEncoder[] left, SmartEncoder[] right, Orientation2D location, double wheelDistance,
-			AHRS navx, AngleDifferenceCalculation angleCalculationType) {
+	public Localizer(SmartEncoder[] left, SmartEncoder[] right, Orientation2D location, double wheelDistance, AHRS navx,
+			AngleDifferenceCalculation angleCalculationType) {
 		m_location = location;
 		m_leftEncoders = left;
 		m_rightEncoders = right;
@@ -117,8 +116,8 @@ public class Localizer implements Input<IPoint2D> {
 	 */
 	public static Localizer of(SmartEncoder left, SmartEncoder right, double wheelDist, AHRS navx,
 			AngleDifferenceCalculation angleCalculationType) {
-		return new Localizer(new SmartEncoder[] { left }, new SmartEncoder[] { right },
-				Orientation2D.mutable(0, 0, 0), wheelDist, navx, angleCalculationType);
+		return new Localizer(new SmartEncoder[] { left }, new SmartEncoder[] { right }, Orientation2D.mutable(0, 0, 0),
+				wheelDist, navx, angleCalculationType);
 	}
 
 	public int getLeftTicks() {
@@ -168,7 +167,7 @@ public class Localizer implements Input<IPoint2D> {
 				resetSelf();
 			}
 
-			if (ePort.isEnabled()) {
+			if (ePort.isEnabled() && m_enabled) {
 				m_location.toDashboard("Robot location");
 
 				double gyroAngle = getAngleRadians();
@@ -183,7 +182,6 @@ public class Localizer implements Input<IPoint2D> {
 				rightDistDiff += rightDist;
 				leftDistDiff += leftDist;
 
-				ePort.putNumber("RLdiffDifference", rightDistDiff - leftDistDiff);
 				ePort.putNumber("Left encoder", leftDist);
 				ePort.putNumber("Right encoder", rightDist);
 
@@ -207,12 +205,8 @@ public class Localizer implements Input<IPoint2D> {
 				} else {
 					boolean leftLonger = leftDistDiff > rightDistDiff;
 					double shortDist = leftLonger ? rightDistDiff : leftDistDiff;
-					//double longerDist = leftLonger ? leftDistDiff : rightDistDiff;
-					double signedRadiusFromCenter = -(shortDist / angleChange 
+					double signedRadiusFromCenter = -(shortDist / angleChange
 							+ Math.signum(angleChange) * m_wheelDistance / 2);
-					//double wheelDist = RobotStats.HORIZONTAL_WHEEL_DIST;
-					//double signedRadiusFromCenter = -Math.signum(angleChange)
-					//		* ((wheelDist * shortDist) / (longerDist - shortDist) + 0.5 * wheelDist);
 					IOrientation2D rotationOrigin = Orientation2D.immutable(m_location).moveBy(signedRadiusFromCenter,
 							0, m_location.getDirection(), DirectionEffect.RESERVED);
 					synchronized (LOCK) {
@@ -220,18 +214,7 @@ public class Localizer implements Input<IPoint2D> {
 						m_location.setDirection(getAngleRadians());
 					}
 				}
-
-				NetworkTable motionTable = NetworkTable.getTable("motion");
-				motionTable.putNumber("encLeft", leftDist);
-				motionTable.putNumber("encRight", rightDist);
-				motionTable.putNumber("locX", m_location.getX());
-				motionTable.putNumber("locY", m_location.getY());
-				motionTable.putNumber("locAngle", m_location.getDirection());
-				motionTable.putNumber("gyroAngle", m_lastGyroAngle);
-				motionTable.putBoolean("isUpdated", true);
 				ePort.putNumber("angle", angleChange);
-				//if (printCnt++ % 100 == 0)
-				//Robot.managedPrinter.warnln(getClass(), "robot location: " + Orientation2D.immutable(m_location));
 			} else {
 				resetSelf();
 			}
@@ -271,11 +254,26 @@ public class Localizer implements Input<IPoint2D> {
 
 	}
 
-	public void reset() {
+	public synchronized void reset() {
 		shouldReset = true;
 	}
 
 	public void setEnvironmentPort(EnvironmentPort ePort) {
 		this.ePort = ePort;
+	}
+
+	/**
+	 * Enabled localizer to run
+	 */
+	public synchronized void start() {
+		m_enabled = true;
+		reset();
+	}
+
+	/**
+	 * Forces localizer to stop calculating
+	 */
+	public synchronized void stop() {
+		m_enabled = false;
 	}
 }

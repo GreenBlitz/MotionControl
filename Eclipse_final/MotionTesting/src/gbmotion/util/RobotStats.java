@@ -24,12 +24,12 @@ public final class RobotStats {
 			 * Distance between parallel wheels
 			 */
 			HORIZONTAL_DISTANCE(0.565, "meters"),
-			
+
 			/**
 			 * Distance between 2 most radical wheels on same side
 			 */
-			VERTICAL_DISTANCE(0.65, "meters"), 
-			
+			VERTICAL_DISTANCE(0.65, "meters"),
+
 			/**
 			 * Radius of chassis wheels
 			 */
@@ -46,50 +46,99 @@ public final class RobotStats {
 
 		/**
 		 * Encoders tick per metre
+		 * 
 		 * @author karlo
-		 *
 		 */
-		public static enum EncoderScale {
-			LEFT_VELOCITY(, Gear.VELOCITY),
-			LEFT_POWER(, Gear.POWER),
-			RIGHT_VELOCITY(, Gear.VELOCITY),
-			RIGHT_POWER(, Gear.POWER);
+		public static enum EncoderMetreScale {
+			/**
+			 * Left encoder ticks per meter in velocity gear
+			 */
+			LEFT_VELOCITY(680.666666, Gear.VELOCITY), 
 			
+			/**
+			 * Left encoder ticks per meter in power gear
+			 */
+			LEFT_POWER(2493.8888888, Gear.POWER),
+			
+			/**
+			 * Right encoder ticks per meter in velocity gear
+			 */
+			RIGHT_VELOCITY(-684.933333, Gear.VELOCITY),
+			
+			/**
+			 * Right encoder ticks per meter in power gear
+			 */
+			RIGHT_POWER(-2465.6666666, Gear.POWER);
+
 			public final double value;
 			public final Gear gear;
-			
-			private EncoderScale(double val, Gear gear) {
+
+			private EncoderMetreScale(double val, Gear gear) {
 				this.value = val;
 				this.gear = gear;
 			}
-			
+
 			/**
 			 * 
-			 * @param gear The gear in which the scale was measured
-			 * @param dir Direction- true for right, false for left
+			 * @param gear
+			 *            The gear in which the scale was measured
+			 * @param dir
+			 *            Direction- true for right, false for left
 			 * @return Encoder Scale of the encoder which matches given data
 			 */
-			public static EncoderScale of(Gear gear, boolean dir) {
+			public static EncoderMetreScale of(Gear gear, boolean dir) {
 				if (gear == Gear.POWER)
 					return dir ? RIGHT_POWER : LEFT_POWER;
 				else
 					return dir ? RIGHT_VELOCITY : LEFT_VELOCITY;
 			}
+
+			/**
+			 * 
+			 * @return signum of this value
+			 */
+			public int invert() {
+				return (int) Math.signum(value);
+			}
+			
+			/**
+			 * 
+			 * @return true if the scale is smaller than 0
+			 */
+			public boolean inverted() {
+				return value < 0;
+			}
 		}
 
 		/**
 		 * Encoders ticks per Radian
+		 * 
 		 * @author karlo
 		 */
 		public static enum EncoderRadianScale {
-			LEFT_VELOCITY(, Gear.VELOCITY),
-			LEFT_POWER(, Gear.POWER),
-			RIGHT_VELOCITY(, Gear.VELOCITY),
-			RIGHT_POWER(, Gear.POWER);
+			/**
+			 * Left encoder ticks per radian in velocity gear
+			 */
+			LEFT_VELOCITY(166 / Math.PI, Gear.VELOCITY),
 			
+			/**
+			 * Left encoder ticks per radian in power gear
+			 */
+			LEFT_POWER(594 / Math.PI,Gear.POWER),
+			
+			/**
+			 * Right encoder ticks per radian in velocity gear
+			 */
+			RIGHT_VELOCITY(-164 / Math.PI, Gear.VELOCITY),
+			
+			/**
+			 * Right encoder ticks per radian in power gear 
+			 */
+			RIGHT_POWER(-579 / Math.PI, Gear.POWER);
+
 			public final double value;
 			public final Gear gear;
-			
+
 			private EncoderRadianScale(double val, Gear gear) {
 				this.value = val;
 				this.gear = gear;
@@ -97,9 +146,12 @@ public final class RobotStats {
 
 			/**
 			 * 
-			 * @param gear The gear in which the scale was measured
-			 * @param dir Direction- true for right, false for left
-			 * @return Encoder Radian Scale of the encoder which matches given data
+			 * @param gear
+			 *            The gear in which the scale was measured
+			 * @param dir
+			 *            Direction- true for right, false for left
+			 * @return Encoder Radian Scale of the encoder which matches given
+			 *         data
 			 */
 			public static EncoderRadianScale of(Gear gear, boolean dir) {
 				if (gear == Gear.POWER)
@@ -107,22 +159,21 @@ public final class RobotStats {
 				else
 					return dir ? RIGHT_VELOCITY : LEFT_VELOCITY;
 			}
-		}
-
-		/**
-		 * Which encoder is inverted
-		 * 
-		 * @author karlo
-		 */
-		public static enum EncoderInvert {
-			LEFT(), RIGHT();
-
-			public final int invert;
-			public final boolean inverted;
-
-			private EncoderInvert(boolean invert) {
-				inverted = invert;
-				this.invert = inverted ? -1 : 1;
+			
+			/**
+			 * 
+			 * @return signum of this value
+			 */
+			public int invert() {
+				return (int) Math.signum(value);
+			}
+			
+			/**
+			 * 
+			 * @return true if the scale is smaller than 0
+			 */
+			public boolean inverted() {
+				return value < 0;
 			}
 		}
 	}
