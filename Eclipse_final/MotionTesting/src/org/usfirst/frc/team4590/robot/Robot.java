@@ -104,7 +104,7 @@ public class Robot extends IterativeRobot {
 		right = rd.getEncoder(true);
 		gyro = new AHRS(SPI.Port.kMXP);
 		reset();
-		loc = Localizer.of(left, right, RobotStats.Lobiiiiiin.Chassis.WHEEL_RADIUS.value, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
+		loc = Localizer.of(left, right, RobotStats.Cerberous.Chassis.WHEEL_RADIUS.value, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
 		
 		output = new APPCOutput();
 		m_arenaMap = new ArenaMap();

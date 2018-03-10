@@ -11,8 +11,104 @@ public final class RobotStats {
 
 		public static final boolean CHASSIS_LEFT_ENCODER_INVERT = true, CHASSIS_RIGHT_ENCODER_INVERT = false;
 	}
+	
+	public static final class Gildaboi {
+		/**
+		 * Chassis size
+		 */
+		public static enum Chassis {
+			/**
+			 * Distance between parallel wheels
+			 */
+			HORIZONTAL_DISTANCE(0.60, "meters"),
 
-	public static final class Lobiiiiiin {
+			/**
+			 * Distance between 2 most radical wheels on same side
+			 */
+			VERTICAL_DISTANCE(0.71, "meters"),
+
+			/**
+			 * Radius of chassis wheels
+			 */
+			WHEEL_RADIUS(0.0762, "meters");
+
+			public final double value;
+			public final String units;
+
+			private Chassis(double val, String unit) {
+				value = val;
+				units = unit;
+			}
+		}
+
+		/**
+		 * Encoders tick per metre
+		 * 
+		 * @author karlo
+		 */
+		public static enum EncoderMetreScale {
+			/**
+			 * Left encoder ticks per meter in velocity gear
+			 */
+			LEFT_VELOCITY(-1630, Gear.VELOCITY), 
+			
+			/**
+			 * Left encoder ticks per meter in power gear
+			 */
+			LEFT_POWER(-1630, Gear.POWER),
+			
+			/**
+			 * Right encoder ticks per meter in velocity gear
+			 */
+			RIGHT_VELOCITY(1630, Gear.VELOCITY),
+			
+			/**
+			 * Right encoder ticks per meter in power gear
+			 */
+			RIGHT_POWER(1630, Gear.POWER);
+
+			public final int value;
+			public final Gear gear;
+
+			private EncoderMetreScale(int val, Gear gear) {
+				this.value = val;
+				this.gear = gear;
+			}
+
+			/**
+			 * 
+			 * @param gear
+			 *            The gear in which the scale was measured
+			 * @param dir
+			 *            Direction- true for right, false for left
+			 * @return Encoder Scale of the encoder which matches given data
+			 */
+			public static EncoderMetreScale of(Gear gear, boolean dir) {
+				if (gear == Gear.POWER)
+					return dir ? RIGHT_POWER : LEFT_POWER;
+				else
+					return dir ? RIGHT_VELOCITY : LEFT_VELOCITY;
+			}
+
+			/**
+			 * 
+			 * @return signum of this value
+			 */
+			public int invert() {
+				return (int) Math.signum(value);
+			}
+			
+			/**
+			 * 
+			 * @return true if the scale is smaller than 0
+			 */
+			public boolean inverted() {
+				return value < 0;
+			}
+		}
+	}
+	
+	public static final class Cerberous {
 
 		/**
 		 * Chassis size
@@ -33,7 +129,7 @@ public final class RobotStats {
 			/**
 			 * Radius of chassis wheels
 			 */
-			WHEEL_RADIUS(0.7512, "meters");
+			WHEEL_RADIUS(0.0762, "meters");
 
 			public final double value;
 			public final String units;

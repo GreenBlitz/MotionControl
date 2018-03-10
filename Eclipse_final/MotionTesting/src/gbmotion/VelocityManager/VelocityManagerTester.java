@@ -27,11 +27,11 @@ public class VelocityManagerTester {
 		m_leftEncoder = encoderLeft;
 		m_rightEncoder = encoderRight;
 		if (gear == RobotStats.Gear.POWER) {
-			m_leftEncoderTicksPerRadian = RobotStats.Lobiiiiiin.EncoderRadianScale.LEFT_POWER.value;
-			m_rightEncoderTicksPerRadian = RobotStats.Lobiiiiiin.EncoderRadianScale.RIGHT_POWER.value;
+			m_leftEncoderTicksPerRadian = RobotStats.Cerberous.EncoderRadianScale.LEFT_POWER.value;
+			m_rightEncoderTicksPerRadian = RobotStats.Cerberous.EncoderRadianScale.RIGHT_POWER.value;
 		} else {
-			m_leftEncoderTicksPerRadian = RobotStats.Lobiiiiiin.EncoderRadianScale.LEFT_VELOCITY.value;
-			m_rightEncoderTicksPerRadian = RobotStats.Lobiiiiiin.EncoderRadianScale.RIGHT_VELOCITY.value;
+			m_leftEncoderTicksPerRadian = RobotStats.Cerberous.EncoderRadianScale.LEFT_VELOCITY.value;
+			m_rightEncoderTicksPerRadian = RobotStats.Cerberous.EncoderRadianScale.RIGHT_VELOCITY.value;
 		}
 		m_stick = stick;
 		m_velocityManagerLeft = new VoltageController(VoltageController.TimeOption.ASAP, 0, 0, pastTimeImportance);
