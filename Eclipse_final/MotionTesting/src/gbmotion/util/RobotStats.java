@@ -12,7 +12,7 @@ public final class RobotStats {
 		public static final boolean CHASSIS_LEFT_ENCODER_INVERT = true, CHASSIS_RIGHT_ENCODER_INVERT = false;
 	}
 
-	public static final class Guillotine {
+	public static final class Lobiiiiiin {
 
 		/**
 		 * Chassis size
@@ -53,27 +53,27 @@ public final class RobotStats {
 			/**
 			 * Left encoder ticks per meter in velocity gear
 			 */
-			LEFT_VELOCITY(680.666666, Gear.VELOCITY), 
+			LEFT_VELOCITY(681, Gear.VELOCITY), 
 			
 			/**
 			 * Left encoder ticks per meter in power gear
 			 */
-			LEFT_POWER(2493.8888888, Gear.POWER),
+			LEFT_POWER(2494, Gear.POWER),
 			
 			/**
 			 * Right encoder ticks per meter in velocity gear
 			 */
-			RIGHT_VELOCITY(-684.933333, Gear.VELOCITY),
+			RIGHT_VELOCITY(-685, Gear.VELOCITY),
 			
 			/**
 			 * Right encoder ticks per meter in power gear
 			 */
-			RIGHT_POWER(-2465.6666666, Gear.POWER);
+			RIGHT_POWER(-2466, Gear.POWER);
 
-			public final double value;
+			public final int value;
 			public final Gear gear;
 
-			private EncoderMetreScale(double val, Gear gear) {
+			private EncoderMetreScale(int val, Gear gear) {
 				this.value = val;
 				this.gear = gear;
 			}

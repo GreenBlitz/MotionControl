@@ -5,10 +5,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class SmartEncoder {
 	private final TalonSRX m_talon;
-	private final double m_ticksPerMeterPower;
-	private final double m_ticksPerMeterVelocity;
+	private final int m_ticksPerMeterPower;
+	private final int m_ticksPerMeterVelocity;
 
-	public SmartEncoder(TalonSRX talon, double ticksPerMeterPower, double ticksPerMeterVelocity) {
+	public SmartEncoder(TalonSRX talon, int ticksPerMeterPower, int ticksPerMeterVelocity) {
 		if (ticksPerMeterPower == +0.0 || !Double.isFinite(ticksPerMeterPower) || ticksPerMeterPower == -0.0)
 			throw new IllegalArgumentException("invalid ticks per meter value '" + ticksPerMeterPower + "'");
 
@@ -20,11 +20,11 @@ public class SmartEncoder {
 		m_ticksPerMeterPower = ticksPerMeterPower;
 	}
 
-	public double getTicksPerMeter(RobotStats.Gear gear) {
+	public int getTicksPerMeter(RobotStats.Gear gear) {
 		return gear == RobotStats.Gear.POWER ? m_ticksPerMeterPower : m_ticksPerMeterVelocity;
 	}
 	
-	public double getTicksPerMeter() {
+	public int getTicksPerMeter() {
 		return getTicksPerMeter(Shifter.getInstance().getState());
 	}
 

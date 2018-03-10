@@ -32,10 +32,10 @@ public class DrivePort {
 	public DrivePort(SmartTalon frontLeftMotor, SmartTalon rearLeftMotor, SmartTalon frontRightMotor,
 			SmartTalon rearRightMotor) {
 		m_robotDrive = new CANRobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
-		m_leftEncoder = new SmartEncoder(rearLeftMotor, RobotStats.Guillotine.EncoderMetreScale.LEFT_POWER.value,
-				RobotStats.Guillotine.EncoderMetreScale.LEFT_VELOCITY.value);
-		m_rightEncoder = new SmartEncoder(rearRightMotor, RobotStats.Guillotine.EncoderMetreScale.RIGHT_POWER.value,
-				RobotStats.Guillotine.EncoderMetreScale.RIGHT_VELOCITY.value);
+		m_leftEncoder = new SmartEncoder(rearLeftMotor, RobotStats.Lobiiiiiin.EncoderMetreScale.LEFT_POWER.value,
+				RobotStats.Lobiiiiiin.EncoderMetreScale.LEFT_VELOCITY.value);
+		m_rightEncoder = new SmartEncoder(rearRightMotor, RobotStats.Lobiiiiiin.EncoderMetreScale.RIGHT_POWER.value,
+				RobotStats.Lobiiiiiin.EncoderMetreScale.RIGHT_VELOCITY.value);
 	}
 
 	/**

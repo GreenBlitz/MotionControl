@@ -11,6 +11,7 @@ import gbmotion.appc.APPController;
 import gbmotion.appc.Localizer;
 import gbmotion.base.DrivePort;
 import gbmotion.path.ArenaMap;
+import gbmotion.path.PathFactory;
 import gbmotion.util.PrintManager;
 import gbmotion.util.RobotStats;
 import gbmotion.util.SmartEncoder;
@@ -45,6 +46,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledInit() {
 		System.out.println("Am I Disabled?");
+		controller.stop();
+		controller.free();
 		resetEncoders();
 		loc.stop();
 	}
@@ -53,6 +56,8 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		reset();
 		loc.start();
+		new PathFactory().conncetLine(0, 1, 0.01).construct(m_arenaMap);
+		controller.start();
 	}
 
 	@Override
@@ -99,14 +104,14 @@ public class Robot extends IterativeRobot {
 		right = rd.getEncoder(true);
 		gyro = new AHRS(SPI.Port.kMXP);
 		reset();
-		loc = Localizer.of(left, right, RobotStats.Guillotine.Chassis.WHEEL_RADIUS.value, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
-		/*
+		loc = Localizer.of(left, right, RobotStats.Lobiiiiiin.Chassis.WHEEL_RADIUS.value, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
+		
 		output = new APPCOutput();
 		m_arenaMap = new ArenaMap();
 		controller = new APPController(loc, output, m_arenaMap);
 		initPrintables();
 		OI.init(loc);
-		*/
+		
 	}
 
 	public static void killMySelf(String suicideLetter) {

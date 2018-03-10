@@ -9,8 +9,6 @@
 	<classpathentry kind="var" path="USERLIBS_DIR/navx_frc.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/la4j-0.6.0.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/gson-2.8.1.jar"/>
-	<classpathentry kind="var" path="USERLIBS_DIR/log4j-api-2.8.2.jar"/>
-	<classpathentry kind="var" path="USERLIBS_DIR/log4j-core-2.8.2.jar"/>
 	<classpathentry kind="var" path="wpiutil" sourcepath="wpiutil.sources"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix-sources.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix.jar"/>
