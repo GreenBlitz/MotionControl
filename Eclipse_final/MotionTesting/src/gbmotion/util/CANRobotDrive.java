@@ -6,6 +6,8 @@ public class CANRobotDrive {
 	private double m_powerLimit = 1;
 	private int m_frontLeftInverted = 1, m_rearLeftInverted = 1, m_frontRightInverted = 1, m_rearRightInverted = 1;
 
+	private boolean hasSecond = true;
+
 	public CANRobotDrive(SmartTalon frontLeft, SmartTalon rearLeft, SmartTalon frontRight, SmartTalon rearRight) {
 		m_frontLeft = frontLeft;
 		m_rearLeft = rearLeft;
@@ -16,6 +18,16 @@ public class CANRobotDrive {
 	public CANRobotDrive(int frontLeft, int rearLeft, int frontRight, int rearRight) {
 		this(new SmartTalon(frontLeft), new SmartTalon(rearLeft), new SmartTalon(frontRight),
 				new SmartTalon(rearRight));
+	}
+	
+	public CANRobotDrive(SmartTalon left, SmartTalon right){
+		hasSecond = false; 
+		m_frontLeft = left;
+		m_frontRight = right;
+	}
+	
+	public CANRobotDrive(int left, int right){
+		this(new SmartTalon(left), new SmartTalon(right));
 	}
 
 	public static enum TalonID {
@@ -70,7 +82,7 @@ public class CANRobotDrive {
 
 		moveValue *= squaredInputs ? Math.abs(moveValue) : 1;
 		rotateValue *= squaredInputs ? Math.abs(rotateValue) : 1;
-		
+
 		if (moveValue > 0.0) {
 			if (rotateValue > 0.0) {
 				leftMotorSpeed = moveValue - rotateValue;
@@ -90,7 +102,7 @@ public class CANRobotDrive {
 		}
 		setLeftRightMotorOutputs(leftMotorSpeed, rightMotorSpeed);
 	}
-	
+
 	public void arcadeDrive(double power, double rotate) {
 		arcadeDrive(power, rotate, true);
 	}
@@ -101,10 +113,10 @@ public class CANRobotDrive {
 
 		leftValue *= squaredInputs ? Math.abs(leftValue) : 1;
 		rightValue *= squaredInputs ? Math.abs(rightValue) : 1;
-		
+
 		setLeftRightMotorOutputs(leftValue, rightValue);
 	}
-	
+
 	public void tankDrive(double leftValue, double rightValue) {
 		tankDrive(leftValue, rightValue, true);
 	}
@@ -118,7 +130,9 @@ public class CANRobotDrive {
 	public void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
 		m_frontLeft.set(m_frontLeftInverted * limit(leftOutput) * m_outputScale);
 		m_rearLeft.set(m_rearLeftInverted * limit(leftOutput) * m_outputScale);
-		m_frontRight.set(-m_frontRightInverted * limit(rightOutput) * m_outputScale);
-		m_rearRight.set(-m_rearRightInverted * limit(rightOutput) * m_outputScale);
+		if (hasSecond) {
+			m_frontRight.set(m_frontRightInverted * limit(rightOutput) * m_outputScale);
+			m_rearRight.set(m_rearRightInverted * limit(rightOutput) * m_outputScale);
+		}
 	}
 }

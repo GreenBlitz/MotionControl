@@ -98,7 +98,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
-		rd = DrivePort.DEFAULT;
+		rd = DrivePort.GILDABOI;
 		rd.setPowerLimit(FULL_POWER);
 		left = rd.getEncoder(false);
 		right = rd.getEncoder(true);

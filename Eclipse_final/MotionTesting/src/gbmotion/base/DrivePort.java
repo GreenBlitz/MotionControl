@@ -14,6 +14,8 @@ public class DrivePort {
 			new SmartTalon(RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT),
 			new SmartTalon(RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT),
 			new SmartTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT));
+	
+	public static final DrivePort GILDABOI = new DrivePort(new SmartTalon(8), new SmartTalon(11));
 
 	protected CANRobotDrive m_robotDrive;
 	private SmartEncoder m_leftEncoder;
@@ -35,6 +37,14 @@ public class DrivePort {
 		m_leftEncoder = new SmartEncoder(rearLeftMotor, RobotStats.Cerberous.EncoderMetreScale.LEFT_POWER.value,
 				RobotStats.Cerberous.EncoderMetreScale.LEFT_VELOCITY.value);
 		m_rightEncoder = new SmartEncoder(rearRightMotor, RobotStats.Cerberous.EncoderMetreScale.RIGHT_POWER.value,
+				RobotStats.Cerberous.EncoderMetreScale.RIGHT_VELOCITY.value);
+	}
+	
+	public DrivePort(SmartTalon left, SmartTalon right){
+		m_robotDrive = new CANRobotDrive(left, right);
+		m_leftEncoder = new SmartEncoder(left, RobotStats.Gildaboi.EncoderMetreScale.LEFT_POWER.value,
+				RobotStats.Cerberous.EncoderMetreScale.LEFT_VELOCITY.value);
+		m_rightEncoder = new SmartEncoder(right, RobotStats.Gildaboi.EncoderMetreScale.RIGHT_POWER.value,
 				RobotStats.Cerberous.EncoderMetreScale.RIGHT_VELOCITY.value);
 	}
 
