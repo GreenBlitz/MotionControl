@@ -3,6 +3,7 @@ package gbmotion.path;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.usfirst.frc.team4590.robot.Robot;
 
@@ -303,7 +304,12 @@ public class ArenaMap {
 	 * @return last point in the path
 	 */
 	public IPoint2D getLast() {
-		return m_path.getLast();
+		try {
+			return m_path.getLast();
+		} catch (NoSuchElementException e) {
+			throw new IllegalStateException("empty arena map");
+		}
+		
 	}
 
 	/**

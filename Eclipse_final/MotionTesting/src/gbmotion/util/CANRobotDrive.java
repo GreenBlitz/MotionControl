@@ -4,7 +4,7 @@ public class CANRobotDrive {
 	private SmartTalon m_frontLeft, m_rearLeft, m_frontRight, m_rearRight;
 	private double m_outputScale = 1;
 	private double m_powerLimit = 1;
-	private int m_frontLeftInverted = 1, m_rearLeftInverted = 1, m_frontRightInverted = 1, m_rearRightInverted = 1;
+	private int m_frontLeftInverted = 1, m_rearLeftInverted = 1, m_frontRightInverted = -1, m_rearRightInverted = -1;
 
 	private boolean hasSecond = true;
 
@@ -100,6 +100,7 @@ public class CANRobotDrive {
 				rightMotorSpeed = -Math.max(-moveValue, -rotateValue);
 			}
 		}
+		
 		setLeftRightMotorOutputs(leftMotorSpeed, rightMotorSpeed);
 	}
 
@@ -128,11 +129,11 @@ public class CANRobotDrive {
 	}
 
 	public void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
-		m_frontLeft.set(m_frontLeftInverted * limit(leftOutput) * m_outputScale);
+		m_rearRight.set(m_rearRightInverted * limit(rightOutput) * m_outputScale);
 		m_rearLeft.set(m_rearLeftInverted * limit(leftOutput) * m_outputScale);
 		if (hasSecond) {
 			m_frontRight.set(m_frontRightInverted * limit(rightOutput) * m_outputScale);
-			m_rearRight.set(m_rearRightInverted * limit(rightOutput) * m_outputScale);
+			m_frontLeft.set(m_frontLeftInverted * limit(leftOutput) * m_outputScale);
 		}
 	}
 }

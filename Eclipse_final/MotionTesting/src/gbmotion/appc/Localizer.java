@@ -242,12 +242,6 @@ public class Localizer implements Input<IPoint2D> {
 	 */
 	private void resetSelf() {
 		synchronized (LOCK) {
-			for (SmartEncoder enc : m_leftEncoders)
-				enc.reset();
-
-			for (SmartEncoder enc : m_rightEncoders)
-				enc.reset();
-
 			m_location = m_location.set(0, 0, 0);
 			referenceAngle = m_navx.getYaw();
 		}

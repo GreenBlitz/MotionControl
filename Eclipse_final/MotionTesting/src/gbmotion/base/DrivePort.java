@@ -5,6 +5,7 @@ import org.usfirst.frc.team4590.robot.RobotMap;
 import gbmotion.util.CANRobotDrive;
 import gbmotion.util.CANRobotDrive.TalonID;
 import gbmotion.util.RobotStats;
+import gbmotion.util.Shifter;
 import gbmotion.util.SmartEncoder;
 import gbmotion.util.SmartTalon;
 
@@ -15,7 +16,7 @@ public class DrivePort {
 			new SmartTalon(RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT),
 			new SmartTalon(RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT));
 	
-	public static final DrivePort GILDABOI = new DrivePort(new SmartTalon(8), new SmartTalon(11));
+	// public static final DrivePort GILDABOI = new DrivePort(new SmartTalon(8), new SmartTalon(11));
 
 	protected CANRobotDrive m_robotDrive;
 	private SmartEncoder m_leftEncoder;
@@ -35,10 +36,10 @@ public class DrivePort {
 			SmartTalon rearRightMotor) {
 		m_robotDrive = new CANRobotDrive(frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor);
 		m_leftEncoder = new SmartEncoder(rearLeftMotor, RobotStats.Cerberous.EncoderMetreScale.LEFT_POWER.value,
-				RobotStats.Cerberous.EncoderMetreScale.LEFT_VELOCITY.value);
+				RobotStats.Cerberous.EncoderMetreScale.of(Shifter.getInstance().getState(), false).value);
 		m_rightEncoder = new SmartEncoder(rearRightMotor, RobotStats.Cerberous.EncoderMetreScale.RIGHT_POWER.value,
-				RobotStats.Cerberous.EncoderMetreScale.RIGHT_VELOCITY.value);
-	}
+				RobotStats.Cerberous.EncoderMetreScale.of(Shifter.getInstance().getState(), true).value);
+		}
 	
 	public DrivePort(SmartTalon left, SmartTalon right){
 		m_robotDrive = new CANRobotDrive(left, right);

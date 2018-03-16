@@ -42,12 +42,12 @@ public class Robot extends IterativeRobot {
 	public static boolean kms = false;
 	public static String suicideLetter = "";
 	public static Throwable suicideCause = null;
-
+ 
 	@Override
 	public void disabledInit() {
 		System.out.println("Am I Disabled?");
-		controller.stop();
-		controller.free();
+		//controller.stop();
+		//controller.free();
 		resetEncoders();
 		loc.stop();
 	}
@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
 		reset();
 		loc.start();
 		new PathFactory().conncetLine(0, 1, 0.01).construct(m_arenaMap);
-		controller.start();
+		//controller.start();
 	}
 
 	@Override
@@ -78,17 +78,17 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		DrivePort.DEFAULT.tankDrive(0, 0);
+		reset();
 	}
 
 	@Override
 	public void autonomousPeriodic() {
-		logGyro();
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		logGyro();
+		System.out.println(loc.recieve());
 		rd.arcadeDrive(-OI.getInstance().getJoystick().getRawAxis(1), OI.getInstance().getJoystick().getRawAxis(4),
 				true);
 	}
@@ -98,20 +98,17 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
-		rd = DrivePort.GILDABOI;
+		rd = DrivePort.DEFAULT;
 		rd.setPowerLimit(FULL_POWER);
 		left = rd.getEncoder(false);
 		right = rd.getEncoder(true);
 		gyro = new AHRS(SPI.Port.kMXP);
-		reset();
 		loc = Localizer.of(left, right, RobotStats.Cerberous.Chassis.WHEEL_RADIUS.value, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
-		
-		output = new APPCOutput();
-		m_arenaMap = new ArenaMap();
-		controller = new APPController(loc, output, m_arenaMap);
+		//output = new APPCOutput();
+		//m_arenaMap = new ArenaMap();
+		//controller = new APPController(loc, output, m_arenaMap);
 		initPrintables();
 		OI.init(loc);
-		
 	}
 
 	public static void killMySelf(String suicideLetter) {
@@ -144,20 +141,8 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void resetEncoders() {
-		if (left != null) left.reset();
-		if (right != null) right.reset();
-	}
-	
-	private void printTicks() {
-		System.out.println("left ticks: " + left.getTicks());
-		System.out.println("right ticks: " + right.getTicks());
-		System.out.println("------------------------------------");
-	}
-	
-	private void printDistances() {
-		System.out.println("left distance: " + left.getDistance());
-		System.out.println("right distance: " + right.getDistance());
-		System.out.println("------------------------------------");
+		left.reset();
+		right.reset();
 	}
 	
 	private void logGyro() {
@@ -167,12 +152,15 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void resetGyro() {
-		gyro.reset();
+		do {
+			gyro.reset();
+		} while (gyro.getYaw() != 0);
 		while (gyro.isCalibrating()) {}
 	}
 	
 	private void reset() {
 		resetGyro();
 		resetEncoders();
+		loc.reset();
 	}
 }

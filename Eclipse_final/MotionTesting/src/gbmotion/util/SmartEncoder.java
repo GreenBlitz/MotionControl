@@ -33,11 +33,11 @@ public class SmartEncoder {
 	}
 
 	public double getDistance() {
-		return m_talon.getSensorCollection().getQuadraturePosition() / getTicksPerMeter();
+		return ((double) m_talon.getSensorCollection().getQuadraturePosition()) / getTicksPerMeter();
 	}
 
 	public double getSpeed() {
-		return m_talon.getSensorCollection().getQuadratureVelocity() / getTicksPerMeter();
+		return ((double) m_talon.getSensorCollection().getQuadratureVelocity()) / getTicksPerMeter();
 	}
 
 	public ErrorCode reset() {
@@ -45,6 +45,6 @@ public class SmartEncoder {
 		if (ec != ErrorCode.OK) {
 			System.err.println("error occured while reseting encoder '" + m_talon.getHandle() + "': " + ec);
 		}
-		return ec;
+		return getTicks() == 0 ? ec : reset();
 	}
 }
