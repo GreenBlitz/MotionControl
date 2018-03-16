@@ -118,15 +118,6 @@ public abstract class IterativeController<IN, OUT> extends AbstractController<IN
 		public void run() {
 			IterativeController.this.run(m_controllerState, m_destination, m_tolerance, m_environmentPort);
 		}
-
-		public void init() {
-			Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-				@Override
-				public void uncaughtException(Thread arg0, Throwable arg1) {
-					Robot.killMySelf(arg1);
-				}
-			});
-		}
 	}
 
 	/**
