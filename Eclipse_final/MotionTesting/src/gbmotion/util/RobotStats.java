@@ -149,22 +149,22 @@ public final class RobotStats {
 			/**
 			 * Left encoder ticks per meter in velocity gear
 			 */
-			LEFT_VELOCITY(681, Gear.VELOCITY), 
+			LEFT_VELOCITY(-681, Gear.VELOCITY), 
 			
 			/**
 			 * Left encoder ticks per meter in power gear
 			 */
-			LEFT_POWER(2494, Gear.POWER),
+			LEFT_POWER(-2494, Gear.POWER),
 			
 			/**
 			 * Right encoder ticks per meter in velocity gear
 			 */
-			RIGHT_VELOCITY(-685, Gear.VELOCITY),
+			RIGHT_VELOCITY(685, Gear.VELOCITY),
 			
 			/**
 			 * Right encoder ticks per meter in power gear
 			 */
-			RIGHT_POWER(-2466, Gear.POWER);
+			RIGHT_POWER(2466, Gear.POWER);
 
 			public final int value;
 			public final Gear gear;
