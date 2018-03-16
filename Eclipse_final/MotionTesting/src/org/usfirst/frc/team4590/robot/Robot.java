@@ -111,16 +111,6 @@ public class Robot extends IterativeRobot {
 		OI.init(loc);
 	}
 
-	public static void killMySelf(String suicideLetter) {
-		Robot.suicideLetter = suicideLetter;
-		kms = true;
-	}
-
-	public static void killMySelf(Throwable cause) {
-		Robot.suicideCause = cause;
-		kms = true;
-	}
-
 	private void initPrintables() {
 	}
 
@@ -133,22 +123,16 @@ public class Robot extends IterativeRobot {
 	}
 
 	public double getSpeedL() {
-		return -right.getSpeed();
+		return left.getSpeed();
 	}
 
 	public double getSpeedR() {
-		return left.getSpeed();
+		return right.getSpeed();
 	}
 	
 	public void resetEncoders() {
 		left.reset();
 		right.reset();
-	}
-	
-	private void logGyro() {
-		System.out.println("yaw: " + gyro.getYaw());
-		System.out.println("pitch: " + gyro.getPitch());
-		System.out.println("roll: " + gyro.getRoll());
 	}
 	
 	private void resetGyro() {
