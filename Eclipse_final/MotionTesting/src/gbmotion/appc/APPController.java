@@ -16,7 +16,7 @@ import gbmotion.path.IndexedPoint2D;
 
 
 public class APPController extends IterativeController<IPoint2D, APPController.APPDriveData> {
-	protected static final double DEFAULT_LOOKAHEAD = 0.5;
+	protected static final double DEFAULT_LOOKAHEAD = 0.6;
 	protected static final double DEFAULT_TOLERANCE_DIST = 0.05;
 	protected static final double DEFAULT_MIN_ON_TARGET_TIME = 0.02;
 	protected static final double DEFAULT_SLOWDOWN = 1;
@@ -106,7 +106,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 	 * @return new goal point
 	 */
 	private IPoint2D updateGoalPoint(IPoint2D loc, ArenaMap map, double lookAhead) {
-		IPoint2D tmp = map.lastPointInRange(loc, lookAhead);
+		IPoint2D tmp = map.lastPointInRangeBF(loc, 0, lookAhead);
 		Robot.managedPrinter.println(getClass(), "next goal point: " + tmp);
 		tmp.toDashboard("Goal point");
 		if (tmp != null)
@@ -164,7 +164,7 @@ public class APPController extends IterativeController<IPoint2D, APPController.A
 		double distanceOverSlowDown = robotLoc.distance(m_destination) / m_slowDownDistance;
 		if (distanceOverSlowDown > 1)
 			return 1;
-		return Math.max(distanceOverSlowDown, 0.8);
+		return Math.max(distanceOverSlowDown, 0.5);
 	}
 
 	/**

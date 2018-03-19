@@ -123,9 +123,7 @@ public class CANRobotDrive {
 	}
 
 	private double limit(double value) {
-		if (value > 0)
-			return Math.min(value, m_powerLimit);
-		return Math.max(value, -m_powerLimit);
+		return Math.max(Math.min(m_powerLimit, value), -m_powerLimit);
 	}
 
 	public void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {

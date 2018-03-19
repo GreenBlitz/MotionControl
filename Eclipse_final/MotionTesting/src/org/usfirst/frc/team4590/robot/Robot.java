@@ -3,6 +3,7 @@ package org.usfirst.frc.team4590.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -10,6 +11,7 @@ import gbmotion.appc.APPCOutput;
 import gbmotion.appc.APPController;
 import gbmotion.appc.Localizer;
 import gbmotion.base.DrivePort;
+import gbmotion.base.point.orientation.IOrientation2D;
 import gbmotion.path.ArenaMap;
 import gbmotion.path.PathFactory;
 import gbmotion.util.PrintManager;
@@ -46,8 +48,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledInit() {
 		System.out.println("Am I Disabled?");
-		//controller.stop();
-		//controller.free();
+		if(controller!=null){
+			controller.stop();
+			controller.free();
+		}
 		resetEncoders();
 		loc.stop();
 	}
@@ -56,8 +60,9 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		reset();
 		loc.start();
-		new PathFactory().conncetLine(0, 1, 0.01).construct(m_arenaMap);
-		//controller.start();
+		new PathFactory().connectLine(0, 2, 0.01).connectLine(-1.5, 2, 0.01).connectLine(-1.5, 4, 0.01).construct(m_arenaMap);
+		controller = new APPController(loc, output, m_arenaMap);
+		controller.start();
 	}
 
 	@Override
@@ -83,12 +88,24 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
+	
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		System.out.println(loc.recieve());
+		
+		edu.wpi.first.wpilibj.networktables.NetworkTable motion = edu.wpi.first.wpilibj.networktables.NetworkTable.getTable("motion");
+		motion.putNumber("locX", loc.recieve().getX());
+		motion.putNumber("locY", loc.recieve().getY());
+		motion.putNumber("locAngle", ((IOrientation2D)loc.recieve()).getDirection());
+		motion.putNumber("gyroAngle", Math.toRadians(gyro.getYaw()));
+		//System.out.println(gyro.getYaw());
+		//motion.putNumber("pathLength", 0);
+		motion.putNumber("encLeft", loc.getLeftDistance());
+		motion.putNumber("encRight", loc.getRightDistance());
+		motion.putBoolean("isUpdated", true);
 		rd.arcadeDrive(-OI.getInstance().getJoystick().getRawAxis(1), OI.getInstance().getJoystick().getRawAxis(4),
 				true);
 	}
@@ -100,13 +117,12 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		rd = DrivePort.DEFAULT;
 		rd.setPowerLimit(FULL_POWER);
-		left = rd.getEncoder(false);
-		right = rd.getEncoder(true);
+		left = rd.getEncoder(true);
+		right = rd.getEncoder(false);
 		gyro = new AHRS(SPI.Port.kMXP);
-		loc = Localizer.of(left, right, RobotStats.Cerberous.Chassis.WHEEL_RADIUS.value, gyro, Localizer.AngleDifferenceCalculation.GYRO_BASED);
-		//output = new APPCOutput();
-		//m_arenaMap = new ArenaMap();
-		//controller = new APPController(loc, output, m_arenaMap);
+		loc = Localizer.of(left, right, RobotStats.Cerberous.Chassis.HORIZONTAL_DISTANCE.value, gyro, Localizer.AngleDifferenceCalculation.ENCODER_BASED);
+		output = new APPCOutput();
+		m_arenaMap = new ArenaMap();
 		initPrintables();
 		OI.init(loc);
 	}

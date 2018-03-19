@@ -27,8 +27,8 @@ public class Localizer implements Input<IPoint2D> {
 
 	private IOrientation2D m_location;
 
-	private SmartEncoder[] m_leftEncoders;
-	private SmartEncoder[] m_rightEncoders;
+	public SmartEncoder[] m_leftEncoders;
+	public SmartEncoder[] m_rightEncoders;
 
 	private AHRS m_navx;
 	private double referenceAngle = 0;
@@ -157,8 +157,47 @@ public class Localizer implements Input<IPoint2D> {
 		private double leftDist;
 		private double rightDist;
 
-		@Override
-		/**
+		public void oldRun(){
+
+		
+			double rightDistDiff = -rightDist;
+            double leftDistDiff = -leftDist;
+            leftDist = getLeftDistance();
+        	rightDist = getRightDistance();
+        	rightDistDiff += rightDist;
+        	leftDistDiff += leftDist;
+        	Point2DGuyde old = new Point2DGuyde(m_location.getX(), m_location.getY(), m_location.getDirection());
+
+            if (Math.abs(leftDistDiff - rightDistDiff) < 10e-4) {
+                synchronized (LOCK) {
+                	old = old.moveBy(0, leftDistDiff);
+                	m_location = m_location.set(old.getX(), old.getY(), old.getDirection() );
+                    return;
+                }
+            }
+            
+        	
+    		boolean leftIsLong = leftDistDiff > rightDistDiff;
+    		double shortDist = leftIsLong ? rightDistDiff : leftDistDiff;
+    		
+    		 
+    		double angle = (rightDistDiff - leftDistDiff) / m_wheelDistance;
+
+    		double radiusFromCenter = -(shortDist/angle + Math.signum(angle) * m_wheelDistance/2);
+    		double adjustedRadiusFromCenter = radiusFromCenter;
+    		Point2DGuyde rotationOrigin = old.moveBy(adjustedRadiusFromCenter, 0);
+            synchronized (LOCK){
+                old = old.rotateRelativeTo(rotationOrigin, angle);
+                m_location = m_location.set(old.getX(), old.getY(), old.getDirection());
+                
+            }
+
+        	if (shouldReset){
+				resetSelf();
+				shouldReset = false;
+			}
+		}
+	/**
 		 * Update the robot position
 		 */
 		public void run() {
@@ -185,7 +224,7 @@ public class Localizer implements Input<IPoint2D> {
 				ePort.putNumber("Left encoder", leftDist);
 				ePort.putNumber("Right encoder", rightDist);
 
-				double angleChange = (rightDistDiff - leftDistDiff) / m_wheelDistance;
+				double angleChange = -(rightDistDiff - leftDistDiff) / m_wheelDistance;
 
 				switch (m_angleCalculationType) {
 				case ENCODER_BASED:
@@ -200,7 +239,7 @@ public class Localizer implements Input<IPoint2D> {
 
 				if (angleChange == 0) {
 					synchronized (LOCK) {
-						m_location.moveBy(0, leftDistDiff, m_location.getDirection(), DirectionEffect.RESERVED);
+						m_location.moveBy(0, (leftDistDiff + rightDistDiff) / 2, m_location.getDirection(), DirectionEffect.RESERVED);
 					}
 				} else {
 					boolean leftLonger = leftDistDiff > rightDistDiff;
@@ -211,10 +250,20 @@ public class Localizer implements Input<IPoint2D> {
 							0, m_location.getDirection(), DirectionEffect.RESERVED);
 					synchronized (LOCK) {
 						m_location.rotateAround(rotationOrigin, angleChange, DirectionEffect.CHANGED);
-						m_location.setDirection(getAngleRadians());
+//						m_location.setDirection(getAngleRadians());
 					}
 				}
 				ePort.putNumber("angle", angleChange);
+				edu.wpi.first.wpilibj.networktables.NetworkTable motion = edu.wpi.first.wpilibj.networktables.NetworkTable.getTable("motion");
+				motion.putNumber("locX", m_location.getX());
+				motion.putNumber("locY", m_location.getY());
+				motion.putNumber("locAngle", m_location.getDirection());
+				motion.putNumber("gyroAngle", Math.toRadians(m_navx.getYaw()));
+				//System.out.println(gyro.getYaw());
+				//motion.putNumber("pathLength", 0);
+				motion.putNumber("encLeft", getLeftDistance());
+				motion.putNumber("encRight", getRightDistance());
+				motion.putBoolean("isUpdated", true);
 			} else {
 				resetSelf();
 			}

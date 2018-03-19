@@ -70,7 +70,7 @@ public class PathFactory {
 	 * @param metersPerPoint
 	 * @return
 	 */
-	public PathFactory conncetLine(double x, double y, double metersPerPoint) {
+	public PathFactory connectLine(double x, double y, double metersPerPoint) {
 		return connectLine(Point2D.immutable(x, y), metersPerPoint);
 	}
 

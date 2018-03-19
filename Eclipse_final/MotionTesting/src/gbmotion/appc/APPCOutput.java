@@ -15,8 +15,9 @@ import gbmotion.util.RobotStats;
  * @author karlo
  */
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static final double FULL_POWER = 0.8 * 0.5;
-	private static final double ROTATION_FACTOR = 2;//RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
+	private static final double POWER_FACTOR = 0.7;
+	private static final double FULL_POWER = 0.8;
+	private static final double ROTATION_FACTOR = -3.5;//RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 	private DrivePort dPort = DrivePort.DEFAULT;
@@ -104,8 +105,8 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		double rotationPowerLeft = dX * ROTATION_FACTOR;
 		double rotationPowerRight = -rotationPowerLeft;
 
-		double powerUnscaledLeft = dY + sign(dY) * rotationPowerLeft;
-		double powerUnscaledRight = dY + sign(dY) * rotationPowerRight;
+		double powerUnscaledLeft = dY + rotationPowerLeft;
+		double powerUnscaledRight = dY + rotationPowerRight;
 
 		if (Math.abs(powerUnscaledLeft) > Math.abs(powerUnscaledRight)) {
 			left = maxPower * sign(powerUnscaledLeft);
@@ -162,6 +163,11 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 * @param right
 	 *            right engines power
 	 */
+	private static double[] limitPower(double left, double right){
+		right*=POWER_FACTOR; left*=POWER_FACTOR;
+		double c = left>right ? (left>FULL_POWER ? FULL_POWER/Math.abs(left):1):(right>FULL_POWER ? FULL_POWER/Math.abs(right):1);
+		return new double[]{c*left, c*right};
+	}
 	public void tankDrive(double left, double right) {
 		tankDrive(left, right, false);
 	}
@@ -178,7 +184,11 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		NetworkTable motionTable = NetworkTable.getTable("motion");
 		motionTable.putNumber("motorRight", right);
 		motionTable.putNumber("motorLeft", left);
-		dPort.tankDrive(FULL_POWER * left, FULL_POWER * right, squared);
+		double[] tmp = limitPower(left, right);
+		left = tmp[0]; right = tmp[1];
+		System.out.println("left " + left);
+		System.out.println("right " + right);
+			dPort.tankDrive(left, right, squared);
 	}
 
 	/**
@@ -188,7 +198,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 *            drive curve
 	 */
 	public void arcadeDrive(double magnitude, double curve) {
-		dPort.arcadeDrive(FULL_POWER * magnitude, curve);
+		dPort.arcadeDrive(POWER_FACTOR * magnitude, curve);
 	}
 
 	/**

@@ -258,6 +258,32 @@ public class ArenaMap {
 		Robot.managedPrinter.println(getClass(), ret);
 		return ret;
 	}
+	public IndexedPoint2D lastPointInRangeBF(IPoint2D loc, double minRadius, double maxRadius) {
+	
+		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
+		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
+		IndexedPoint2D ret = null;
+		int[] mapLoc = hash(loc);
+		int x0 = Math.max(mapLoc[0] - radInSqrs, 0);
+		int x1 = Math.min(mapLoc[0] + radInSqrs, m_map.length - 1);
+		int y0 = Math.max(mapLoc[1] - radInSqrs, 0);
+		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map[0].length - 1);
+		double dontCollectGC;
+		for (int x = 0; x < m_map.length; x++)
+			for (int y = 0; y < m_map[0].length; y++){
+				for (IndexedPoint2D point : m_map[x][y]) {
+					dontCollectGC = point.distanceSquared(loc);
+					if (minRadiusSq <= dontCollectGC && dontCollectGC <= maxRadiusSq
+							&& (ret == null || (ret.getIndex() < point.index)))
+						ret = point;
+				}
+			}
+		Robot.managedPrinter.println(getClass(), ret);
+		if (ret == null) {
+			ret = (IndexedPoint2D) closestPoint(loc, maxRadius);
+		}
+		return ret;
+	}
 
 	/**
 	 * finds the closest point to a given point ({@code loc}) uses
