@@ -28,8 +28,11 @@ public abstract class Point2D implements IPoint2D {
 	 *            Y axis cords
 	 * @return new {@link ImPoint2D immutable Point2D} object
 	 */
-	public static Point2D immutable(double x, double y) {
+	public static ImPoint2D immutable(double x, double y) {
 		return new ImPoint2D(x, y);
+	}
+	public static ImPoint2D immutable(IPoint2D point){
+		return immutable(point.getX(), point.getY());
 	}
 
 	protected double m_x;

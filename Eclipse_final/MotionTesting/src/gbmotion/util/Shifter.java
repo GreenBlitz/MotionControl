@@ -1,5 +1,7 @@
 package gbmotion.util;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class Shifter {
 	private static Shifter instance;
 	
