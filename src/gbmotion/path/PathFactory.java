@@ -62,53 +62,56 @@ public class PathFactory {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * adds a round section to the path using bazier curve
+	 * 
 	 * @param numOfPoints
-	 * 		the number of points in the added curve.
+	 *            the number of points in the added curve.
 	 * @param poles
-	 * 		the poles you want to make into a curve
+	 *            the poles you want to make into a curve
 	 * @return
 	 */
-	private PathFactory bazierCurve(double numOfPoints, ImPoint2D... poles){
-		numOfPoints = 1/numOfPoints;
-		ImPoint2D[] polesAgain = new ImPoint2D[poles.length+1];
+	private PathFactory bazierCurve(double numOfPoints, ImPoint2D... poles) {
+		numOfPoints = 1 / numOfPoints;
+		ImPoint2D[] polesAgain = new ImPoint2D[poles.length + 1];
 		ImPoint2D origin = Point2D.immutable(m_path.getLast());
-		for(double phase=numOfPoints; phase<1; phase+=numOfPoints){
+		for (double phase = numOfPoints; phase < 1; phase += numOfPoints) {
 			polesAgain[0] = origin;
-			for(int i=0; i<poles.length; i++){
-				polesAgain[i+1] = poles[i];
+			for (int i = 0; i < poles.length; i++) {
+				polesAgain[i + 1] = poles[i];
 			}
 			m_path.add(MathUtil.bazierPhase(phase, polesAgain));
 		}
-		m_path.add(Point2D.immutable(poles[poles.length-1]));
-		return this;
-	}
-	
-	/**
-	 * 
-	 * @param metersPerPoint
-	 * @param roundingSize
-	 * 		the size of the rounded part in each corner
-	 * @param points
-	 * the points to be connected
-	 * @return
-	 */
-	public PathFactory smartConnect(double metersPerPoint, double roundingSize, IPoint2D... points){
-		ImPoint2D[] pointsAgain = new ImPoint2D[points.length];
-		for(int i=0; i<points.length;) pointsAgain[i] = Point2D.immutable(points[i++]);
-		for(int i=0; i<points.length-1;){
-			connectLine(MathUtil.nextTo(pointsAgain[i], m_path.getLast(), roundingSize), metersPerPoint);
-			bazierCurve(metersPerPoint/(2*roundingSize), pointsAgain[i], MathUtil.nextTo(pointsAgain[i], pointsAgain[++i], roundingSize));
-		}
-		connectLine(points[points.length-1], metersPerPoint);
+		m_path.add(Point2D.immutable(poles[poles.length - 1]));
 		return this;
 	}
 
 	/**
-	 * Like {@link PathFactory#connectLine(IPoint2D, double)} but with
-	 * different parameters
+	 * 
+	 * @param metersPerPoint
+	 * @param roundingSize
+	 *            the size of the rounded part in each corner
+	 * @param points
+	 *            the points to be connected
+	 * @return
+	 */
+	public PathFactory smartConnect(double metersPerPoint, double roundingSize, IPoint2D... points) {
+		ImPoint2D[] pointsAgain = new ImPoint2D[points.length];
+		for (int i = 0; i < points.length;)
+			pointsAgain[i] = Point2D.immutable(points[i++]);
+		for (int i = 0; i < points.length - 1;) {
+			connectLine(MathUtil.nextTo(pointsAgain[i], m_path.getLast(), roundingSize), metersPerPoint);
+			bazierCurve(2 * roundingSize / metersPerPoint, pointsAgain[i],
+					MathUtil.nextTo(pointsAgain[i], pointsAgain[++i], roundingSize));
+		}
+		connectLine(points[points.length - 1], metersPerPoint);
+		return this;
+	}
+
+	/**
+	 * Like {@link PathFactory#connectLine(IPoint2D, double)} but with different
+	 * parameters
 	 * 
 	 * @param x
 	 * @param y
@@ -135,8 +138,7 @@ public class PathFactory {
 	public PathFactory genStraightLine(double len, double rotation, double metersPerPoint) {
 		IPoint2D origin = m_path.getLast();
 		for (double i = metersPerPoint; i < len + metersPerPoint; i += metersPerPoint) {
-			m_path.add(( Point2D.immutable(0, i).rotate(rotation))
-					.moveBy(origin));
+			m_path.add((Point2D.immutable(0, i).rotate(rotation)).moveBy(origin));
 		}
 		return this;
 	}
@@ -145,11 +147,11 @@ public class PathFactory {
 		NetworkTable motionTable = NetworkTable.getTable("motion");
 		double[] arr = new double[m_path.getTotalLength() * 2];
 		int i = arr.length;
-		for (IPoint2D pt : m_path){
+		for (IPoint2D pt : m_path) {
 			arr[--i] = pt.getX();
 			arr[--i] = pt.getY();
 		}
-		for (int j = 0; j < arr.length; j+=255){
+		for (int j = 0; j < arr.length; j += 255) {
 			double[] cur = new double[255];
 			System.arraycopy(arr, j, cur, 0, Math.min(255, arr.length - j));
 			motionTable.putNumberArray("path" + j / 255, cur);

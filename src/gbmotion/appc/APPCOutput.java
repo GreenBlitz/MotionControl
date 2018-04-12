@@ -15,19 +15,41 @@ import gbmotion.util.RobotStats;
  * @author karlo
  */
 public class APPCOutput implements Output<APPController.APPDriveData> {
-	private static final double POWER_FACTOR = 0.7;
-	private static final double FULL_POWER = 0.8;
-	private static final double ROTATION_FACTOR = -3.5;//RobotStats.VERTICAL_WHEEL_DIST / RobotStats.HORIZONTAL_WHEEL_DIST;
+	private static final double POWER_FACTOR = 1;
+	private static final double FULL_POWER = 1;
+	private static final double DEFAULT_ROTATION_FACTOR = -3.5;
+
+	private static double ROTATION_FACTOR = DEFAULT_ROTATION_FACTOR;
 
 	private EnvironmentPort ePort = EnvironmentPort.DEFAULT;
 	private DrivePort dPort = DrivePort.DEFAULT;
 
+	private final int m_inverted;
+
 	public APPCOutput(EnvironmentPort ePort, DrivePort dPort) {
 		this.ePort = ePort;
 		this.dPort = dPort;
+		m_inverted = 1;
 	}
 
 	public APPCOutput() {
+		this(false);
+	}
+
+	public APPCOutput(boolean inverted) {
+		m_inverted = inverted ? -1 : 1;
+	}
+
+	public static void setRotationFactor(double value) {
+		ROTATION_FACTOR = value;
+	}
+
+	public static void resetRotationFactor() {
+		ROTATION_FACTOR = DEFAULT_ROTATION_FACTOR;
+	}
+
+	public static double getDefaultRotationFactor() {
+		return DEFAULT_ROTATION_FACTOR;
 	}
 
 	public void setDrivePort(DrivePort dPort) {
@@ -52,7 +74,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	public void curveDrive(DrivePort r, double power, double curve) {
 		ePort.putNumber("Curve", curve);
 		if (curve == 0) {
-			r.tankDrive(power, power, false);
+			r.tankDrive(power, power);
 			ePort.putNumber("powerR", power);
 			ePort.putNumber("powerL", power);
 			return;
@@ -65,11 +87,11 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 		ePort.putNumber("Ratio", ratio);
 		Robot.managedPrinter.println(getClass(), "ratio: " + ratio + ", power: " + power);
 		if (curve < 0) {
-			r.tankDrive(power, power * ratio, false);
+			r.tankDrive(power, power * ratio);
 			ePort.putNumber("powerL", power);
 			ePort.putNumber("powerR", power * ratio);
 		} else {
-			r.tankDrive(power * ratio, power, false);
+			r.tankDrive(power * ratio, power);
 			ePort.putNumber("powerL", power * ratio);
 			ePort.putNumber("powerR", power);
 		}
@@ -102,7 +124,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	public static double[] calculatePelegDrive(double maxPower, double dX, double dY) {
 		double left, right;
 
-		double rotationPowerLeft = dX * ROTATION_FACTOR;
+		double rotationPowerLeft = dX * DEFAULT_ROTATION_FACTOR;
 		double rotationPowerRight = -rotationPowerLeft;
 
 		double powerUnscaledLeft = dY + rotationPowerLeft;
@@ -137,7 +159,7 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 */
 	public void cordDrive(double maxPower, double dX, double dY) {
 		double[] values = calculatePelegDrive(maxPower, dX, dY);
-		tankDrive(values[0], values[1], false);
+		tankDrive(values[0], values[1]);
 	}
 
 	/**
@@ -163,33 +185,24 @@ public class APPCOutput implements Output<APPController.APPDriveData> {
 	 * @param right
 	 *            right engines power
 	 */
-	private static double[] limitPower(double left, double right){
-		right*=POWER_FACTOR; left*=POWER_FACTOR;
-		double c = left>right ? (left>FULL_POWER ? FULL_POWER/Math.abs(left):1):(right>FULL_POWER ? FULL_POWER/Math.abs(right):1);
-		return new double[]{c*left, c*right};
-	}
-	public void tankDrive(double left, double right) {
-		tankDrive(left, right, false);
+	private static double[] limitPower(double left, double right) {
+		right *= POWER_FACTOR;
+		left *= POWER_FACTOR;
+		double c = left > right ? (left > FULL_POWER ? FULL_POWER / Math.abs(left) : 1)
+				: (right > FULL_POWER ? FULL_POWER / Math.abs(right) : 1);
+		return new double[] { c * left, c * right };
 	}
 
-	/**
-	 * @param left
-	 *            left engines power
-	 * @param right
-	 *            right engines power
-	 * @param squared
-	 *            squared inputs
-	 */
-	public void tankDrive(double left, double right, boolean squared) {
+	public void tankDrive(double left, double right) {
 		NetworkTable motionTable = NetworkTable.getTable("motion");
 		motionTable.putNumber("motorRight", right);
 		motionTable.putNumber("motorLeft", left);
 		double[] tmp = limitPower(left, right);
-		left = tmp[0]; right = tmp[1];
-		System.out.println("left " + left);
-		System.out.println("right " + right);
-			dPort.tankDrive(left, right, squared);
+		left = m_inverted == 1 ? tmp[0] : tmp[1];
+		right = m_inverted == 1 ? tmp[1] : tmp[0];
+		dPort.tankDrive(m_inverted * left, m_inverted * right);
 	}
+
 
 	/**
 	 * @param magnitude

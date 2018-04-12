@@ -23,7 +23,7 @@ public class SmartEncoder {
 	public int getTicksPerMeter(RobotStats.Gear gear) {
 		return gear == RobotStats.Gear.POWER ? m_ticksPerMeterPower : m_ticksPerMeterVelocity;
 	}
-	
+
 	public int getTicksPerMeter() {
 		return getTicksPerMeter(Shifter.getInstance().getState());
 	}
@@ -33,11 +33,11 @@ public class SmartEncoder {
 	}
 
 	public double getDistance() {
-		return ((double) m_talon.getSensorCollection().getQuadraturePosition()) / getTicksPerMeter();
+		return ((double) getTicks()) / getTicksPerMeter();
 	}
 
 	public double getSpeed() {
-		return ((double) m_talon.getSensorCollection().getQuadratureVelocity()) / getTicksPerMeter();
+		return ((double) getTicks()) / getTicksPerMeter();
 	}
 
 	public ErrorCode reset() {
@@ -46,5 +46,9 @@ public class SmartEncoder {
 			System.err.println("error occured while reseting encoder '" + m_talon.getHandle() + "': " + ec);
 		}
 		return getTicks() == 0 ? ec : reset();
+	}
+
+	public SmartEncoder invert() {
+		return new SmartEncoder(m_talon, -m_ticksPerMeterPower, -m_ticksPerMeterVelocity);
 	}
 }

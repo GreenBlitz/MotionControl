@@ -5,8 +5,6 @@ import java.util.function.Function;
 
 import gbmotion.base.EnvironmentPort;
 import gbmotion.base.exceptions.NullToleranceException;
-import gbmotion.events.ControllerStoppedEvent;
-import gbmotion.events.EventManager;
 
 /**
  * Abstract controller with input and output
@@ -266,7 +264,6 @@ public abstract class AbstractController<IN, OUT> implements IController {
 	 */
 	@Override
 	public final synchronized void end() {
-		EventManager.fireEvent(ControllerStoppedEvent.of(this));
 		m_controllerState = State.END;
 	}
 

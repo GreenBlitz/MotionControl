@@ -18,7 +18,9 @@ import gbmotion.base.point.IPoint2D;
 public class ArenaMap {
 
 	/**
-	 * Indicates that an attempt was made to place a point outside of the given map
+	 * Indicates that an attempt was made to place a point outside of the given
+	 * map
+	 * 
 	 * @author karlo
 	 */
 	public static class OutOfMapException extends RuntimeException {
@@ -60,21 +62,20 @@ public class ArenaMap {
 	}
 
 	private static final double METRE_PER_FOOT = .3048;
-	
+
 	public static final double DEFAULT_MAP_ACCURACY = 0.1;
 	public static final double DEFAULT_HEIGHT = 54 * METRE_PER_FOOT;
 	public static final double DEFAULT_WIDTH = 27 * METRE_PER_FOOT;
-	
+
 	/**
 	 * X axis offset (with relation to {@code DEFAULT_WIDTH})
 	 */
 	public static final double DEFAULT_X_OFFSET = DEFAULT_WIDTH / 2;
-	
+
 	/**
 	 * Y axis offset (with relation to {@code DEFAULT_HEIGHT})
 	 */
 	public static final double DEFAULT_Y_OFFSET = DEFAULT_HEIGHT / 2;
-	
 
 	/**
 	 * The map
@@ -90,14 +91,15 @@ public class ArenaMap {
 	 * X axis offset (in map blocks)
 	 */
 	private final int m_xAxisOffset;
-	
+
 	/**
 	 * Y axis offset (in map blocks)
 	 */
 	private final int m_yAxisOffset;
 
 	/**
-	 * Map accuracy (ratio between an axis' length and amount of blocks on it, identical for both x and y)
+	 * Map accuracy (ratio between an axis' length and amount of blocks on it,
+	 * identical for both x and y)
 	 */
 	private final double m_mapAccuracy;
 
@@ -136,6 +138,17 @@ public class ArenaMap {
 	 */
 	public ArenaMap(double accuracy, double width, double height) {
 		this(accuracy, width, height, width / 2, height / 2);
+	}
+
+	/**
+	 *
+	 * @param xAxisOffset
+	 *            initial position X
+	 * @param yAxisOffset
+	 *            initial position Y
+	 */
+	public ArenaMap(double xAxisOffset, double yAxisOffset) {
+		this(DEFAULT_MAP_ACCURACY, DEFAULT_WIDTH, DEFAULT_HEIGHT, xAxisOffset, yAxisOffset);
 	}
 
 	/**
@@ -245,7 +258,7 @@ public class ArenaMap {
 		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map[0].length - 1);
 		double dontCollectGC;
 		for (int x = x0; x < x1; x++)
-			for (int y = y0; y < y1; y++){
+			for (int y = y0; y < y1; y++) {
 				Robot.managedPrinter.println(getClass(), "reached square x: " + x + ", y: " + y);
 				for (IndexedPoint2D point : (List<IndexedPoint2D>) m_map[x][y]) {
 					dontCollectGC = point.distanceSquared(loc);
@@ -258,8 +271,9 @@ public class ArenaMap {
 		Robot.managedPrinter.println(getClass(), ret);
 		return ret;
 	}
+
 	public IndexedPoint2D lastPointInRangeBF(IPoint2D loc, double minRadius, double maxRadius) {
-	
+
 		double minRadiusSq = minRadius * minRadius, maxRadiusSq = maxRadius * maxRadius;
 		int radInSqrs = (int) (maxRadius / m_mapAccuracy) + 1;
 		IndexedPoint2D ret = null;
@@ -270,7 +284,7 @@ public class ArenaMap {
 		int y1 = Math.min(mapLoc[1] + radInSqrs, m_map[0].length - 1);
 		double dontCollectGC;
 		for (int x = 0; x < m_map.length; x++)
-			for (int y = 0; y < m_map[0].length; y++){
+			for (int y = 0; y < m_map[0].length; y++) {
 				for (IndexedPoint2D point : m_map[x][y]) {
 					dontCollectGC = point.distanceSquared(loc);
 					if (minRadiusSq <= dontCollectGC && dontCollectGC <= maxRadiusSq
@@ -315,7 +329,6 @@ public class ArenaMap {
 	 * @param radius
 	 * @return
 	 */
-
 	public IPoint2D lastPointInRange(IPoint2D loc, double radius) {
 		IPoint2D ret = lastPointInRange(loc, 0, radius);
 
@@ -323,6 +336,25 @@ public class ArenaMap {
 			ret = closestPoint(loc, radius);
 		}
 		Robot.managedPrinter.printf(getClass(), "location: %s, point in range: %s, radius: %f\r\n", loc, ret, radius);
+		return ret;
+	}
+
+	public IndexedPoint2D lastPointInRange(IPoint2D loc, double radius, boolean isAutistic) {
+		if (!isAutistic)
+			return lastPointInRangeBF(loc, 0, radius);
+		IndexedPoint2D ret = null;
+		boolean isFound = false;
+		for (int ind = m_path.size() - 1; ind >= 0; ind--) {
+			IndexedPoint2D current = m_path.get(ind);
+			if (isFound) {
+				if (current.distanceSquared(loc) <= radius * radius && current.index > ret.index)
+					ret = current;
+			} else if (ret == null || current.distanceSquared(loc) <= ret.distanceSquared(loc)) {
+				ret = current;
+				if (ret.distanceSquared(loc) <= radius * radius)
+					isFound = true;
+			}
+		}
 		return ret;
 	}
 
@@ -335,7 +367,7 @@ public class ArenaMap {
 		} catch (NoSuchElementException e) {
 			throw new IllegalStateException("empty arena map");
 		}
-		
+
 	}
 
 	/**

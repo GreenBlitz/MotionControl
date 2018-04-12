@@ -15,7 +15,7 @@ public class AngleOutput implements Output<Double>{
 	@Override
 	public void use(Double output) {
 		double driveVal = Math.max(-0.8, Math.min(0.8, output));
-		m_dPort.tankDrive(driveVal, -driveVal, false);
+		m_dPort.tankDrive(driveVal, -driveVal);
 	}
 	
 	@Override
