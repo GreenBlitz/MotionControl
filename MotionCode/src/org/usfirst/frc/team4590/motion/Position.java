@@ -70,6 +70,15 @@ public class Position extends Point {
 	}
 	
 	/**
+	 * Rotate the Position around itself.
+	 * i.e. change the angle of this point by the parameter
+	 * @param angle
+	 */
+	public void changeAngleBy(double angle){
+		setAngle(getAngle() + angle);
+	}
+	
+	/**
 	 * Returns a new location with the same values
 	 */
 	@Override
