@@ -5,9 +5,13 @@ public class Point {
 	protected double x;
 	protected double y;
 	
-	public Point(double x, double y){
+	public Point(double x, double y) {
 		this.setX(x);
 		this.setY(y);
+	}
+	
+	public Point clone() {
+		return new Point(x, y);
 	}
 	
 	public double[] get(){
