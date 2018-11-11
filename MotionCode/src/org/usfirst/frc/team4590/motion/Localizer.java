@@ -2,12 +2,14 @@ package org.usfirst.frc.team4590.motion;
 
 import org.usfirst.frc.team4590.robot.RobotMap;
 
+import edu.wpi.first.wpilibj.Encoder;
+
 /**
  * runs in a seperate thred calculating the robot position
  * @author Udi & Alexey
  *
  */
-public class Localizer {
+public class Localizer implements Runnable {
 
 	private static Localizer instance = null;
 	
@@ -23,6 +25,13 @@ public class Localizer {
 
 	private Position m_location;
 	private double m_wheelDistance;
+	private Encoder leftEncoder;
+	private Encoder rightEncoder;
+	
+	private double prevDistanceLeft;
+	private double prevDistanceRight;
+	
+	private long sleepTime = 20;
 	
 	public Object LOCK;
 
@@ -36,16 +45,35 @@ public class Localizer {
 	 * @return
 	 */
 	public Position getLocation(){
-		return m_location.clone();
+		synchronized (LOCK) {
+			return m_location.clone();
+
+		}
 	}
 	
 	/**
+	 *
 	 * sets initial values of Localizer, functions as constructor.
 	 * 
 	 * @param initialLocation
+	 * @param left
+	 * @param right
 	 */
-	public void configure(Position initialLocation) {
+	public void configure(Position initialLocation, Encoder left, Encoder right) {
 		m_location = initialLocation;
+		leftEncoder = left;
+		rightEncoder = right;
+		prevDistanceLeft = left.getDistance();
+		prevDistanceRight = right.getDistance();
+	}
+	
+	/**
+	 * Reset prevDistanceLeft and prevDistanceRight.
+	 * You want to call this when reseting encoders for example
+	 */
+	public void resetEncoderDistances(){
+		prevDistanceLeft = leftEncoder.getDistance();
+		prevDistanceRight = rightEncoder.getDistance();
 	}
 	
 	/**
@@ -60,10 +88,26 @@ public class Localizer {
 		double circleRadius = distance / angle;
 		
 		double dy = circleRadius * Math.sin(angle);
-		double dx = circleRadius * (1 - Math.cos(angle));
+		double dx = -circleRadius * (1 - Math.cos(angle));
 		
 		synchronized(LOCK){
 			m_location.translate(dx, dy);
+		}
+	}
+
+	@Override
+	public void run() {
+		double encL = leftEncoder.getDistance();
+		double encR = rightEncoder.getDistance();
+		
+		run(encR - prevDistanceRight, encL - prevDistanceLeft);
+		prevDistanceLeft = encL;
+		prevDistanceRight = encR;
+		
+		try {
+			Thread.sleep(sleepTime);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
