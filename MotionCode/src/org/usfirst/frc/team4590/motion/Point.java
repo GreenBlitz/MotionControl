@@ -51,6 +51,24 @@ public class Point {
 		setY(y);
 	}
 	
+	/**
+	 * Move the point by [x, y]
+	 * @param x
+	 * @param y
+	 */
+	public void translate(double x, double y){
+		this.x += x;
+		this.y += y;
+	}
+	
+	/**
+	 * Move by the x and y of the point
+	 * @param p
+	 */
+	public void translate(Point p){
+		translate(p.getX(), p.getY());
+	}
+	
 	public double getY() {
 		return y;
 	}
