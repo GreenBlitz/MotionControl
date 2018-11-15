@@ -4,6 +4,12 @@ bin/
 build/
 out/
 
+# eclipse/intellij config files
+.idea/
+*.iml
+build.*
+
+
 # Log file
 *.log
 log/
