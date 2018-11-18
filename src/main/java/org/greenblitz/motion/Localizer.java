@@ -1,6 +1,7 @@
 package org.greenblitz.motion;
 
 import edu.wpi.first.wpilibj.Encoder;
+import org.greenblitz.motion.utils.SmartEncoder;
 
 /**
  * runs in a seperate thread calculating the robot position
@@ -19,8 +20,8 @@ public class Localizer implements Runnable {
 
 	private Position m_location;
 	private double m_wheelDistance;
-	private Encoder leftEncoder;
-	private Encoder rightEncoder;
+	private SmartEncoder leftEncoder;
+	private SmartEncoder rightEncoder;
 	
 	private double prevDistanceLeft;
 	private double prevDistanceRight;
@@ -53,7 +54,7 @@ public class Localizer implements Runnable {
 	 * @param left
 	 * @param right
 	 */
-	public void configure(Position initialLocation, double wheelDistance, Encoder left, Encoder right) {
+	public void configure(Position initialLocation, double wheelDistance, SmartEncoder left, SmartEncoder right) {
 		m_location = initialLocation;
         m_wheelDistance = wheelDistance;
 		leftEncoder = left;
