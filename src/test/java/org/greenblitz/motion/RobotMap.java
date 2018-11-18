@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.usfirst.frc.team4590.robot;
+package org.greenblitz.motion;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into

@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.usfirst.frc.team4590.robot;
+package org.greenblitz.motion;
 
 /**
  * This class is the glue that binds the controls on the physical operator

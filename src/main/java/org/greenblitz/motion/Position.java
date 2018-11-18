@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4590.motion;
+package org.greenblitz.motion;
 
 /**
  * Represent a position in 2D space (for example of a robot) that consists of x, y, and angle (heading, the direction the object faces)
@@ -22,7 +22,7 @@ public class Position extends Point {
 	 * @param angle
 	 * @return
 	 */
-	protected double normalizeAngle(double angle) {
+	protected static double normalizeAngle(double angle) {
 		angle %= (2 * Math.PI);
 		if (angle < 0)
 			angle += 2 * Math.PI;

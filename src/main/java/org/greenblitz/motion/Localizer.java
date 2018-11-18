@@ -1,21 +1,15 @@
-package org.usfirst.frc.team4590.motion;
-
-import org.usfirst.frc.team4590.robot.RobotMap;
+package org.greenblitz.motion;
 
 import edu.wpi.first.wpilibj.Encoder;
 
 /**
- * runs in a seperate thred calculating the robot position
+ * runs in a seperate thread calculating the robot position
  * @author Udi & Alexey
  *
  */
 public class Localizer implements Runnable {
 
 	private static Localizer instance = null;
-	
-	private Localizer(){
-		m_wheelDistance = RobotMap.wheelDistance;
-	}
 
 	public static Localizer getInstance() {
 		if (instance == null)
@@ -59,8 +53,9 @@ public class Localizer implements Runnable {
 	 * @param left
 	 * @param right
 	 */
-	public void configure(Position initialLocation, Encoder left, Encoder right) {
+	public void configure(Position initialLocation, double wheelDistance, Encoder left, Encoder right) {
 		m_location = initialLocation;
+        m_wheelDistance = wheelDistance;
 		leftEncoder = left;
 		rightEncoder = right;
 		prevDistanceLeft = left.getDistance();
