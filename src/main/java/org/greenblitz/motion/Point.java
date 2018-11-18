@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4590.motion;
+package org.greenblitz.motion;
 
 /**
  * Represents a simple 2D point

@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.usfirst.frc.team4590.robot.subsystems;
+package org.greenblitz.motion.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
