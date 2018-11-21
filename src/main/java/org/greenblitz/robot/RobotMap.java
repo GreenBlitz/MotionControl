@@ -1,4 +1,4 @@
-package org.greenblitz.motion.robot;
+package org.greenblitz.robot;
 
 public class RobotMap {
     //Joysticks

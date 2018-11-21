@@ -15,7 +15,7 @@ public class Point {
 	 * the y coordinate
 	 */
 	protected double y;
-	
+
 	/**
 	 * 
 	 * @param x
@@ -25,7 +25,7 @@ public class Point {
 		this.setX(x);
 		this.setY(y);
 	}
-	
+
 	/**
 	 * Returns a new point in the same location
 	 */
@@ -85,8 +85,14 @@ public class Point {
 		this.x = x;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return x == ((Point)obj).x && y == ((Point)obj).y;
+	}
+
+	@Override
 	public String toString(){
-	    return "Point[x => " + x + ", y => " + y + "]";
+	    return "Point[x: " + x + ", y: " + y + "]";
     }
 	
 }

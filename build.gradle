@@ -7,7 +7,7 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2018.06.21"
 }
 
-def ROBOT_CLASS = "org.greenblitz.motion.robot.Robot"
+def ROBOT_CLASS = "org.greenblitz.robot.Robot"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -41,6 +41,16 @@ dependencies {
     compile wpilib()
     compile ctre()
     compile navx()
+    testImplementation(
+            'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    )
+    testRuntimeOnly(
+            'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    )
+}
+
+test {
+    useJUnitPlatform()
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')

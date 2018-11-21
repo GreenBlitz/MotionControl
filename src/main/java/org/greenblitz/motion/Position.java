@@ -1,7 +1,7 @@
 package org.greenblitz.motion;
 
 /**
- * Represent a position in 2D space (for example of a robot) that consists of x, y, and angle (heading, the direction the object faces)
+ * Represent a position in 2D space (for example of a org.greenblitz.robot) that consists of x, y, and angle (heading, the direction the object faces)
  * @author Alexey
  *
  */
@@ -22,7 +22,7 @@ public class Position extends Point {
 	 * @param angle
 	 * @return
 	 */
-	protected static double normalizeAngle(double angle) {
+	public static double normalizeAngle(double angle) {
 		angle %= (2 * Math.PI);
 		if (angle < 0)
 			angle += 2 * Math.PI;
@@ -99,6 +99,6 @@ public class Position extends Point {
 	}
 
     public String toString(){
-        return "Position[x => " + x + ", y => " + y + ", angle => " + angle + "]";
+        return "Position[x: " + x + ", y: " + y + ", angle: " + angle + "]";
     }
 }

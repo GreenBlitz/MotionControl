@@ -1,10 +1,10 @@
-package org.greenblitz.motion.robot;
+package org.greenblitz.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.Position;
-import org.greenblitz.motion.robot.subsystems.Chassis;
+import org.greenblitz.robot.subsystems.Chassis;
 
 public class Robot extends IterativeRobot {
 

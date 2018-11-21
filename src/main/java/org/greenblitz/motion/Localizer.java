@@ -1,12 +1,12 @@
 package org.greenblitz.motion;
 
-import org.greenblitz.motion.utils.SmartEncoder;
+import org.greenblitz.utils.SmartEncoder;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * runs in a seperate thread calculating the robot position
+ * runs in a seperate thread calculating the org.greenblitz.robot position
  * @author Udi & Alexey
  *
  */
@@ -33,12 +33,12 @@ public class Localizer extends TimerTask {
 	public Object LOCK;
 
 	/**
-	 * <p>Get the robot location. This is the system: </p>
+	 * <p>Get the org.greenblitz.robot location. This is the system: </p>
 	 *                      ^<br>
 	 *                      |<br>
 	 *                      |<br>
 	 *                      R ---->
-	 * <br> <br> Where 'R' is the robot, up is the y coord and right is the x coord
+	 * <br> <br> Where 'R' is the org.greenblitz.robot, up is the y coord and right is the x coord
 	 * @return
 	 */
 	public Position getLocation(){
