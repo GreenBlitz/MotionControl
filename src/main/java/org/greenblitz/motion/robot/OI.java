@@ -1,6 +1,4 @@
-package org.greenblitz.motion;
-
-import org.greenblitz.motion.utils.SmartJoystick;
+package org.greenblitz.motion.robot;
 
 public class OI {
 

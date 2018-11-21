@@ -1,14 +1,16 @@
 package org.greenblitz.motion;
 
-import edu.wpi.first.wpilibj.Encoder;
 import org.greenblitz.motion.utils.SmartEncoder;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * runs in a seperate thread calculating the robot position
  * @author Udi & Alexey
  *
  */
-public class Localizer implements Runnable {
+public class Localizer extends TimerTask {
 
 	private static Localizer instance = null;
 
@@ -26,7 +28,7 @@ public class Localizer implements Runnable {
 	private double prevDistanceLeft;
 	private double prevDistanceRight;
 	
-	private long sleepTime = 20;
+	private static long SLEEP_TIME = 20;
 	
 	public Object LOCK;
 
@@ -99,12 +101,12 @@ public class Localizer implements Runnable {
 		run(encR - prevDistanceRight, encL - prevDistanceLeft);
 		prevDistanceLeft = encL;
 		prevDistanceRight = encR;
-		
-		try {
-			Thread.sleep(sleepTime);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+
 	}
+
+	public static void startLocalizer(){
+        Timer t = new Timer();
+        t.schedule(getInstance(), 0, SLEEP_TIME);
+    }
 
 }

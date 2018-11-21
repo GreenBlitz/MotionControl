@@ -84,5 +84,9 @@ public class Point {
 	public void setX(double x) {
 		this.x = x;
 	}
+
+	public String toString(){
+	    return "Point[x => " + x + ", y => " + y + "]";
+    }
 	
 }

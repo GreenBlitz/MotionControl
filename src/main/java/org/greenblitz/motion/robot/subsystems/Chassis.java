@@ -1,25 +1,31 @@
-package org.greenblitz.motion.subsystems;
+package org.greenblitz.motion.robot.subsystems;
 
 import com.ctre.phoenix.ErrorCode;
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.motion.OI;
-import org.greenblitz.motion.RobotMap;
-import org.greenblitz.motion.commands.ArcadeDriveByJoystick;
-import org.greenblitz.motion.utils.CTRE.CANRobotDrive;
-import org.greenblitz.motion.utils.CTRE.CANRobotDrive.TalonID;
+import org.greenblitz.motion.robot.CANRobotDrive;
+import org.greenblitz.motion.robot.OI;
+import org.greenblitz.motion.robot.RobotMap;
+import org.greenblitz.motion.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.motion.utils.SmartEncoder;
 
 public class Chassis extends Subsystem {
 
     private static Chassis instance;
 
-    private static final int TICKS_PER_METER = 2150;
+    private static final double TICKS_PER_METER = 2150;
 
     private SmartEncoder m_leftEncoder, m_rightEncoder;
+
+    public SmartEncoder getLeftEncoder() {
+        return m_leftEncoder;
+    }
+
+    public SmartEncoder getRightEncoder() {
+        return m_rightEncoder;
+    }
+
     private CANRobotDrive m_robotDrive;
-    private AHRS m_navx;
 
     public static Chassis getInstance() {
         return instance;
@@ -32,11 +38,10 @@ public class Chassis extends Subsystem {
     private Chassis() {
         m_robotDrive = new CANRobotDrive(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT, RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT,
                 RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT, RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT);
-        m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(TalonID.REAR_LEFT), TICKS_PER_METER, TICKS_PER_METER);
-        m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(TalonID.REAR_RIGHT), TICKS_PER_METER, TICKS_PER_METER);
+        m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER);
+        m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER);
         m_leftEncoder.reset();
         m_rightEncoder.reset();
-        m_navx.reset();
     }
 
 
@@ -97,12 +102,7 @@ public class Chassis extends Subsystem {
     }
 
     public void resetSensors() {
-        resetGyro();
         resetEncoders();
-    }
-
-    public void resetGyro() {
-        m_navx.reset();
     }
 
     public ErrorCode resetLeftEncoder() {

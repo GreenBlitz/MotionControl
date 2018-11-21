@@ -1,4 +1,6 @@
-package org.greenblitz.motion.utils.CTRE;
+package org.greenblitz.motion.robot;
+
+import org.greenblitz.motion.utils.SmartTalon;
 
 public class CANRobotDrive {
 	private SmartTalon m_frontLeft, m_rearLeft, m_frontRight, m_rearRight;
@@ -18,7 +20,7 @@ public class CANRobotDrive {
 				new SmartTalon(rearRight));
 	}
 
-	public static enum TalonID {
+	public enum TalonID {
 		FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT
 	}
 

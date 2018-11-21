@@ -87,3 +87,6 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+
+# gradle config dirs
+.gradle/
