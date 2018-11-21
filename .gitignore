@@ -9,6 +9,8 @@ out/
 *.iml
 build.*
 
+# gradle config directory
+.gradle/
 
 # Log file
 *.log
@@ -19,6 +21,7 @@ log/
 
 # Project file
 *.project
+
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
