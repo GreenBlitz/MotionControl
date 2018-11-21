@@ -9,6 +9,8 @@ out/
 *.iml
 build.*
 
+# gradle config directory
+.gradle/
 
 # Log file
 *.log
