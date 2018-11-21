@@ -1,6 +1,9 @@
 package org.greenblitz.robot;
 
 public class RobotMap {
+
+    public static final double WHEELBASE_WIDTH = 0;
+
     //Joysticks
     public static final int MAINJS_ID = 0,
             SIDEJS_ID = 2;

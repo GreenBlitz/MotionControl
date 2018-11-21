@@ -14,6 +14,8 @@ public class Localizer extends TimerTask {
 
 	private static Localizer instance = null;
 
+	private Localizer() {}
+
 	public static Localizer getInstance() {
 		if (instance == null)
 			instance = new Localizer();
@@ -63,7 +65,18 @@ public class Localizer extends TimerTask {
 		rightEncoder = right;
 		prevDistanceLeft = left.getDistance();
 		prevDistanceRight = right.getDistance();
+		LOCK = new Object();
 	}
+
+    /**
+     *
+     * @param wheelDistance
+     * @param left
+     * @param right
+     */
+    public void configure(double wheelDistance, SmartEncoder left, SmartEncoder right) {
+        configure(new Position(0, 0), wheelDistance, left, right);
+    }
 	
 	/**
 	 * Reset prevDistanceLeft and prevDistanceRight.
@@ -90,6 +103,7 @@ public class Localizer extends TimerTask {
 		
 		synchronized(LOCK){
 			m_location.translate(dx, dy);
+			m_location.changeAngleBy(angle);
 		}
 	}
 
@@ -99,12 +113,14 @@ public class Localizer extends TimerTask {
 		double encR = rightEncoder.getDistance();
 		
 		run(encR - prevDistanceRight, encL - prevDistanceLeft);
+
 		prevDistanceLeft = encL;
 		prevDistanceRight = encR;
-
 	}
 
 	public static void startLocalizer(){
+	    if (getInstance().LOCK == null)
+	        throw new NullPointerException("configure not called");
         Timer t = new Timer();
         t.schedule(getInstance(), 0, SLEEP_TIME);
     }
