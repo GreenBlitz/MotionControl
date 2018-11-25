@@ -8,11 +8,13 @@ package org.greenblitz.motion;
 public class Point {
 	
 	/**
-	 * the x coordinate
+	 * the x coordinate: right to left
+     * positive direction left
 	 */
 	protected double x;
 	/**
-	 * the y coordinate
+	 * the y coordinate: forwards & backwards
+     * positive direction forwards
 	 */
 	protected double y;
 	
@@ -85,8 +87,16 @@ public class Point {
 		this.x = x;
 	}
 
-	public String toString(){
-	    return "Point[x => " + x + ", y => " + y + "]";
+	//public String toString(){
+	//    return "Point[x => " + x + ", y => " + y + "]";
+    //}
+
+
+    @Override
+    public String toString() {
+        return "Point{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
-	
 }

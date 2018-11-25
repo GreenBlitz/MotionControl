@@ -28,9 +28,9 @@ public class Localizer extends TimerTask {
 	private double prevDistanceLeft;
 	private double prevDistanceRight;
 	
-	private static long SLEEP_TIME = 20;
+	private static long SLEEP_TIME = 20L;
 	
-	public Object LOCK;
+	private final Object LOCK = new Object();
 
 	/**
 	 * <p>Get the robot location. This is the system: </p>
@@ -75,30 +75,34 @@ public class Localizer extends TimerTask {
 	}
 	
 	/**
-	 * update the location
+	 * calculateDiff the location
 	 * @param rightDist distance right wheel traveled
 	 * @param leftDist distance left wheel traveled
+     * @return x difference, y difference, angle difference
 	 */
-	private void run(double rightDist, double leftDist) {
+	public static double[] calculateDiff(double rightDist, double leftDist, double wheelDistance) {
+	    if(rightDist == leftDist)
+            return new double[]{0, rightDist, 0};
 		double distance = (rightDist + leftDist) / 2;
-		double angle = (rightDist - leftDist) / m_wheelDistance;
+		double angle = (rightDist - leftDist) / wheelDistance;
 		
 		double circleRadius = distance / angle;
 		
 		double dy = circleRadius * Math.sin(angle);
 		double dx = -circleRadius * (1 - Math.cos(angle));
-		
-		synchronized(LOCK){
-			m_location.translate(dx, dy);
-		}
+
+		return new double[]{dx, dy, angle};
 	}
 
 	@Override
 	public void run() {
-		double encL = leftEncoder.getDistance();
-		double encR = rightEncoder.getDistance();
-		
-		run(encR - prevDistanceRight, encL - prevDistanceLeft);
+		double encL = leftEncoder.getDistance(),
+                encR = rightEncoder.getDistance();
+		double[] dXdYdAngle = calculateDiff(encR - prevDistanceRight, encL - prevDistanceLeft, m_wheelDistance);
+		synchronized (LOCK){
+		    m_location.translate(dXdYdAngle[0], dXdYdAngle[1]);
+		    m_location.changeAngleBy(dXdYdAngle[2]);
+        }
 		prevDistanceLeft = encL;
 		prevDistanceRight = encR;
 

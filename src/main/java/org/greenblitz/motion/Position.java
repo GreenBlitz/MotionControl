@@ -98,7 +98,17 @@ public class Position extends Point {
 		this.angle = normalizeAngle(angle);
 	}
 
-    public String toString(){
-        return "Position[x => " + x + ", y => " + y + ", angle => " + angle + "]";
+   // public String toString(){
+     //   return "Position[x => " + x + ", y => " + y + ", angle => " + angle + "]";
+    //}
+
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "angle=" + angle +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
     }
 }
