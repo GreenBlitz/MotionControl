@@ -6,7 +6,7 @@ import org.greenblitz.robot.SmartJoystick;
 
 public class ArcadeDriveByJoystick extends Command {
     private SmartJoystick m_stick;
-    private final double mult = 1;
+    private final double mult = .6;
 
     public ArcadeDriveByJoystick(SmartJoystick stick) {
         requires(Chassis.getInstance());

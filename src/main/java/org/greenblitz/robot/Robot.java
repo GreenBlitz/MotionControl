@@ -6,12 +6,14 @@ import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.Position;
 import org.greenblitz.robot.subsystems.Chassis;
 
+import java.util.TimerTask;
+
 public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
         Chassis.init();
-        Localizer.getInstance().configure(new Position(0, 0), 40.0, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
+        Localizer.getInstance().configure(RobotMap.WHEELBASE_WIDTH, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
         Localizer.startLocalizer();
     }
 
@@ -36,21 +38,20 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         Scheduler.getInstance().removeAll();
         Chassis.getInstance().resetSensors();
+        Localizer.getInstance().resetEncoderDistances();
         System.out.println(Localizer.getInstance().getLocation());
     }
 
     @Override
     public void teleopPeriodic() {
         System.out.println(Localizer.getInstance().getLocation());
-        //Scheduler.getInstance().run();
-        Chassis.getInstance().tankDrive(
-                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
-                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_Y));
+        Scheduler.getInstance().run();
     }
 
     @Override
     public void disabledInit() {
         Chassis.getInstance().resetEncoders();
+        Localizer.getInstance().resetEncoderDistances();
     }
 
     @Override

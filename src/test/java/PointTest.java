@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PointTest {
 
     private static boolean fuzzyPointEquals(Point actual, Point expected, double fuzz) {
-        System.out.println("Actual: " + actual + "; Expected: " + expected);
+//        System.out.println("Actual: " + actual + "; Expected: " + expected);
         return (Math.abs(actual.getX() - expected.getX()) < fuzz)
                 && (Math.abs(actual.getY() - expected.getY()) < fuzz);
     }
