@@ -1,8 +1,8 @@
-package org.greenblitz.motion.robot.commands;
+package org.greenblitz.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import org.greenblitz.motion.robot.subsystems.Chassis;
-import org.greenblitz.motion.robot.SmartJoystick;
+import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.robot.SmartJoystick;
 
 public class ArcadeDriveByJoystick extends Command {
     private SmartJoystick m_stick;

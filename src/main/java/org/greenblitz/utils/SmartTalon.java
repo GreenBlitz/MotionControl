@@ -1,4 +1,4 @@
-package org.greenblitz.motion.utils;
+package org.greenblitz.utils;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;

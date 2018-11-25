@@ -17,7 +17,7 @@ public class Point {
      * positive direction forwards
 	 */
 	protected double y;
-	
+
 	/**
 	 * 
 	 * @param x
@@ -27,7 +27,7 @@ public class Point {
 		this.setX(x);
 		this.setY(y);
 	}
-	
+
 	/**
 	 * Returns a new point in the same location
 	 */
@@ -87,10 +87,6 @@ public class Point {
 		this.x = x;
 	}
 
-	//public String toString(){
-	//    return "Point[x => " + x + ", y => " + y + "]";
-    //}
-
 
     @Override
     public String toString() {
@@ -99,4 +95,9 @@ public class Point {
                 ", y=" + y +
                 '}';
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		return x == ((Point)obj).x && y == ((Point)obj).y;
+	}
 }

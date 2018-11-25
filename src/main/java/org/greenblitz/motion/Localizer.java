@@ -1,18 +1,20 @@
 package org.greenblitz.motion;
 
-import org.greenblitz.motion.utils.SmartEncoder;
+import org.greenblitz.utils.SmartEncoder;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * runs in a seperate thread calculating the robot position
+ * runs in a seperate thread calculating the org.greenblitz.robot position
  * @author Udi & Alexey
  *
  */
 public class Localizer extends TimerTask {
 
 	private static Localizer instance = null;
+
+	private Localizer() {}
 
 	public static Localizer getInstance() {
 		if (instance == null)
@@ -33,12 +35,12 @@ public class Localizer extends TimerTask {
 	private final Object LOCK = new Object();
 
 	/**
-	 * <p>Get the robot location. This is the system: </p>
+	 * <p>Get the org.greenblitz.robot location. This is the system: </p>
 	 *                      ^<br>
 	 *                      |<br>
 	 *                      |<br>
 	 *                      R ---->
-	 * <br> <br> Where 'R' is the robot, up is the y coord and right is the x coord
+	 * <br> <br> Where 'R' is the org.greenblitz.robot, up is the y coord and right is the x coord
 	 * @return
 	 */
 	public Position getLocation(){
@@ -64,6 +66,16 @@ public class Localizer extends TimerTask {
 		prevDistanceLeft = left.getDistance();
 		prevDistanceRight = right.getDistance();
 	}
+
+    /**
+     *
+     * @param wheelDistance
+     * @param left
+     * @param right
+     */
+    public void configure(double wheelDistance, SmartEncoder left, SmartEncoder right) {
+        configure(new Position(0, 0), wheelDistance, left, right);
+    }
 	
 	/**
 	 * Reset prevDistanceLeft and prevDistanceRight.
@@ -75,12 +87,12 @@ public class Localizer extends TimerTask {
 	}
 	
 	/**
-	 * calculateDiff the location
+	 * calculateMovement the location
 	 * @param rightDist distance right wheel traveled
 	 * @param leftDist distance left wheel traveled
      * @return x difference, y difference, angle difference
 	 */
-	public static double[] calculateDiff(double rightDist, double leftDist, double wheelDistance) {
+	public static double[] calculateMovement(double rightDist, double leftDist, double wheelDistance) {
 	    if(rightDist == leftDist)
             return new double[]{0, rightDist, 0};
 		double distance = (rightDist + leftDist) / 2;
@@ -92,20 +104,21 @@ public class Localizer extends TimerTask {
 		double dx = -circleRadius * (1 - Math.cos(angle));
 
 		return new double[]{dx, dy, angle};
+
 	}
 
 	@Override
 	public void run() {
 		double encL = leftEncoder.getDistance(),
                 encR = rightEncoder.getDistance();
-		double[] dXdYdAngle = calculateDiff(encR - prevDistanceRight, encL - prevDistanceLeft, m_wheelDistance);
+		double[] dXdYdAngle = calculateMovement(encR - prevDistanceRight, encL - prevDistanceLeft, m_wheelDistance);
 		synchronized (LOCK){
 		    m_location.translate(dXdYdAngle[0], dXdYdAngle[1]);
 		    m_location.changeAngleBy(dXdYdAngle[2]);
         }
+
 		prevDistanceLeft = encL;
 		prevDistanceRight = encR;
-
 	}
 
 	public static void startLocalizer(){

@@ -1,13 +1,13 @@
-package org.greenblitz.motion.robot.subsystems;
+package org.greenblitz.robot.subsystems;
 
 import com.ctre.phoenix.ErrorCode;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.motion.robot.CANRobotDrive;
-import org.greenblitz.motion.robot.OI;
-import org.greenblitz.motion.robot.RobotMap;
-import org.greenblitz.motion.robot.commands.ArcadeDriveByJoystick;
-import org.greenblitz.motion.utils.SmartEncoder;
+import org.greenblitz.robot.CANRobotDrive;
+import org.greenblitz.robot.OI;
+import org.greenblitz.robot.RobotMap;
+import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
+import org.greenblitz.utils.SmartEncoder;
 
 public class Chassis extends Subsystem {
 
