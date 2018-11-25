@@ -23,7 +23,9 @@ public class Localizer extends TimerTask {
         return instance;
     }
 
-    private Position m_location;
+
+    private Position m_location;//Positive x direction is left
+
     private double m_wheelDistance;
     private SmartEncoder leftEncoder;
     private SmartEncoder rightEncoder;
@@ -104,7 +106,7 @@ public class Localizer extends TimerTask {
         double circleRadius = distance / angle;
 
         double dy = circleRadius * Math.sin(angle);
-        double dx = -circleRadius * (1 - Math.cos(angle));
+        double dx = circleRadius * (1 - Math.cos(angle));
 
         return new Position(new Point(dx, dy).rotate(robotAng), angle);
 

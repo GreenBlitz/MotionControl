@@ -12,7 +12,7 @@ public class Position extends Point {
      * This representation is like in math:
      * 1. In radians
      * 2. Between 0 and 2*PI
-     * 3. 0 radians = facing positive x
+     * 3. 0 radians = facing positive y
      * 4. Goes counter clockwise
      */
     protected double angle;
@@ -120,9 +120,9 @@ public class Position extends Point {
     @Override
     public String toString() {
         return "Position{" +
-                "angle=" + angle +
-                ", x=" + x +
+                "x=" + x +
                 ", y=" + y +
+                ", angle=" + angle +
                 '}';
     }
 }
