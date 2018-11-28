@@ -41,6 +41,11 @@ dependencies {
     compile wpilib()
     compile ctre()
     compile navx()
+
+    compile pathfinder()
+
+    
+
     testImplementation(
             'org.junit.jupiter:junit-jupiter-api:5.1.0'
     )

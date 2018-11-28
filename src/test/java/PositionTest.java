@@ -13,7 +13,7 @@ public class PositionTest {
                 () -> assertEquals(Position.normalizeAngle(Math.PI * 2), 0, delta),
                 () -> assertEquals(Position.normalizeAngle(-Math.PI), Math.PI, delta),
                 () -> assertEquals(Position.normalizeAngle(-2 * Math.PI), 0, delta),
-                () -> assertEquals(Position.normalizeAngle(-0.5 * Math.PI - 8 * Math.PI), 1.5 * Math.PI, delta),
+                () -> assertEquals(Position.normalizeAngle(-0.5 * Math.PI - 8 * Math.PI), -0.5 * Math.PI, delta),
                 () -> assertEquals(Position.normalizeAngle(1.3 + Math.PI * 16), 1.3, delta));
     }
 

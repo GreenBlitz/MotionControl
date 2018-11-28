@@ -38,7 +38,6 @@ public class Position extends Point {
     }
 
     /**
-     *
      * @param point
      * @param angle
      */
@@ -47,7 +46,6 @@ public class Position extends Point {
     }
 
     /**
-     *
      * @param point
      */
     public Position(Point point) {
@@ -55,15 +53,17 @@ public class Position extends Point {
     }
 
     /**
-     * Changes an angle to an equivalent angle between 0 and 2*PI
+     * Changes an angle to an equivalent angle between -PI and PI
      *
      * @param angle
      * @return
      */
     public static double normalizeAngle(double angle) {
-        /*angle %= (2 * Math.PI);
-        if (angle < 0)
-            angle += 2 * Math.PI;*/
+        angle %= (2 * Math.PI);
+        if (angle > Math.PI)
+            angle -= 2 * Math.PI;
+        if (angle <= -Math.PI)
+            angle += 2 * Math.PI;
         return angle;
     }
 
