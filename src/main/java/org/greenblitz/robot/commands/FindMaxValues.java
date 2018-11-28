@@ -94,6 +94,6 @@ public class FindMaxValues extends Command {
 
     @Override
     protected void end() {
-        System.out.println("end");
+        Chassis.getInstance().stop();
     }
 }
