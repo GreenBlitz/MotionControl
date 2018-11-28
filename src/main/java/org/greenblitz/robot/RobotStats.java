@@ -5,6 +5,7 @@ public final class RobotStats {
         VELOCITY, POWER
     }
 
+    @Deprecated
     public static final class Ragnarok {
         public static final double HORIZONTAL_WHEEL_DIST = 0.68, VERTICAL_WHEEL_DIST = 0.7, WHEEL_RADIUS = 0.045,
                 LEFT_ENCODER_SCALE = 168 / 45281.0, RIGHT_ENCODER_SCALE = 168 / 45321.0;
@@ -12,6 +13,7 @@ public final class RobotStats {
         public static final boolean CHASSIS_LEFT_ENCODER_INVERT = true, CHASSIS_RIGHT_ENCODER_INVERT = false;
     }
 
+    @Deprecated
     public static final class Gildaboi {
         /**
          * Chassis size
@@ -129,7 +131,13 @@ public final class RobotStats {
             /**
              * Radius of chassis wheels
              */
-            WHEEL_RADIUS(0.0762, "meters");
+            WHEEL_RADIUS(0.0762, "meters"),
+
+            MAX_VELOCITY(Float.NaN, "meters per second"),
+
+            MAX_ACCELARATION(Float.NaN, "meters per second squared"),
+
+            MAX_JERK(Float.NaN, "meters per second cubed");
 
             public final double value;
             public final String units;
