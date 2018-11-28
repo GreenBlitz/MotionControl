@@ -36,7 +36,7 @@ public class FollowPoints extends Command {
         requires(Chassis.getInstance());
         this.config = new Trajectory.Config(fit, samples, dt,
                 RobotStats.Cerberous.Chassis.MAX_VELOCITY.value,
-                RobotStats.Cerberous.Chassis.MAX_ACCELARATION.value,
+                RobotStats.Cerberous.Chassis.MAX_ACCELERATION.value,
                 RobotStats.Cerberous.Chassis.MAX_JERK.value);
         this.trajectory = Pathfinder.generate(waypoints, this.config);
         this.mod = new TankModifier(this.trajectory);

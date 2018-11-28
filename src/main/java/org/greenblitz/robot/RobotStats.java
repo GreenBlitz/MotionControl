@@ -133,11 +133,11 @@ public final class RobotStats {
              */
             WHEEL_RADIUS(0.0762, "meters"),
 
-            MAX_VELOCITY(Float.NaN, "meters per second"),
+            MAX_VELOCITY(0.08, "meters per second"), // At 0.6 power
 
-            MAX_ACCELARATION(Float.NaN, "meters per second squared"),
+            MAX_ACCELERATION(3.15, "meters per second squared"), // At 0.6 power
 
-            MAX_JERK(Float.NaN, "meters per second cubed");
+            MAX_JERK(160, "meters per second cubed"); // At 0.6 power
 
             public final double value;
             public final String units;

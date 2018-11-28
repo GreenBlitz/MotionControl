@@ -23,7 +23,7 @@ public class PointTest {
         p1.translate(p2);
         assertEquals(p1, p2, "translate test");
         p2.translate(-10, 0);
-        assertEquals(p1.getY(), p2.getY(), 0.0);
+        assertEquals(p1.getY(), p2.getY(), 0.0000001);
         assertEquals(p1.getX() - 10, p2.getX());
         p2.translate(p2);
         assertEquals(6, p2.getX());

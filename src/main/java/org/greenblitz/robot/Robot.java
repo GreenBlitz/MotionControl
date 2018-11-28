@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.Position;
+import org.greenblitz.robot.commands.FindMaxValues;
 import org.greenblitz.robot.subsystems.Chassis;
 
 public class Robot extends IterativeRobot {
@@ -38,20 +39,16 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        //System.out.println(Localizer.getInstance().getLocation());
-        //Scheduler.getInstance().run();
+        Scheduler.getInstance().run();
 
-        System.out.println("Localizer: " + Localizer.getInstance().getLocation());
-        System.out.println("Angle: " + ((Chassis.getInstance().getRightDistance() - Chassis.getInstance().getLeftDistance()) / RobotStats.Cerberous.Chassis.HORIZONTAL_DISTANCE.value));
-        //System.out.println("enc left=" + Chassis.getInstance().getLeftDistance() + ", right=" + Chassis.getInstance().getRightDistance());
-
-        Chassis.getInstance().tankDrive(
-                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
-                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_Y));
+//        Chassis.getInstance().tankDrive(
+//                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
+//                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_Y));
     }
 
     @Override
     public void disabledInit() {
+        Chassis.getInstance().stop();
         Chassis.getInstance().resetEncoders();
         Localizer.getInstance().reset();
     }
