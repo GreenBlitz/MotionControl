@@ -61,9 +61,9 @@ public class Position extends Point {
      * @return
      */
     public static double normalizeAngle(double angle) {
-        angle %= (2 * Math.PI);
+        /*angle %= (2 * Math.PI);
         if (angle < 0)
-            angle += 2 * Math.PI;
+            angle += 2 * Math.PI;*/
         return angle;
     }
 

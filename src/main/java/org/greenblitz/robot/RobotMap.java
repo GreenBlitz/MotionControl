@@ -2,18 +2,13 @@ package org.greenblitz.robot;
 
 public class RobotMap {
 
-    public static final double WHEELBASE_WIDTH = 0;
+    public static class JoystickID {
+        public static final int MAIN = 0, SIDE = 2;
+    }
 
-    //Joysticks
-    public static final int MAINJS_ID = 0,
-            SIDEJS_ID = 2;
-
-    //Motor & Sensor ports
-    //Chassis
-    public static final int CHASSIS_FRONT_LEFT_MOTOR_PORT = 3,
-            CHASSIS_REAR_LEFT_MOTOR_PORT = 8,
-            CHASSIS_FRONT_RIGHT_MOTOR_PORT = 2,
-            CHASSIS_REAR_RIGHT_MOTOR_PORT = 10;
+    public static class ChassisPort {
+        public static final int FRONT_LEFT = 3, FRONT_RIGHT = 2, REAR_LEFT = 8, REAR_RIGHT = 10;
+    }
 
     //Shifter
     public static final int SHIFTER_SOLENOID_FORWARD_PORT = 3,
@@ -58,9 +53,5 @@ public class RobotMap {
 
     //Shooter rotation
     public static final double SHOOTER_ROTATION_LEFT_VALUE = 0,
-            SHOOTER_ROTATION_MIDDLE_VALUE = 0,
-
-
-    SHOOTER_ROTATION_RIGHT_VALUE = 0;
-
+            SHOOTER_ROTATION_MIDDLE_VALUE = 0;
 }

@@ -12,11 +12,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  */
 
 public class SmartEncoder {
-    private double m_lastVelocity = 0;
-    private int m_lastVelocityTicks = 0;
-    private long m_lastVelocityTime = 0;
     private final TalonSRX m_talon;
-    private final double m_ticksPerMeter;
+    private double m_ticksPerMeter;
 
     /**
      * This constructor receives a TalonSRX and the ticks per meter of the Talon
@@ -59,17 +56,6 @@ public class SmartEncoder {
         return ((double) m_talon.getSensorCollection().getQuadratureVelocity()) /*testGetSpeed()*/ / m_ticksPerMeter;
     }
 
-    private double testGetSpeed() {
-        int distanceDifference = getTicks() - m_lastVelocityTicks;
-        long timeDifference = System.currentTimeMillis() - m_lastVelocityTime;
-
-        m_lastVelocityTicks = getTicks();
-        m_lastVelocityTime = System.currentTimeMillis();
-
-        if (timeDifference != 0 )
-            m_lastVelocity = distanceDifference / timeDifference;
-        return m_lastVelocity;
-    }
 
     /**
      * This function resets the encoder
@@ -81,7 +67,10 @@ public class SmartEncoder {
         if (ec != ErrorCode.OK) {
             System.err.println("error occured while reseting encoder '" + m_talon.getHandle() + "': " + ec);
         }
-        System.err.println("reset encoder");
         return getTicks() == 0 ? ec : reset();
+    }
+
+    public void invert() {
+        m_ticksPerMeter = -m_ticksPerMeter;
     }
 }

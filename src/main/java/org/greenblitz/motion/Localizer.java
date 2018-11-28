@@ -1,5 +1,8 @@
 package org.greenblitz.motion;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import org.greenblitz.robot.RobotStats;
+import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.SmartEncoder;
 
 import java.util.Timer;
@@ -83,9 +86,10 @@ public class Localizer extends TimerTask {
      * Reset prevDistanceLeft and prevDistanceRight.
      * You want to call this when reseting encoders for example
      */
-    public void resetEncoderDistances() {
+    public void reset() {
         prevDistanceLeft = leftEncoder.getDistance();
         prevDistanceRight = rightEncoder.getDistance();
+        m_location.set(0, 0, 0);
     }
 
     /**
@@ -102,29 +106,44 @@ public class Localizer extends TimerTask {
         }
         double distance = (rightDist + leftDist) / 2;
         double angle = (rightDist - leftDist) / wheelDistance;
-
         double circleRadius = distance / angle;
 
         double dy = circleRadius * Math.sin(angle);
         double dx = circleRadius * (1 - Math.cos(angle));
-
         return new Position(new Point(dx, dy).rotate(robotAng), angle);
-
     }
 
     @Override
     public void run() {
-        double encL = leftEncoder.getDistance(),
-                encR = rightEncoder.getDistance();
+        double encL = getLeftDistance(),
+                encR = getRightDistance();
         Position dXdYdAngle = calculateMovement(encR - prevDistanceRight, encL - prevDistanceLeft,
                 m_wheelDistance, Localizer.getInstance().getLocation().getAngle());
         synchronized (LOCK) {
             m_location.translate(dXdYdAngle);
-            m_location.changeAngleBy(dXdYdAngle.angle);
+            m_location.setAngle(
+                    (getRightDistance() - getLeftDistance())
+                            / m_wheelDistance);
         }
 
         prevDistanceLeft = encL;
         prevDistanceRight = encR;
+    }
+
+    private double getLeftDistance() {
+        return leftEncoder.getDistance();
+    }
+
+    private double getRightDistance() {
+        return rightEncoder.getDistance();
+    }
+
+    private double altGetLeftDistance() {
+        return Chassis.getInstance().getLeftDistance();
+    }
+
+    private double altGetRightDistance() {
+        return Chassis.getInstance().getRightDistance();
     }
 
     public static void startLocalizer() {

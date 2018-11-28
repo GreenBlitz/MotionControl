@@ -11,7 +11,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotInit() {
         Chassis.init();
-        Localizer.getInstance().configure(new Position(0, 0), 40.0, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
+        Localizer.getInstance().configure(new Position(0, 0), RobotStats.Cerberous.Chassis.HORIZONTAL_DISTANCE.value, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
         Localizer.startLocalizer();
     }
 
@@ -23,8 +23,6 @@ public class Robot extends IterativeRobot {
     @Override
     public void autonomousInit() {
         Chassis.getInstance().resetSensors();
-        /*Chassis.getInstance().resetLocalizer();
-        Chassis.getInstance().enableLocalizer();*/
     }
 
     @Override
@@ -36,13 +34,17 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         Scheduler.getInstance().removeAll();
         Chassis.getInstance().resetSensors();
-        System.out.println(Localizer.getInstance().getLocation());
     }
 
     @Override
     public void teleopPeriodic() {
-        System.out.println(Localizer.getInstance().getLocation());
+        //System.out.println(Localizer.getInstance().getLocation());
         //Scheduler.getInstance().run();
+
+        System.out.println("Localizer: " + Localizer.getInstance().getLocation());
+        System.out.println("Angle: " + ((Chassis.getInstance().getRightDistance() - Chassis.getInstance().getLeftDistance()) / RobotStats.Cerberous.Chassis.HORIZONTAL_DISTANCE.value));
+        //System.out.println("enc left=" + Chassis.getInstance().getLeftDistance() + ", right=" + Chassis.getInstance().getRightDistance());
+
         Chassis.getInstance().tankDrive(
                 OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
                 OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_Y));
@@ -51,6 +53,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledInit() {
         Chassis.getInstance().resetEncoders();
+        Localizer.getInstance().reset();
     }
 
     @Override

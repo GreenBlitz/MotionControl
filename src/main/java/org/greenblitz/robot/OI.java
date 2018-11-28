@@ -7,6 +7,7 @@ public class OI {
     private SmartJoystick mainJS;
 
     public static OI getInstance() {
+        if (instance == null) init();
         return instance;
     }
 
@@ -15,7 +16,7 @@ public class OI {
     }
 
     private OI() {
-        mainJS = new SmartJoystick(RobotMap.MAINJS_ID);
+        mainJS = new SmartJoystick(RobotMap.JoystickID.MAIN);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
 

@@ -36,9 +36,10 @@ public class Chassis extends Subsystem {
     }
 
     private Chassis() {
-        m_robotDrive = new CANRobotDrive(RobotMap.CHASSIS_FRONT_LEFT_MOTOR_PORT, RobotMap.CHASSIS_REAR_LEFT_MOTOR_PORT,
-                RobotMap.CHASSIS_FRONT_RIGHT_MOTOR_PORT, RobotMap.CHASSIS_REAR_RIGHT_MOTOR_PORT);
+        m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
+                RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
         m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER);
+        m_leftEncoder.invert();
         m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER);
         m_leftEncoder.reset();
         m_rightEncoder.reset();
@@ -78,7 +79,7 @@ public class Chassis extends Subsystem {
     }
 
     public double getLeftDistance() {
-        return -m_leftEncoder.getDistance();
+        return m_leftEncoder.getDistance();
     }
 
     public double getRightDistance() {
@@ -86,7 +87,7 @@ public class Chassis extends Subsystem {
     }
 
     public int getLeftTicks() {
-        return -m_leftEncoder.getTicks();
+        return m_leftEncoder.getTicks();
     }
 
     public int getRightTicks() {
@@ -94,7 +95,7 @@ public class Chassis extends Subsystem {
     }
 
     public double getLeftSpeed() {
-        return -m_leftEncoder.getSpeed();
+        return m_leftEncoder.getSpeed();
     }
 
     public double getRightSpeed() {

@@ -55,10 +55,10 @@ public class LocalizerTest {
     //not finished
     //@Test
     /*void calculateDiffInDepth2Test() {
-        Position diff = Localizer.calculateMovement((8.5 - 2.5) * (-Math.PI / 3), 2.5 * (Math.PI / 3), 8.5, Math.PI*2/3);
-        assertEquals(diff.getX(), -(2.5 - (8.5 / 2)) * 0.5, EPSILON);
-        assertEquals(diff.getY(), (2.5 - (8.5 / 2)) * (Math.sqrt(3) / 2), EPSILON);
-        assertEquals(diff.getAngle(), Position.normalizeAngle(-Math.PI / 3), EPSILON);
+        Position diff = Localizer.calculateMovement((8.5 - 4.4) * (-Math.PI / 3), 4.4 * (Math.PI / 3), 8.5, Math.PI*2/3);
+        assertEquals(diff.getX(), -(4.4 - (8.5 / 2)) * 0.5, EPSILON);
+        assertEquals(diff.getY(), (4.4 - (8.5 / 2)) * (Math.sqrt(3) / 2), EPSILON);
+        assertEquals(diff.getAngle(), Position.normalizeAngle(Math.PI / 3), EPSILON);
     }*/
 
 }
