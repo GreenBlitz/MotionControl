@@ -34,6 +34,9 @@ deploy {
 repositories {
     jcenter()
     mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 
@@ -42,7 +45,10 @@ dependencies {
     compile ctre()
     compile navx()
 
+    compile name: "canvasAS"
+
     compile pathfinder()
+    testCompile pathfinder()
 
     testImplementation(
             'org.junit.jupiter:junit-jupiter-api:5.1.0'

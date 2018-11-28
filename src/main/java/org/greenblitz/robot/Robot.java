@@ -2,6 +2,7 @@ package org.greenblitz.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import jaci.pathfinder.Waypoint;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.Position;
 import org.greenblitz.robot.commands.FindMaxValues;
@@ -9,10 +10,15 @@ import org.greenblitz.robot.subsystems.Chassis;
 
 public class Robot extends IterativeRobot {
 
+    Waypoint[] path = new Waypoint[] {
+            new Waypoint(0, 1, 0)
+    };
+
+
     @Override
     public void robotInit() {
         Chassis.init();
-        Localizer.getInstance().configure(new Position(0, 0), RobotStats.Cerberous.Chassis.HORIZONTAL_DISTANCE.value, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
+        Localizer.getInstance().configure(RobotStats.Cerberous.Chassis.HORIZONTAL_DISTANCE.value, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
         Localizer.startLocalizer();
     }
 

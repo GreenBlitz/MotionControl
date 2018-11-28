@@ -4,10 +4,11 @@ bin/
 build/
 out/
 
+*.jar
+
 # eclipse/intellij config files
 .idea/
 *.iml
-build.*
 
 # gradle config directory
 .gradle/

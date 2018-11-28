@@ -71,8 +71,8 @@ public class FollowPoints extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Chassis.getInstance().tankDrive(
-    			0.5*followerL.calculate(Chassis.getInstance().getLeftTicks()),
-    			0.5*followerR.calculate(-Chassis.getInstance().getRightTicks())
+    			0.7*Math.min(followerL.calculate(Chassis.getInstance().getLeftTicks()), 1),
+    			0.7*Math.min(followerR.calculate(-Chassis.getInstance().getRightTicks()), 1)
     			);
     }
 
