@@ -34,9 +34,6 @@ deploy {
 repositories {
     jcenter()
     mavenCentral()
-    flatDir {
-        dirs 'libs'
-    }
 }
 
 
@@ -44,9 +41,7 @@ dependencies {
     compile wpilib()
     compile ctre()
     compile navx()
-
-    compile name: "canvasAS"
-
+    
     compile pathfinder()
     testCompile pathfinder()
 
