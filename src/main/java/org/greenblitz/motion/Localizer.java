@@ -37,17 +37,17 @@ public class Localizer extends TimerTask {
     private double prevDistanceLeft;
     private double prevDistanceRight;
 
-    private static long SLEEP_TIME = 20L;
+    private static long SLEEP_TIME = 50L;
 
     private final Object LOCK = new Object();
 
     /**
      * <p>Get the org.greenblitz.robot location. This is the system: </p>
-     * ^<br>
-     * |<br>
-     * |<br>
-     * R ---->
-     * <br> <br> Where 'R' is the org.greenblitz.robot, up is the y coord and right is the x coord
+     *      ^<br>
+     *      |<br>
+     *      |<br>
+     * <--- R
+     * <br> <br> Where 'R' is the org.greenblitz.robot, up is the y coord and left is the x coord
      *
      * @return
      */
@@ -127,8 +127,12 @@ public class Localizer extends TimerTask {
             m_location.setAngle((encR - encL) / m_wheelDistance);
             SmartDashboard.putNumber("robot x", m_location.getX());
             SmartDashboard.putNumber("robot y", m_location.getY());
-            SmartDashboard.putNumber("robot angle", m_location.getAngle());
+            SmartDashboard.putNumber("robot angle", Math.toDegrees(m_location.getAngle()));
         }
+        double rightV = (encR - prevDistanceRight) * 1000 / SLEEP_TIME;
+        if (rightV != 0) System.out.println("right velocity = " + ((encR - prevDistanceRight) * 1000 / SLEEP_TIME));
+        double leftV = (encL - prevDistanceLeft) * 1000 / SLEEP_TIME;
+        if (leftV != 0) System.out.println("left velocity = " + ((encL - prevDistanceLeft) * 1000 / SLEEP_TIME));
 
         prevDistanceLeft = encL;
         prevDistanceRight = encR;

@@ -13,8 +13,8 @@ public class Chassis extends Subsystem {
 
     private static Chassis instance;
 
-    private static final double TICKS_PER_METER_LEFT = 2548;
-    private static final double TICKS_PER_METER_RIGHT = 2548;
+    private static final double TICKS_PER_METER_LEFT = 2549;
+    private static final double TICKS_PER_METER_RIGHT = 2569;
 
     private SmartEncoder m_leftEncoder, m_rightEncoder;
 
@@ -57,7 +57,7 @@ public class Chassis extends Subsystem {
         SmartDashboard.putString("Chassis current command", getCurrentCommandName());
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
-        SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
+        SmartDashboard.putNumber("Chassis rightticks", getRightTicks());
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {

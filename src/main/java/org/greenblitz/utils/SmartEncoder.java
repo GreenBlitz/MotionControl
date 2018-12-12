@@ -54,10 +54,10 @@ public class SmartEncoder {
     /**
      * This function returns the velocity felt by the encoder divided by the ticks per meter.
      *
-     * @return The velocity felt by the talon divided by the ticks per meter.
+     * @return Meter per second velocity of the encoder
      */
     public double getSpeed() {
-        return ((double) m_talon.getSensorCollection().getQuadratureVelocity()) /*testGetSpeed()*/ / m_ticksPerMeter;
+        return 10 * ((double) m_talon.getSensorCollection().getQuadratureVelocity()) /*testGetSpeed()*/ / m_ticksPerMeter;
     }
 
 
