@@ -13,8 +13,8 @@ public class Chassis extends Subsystem {
 
     private static Chassis instance;
 
-    private static final double TICKS_PER_METER_LEFT = 2549;
-    private static final double TICKS_PER_METER_RIGHT = 2569;
+    private static final double TICKS_PER_METER_LEFT = 2548;
+    private static final double TICKS_PER_METER_RIGHT = 2548;
 
     private SmartEncoder m_leftEncoder, m_rightEncoder;
 
@@ -40,8 +40,8 @@ public class Chassis extends Subsystem {
         m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
                 RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
         m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER_LEFT);
-        m_leftEncoder.invert();
         m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER_RIGHT);
+        m_rightEncoder.invert();
         m_leftEncoder.reset();
         m_rightEncoder.reset();
     }
@@ -57,7 +57,7 @@ public class Chassis extends Subsystem {
         SmartDashboard.putString("Chassis current command", getCurrentCommandName());
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
-        SmartDashboard.putNumber("Chassis rightticks", getRightTicks());
+        SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {

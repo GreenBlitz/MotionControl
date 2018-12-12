@@ -125,8 +125,6 @@ public class Localizer extends TimerTask {
         synchronized (LOCK) {
             m_location.translate(dXdY);
             m_location.setAngle((encR - encL) / m_wheelDistance);
-            SmartDashboard.putNumber("encoder right", encR);
-            SmartDashboard.putNumber("encoder left", encL);
             SmartDashboard.putNumber("robot x", m_location.getX());
             SmartDashboard.putNumber("robot y", m_location.getY());
             SmartDashboard.putNumber("robot angle", m_location.getAngle());
