@@ -15,6 +15,10 @@ public class SmartEncoder {
     private final TalonSRX m_talon;
     private double m_ticksPerMeter;
 
+    public TalonSRX getTalon() {
+        return m_talon;
+    }
+
     /**
      * This constructor receives a TalonSRX and the ticks per meter of the Talon
      * It also checks to see if the ticks per meter are valid as well.

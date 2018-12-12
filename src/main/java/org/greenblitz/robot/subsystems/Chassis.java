@@ -13,7 +13,8 @@ public class Chassis extends Subsystem {
 
     private static Chassis instance;
 
-    private static final double TICKS_PER_METER = 2150;
+    private static final double TICKS_PER_METER_LEFT = 2549;
+    private static final double TICKS_PER_METER_RIGHT = 2569;
 
     private SmartEncoder m_leftEncoder, m_rightEncoder;
 
@@ -38,12 +39,13 @@ public class Chassis extends Subsystem {
     private Chassis() {
         m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
                 RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
-        m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER);
+        m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER_LEFT);
         m_leftEncoder.invert();
-        m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER);
+        m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER_RIGHT);
         m_leftEncoder.reset();
         m_rightEncoder.reset();
     }
+
 
 
     public void initDefaultCommand() {

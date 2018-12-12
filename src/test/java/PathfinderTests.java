@@ -1,6 +1,3 @@
-import canvasAS.Canvas;
-import canvasAS.Line;
-import canvasAS.Point;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
@@ -14,7 +11,7 @@ import java.util.Scanner;
 
 public class PathfinderTests {
 
-    Scanner scan = new Scanner(System.in);
+    /*Scanner scan = new Scanner(System.in);
     Trajectory.Config config;
     Trajectory trajectory;
     TankModifier mod;
@@ -62,6 +59,6 @@ public class PathfinderTests {
         Canvas.getInstance().setSize(1000, 1000);
         Canvas.getInstance().repaint();
         scan.next();
-    }
+    }*/
 
 }

@@ -10,7 +10,7 @@ public class SmartTalon extends TalonSRX {
         super(deviceNumber);
     }
 
-    public void set(double power) {
+    public void  set(double power) {
         if (power != mLastValue) {
             mLastValue = power;
             set(ControlMode.PercentOutput, mLastValue);

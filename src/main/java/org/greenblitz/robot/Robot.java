@@ -47,9 +47,11 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
 
-//        Chassis.getInstance().tankDrive(
-//                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
-//                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_Y));
+        Chassis.getInstance().tankDrive(
+                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
+                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_Y));
+
+
     }
 
     @Override

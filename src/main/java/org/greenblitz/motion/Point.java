@@ -74,7 +74,7 @@ public class Point {
         double cos = Math.cos(radians),
                 sin = Math.sin(radians);
         Point temp = this.clone();
-        setX(temp.y * sin + temp.x * cos);
+        setX(temp.x * cos + temp.y * sin);
         setY(temp.y * cos - temp.x * sin);
         return this;
     }

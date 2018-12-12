@@ -1,6 +1,7 @@
 package org.greenblitz.motion;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.SmartEncoder;
@@ -80,6 +81,8 @@ public class Localizer extends TimerTask {
      */
     public void configure(double wheelDistance, SmartEncoder left, SmartEncoder right) {
         configure(new Position(0, 0), wheelDistance, left, right);
+        assert (left == Chassis.getInstance().getLeftEncoder());
+        assert (right == Chassis.getInstance().getRightEncoder());
     }
 
     /**
@@ -100,7 +103,7 @@ public class Localizer extends TimerTask {
      * @param robotAng  the angle of the robot
      * @return x difference, y difference, angle difference
      */
-    public static Position calculateMovement(double rightDist, double leftDist, double wheelDistance, double robotAng) {
+    public static Point calculateMovement(double rightDist, double leftDist, double wheelDistance, double robotAng) {
         if (rightDist == leftDist) {
             return new Position(new Point(0, rightDist).rotate(robotAng), 0);
         }
@@ -110,20 +113,23 @@ public class Localizer extends TimerTask {
 
         double dy = circleRadius * Math.sin(angle);
         double dx = circleRadius * (1 - Math.cos(angle));
-        return new Position(new Point(dx, dy).rotate(robotAng), angle);
+        return new Point(dx, dy).rotate(robotAng);
     }
 
     @Override
     public void run() {
         double encL = getLeftDistance(),
                 encR = getRightDistance();
-        Position dXdYdAngle = calculateMovement(encR - prevDistanceRight, encL - prevDistanceLeft,
+        Point dXdY = calculateMovement(encR - prevDistanceRight, encL - prevDistanceLeft,
                 m_wheelDistance, Localizer.getInstance().getLocation().getAngle());
         synchronized (LOCK) {
-            m_location.translate(dXdYdAngle);
-            m_location.setAngle(
-                    (getRightDistance() - getLeftDistance())
-                            / m_wheelDistance);
+            m_location.translate(dXdY);
+            m_location.setAngle((encR - encL) / m_wheelDistance);
+            SmartDashboard.putNumber("encoder right", encR);
+            SmartDashboard.putNumber("encoder left", encL);
+            SmartDashboard.putNumber("robot x", m_location.getX());
+            SmartDashboard.putNumber("robot y", m_location.getY());
+            SmartDashboard.putNumber("robot angle", m_location.getAngle());
         }
 
         prevDistanceLeft = encL;
