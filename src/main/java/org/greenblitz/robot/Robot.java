@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import jaci.pathfinder.Waypoint;
 import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.Position;
-import org.greenblitz.robot.commands.FindMaxValues;
 import org.greenblitz.robot.subsystems.Chassis;
 
 public class Robot extends IterativeRobot {
@@ -18,7 +16,7 @@ public class Robot extends IterativeRobot {
     @Override
     public void robotInit() {
         Chassis.init();
-        Localizer.getInstance().configure(RobotStats.Cerberous.Chassis.HORIZONTAL_DISTANCE.value, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
+        Localizer.getInstance().configure(RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
         Localizer.startLocalizer();
     }
 
@@ -46,11 +44,6 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-
-        Chassis.getInstance().tankDrive(
-                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
-                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_Y));
-
 
     }
 

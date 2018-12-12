@@ -20,12 +20,12 @@ public class PathfinderTests {
 
     public void createPaths(Trajectory.FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
         this.config = new Trajectory.Config(fit, samples, dt,
-                RobotStats.Cerberous.Chassis.MAX_VELOCITY.value,
-                RobotStats.Cerberous.Chassis.MAX_ACCELERATION.value,
-                RobotStats.Cerberous.Chassis.MAX_JERK.value);
+                RobotStats.Picasso.Chassis.MAX_VELOCITY.value,
+                RobotStats.Picasso.Chassis.MAX_ACCELERATION.value,
+                RobotStats.Picasso.Chassis.MAX_JERK.value);
         this.trajectory = Pathfinder.generate(waypoints, config);
         this.mod = new TankModifier(this.trajectory);
-        this.mod.modify(RobotStats.Cerberous.Chassis.VERTICAL_DISTANCE.value);
+        this.mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE.value);
         this.leftTraj  = mod.getLeftTrajectory();
         this.rightTraj = mod.getRightTrajectory();
 
@@ -49,9 +49,9 @@ public class PathfinderTests {
             Trajectory.Segment e = trajectory.get(i + 1);
             // 1 meter = 100 pixels
             Line l = new Line(new Point(s.x * 100, s.y * 100), new Point(e.x * 100, e.y * 100));
-            double red = ((s.velocity + e.velocity) / 2.0) / RobotStats.Cerberous.Chassis.MAX_VELOCITY.value;
-            double green = ((s.acceleration + e.acceleration) / 2.0) / RobotStats.Cerberous.Chassis.MAX_ACCELERATION.value;
-            double blue = ((s.jerk + e.jerk) / 2.0) / RobotStats.Cerberous.Chassis.MAX_JERK.value;
+            double red = ((s.velocity + e.velocity) / 2.0) / RobotStats.Picasso.Chassis.MAX_VELOCITY.value;
+            double green = ((s.acceleration + e.acceleration) / 2.0) / RobotStats.Picasso.Chassis.MAX_ACCELERATION.value;
+            double blue = ((s.jerk + e.jerk) / 2.0) / RobotStats.Picasso.Chassis.MAX_JERK.value;
             l.setColor(new Color((int) (red * 255), (int) (green * 255), (int) (blue * 255)));
             l.translate(center);
             l.queuePaint();

@@ -35,12 +35,12 @@ public class FollowPoints extends Command {
     public FollowPoints(FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
         requires(Chassis.getInstance());
         this.config = new Trajectory.Config(fit, samples, dt,
-                RobotStats.Cerberous.Chassis.MAX_VELOCITY.value,
-                RobotStats.Cerberous.Chassis.MAX_ACCELERATION.value,
-                RobotStats.Cerberous.Chassis.MAX_JERK.value);
+                RobotStats.Picasso.Chassis.MAX_VELOCITY.value,
+                RobotStats.Picasso.Chassis.MAX_ACCELERATION.value,
+                RobotStats.Picasso.Chassis.MAX_JERK.value);
         this.trajectory = Pathfinder.generate(waypoints, this.config);
         this.mod = new TankModifier(this.trajectory);
-        this.mod.modify(RobotStats.Cerberous.Chassis.VERTICAL_DISTANCE.value);
+        this.mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE.value);
         this.leftTraj  = mod.getLeftTrajectory();
         this.rightTraj = mod.getRightTrajectory();
         
@@ -48,20 +48,20 @@ public class FollowPoints extends Command {
 
         this.followerL = new EncoderFollower(leftTraj);
         followerL.configureEncoder(0,
-                (int)(RobotStats.Cerberous.EncoderRadianScale.LEFT_POWER.value * 2 * Math.PI),
-                RobotStats.Cerberous.Chassis.WHEEL_RADIUS.value);
+                (int)(RobotStats.Picasso.EncoderRadianScale.LEFT_POWER * 2 * Math.PI),
+                RobotStats.Picasso.Chassis.WHEEL_RADIUS.value);
 
         followerL.configurePIDVA(1.0, 0.0, 0.0,
-                1.0/RobotStats.Cerberous.Chassis.MAX_VELOCITY.value, 0.0);
+                1.0/ RobotStats.Picasso.Chassis.MAX_VELOCITY.value, 0.0);
 
 
         this.followerR = new EncoderFollower(rightTraj);
         followerR.configureEncoder(0,
-                (int)(RobotStats.Cerberous.EncoderRadianScale.RIGHT_POWER.value * 2 * Math.PI),
-                RobotStats.Cerberous.Chassis.WHEEL_RADIUS.value);
+                (int)(RobotStats.Picasso.EncoderRadianScale.RIGHT_POWER * 2 * Math.PI),
+                RobotStats.Picasso.Chassis.WHEEL_RADIUS.value);
 
         followerR.configurePIDVA(1.0, 0.0, 0.0,
-                1.0/RobotStats.Cerberous.Chassis.MAX_VELOCITY.value, 0.0);
+                1.0/ RobotStats.Picasso.Chassis.MAX_VELOCITY.value, 0.0);
     }
 
     // Called just before this Command runs the first time
