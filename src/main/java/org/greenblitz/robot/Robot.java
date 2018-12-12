@@ -1,5 +1,7 @@
 package org.greenblitz.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import jaci.pathfinder.Waypoint;
@@ -11,7 +13,6 @@ public class Robot extends IterativeRobot {
     Waypoint[] path = new Waypoint[] {
             new Waypoint(0, 1, 0)
     };
-
 
     @Override
     public void robotInit() {
