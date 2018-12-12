@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.robot.CANRobotDrive;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
+import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.utils.SmartEncoder;
 
@@ -13,8 +14,8 @@ public class Chassis extends Subsystem {
 
     private static Chassis instance;
 
-    private static final double TICKS_PER_METER_LEFT = 2549;
-    private static final double TICKS_PER_METER_RIGHT = 2569;
+    private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_VELOCITY;
+    private static final double TICKS_PER_METER_RIGHT = RobotStats.Picasso.EncoderMetreScale.RIGHT_VELOCITY;
 
     private SmartEncoder m_leftEncoder, m_rightEncoder;
 

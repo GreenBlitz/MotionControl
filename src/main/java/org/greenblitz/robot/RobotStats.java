@@ -1,5 +1,9 @@
 package org.greenblitz.robot;
 
+import org.greenblitz.robot.subsystems.Chassis;
+
+import java.io.CharArrayReader;
+
 public final class RobotStats {
     public enum Gear {
         VELOCITY, POWER
@@ -52,22 +56,22 @@ public final class RobotStats {
             /**
              * Left encoder ticks per meter in velocity gear
              */
-            LEFT_VELOCITY(-1630, Gear.VELOCITY),
+            LEFT_VELOCITY(-2549, Gear.VELOCITY),
 
             /**
              * Left encoder ticks per meter in power gear
              */
-            LEFT_POWER(-1630, Gear.POWER),
+            LEFT_POWER(-2549, Gear.POWER),
 
             /**
              * Right encoder ticks per meter in velocity gear
              */
-            RIGHT_VELOCITY(1630, Gear.VELOCITY),
+            RIGHT_VELOCITY(2569, Gear.VELOCITY),
 
             /**
              * Right encoder ticks per meter in power gear
              */
-            RIGHT_POWER(1630, Gear.POWER);
+            RIGHT_POWER(2569, Gear.POWER);
 
             public final int value;
             public final Gear gear;
@@ -142,7 +146,7 @@ public final class RobotStats {
             /**
              * Encoder ticks per meter on each side in each gear
              */
-            public static final double LEFT_VELOCITY = -681, LEFT_POWER = -2494, RIGHT_VELOCITY = 685, RIGHT_POWER = 2466;
+            public static final double LEFT_VELOCITY = 2549, LEFT_POWER = 2549, RIGHT_VELOCITY = 2569, RIGHT_POWER = 2569;
 
             /**
              * @param gear The gear in which the scale was measured
