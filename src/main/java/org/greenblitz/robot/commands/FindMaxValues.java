@@ -67,14 +67,14 @@ public class FindMaxValues extends Command {
         double jerkR = (accR - prevAccR) / deltaT;
         prevAccR = accR;
 
-        if (Math.abs(newSpeedL) > maxVelL) maxVelL = newSpeedL;
-        if (Math.abs(newSpeedR) > maxVelR) maxVelR = newSpeedR;
+        if (Math.abs(newSpeedL) > maxVelL) maxVelL = Math.abs(newSpeedL);
+        if (Math.abs(newSpeedR) > maxVelR) maxVelR = Math.abs(newSpeedR);
 
-        if (Math.abs(accL) > maxAccL) maxAccL = accL;
-        if (Math.abs(accR) > maxAccR) maxAccR = accR;
+        if (Math.abs(accL) > maxAccL) maxAccL = Math.abs(accL);
+        if (Math.abs(accR) > maxAccR) maxAccR = Math.abs(accR);
 
-        if (Math.abs(jerkL) > maxJerkL) maxJerkL = jerkL;
-        if (Math.abs(jerkR) > maxJerkR) maxJerkR = jerkR;
+        if (Math.abs(jerkL) > maxJerkL) maxJerkL = Math.abs(jerkL);
+        if (Math.abs(jerkR) > maxJerkR) maxJerkR = Math.abs(jerkR);
 
         SmartDashboard.putNumber("left V", newSpeedL);
         SmartDashboard.putNumber("right V", newSpeedR);

@@ -107,6 +107,7 @@ public class Localizer extends TimerTask {
         if (rightDist == leftDist) {
             return new Position(new Point(0, rightDist).rotate(robotAng), 0);
         }
+
         double distance = (rightDist + leftDist) / 2;
         double angle = (rightDist - leftDist) / wheelDistance;
         double circleRadius = distance / angle;
@@ -120,8 +121,10 @@ public class Localizer extends TimerTask {
     public void run() {
         double encL = getLeftDistance(),
                 encR = getRightDistance();
-        Point dXdY = calculateMovement(encR - prevDistanceRight, encL - prevDistanceLeft,
+        Point dXdY = calculateMovement(
+                encR - prevDistanceRight, encL - prevDistanceLeft,
                 m_wheelDistance, Localizer.getInstance().getLocation().getAngle());
+
         synchronized (LOCK) {
             m_location.translate(dXdY);
             m_location.setAngle((encR - encL) / m_wheelDistance);

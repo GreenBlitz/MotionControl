@@ -78,7 +78,10 @@ public class FollowPoints extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return this.followerL.isFinished() || this.followerR.isFinished();
+        boolean ret = this.followerL.isFinished() && this.followerR.isFinished();
+        if(ret) System.out.println("finished");
+        else System.out.println("not finished");
+        return ret;
     }
 
     // Called once after isFinished returns true
