@@ -26,7 +26,7 @@ public class GenerateTrajectory {
         long currentTime = System.currentTimeMillis();
 
         while (ret[0] == null){
-            if (System.currentTimeMillis() - currentTime > 3*1000){
+            if (System.currentTimeMillis() - currentTime > 1000){
                 break;
             }
         }
