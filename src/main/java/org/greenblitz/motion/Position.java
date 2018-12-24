@@ -1,5 +1,10 @@
 package org.greenblitz.motion;
 
+import com.sun.istack.internal.NotNull;
+import jaci.pathfinder.Waypoint;
+import org.jetbrains.annotations.Contract;
+import sun.misc.Contended;
+
 /**
  * Represent a position in 2D space (for example of a org.greenblitz.robot) that consists of x, y, and angle (heading, the direction the object faces)
  *
@@ -52,12 +57,18 @@ public class Position extends Point {
         this(point, 0);
     }
 
+    @NotNull
+    public static Waypoint toWaypoint(Position p){
+        return new Waypoint(p.getX(), p.getY(), p.getAngle());
+    }
+
     /**
      * Changes an angle to an equivalent angle between -PI and PI
      *
      * @param angle
      * @return
      */
+    @Contract(pure = true)
     public static double normalizeAngle(double angle) {
         angle %= (2 * Math.PI);
         if (angle > Math.PI)

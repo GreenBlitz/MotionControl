@@ -15,7 +15,7 @@ public class GenerateTrajectory {
     }
 
     public static Trajectory generateTrajectory(Waypoint[] waypoints, Trajectory.FitMethod fit, int samples, double dt)
-    throws Exception{
+    throws PathfinderException{
         Trajectory[] ret = new Trajectory[1];
         ret[0] = null;
 
@@ -32,20 +32,20 @@ public class GenerateTrajectory {
         }
 
         if (ret[0] == null)
-            throw new Exception("generator in infinite loop");
+            throw new PathfinderException("generator in infinite loop");
 
         return ret[0];
     }
 
-    public static Trajectory generateTrajectory(Waypoint[] waypoints, int samples, double dt) throws Exception{
+    public static Trajectory generateTrajectory(Waypoint[] waypoints, int samples, double dt) throws PathfinderException{
         return generateTrajectory(waypoints, Trajectory.FitMethod.HERMITE_CUBIC, samples, dt);
     }
 
-    public static Trajectory generateTrajectory(Waypoint[] waypoints, double dt) throws Exception{
+    public static Trajectory generateTrajectory(Waypoint[] waypoints, double dt) throws PathfinderException{
         return generateTrajectory(waypoints, Trajectory.Config.SAMPLES_HIGH, dt);
     }
 
-    public static Trajectory generateTrajectory(Waypoint[] waypoints) throws Exception{
+    public static Trajectory generateTrajectory(Waypoint[] waypoints) throws PathfinderException{
         return generateTrajectory(waypoints, 0.05);
     }
 
