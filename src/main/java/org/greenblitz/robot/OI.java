@@ -30,16 +30,6 @@ public class OI {
 
         mainJS.A.whenPressed(new FindMaxValues());
         mainJS.B.whenPressed(new ArcadeDriveByJoystick(mainJS));
-
-        mainJS.X.whenPressed(new FollowPoints(
-                Trajectory.FitMethod.HERMITE_CUBIC,
-                Trajectory.Config.SAMPLES_HIGH,
-                0.05,
-                new Waypoint[]{
-                        new Waypoint(0, 0, 0),
-                        new Waypoint(1, 1, Math.PI / 4)
-                }));
-
     }
 
     public SmartJoystick getMainJS() {

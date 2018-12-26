@@ -1,5 +1,7 @@
 package org.greenblitz.motion;
 
+import jaci.pathfinder.Waypoint;
+
 /**
  * Represent a position in 2D space (for example of a org.greenblitz.robot) that consists of x, y, and angle (heading, the direction the object faces)
  *
@@ -50,6 +52,10 @@ public class Position extends Point {
      */
     public Position(Point point) {
         this(point, 0);
+    }
+
+    public static Waypoint toWaypoint(Position p){
+        return new Waypoint(p.getX(), p.getY(), p.getAngle());
     }
 
     /**
