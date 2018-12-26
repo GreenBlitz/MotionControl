@@ -37,9 +37,7 @@ public class OI {
                 0.05,
                 new Waypoint[]{
                         new Waypoint(0, 0, 0),
-                        new Waypoint(0.5, 1.5, 0),
-                        new Waypoint(0, 3, 0),
-                        new Waypoint(0.0001, 5, 0)
+                        new Waypoint(1, 1, Math.PI / 4)
                 }));
 
     }

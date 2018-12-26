@@ -70,7 +70,8 @@ public class Point {
      *
      * @param radians
      */
-    public Point rotate(double radians) {
+    public Point rotate(double radians)
+    {
         double cos = Math.cos(radians),
                 sin = Math.sin(radians);
         Point temp = this.clone();
@@ -96,7 +97,8 @@ public class Point {
         this.y = y;
     }
 
-    public double getX() {
+    public double getX()
+    {
         return x;
     }
 

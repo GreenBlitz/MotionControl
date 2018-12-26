@@ -94,13 +94,7 @@ public class CANRobotDrive {
 	}
 
 	public void tankDrive(double leftValue, double rightValue) {
-		leftValue = limit(-leftValue);
-		rightValue = limit(-rightValue);
-
-		leftValue = Math.copySign(leftValue * leftValue, leftValue);
-		rightValue = Math.copySign(rightValue * rightValue, rightValue);
-
-		setLeftRightMotorOutputs(leftValue, rightValue);
+		setLeftRightMotorOutputs(-leftValue, -rightValue);
 	}
 
 	private double limit(double value) {

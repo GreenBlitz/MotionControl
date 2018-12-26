@@ -79,7 +79,8 @@ public class Localizer extends TimerTask {
      * @param left
      * @param right
      */
-    public void configure(double wheelDistance, SmartEncoder left, SmartEncoder right) {
+    public void configure(double wheelDistance, SmartEncoder left, SmartEncoder right)
+    {
         configure(new Position(0, 0), wheelDistance, left, right);
         assert (left == Chassis.getInstance().getLeftEncoder());
         assert (right == Chassis.getInstance().getRightEncoder());
@@ -132,10 +133,6 @@ public class Localizer extends TimerTask {
             SmartDashboard.putNumber("robot y", m_location.getY());
             SmartDashboard.putNumber("robot angle", Math.toDegrees(m_location.getAngle()));
         }
-        double rightV = (encR - prevDistanceRight) * 1000 / SLEEP_TIME;
-        if (rightV != 0) System.out.println("right velocity = " + ((encR - prevDistanceRight) * 1000 / SLEEP_TIME));
-        double leftV = (encL - prevDistanceLeft) * 1000 / SLEEP_TIME;
-        if (leftV != 0) System.out.println("left velocity = " + ((encL - prevDistanceLeft) * 1000 / SLEEP_TIME));
 
         prevDistanceLeft = encL;
         prevDistanceRight = encR;

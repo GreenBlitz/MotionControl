@@ -31,7 +31,6 @@ public class FindMaxValues extends Command {
         requires(Chassis.getInstance());
         this.maxVelL = 0;
         this.maxVelR = 0;
-        System.out.println("constructed");
     }
 
     @Override
