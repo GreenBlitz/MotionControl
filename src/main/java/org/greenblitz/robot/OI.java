@@ -1,7 +1,9 @@
 package org.greenblitz.robot;
 
+import org.greenblitz.motion.pathfinder.PathFollowerCommand;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.FindMaxValues;
+import org.greenblitz.robot.subsystems.Chassis;
 
 public class OI {
 
@@ -25,6 +27,7 @@ public class OI {
 
         mainJS.A.whenPressed(new FindMaxValues());
         mainJS.B.whenPressed(new ArcadeDriveByJoystick(mainJS));
+        mainJS.Y.whenPressed(new PathFollowerCommand(Chassis.getInstance().getPathFollowerController()));
     }
 
     public SmartJoystick getMainJS() {

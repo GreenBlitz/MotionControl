@@ -2,6 +2,7 @@ package org.greenblitz.utils;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import org.greenblitz.motion.base.IEncoder;
 
 /**
  * This class has many functions that make using an encoder much simpler.
@@ -11,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  * @see TalonSRX
  */
 
-public class SmartEncoder {
+public class SmartEncoder implements IEncoder {
     private final TalonSRX m_talon;
     private double m_ticksPerMeter;
 
@@ -66,12 +67,26 @@ public class SmartEncoder {
      *
      * @return Error code if the encoder could not be reset, otherwise resets the encoder.
      */
-    public ErrorCode reset() {
+    public void reset() {
+        resetRec();
+    }
+
+    public ErrorCode resetRec() {
         ErrorCode ec = m_talon.getSensorCollection().setQuadraturePosition(0, 100);
         if (ec != ErrorCode.OK) {
             System.err.println("error occured while reseting encoder '" + m_talon.getHandle() + "': " + ec);
         }
-        return getTicks() == 0 ? ec : reset();
+        return getTicks() == 0 ? ec : resetRec();
+    }
+
+    @Override
+    public int getTickRate() {
+        return m_talon.getSensorCollection().getQuadratureVelocity();
+    }
+
+    @Override
+    public double getVelocity() {
+        return getSpeed();
     }
 
     public void invert() {
