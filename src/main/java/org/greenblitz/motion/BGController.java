@@ -29,7 +29,7 @@ public class BGController extends Command {
         Trajectory newPart;
         try {
              newPart = GenerateTrajectory.generateTrajectory(new Waypoint[]{currentloc, desiredWaypoint},
-                    Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_FAST, miliDelay / 1000);
+                    Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_FAST, miliDelay / 1000.0);
         } catch (PathfinderException e){
             e.printStackTrace();
             return;

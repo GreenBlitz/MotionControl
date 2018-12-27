@@ -9,6 +9,7 @@ import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.Localizer;
+import org.greenblitz.motion.pathfinder.PathFollower;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Timer;
@@ -25,19 +26,7 @@ public class Robot extends IterativeRobot {
     protected EncoderFollower followerR;
     protected EncoderFollower followerL;
 
-    private TimerTask generateFollower() {
-        followerL.reset();
-        followerR.reset();
-        Chassis.getInstance().resetSensors();
-        return new TimerTask() {
-            @Override
-            public void run() {
-                Chassis.getInstance().tankDrive(
-                        followerL.calculate(Chassis.getInstance().getLeftTicks()),
-                        followerR.calculate(-Chassis.getInstance().getRightTicks()));
-            }
-        };
-    }
+    private PathFollower follower;
 
     private Timer notifier = new Timer();
 
@@ -52,6 +41,7 @@ public class Robot extends IterativeRobot {
                 RobotStats.Picasso.Chassis.MAX_VELOCITY / 2,
                 RobotStats.Picasso.Chassis.MAX_ACCELERATION,
                 RobotStats.Picasso.Chassis.MAX_JERK);
+
         this.trajectory = Pathfinder.generate(waypoints, this.config);
         this.mod = new TankModifier(this.trajectory);
         this.mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
@@ -76,6 +66,10 @@ public class Robot extends IterativeRobot {
 
         followerR.configurePIDVA(1.0, 0.0, 0.0,
                 1.0 / RobotStats.Picasso.Chassis.MAX_VELOCITY, 0.0);
+
+        PathFollower.EncoderConfig leftConfig = new PathFollower.EncoderConfig(  )
+
+        follower = new PathFollower(Chassis.getInstance(), RobotStats.Picasso.Chassis.WHEEL_RADIUS * 2, 20, leftTraj, rightTraj, leftConfig, rightConfig);
     }
 
     @Override

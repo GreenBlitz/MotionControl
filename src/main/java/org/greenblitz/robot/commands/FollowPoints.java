@@ -15,18 +15,18 @@ import jaci.pathfinder.modifiers.TankModifier;
  *
  */
 public class FollowPoints extends Command {
-	
+
 	protected Trajectory.Config config;
 	protected Trajectory trajectory;
 	protected TankModifier mod;
 	protected Trajectory leftTraj;
 	protected Trajectory rightTraj;
-	
+
 	protected EncoderFollower followerR;
 	protected EncoderFollower followerL;
 
 	/**
-	 * 
+	 *
 	 * @param fit	CUBIC_SPLINE or somthing else
 	 * @param samples number of new points in each segment
 	 * @param dt time periond between segments/points
@@ -43,7 +43,7 @@ public class FollowPoints extends Command {
         this.mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
         this.leftTraj  = mod.getLeftTrajectory();
         this.rightTraj = mod.getRightTrajectory();
-        
+
         Chassis.getInstance().resetEncoders();
 
         this.followerL = new EncoderFollower(leftTraj);

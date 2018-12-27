@@ -1,12 +1,7 @@
 package org.greenblitz.robot;
 
-import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
-import org.greenblitz.motion.Localizer;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.FindMaxValues;
-import org.greenblitz.robot.commands.FollowPoints;
 
 public class OI {
 
