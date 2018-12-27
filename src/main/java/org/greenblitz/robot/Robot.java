@@ -2,16 +2,9 @@ package org.greenblitz.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
-import jaci.pathfinder.followers.EncoderFollower;
-import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.pathfinder.PathFollower;
 import org.greenblitz.robot.subsystems.Chassis;
-
-import java.util.Timer;
 
 public class Robot extends IterativeRobot {
 

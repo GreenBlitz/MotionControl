@@ -18,12 +18,11 @@ public class PathFollower {
     private EncoderConfig m_rightConfiguration;
 
     private long m_period;
-
     private double m_wheelDiameter;
+    private IChassis m_chassis;
 
     private boolean m_isActive = false;
-
-    private IChassis m_chassis;
+    private PathFollowerTask m_currentFollowerTask;
 
     private Timer m_timer = new Timer();
 
@@ -31,7 +30,9 @@ public class PathFollower {
 
         IEncoder left = m_chassis.getLeftEncoder();
         IEncoder right = m_chassis.getRightEncoder();
-
+        {
+            System.out.println("created follower task");
+        }
         @Override
         public void run() {
             m_chassis.tankDrive(m_leftFollower.calculate(left.getTicks()), m_rightFollower.calculate(right.getTicks()));
@@ -126,8 +127,8 @@ public class PathFollower {
 
         m_isActive = true;
         reset();
-
-        m_timer.schedule(new PathFollowerTask(), 0, m_period);
+        m_currentFollowerTask = new PathFollowerTask();
+        m_timer.schedule(m_currentFollowerTask, 0, m_period);
     }
 
     private boolean isActive() {
@@ -135,7 +136,7 @@ public class PathFollower {
     }
 
     public void stop() {
-        m_timer.cancel();
+        m_currentFollowerTask.cancel();
         m_isActive = false;
     }
 

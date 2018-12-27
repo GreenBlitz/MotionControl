@@ -3,7 +3,7 @@ package org.greenblitz.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.robot.subsystems.Chassis;
-import org.greenblitz.robot.SmartJoystick;
+import org.greenblitz.utils.SmartJoystick;
 
 public class ArcadeDriveByJoystick extends Command {
     private SmartJoystick m_stick;

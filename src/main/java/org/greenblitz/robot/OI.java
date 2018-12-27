@@ -4,6 +4,7 @@ import org.greenblitz.motion.pathfinder.PathFollowerCommand;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.FindMaxValues;
 import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.utils.SmartJoystick;
 
 public class OI {
 

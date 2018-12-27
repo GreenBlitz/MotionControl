@@ -1,21 +1,17 @@
 package org.greenblitz.robot.subsystems;
 
-import com.ctre.phoenix.ErrorCode;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
-import jaci.pathfinder.followers.EncoderFollower;
-import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
 import org.greenblitz.motion.pathfinder.PathFollower;
-import org.greenblitz.robot.CANRobotDrive;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
+import org.greenblitz.robot.RobotPath;
 import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
+import org.greenblitz.utils.CANRobotDrive;
 import org.greenblitz.utils.SmartEncoder;
 
 public class Chassis extends Subsystem implements IChassis {
@@ -24,8 +20,6 @@ public class Chassis extends Subsystem implements IChassis {
 
     private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_VELOCITY;
     private static final double TICKS_PER_METER_RIGHT = RobotStats.Picasso.EncoderMetreScale.RIGHT_VELOCITY;
-
-    protected EncoderFollower followerR;
 
     private PathFollower follower;
 
@@ -46,41 +40,16 @@ public class Chassis extends Subsystem implements IChassis {
         return instance;
     }
 
-    /**
-     * @param fit       CUBIC_SPLINE or something else
-     * @param samples   number of new points in each segment
-     * @param dt        time period between segments/points
-     * @param waypoints path waypoints
-     */
-    public void initPF(Trajectory.FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
-        Trajectory.Config config = new Trajectory.Config(fit, samples, dt,
-                RobotStats.Picasso.Chassis.MAX_VELOCITY / 2,
-                RobotStats.Picasso.Chassis.MAX_ACCELERATION,
-                RobotStats.Picasso.Chassis.MAX_JERK);
-
-        Trajectory trajectory = Pathfinder.generate(waypoints, config);
-        TankModifier mod = new TankModifier(trajectory);
-        mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
-        Trajectory leftTraj = mod.getLeftTrajectory();
-        Trajectory rightTraj = mod.getRightTrajectory();
-
-        Chassis.getInstance().resetEncoders();
-
+    public void initPF() {
         PathFollower.EncoderConfig leftConfig = new PathFollower.EncoderConfig((int) (RobotStats.Picasso.EncoderRadianScale.LEFT_POWER * 2 * Math.PI), 1.0, 1.0 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
         PathFollower.EncoderConfig rightConfig = new PathFollower.EncoderConfig((int) (RobotStats.Picasso.EncoderRadianScale.RIGHT_POWER * 2 * Math.PI), 1.0, 1.0 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
 
-        follower = new PathFollower(Chassis.getInstance(), RobotStats.Picasso.Chassis.WHEEL_RADIUS * 2, 20, leftTraj, rightTraj, leftConfig, rightConfig);
+        follower = new PathFollower(Chassis.getInstance(), RobotStats.Picasso.Chassis.WHEEL_RADIUS * 2, 20, RobotPath.getTestTrajectory()[0], RobotPath.getTestTrajectory()[1], leftConfig, rightConfig);
     }
 
     public static void init() {
         instance = new Chassis();
-        instance.initPF(Trajectory.FitMethod.HERMITE_CUBIC,
-                Trajectory.Config.SAMPLES_HIGH,
-                0.05,
-                new Waypoint[]{
-                        new Waypoint(0, 0, 0),
-                        new Waypoint(-1, 2, -Math.PI / 2)
-                });
+        instance.initPF();
     }
 
     private Chassis() {

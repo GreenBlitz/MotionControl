@@ -16,9 +16,6 @@ public class Localizer extends TimerTask {
 
     private static Localizer instance = null;
 
-    private Localizer() {
-    }
-
     public static Localizer getInstance() {
         if (instance == null)
             instance = new Localizer();
