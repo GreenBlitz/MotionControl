@@ -3,6 +3,7 @@ package org.greenblitz.motion;
 import edu.wpi.first.wpilibj.command.Command;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
+import org.greenblitz.motion.pathfinder.PathfinderException;
 
 import java.util.Arrays;
 import java.util.TimerTask;
