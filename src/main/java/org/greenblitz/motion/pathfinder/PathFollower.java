@@ -124,7 +124,7 @@ public class PathFollower {
 
     public void start() {
         if (isActive()) return;
-
+        System.out.println("Started follower!");
         m_isActive = true;
         reset();
         m_currentFollowerTask = new PathFollowerTask();
@@ -138,6 +138,7 @@ public class PathFollower {
     public void stop() {
         m_currentFollowerTask.cancel();
         m_isActive = false;
+        System.out.println("Stopped follower!");
     }
 
     public boolean isFinished() {

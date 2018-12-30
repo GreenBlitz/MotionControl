@@ -23,7 +23,7 @@ public class RobotPath {
     private static void init() {
         Waypoint[] tests = new Waypoint[]{
                 new Waypoint(0, 0, 0),
-                new Waypoint(-1, 2, -Math.PI / 2)
+                new Waypoint(-1, 1, 0),
         };
 
         initPF(Trajectory.FitMethod.HERMITE_CUBIC,
@@ -40,7 +40,7 @@ public class RobotPath {
      */
     private static void initPF(Trajectory.FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
         Trajectory.Config config = new Trajectory.Config(fit, samples, dt,
-                RobotStats.Picasso.Chassis.MAX_VELOCITY / 2,
+                RobotStats.Picasso.Chassis.MAX_VELOCITY / 3.5,
                 RobotStats.Picasso.Chassis.MAX_ACCELERATION,
                 RobotStats.Picasso.Chassis.MAX_JERK);
 

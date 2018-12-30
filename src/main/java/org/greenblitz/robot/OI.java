@@ -25,7 +25,6 @@ public class OI {
         mainJS = new SmartJoystick(RobotMap.JoystickID.MAIN);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
-
         mainJS.A.whenPressed(new FindMaxValues());
         mainJS.B.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.Y.whenPressed(new PathFollowerCommand(Chassis.getInstance().getPathFollowerController()));
