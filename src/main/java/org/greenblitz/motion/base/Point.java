@@ -1,4 +1,4 @@
-package org.greenblitz.motion;
+package org.greenblitz.motion.base;
 
 /**
  * Represents a simple 2D point

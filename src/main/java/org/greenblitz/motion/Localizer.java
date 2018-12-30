@@ -1,8 +1,10 @@
 package org.greenblitz.motion;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import com.sun.xml.internal.fastinfoset.algorithm.IEEE754FloatingPointEncodingAlgorithm;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.robot.RobotStats;
+import org.greenblitz.motion.base.IEncoder;
+import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.SmartEncoder;
 
@@ -31,8 +33,8 @@ public class Localizer extends TimerTask {
     private Position m_location;//Positive x direction is left
 
     private double m_wheelDistance;
-    private SmartEncoder leftEncoder;
-    private SmartEncoder rightEncoder;
+    private IEncoder leftEncoder;
+    private IEncoder rightEncoder;
 
     private double prevDistanceLeft;
     private double prevDistanceRight;
@@ -65,7 +67,7 @@ public class Localizer extends TimerTask {
      * @param left
      * @param right
      */
-    public void configure(Position initialLocation, double wheelDistance, SmartEncoder left, SmartEncoder right) {
+    public void configure(Position initialLocation, double wheelDistance, IEncoder left, IEncoder right) {
         m_location = initialLocation;
         m_wheelDistance = wheelDistance;
         leftEncoder = left;
@@ -79,7 +81,7 @@ public class Localizer extends TimerTask {
      * @param left
      * @param right
      */
-    public void configure(double wheelDistance, SmartEncoder left, SmartEncoder right)
+    public void configure(double wheelDistance, IEncoder left, IEncoder right)
     {
         configure(new Position(0, 0), wheelDistance, left, right);
         assert (left == Chassis.getInstance().getLeftEncoder());

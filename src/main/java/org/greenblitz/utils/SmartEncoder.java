@@ -2,6 +2,7 @@ package org.greenblitz.utils;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import org.greenblitz.motion.base.IEncoder;
 
 /**
  * This class has many functions that make using an encoder much simpler.
@@ -11,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  * @see TalonSRX
  */
 
-public class SmartEncoder {
+public class SmartEncoder implements IEncoder {
     private final TalonSRX m_talon;
     private double m_ticksPerMeter;
 
@@ -26,7 +27,7 @@ public class SmartEncoder {
      * @param ticksPerMeter A final double of the ticks per meter the talon feels per meter of movement.
      */
     public SmartEncoder(TalonSRX talon, double ticksPerMeter) {
-        if (ticksPerMeter == +0.0 || !Double.isFinite(ticksPerMeter) || ticksPerMeter == -0.0)
+        if (ticksPerMeter == +0.0 || !Double.isFinite(ticksPerMeter))
             throw new IllegalArgumentException("invalid ticks per meter value '" + ticksPerMeter + "'");
 
         m_talon = talon;
@@ -51,6 +52,16 @@ public class SmartEncoder {
         return getTicks() / m_ticksPerMeter;
     }
 
+    @Override
+    public int getTickRate() {
+        return getTicks();
+    }
+
+    @Override
+    public double getVelocity() {
+        return getSpeed();
+    }
+
     /**
      * This function returns the velocity felt by the encoder divided by the ticks per meter.
      *
@@ -66,12 +77,21 @@ public class SmartEncoder {
      *
      * @return Error code if the encoder could not be reset, otherwise resets the encoder.
      */
-    public ErrorCode reset() {
+    public void reset() {
         ErrorCode ec = m_talon.getSensorCollection().setQuadraturePosition(0, 100);
         if (ec != ErrorCode.OK) {
             System.err.println("error occured while reseting encoder '" + m_talon.getHandle() + "': " + ec);
         }
-        return getTicks() == 0 ? ec : reset();
+    }
+
+    @Override
+    public void setTicksPerMeter(int ticks) {
+        m_ticksPerMeter = ticks;
+    }
+
+    @Override
+    public int getTicksPerMeter() {
+        return (int)m_ticksPerMeter;
     }
 
     public void invert() {

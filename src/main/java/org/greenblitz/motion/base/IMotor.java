@@ -7,4 +7,8 @@ public interface IMotor {
      * @param power percent of motor power (scaled between -1 and 1)
      */
     void set(double power);
+
+    default void stop(){
+        set(0);
+    }
 }

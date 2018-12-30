@@ -1,4 +1,4 @@
-import org.greenblitz.motion.Position;
+import org.greenblitz.motion.base.Position;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

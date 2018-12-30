@@ -1,4 +1,4 @@
-package org.greenblitz.motion;
+package org.greenblitz.motion.base;
 
 import jaci.pathfinder.Waypoint;
 
