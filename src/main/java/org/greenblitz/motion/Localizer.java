@@ -1,5 +1,6 @@
 package org.greenblitz.motion;
 
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.motion.base.IEncoder;
 import org.greenblitz.robot.subsystems.Chassis;
@@ -23,7 +24,7 @@ public class Localizer extends TimerTask {
     }
 
 
-    private Position m_location;//Positive x direction is left
+    private Position m_location; //Positive x direction is left
 
     private double m_wheelDistance;
     private IEncoder leftEncoder;

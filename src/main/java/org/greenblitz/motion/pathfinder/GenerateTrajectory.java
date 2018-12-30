@@ -1,10 +1,9 @@
-package org.greenblitz.motion;
+package org.greenblitz.motion.pathfinder;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
-import org.greenblitz.motion.pathfinder.PathfinderException;
-import org.greenblitz.robot.RobotStats;
+import org.greenblitz.motion.RobotStats;
 
 public class GenerateTrajectory {
 
@@ -20,9 +19,9 @@ public class GenerateTrajectory {
         Trajectory[] ret = new Trajectory[1];
         ret[0] = null;
 
-        Runnable toRun = () -> unsafeGenerateTrajectory(waypoints, fit, samples, dt, ret);
-
-        Thread thread = new Thread(toRun);
+        Thread thread = new Thread(
+                () -> unsafeGenerateTrajectory(waypoints, fit, samples, dt, ret)
+        );
         thread.start();
         long currentTime = System.currentTimeMillis();
 
@@ -31,6 +30,8 @@ public class GenerateTrajectory {
                 break;
             }
         }
+
+        thread.interrupt();
 
         if (ret[0] == null)
             throw new PathfinderException("generator in infinite loop");

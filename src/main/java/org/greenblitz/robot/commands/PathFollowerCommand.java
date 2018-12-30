@@ -1,12 +1,16 @@
-package org.greenblitz.motion.pathfinder;
+package org.greenblitz.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import org.greenblitz.motion.pathfinder.PathFollower;
+import org.greenblitz.robot.subsystems.Chassis;
 
 public class PathFollowerCommand extends Command {
 
     private PathFollower m_controller;
 
     public PathFollowerCommand(PathFollower controller) {
+        requires(Chassis.getInstance());
         this.m_controller = controller;
     }
 

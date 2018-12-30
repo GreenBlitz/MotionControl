@@ -1,6 +1,6 @@
 import org.greenblitz.motion.Localizer;
 
-import org.greenblitz.motion.Point;
+import org.greenblitz.motion.base.Point;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

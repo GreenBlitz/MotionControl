@@ -3,6 +3,7 @@ package org.greenblitz.motion;
 import edu.wpi.first.wpilibj.command.Command;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
+import org.greenblitz.motion.pathfinder.GenerateTrajectory;
 import org.greenblitz.motion.pathfinder.PathfinderException;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.TimerTask;
  * BGC, Just like Ben-Guruion, is never wrong. It's the truth that's wrong.
  * TODO - Atsmon doesn't approve the name
  */
+@Deprecated
 public class BGController extends Command {
 
     protected Trajectory current;

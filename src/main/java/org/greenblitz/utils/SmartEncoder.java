@@ -27,7 +27,7 @@ public class SmartEncoder implements IEncoder {
      * @param ticksPerMeter A final double of the ticks per meter the talon feels per meter of movement.
      */
     public SmartEncoder(TalonSRX talon, double ticksPerMeter) {
-        if (ticksPerMeter == +0.0 || !Double.isFinite(ticksPerMeter) || ticksPerMeter == -0.0)
+        if (ticksPerMeter == +0.0 || !Double.isFinite(ticksPerMeter))
             throw new IllegalArgumentException("invalid ticks per meter value '" + ticksPerMeter + "'");
 
         m_talon = talon;
@@ -52,6 +52,16 @@ public class SmartEncoder implements IEncoder {
         return getTicks() / m_ticksPerMeter;
     }
 
+    @Override
+    public int getTickRate() {
+        return getTicks();
+    }
+
+    @Override
+    public double getVelocity() {
+        return getSpeed();
+    }
+
     /**
      * This function returns the velocity felt by the encoder divided by the ticks per meter.
      *
@@ -72,10 +82,6 @@ public class SmartEncoder implements IEncoder {
     }
 
     public ErrorCode resetRec() {
-        ErrorCode ec = m_talon.getSensorCollection().setQuadraturePosition(0, 100);
-        if (ec != ErrorCode.OK) {
-            System.err.println("error occured while reseting encoder '" + m_talon.getHandle() + "': " + ec);
-        }
         return getTicks() == 0 ? ec : resetRec();
     }
 
@@ -87,6 +93,16 @@ public class SmartEncoder implements IEncoder {
     @Override
     public double getVelocity() {
         return getSpeed();
+    }
+
+    @Override
+    public void setTicksPerMeter(double ticks) {
+        m_ticksPerMeter = ticks;
+    }
+
+    @Override
+    public double getTicksPerMeter() {
+        return m_ticksPerMeter;
     }
 
     public void invert() {

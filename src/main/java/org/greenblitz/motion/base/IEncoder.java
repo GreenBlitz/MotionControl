@@ -9,7 +9,7 @@ public interface IEncoder {
 
     /**
      *
-     * @return measured distance
+     * @return measured distance (ticks modified by ticks per meter)
      */
     double getDistance();
 
@@ -21,7 +21,7 @@ public interface IEncoder {
 
     /**
      *
-     * @return measured velocity
+     * @return measured velocity (tick rate modified by ticks per meter
      */
     double getVelocity();
 
@@ -29,4 +29,12 @@ public interface IEncoder {
      * Resets the encoder
      */
     void reset();
+
+    /**
+     *
+     * @param ticks
+     */
+    void setTicksPerMeter(double ticks);
+
+    double getTicksPerMeter();
 }
