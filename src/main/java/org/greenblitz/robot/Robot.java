@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import jaci.pathfinder.Trajectory;
 import org.greenblitz.motion.Localizer;
 
+import org.greenblitz.motion.RobotStats;
 import org.greenblitz.robot.subsystems.Chassis;
 public class Robot extends IterativeRobot {
 

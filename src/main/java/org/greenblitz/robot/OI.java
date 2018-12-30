@@ -1,8 +1,8 @@
 package org.greenblitz.robot;
 
-import org.greenblitz.motion.pathfinder.PathFollowerCommand;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.FindMaxValues;
+import org.greenblitz.robot.commands.PathFollowerCommand;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.SmartJoystick;
 
