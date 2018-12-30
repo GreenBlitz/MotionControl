@@ -30,7 +30,7 @@ public class Localizer extends TimerTask {
     }
 
 
-    private Position m_location;//Positive x direction is left
+    private Position m_location; //Positive x direction is left
 
     private double m_wheelDistance;
     private IEncoder leftEncoder;

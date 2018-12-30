@@ -1,4 +1,4 @@
-package org.greenblitz.robot;
+package org.greenblitz.motion;
 
 import org.greenblitz.robot.subsystems.Chassis;
 

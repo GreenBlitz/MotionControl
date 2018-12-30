@@ -85,13 +85,13 @@ public class SmartEncoder implements IEncoder {
     }
 
     @Override
-    public void setTicksPerMeter(int ticks) {
+    public void setTicksPerMeter(double ticks) {
         m_ticksPerMeter = ticks;
     }
 
     @Override
-    public int getTicksPerMeter() {
-        return (int)m_ticksPerMeter;
+    public double getTicksPerMeter() {
+        return m_ticksPerMeter;
     }
 
     public void invert() {

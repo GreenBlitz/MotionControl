@@ -34,7 +34,7 @@ public interface IEncoder {
      *
      * @param ticks
      */
-    void setTicksPerMeter(int ticks);
+    void setTicksPerMeter(double ticks);
 
-    int getTicksPerMeter();
+    double getTicksPerMeter();
 }

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.robot.CANRobotDrive;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
-import org.greenblitz.robot.RobotStats;
+import org.greenblitz.motion.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.utils.SmartEncoder;
 
@@ -58,7 +58,7 @@ public class Chassis extends Subsystem {
         SmartDashboard.putString("Chassis current command", getCurrentCommandName());
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
-        SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
+        SmartDashboard.putNumber("Chassis rightticks", getRightTicks());
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
@@ -66,8 +66,6 @@ public class Chassis extends Subsystem {
     }
 
     public void tankDrive(double leftValue, double rightValue) {
-        SmartDashboard.putNumber("left raw value", leftValue);
-        SmartDashboard.putNumber("right raw value", rightValue);
         m_robotDrive.tankDrive(leftValue, rightValue);
     }
 

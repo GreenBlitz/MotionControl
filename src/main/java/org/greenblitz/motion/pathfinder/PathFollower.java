@@ -1,13 +1,11 @@
 package org.greenblitz.motion.pathfinder;
 
-import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
-import org.greenblitz.robot.RobotStats;
+import org.greenblitz.motion.RobotStats;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Objects;
@@ -105,6 +103,34 @@ public class PathFollower {
         m_rightFollower = new EncoderFollower(right);
 
         configure(leftConfig, rightConfig);
+    }
+
+
+    public PathFollower(Trajectory stateSpaceTrajectory,
+                        IChassis chassis, double wheelDiameter, long period,
+                        EncoderConfig leftConfig, EncoderConfig rightConfig){
+
+        m_chassis = chassis;
+        m_period = period;
+        m_wheelDiameter = wheelDiameter;
+
+        TankModifier mod = new TankModifier(stateSpaceTrajectory);
+        mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
+        Trajectory leftTraj  = mod.getLeftTrajectory();
+        Trajectory rightTraj = mod.getRightTrajectory();
+
+        Chassis.getInstance().resetEncoders();
+
+        this.m_leftFollower = new EncoderFollower(leftTraj);
+        this.m_rightFollower = new EncoderFollower(rightTraj);
+
+        configure(leftConfig, rightConfig);
+    }
+
+    public PathFollower(Trajectory stateSpaceTrajectory,
+                        IChassis chassis, double wheelDiameter, long period,
+                        EncoderConfig config){
+        this(stateSpaceTrajectory, chassis, wheelDiameter, period, config, config);
     }
 
 

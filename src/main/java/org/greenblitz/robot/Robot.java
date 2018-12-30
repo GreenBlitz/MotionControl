@@ -9,11 +9,11 @@ import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.Localizer;
+import org.greenblitz.motion.RobotStats;
 import org.greenblitz.motion.pathfinder.PathFollower;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class Robot extends IterativeRobot {
 
