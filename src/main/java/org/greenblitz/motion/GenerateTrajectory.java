@@ -3,6 +3,7 @@ package org.greenblitz.motion;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
+import org.greenblitz.motion.pathfinder.PathfinderException;
 import org.greenblitz.robot.RobotStats;
 
 public class GenerateTrajectory {
@@ -15,7 +16,7 @@ public class GenerateTrajectory {
     }
 
     public static Trajectory generateTrajectory(Waypoint[] waypoints, Trajectory.FitMethod fit, int samples, double dt)
-    throws PathfinderException{
+    throws PathfinderException {
         Trajectory[] ret = new Trajectory[1];
         ret[0] = null;
 

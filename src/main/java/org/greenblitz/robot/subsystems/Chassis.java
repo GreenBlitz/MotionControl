@@ -58,7 +58,7 @@ public class Chassis extends Subsystem {
         SmartDashboard.putString("Chassis current command", getCurrentCommandName());
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
-        SmartDashboard.putNumber("Chassis rightticks", getRightTicks());
+        SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
@@ -66,6 +66,8 @@ public class Chassis extends Subsystem {
     }
 
     public void tankDrive(double leftValue, double rightValue) {
+        SmartDashboard.putNumber("left raw value", leftValue);
+        SmartDashboard.putNumber("right raw value", rightValue);
         m_robotDrive.tankDrive(leftValue, rightValue);
     }
 

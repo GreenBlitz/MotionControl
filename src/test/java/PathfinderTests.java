@@ -13,21 +13,21 @@ public class PathfinderTests {
 
     /*Scanner scan = new Scanner(System.in);
     Trajectory.Config config;
-    Trajectory trajectory;
+    Trajectory m_trajectory;
     TankModifier mod;
-    Trajectory leftTraj;
-    Trajectory rightTraj;
+    Trajectory m_leftTrajectory;
+    Trajectory m_rightTrajectory;
 
     public void createPaths(Trajectory.FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
         this.config = new Trajectory.Config(fit, samples, dt,
                 RobotStats.Picasso.Chassis.MAX_VELOCITY.value,
                 RobotStats.Picasso.Chassis.MAX_ACCELERATION.value,
                 RobotStats.Picasso.Chassis.MAX_JERK.value);
-        this.trajectory = Pathfinder.generate(waypoints, config);
-        this.mod = new TankModifier(this.trajectory);
+        this.m_trajectory = Pathfinder.generate(waypoints, config);
+        this.mod = new TankModifier(this.m_trajectory);
         this.mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE.value);
-        this.leftTraj  = mod.getLeftTrajectory();
-        this.rightTraj = mod.getRightTrajectory();
+        this.m_leftTrajectory  = mod.getLeftTrajectory();
+        this.m_rightTrajectory = mod.getRightTrajectory();
 
         Chassis.getInstance().resetEncoders();
     }
@@ -44,9 +44,9 @@ public class PathfinderTests {
 
         Point center = new Point(500, 500);
 
-        for (int i = 0; i < trajectory.length() - 1; i++) {
-            Trajectory.Segment s = trajectory.get(i);
-            Trajectory.Segment e = trajectory.get(i + 1);
+        for (int i = 0; i < m_trajectory.length() - 1; i++) {
+            Trajectory.Segment s = m_trajectory.get(i);
+            Trajectory.Segment e = m_trajectory.get(i + 1);
             // 1 meter = 100 pixels
             Line l = new Line(new Point(s.x * 100, s.y * 100), new Point(e.x * 100, e.y * 100));
             double red = ((s.velocity + e.velocity) / 2.0) / RobotStats.Picasso.Chassis.MAX_VELOCITY.value;

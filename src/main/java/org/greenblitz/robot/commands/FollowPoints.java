@@ -15,18 +15,18 @@ import jaci.pathfinder.modifiers.TankModifier;
  *
  */
 public class FollowPoints extends Command {
-	
+
 	protected Trajectory.Config config;
 	protected Trajectory trajectory;
 	protected TankModifier mod;
 	protected Trajectory leftTraj;
 	protected Trajectory rightTraj;
-	
+
 	protected EncoderFollower followerR;
 	protected EncoderFollower followerL;
 
 	/**
-	 * 
+	 *
 	 * @param fit	CUBIC_SPLINE or somthing else
 	 * @param samples number of new points in each segment
 	 * @param dt time periond between segments/points
@@ -43,13 +43,13 @@ public class FollowPoints extends Command {
         this.mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
         this.leftTraj  = mod.getLeftTrajectory();
         this.rightTraj = mod.getRightTrajectory();
-        
+
         Chassis.getInstance().resetEncoders();
 
         this.followerL = new EncoderFollower(leftTraj);
         followerL.configureEncoder(0,
                 (int)(RobotStats.Picasso.EncoderRadianScale.LEFT_POWER * 2 * Math.PI),
-                RobotStats.Picasso.Chassis.WHEEL_RADIUS);
+                RobotStats.Picasso.Chassis.WHEEL_RADIUS * 2);
 
         followerL.configurePIDVA(1.0, 0.0, 0.0,
                 1.0/ RobotStats.Picasso.Chassis.MAX_VELOCITY, 0.0);
@@ -58,10 +58,12 @@ public class FollowPoints extends Command {
         this.followerR = new EncoderFollower(rightTraj);
         followerR.configureEncoder(0,
                 (int)(RobotStats.Picasso.EncoderRadianScale.RIGHT_POWER * 2 * Math.PI),
-                RobotStats.Picasso.Chassis.WHEEL_RADIUS);
+                RobotStats.Picasso.Chassis.WHEEL_RADIUS * 2);
 
         followerR.configurePIDVA(1.0, 0.0, 0.0,
-                1.0/ RobotStats.Picasso.Chassis.MAX_VELOCITY, 0.0);
+                1.0 / RobotStats.Picasso.Chassis.MAX_VELOCITY, 0.0);
+
+
     }
 
     // Called just before this Command runs the first time
@@ -71,22 +73,20 @@ public class FollowPoints extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Chassis.getInstance().tankDrive(
-    			0.7*Math.min(followerL.calculate(Chassis.getInstance().getLeftTicks()), 1),
-    			0.7*Math.min(followerR.calculate(-Chassis.getInstance().getRightTicks()), 1)
-    			);
+    			followerL.calculate(Chassis.getInstance().getLeftTicks()),
+    			followerR.calculate(Chassis.getInstance().getRightTicks()));
+        System.out.printf("%d, %d\n", Chassis.getInstance().getLeftTicks(), Chassis.getInstance().getRightTicks());
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        boolean ret = this.followerL.isFinished() && this.followerR.isFinished();
-        if(ret) System.out.println("finished");
-        else System.out.println("not finished");
-        return ret;
+        return this.followerL.isFinished() && this.followerR.isFinished();
     }
 
     // Called once after isFinished returns true
     protected void end() {
     	Chassis.getInstance().stop();
+        System.out.println("stopped");
     }
 
     // Called when another command which requires one or more of the same

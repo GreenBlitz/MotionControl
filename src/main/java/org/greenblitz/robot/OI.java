@@ -1,12 +1,7 @@
 package org.greenblitz.robot;
 
-import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
-import org.greenblitz.motion.Localizer;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.FindMaxValues;
-import org.greenblitz.robot.commands.FollowPoints;
 
 public class OI {
 
@@ -30,18 +25,6 @@ public class OI {
 
         mainJS.A.whenPressed(new FindMaxValues());
         mainJS.B.whenPressed(new ArcadeDriveByJoystick(mainJS));
-
-        mainJS.X.whenPressed(new FollowPoints(
-                Trajectory.FitMethod.HERMITE_CUBIC,
-                Trajectory.Config.SAMPLES_HIGH,
-                0.05,
-                new Waypoint[]{
-                        new Waypoint(0, 0, 0),
-                        new Waypoint(0.5, 1, 0),
-                        new Waypoint(0, 2, 0),
-                        new Waypoint(0.0001, 3, 0)
-                }));
-
     }
 
     public SmartJoystick getMainJS() {
