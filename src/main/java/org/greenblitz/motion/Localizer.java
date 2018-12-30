@@ -3,6 +3,8 @@ package org.greenblitz.motion;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.motion.base.IEncoder;
+import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Timer;

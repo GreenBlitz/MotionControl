@@ -14,6 +14,14 @@ public class GenerateTrajectory {
         out[0] = Pathfinder.generate(waypoints, config);
     }
 
+    public static Trajectory unsafeGenerate(Waypoint[] waypoints, Trajectory.FitMethod fit, int samples, double dt){
+        Trajectory.Config config = new Trajectory.Config(fit, samples, dt,
+                RobotStats.Picasso.Chassis.MAX_VELOCITY / 3.5,
+                RobotStats.Picasso.Chassis.MAX_ACCELERATION,
+                RobotStats.Picasso.Chassis.MAX_JERK);
+        return Pathfinder.generate(waypoints, config);
+    }
+
     public static Trajectory generateTrajectory(Waypoint[] waypoints, Trajectory.FitMethod fit, int samples, double dt)
     throws PathfinderException {
         Trajectory[] ret = new Trajectory[1];
@@ -26,7 +34,7 @@ public class GenerateTrajectory {
         long currentTime = System.currentTimeMillis();
 
         while (ret[0] == null){
-            if (System.currentTimeMillis() - currentTime > 1000){
+            if (System.currentTimeMillis() - currentTime > 10000){
                 break;
             }
         }

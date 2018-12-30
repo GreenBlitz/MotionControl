@@ -2,6 +2,7 @@ package org.greenblitz.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import org.greenblitz.motion.RobotStats;
 import org.greenblitz.motion.base.IChassis;
@@ -45,13 +46,14 @@ public class Chassis extends Subsystem implements IChassis {
     public static void init() {
         instance = new Chassis();
         try {
-            instance.follower = new PathFollower(GenerateTrajectory.generateTrajectory(
+            SmartDashboard.putBoolean("Is using correct waypoints.", true);
+            instance.follower = new PathFollower(GenerateTrajectory.unsafeGenerate(
                     new Waypoint[]{
                             new Waypoint(0, 0, 0),
-                            new Waypoint(0.5, 0, Math.toRadians(30)),
-                            new Waypoint(0.75, 0.5, Math.toRadians(45)),
-                            new Waypoint(0.5, 0.7, Math.toRadians(90))
-                    }, 0.05
+                            new Waypoint(1, 1, Math.toRadians(45)),
+                    }, Trajectory.FitMethod.HERMITE_QUINTIC,
+                    10000,
+                    0.05
             ),
                     instance,
                     RobotStats.Picasso.Chassis.WHEEL_RADIUS*2,
@@ -61,7 +63,7 @@ public class Chassis extends Subsystem implements IChassis {
                                     Math.PI),
                             1, 1.0/RobotStats.Picasso.Chassis.MAX_VELOCITY)
                     );
-        } catch (PathfinderException e){
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -91,11 +93,11 @@ public class Chassis extends Subsystem implements IChassis {
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
-        m_robotDrive.arcadeDrive(moveValue, rotateValue);
+        m_robotDrive.arcadeDrive(-moveValue, rotateValue);
     }
 
     public void tankDrive(double leftValue, double rightValue) {
-        m_robotDrive.tankDrive(leftValue, rightValue);
+        m_robotDrive.tankDrive(-leftValue, -rightValue);
     }
 
     public void stop() {
