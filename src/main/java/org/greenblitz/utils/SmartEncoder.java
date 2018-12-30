@@ -52,16 +52,6 @@ public class SmartEncoder implements IEncoder {
         return getTicks() / m_ticksPerMeter;
     }
 
-    @Override
-    public int getTickRate() {
-        return getTicks();
-    }
-
-    @Override
-    public double getVelocity() {
-        return getSpeed();
-    }
-
     /**
      * This function returns the velocity felt by the encoder divided by the ticks per meter.
      *
@@ -78,11 +68,7 @@ public class SmartEncoder implements IEncoder {
      * @return Error code if the encoder could not be reset, otherwise resets the encoder.
      */
     public void reset() {
-        resetRec();
-    }
-
-    public ErrorCode resetRec() {
-        return getTicks() == 0 ? ec : resetRec();
+        ErrorCode ec = m_talon.getSensorCollection().setQuadraturePosition(0, 100);
     }
 
     @Override
