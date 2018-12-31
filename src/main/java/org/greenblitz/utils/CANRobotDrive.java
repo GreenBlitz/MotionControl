@@ -67,11 +67,8 @@ public class CANRobotDrive {
 		double leftMotorSpeed;
 		double rightMotorSpeed;
 
-		moveValue = limit(-moveValue);
+		moveValue = limit(moveValue);
 		rotateValue = limit(rotateValue);
-
-		moveValue = Math.copySign(moveValue * moveValue, moveValue);
-		rotateValue = Math.copySign(rotateValue * rotateValue, rotateValue);
 
 		if (moveValue > 0.0) {
 			if (rotateValue > 0.0) {
@@ -94,7 +91,7 @@ public class CANRobotDrive {
 	}
 
 	public void tankDrive(double leftValue, double rightValue) {
-		setLeftRightMotorOutputs(-leftValue, -rightValue);
+		setLeftRightMotorOutputs(leftValue, rightValue);
 	}
 
 	private double limit(double value) {

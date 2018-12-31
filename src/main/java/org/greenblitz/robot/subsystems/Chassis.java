@@ -2,13 +2,15 @@ package org.greenblitz.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.Waypoint;
 import org.greenblitz.motion.RobotStats;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
+import org.greenblitz.motion.pathfinder.GenerateTrajectory;
 import org.greenblitz.motion.pathfinder.PathFollower;
+import org.greenblitz.motion.pathfinder.PathfinderException;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
-import org.greenblitz.robot.RobotPath;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.utils.CANRobotDrive;
 import org.greenblitz.utils.SmartEncoder;
@@ -39,16 +41,28 @@ public class Chassis extends Subsystem implements IChassis {
         return instance;
     }
 
-    public void initPF() {
-        PathFollower.EncoderConfig leftConfig = new PathFollower.EncoderConfig((int) (RobotStats.Picasso.EncoderRadianScale.LEFT_POWER * 2 * Math.PI), 1.0, 1.0 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
-        PathFollower.EncoderConfig rightConfig = new PathFollower.EncoderConfig((int) (RobotStats.Picasso.EncoderRadianScale.RIGHT_POWER * 2 * Math.PI), 1.0, 1.0 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
-
-        follower = new PathFollower(Chassis.getInstance(), RobotStats.Picasso.Chassis.WHEEL_RADIUS * 2, 20, RobotPath.getTestTrajectory()[0], RobotPath.getTestTrajectory()[1], leftConfig, rightConfig);
-    }
-
     public static void init() {
         instance = new Chassis();
-        instance.initPF();
+        try {
+            instance.follower = new PathFollower(GenerateTrajectory.generateTrajectory(
+                    new Waypoint[]{
+                            new Waypoint(0, 0, 0),
+                            new Waypoint(0.5, 0, Math.toRadians(30)),
+                            new Waypoint(0.75, 0.5, Math.toRadians(45)),
+                            new Waypoint(0.5, 0.7, Math.toRadians(90))
+                    }, 0.05
+            ),
+                    instance,
+                    RobotStats.Picasso.Chassis.WHEEL_RADIUS*2,
+                    50,
+                    new PathFollower.EncoderConfig(
+                            (int)(RobotStats.Picasso.EncoderRadianScale.LEFT_VELOCITY*2*
+                                    Math.PI),
+                            1, 1.0/RobotStats.Picasso.Chassis.MAX_VELOCITY)
+                    );
+        } catch (PathfinderException e){
+            e.printStackTrace();
+        }
     }
 
     private Chassis() {
