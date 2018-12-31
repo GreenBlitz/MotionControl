@@ -7,7 +7,6 @@ import org.greenblitz.utils.SmartJoystick;
 
 public class ArcadeDriveByJoystick extends Command {
     private SmartJoystick m_stick;
-    private final double mult = 1;
 
     public ArcadeDriveByJoystick(SmartJoystick stick) {
         requires(Chassis.getInstance());
@@ -15,10 +14,10 @@ public class ArcadeDriveByJoystick extends Command {
     }
 
     protected void execute() {
-        SmartDashboard.putNumber("forwards", m_stick.getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y) * mult);
-        SmartDashboard.putNumber("rotational", m_stick.getAxisValue(SmartJoystick.JoystickAxis.RIGHT_X) * mult);
-        Chassis.getInstance().arcadeDrive(m_stick.getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y) * mult,
-                m_stick.getAxisValue(SmartJoystick.JoystickAxis.RIGHT_X) * mult);
+        SmartDashboard.putNumber("forwards", m_stick.getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y));
+        SmartDashboard.putNumber("rotational", m_stick.getAxisValue(SmartJoystick.JoystickAxis.RIGHT_X));
+        Chassis.getInstance().arcadeDrive(m_stick.getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
+                m_stick.getAxisValue(SmartJoystick.JoystickAxis.RIGHT_X));
     }
 
     protected boolean isFinished() {

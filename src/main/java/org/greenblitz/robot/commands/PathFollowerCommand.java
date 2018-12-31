@@ -22,8 +22,6 @@ public class PathFollowerCommand extends Command {
 
     @Override
     protected void execute() {
-        if (isFinished())
-            end(); // If we don't do this, stop won't be called when using from OI (i.e whenPressed, whileHeld, etc.)
     }
 
     @Override

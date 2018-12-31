@@ -1,6 +1,5 @@
 package org.greenblitz.utils;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.greenblitz.motion.base.IEncoder;
 
@@ -15,6 +14,7 @@ import org.greenblitz.motion.base.IEncoder;
 public class SmartEncoder implements IEncoder {
     private final TalonSRX m_talon;
     private double m_ticksPerMeter;
+    private int m_inverted = 1;
 
     public TalonSRX getTalon() {
         return m_talon;
@@ -40,7 +40,7 @@ public class SmartEncoder implements IEncoder {
      * @return The amount of ticks felt by the talon.
      */
     public int getTicks() {
-        return m_talon.getSensorCollection().getQuadraturePosition();
+        return m_inverted * m_talon.getSensorCollection().getQuadraturePosition();
     }
 
     /**
@@ -58,7 +58,7 @@ public class SmartEncoder implements IEncoder {
      * @return Meter per second velocity of the encoder
      */
     public double getSpeed() {
-        return 10 * ((double) m_talon.getSensorCollection().getQuadratureVelocity()) /*testGetSpeed()*/ / m_ticksPerMeter;
+        return ((double) getTickRate()) / m_ticksPerMeter;
     }
 
 
@@ -73,7 +73,7 @@ public class SmartEncoder implements IEncoder {
 
     @Override
     public int getTickRate() {
-        return m_talon.getSensorCollection().getQuadratureVelocity();
+        return m_inverted * m_talon.getSensorCollection().getQuadratureVelocity();
     }
 
     @Override
@@ -82,16 +82,15 @@ public class SmartEncoder implements IEncoder {
     }
 
     @Override
-    public void setTicksPerMeter(double ticks) {
-        m_ticksPerMeter = ticks;
-    }
-
-    @Override
     public double getTicksPerMeter() {
         return m_ticksPerMeter;
     }
 
     public void invert() {
-        m_ticksPerMeter = -m_ticksPerMeter;
+        m_inverted = -1;
+    }
+
+    public void clear() {
+        m_inverted = 1;
     }
 }
