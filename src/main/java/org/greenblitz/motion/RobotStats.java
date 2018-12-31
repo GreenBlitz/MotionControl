@@ -35,7 +35,9 @@ public final class RobotStats {
 
             public static final double MAX_VELOCITY = 2, MAX_ACCELERATION = 30, MAX_JERK = 1000;
 
-            public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI * WHEEL_RADIUS;
+            public static final double WHEEL_DIAMETER = 2 * WHEEL_RADIUS;
+
+            public static final double WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;
         }
 
         /**

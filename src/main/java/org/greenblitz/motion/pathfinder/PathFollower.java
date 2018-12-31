@@ -1,5 +1,6 @@
 package org.greenblitz.motion.pathfinder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
@@ -39,7 +40,11 @@ public class PathFollower {
 
         @Override
         public void run() {
-            m_chassis.tankDrive(m_leftFollower.calculate(left.getTicks()), m_rightFollower.calculate(right.getTicks()));
+            double l = m_leftFollower.calculate(left.getTicks());
+            double r = m_rightFollower.calculate(right.getTicks());
+            m_chassis.tankDrive(l, r);
+            SmartDashboard.putNumber("left", l);
+            SmartDashboard.putNumber("right", r);
         }
     }
 
@@ -179,6 +184,8 @@ public class PathFollower {
      * Sets the encoder followers relative start position to current encoder tick
      */
     public void reset() {
+        m_leftFollower.reset();
+        m_rightFollower.reset();
         configure(m_leftConfiguration, m_rightConfiguration);
     }
 }

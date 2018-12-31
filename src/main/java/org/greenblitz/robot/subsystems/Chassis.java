@@ -3,6 +3,7 @@ package org.greenblitz.robot.subsystems;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
+import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.RobotStats;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
@@ -60,7 +61,7 @@ public class Chassis extends Subsystem implements IChassis {
     private void initMotion(Trajectory[] trajectories) {
         PathFollower.EncoderConfig m_leftConfig = new PathFollower.EncoderConfig((int) (m_leftEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
         PathFollower.EncoderConfig m_rightConfig = new PathFollower.EncoderConfig((int) (m_rightEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
-        follower = new PathFollower(this, RobotStats.Picasso.Chassis.VERTICAL_DISTANCE, 20, trajectories[0], trajectories[1], m_leftConfig, m_rightConfig);
+        follower = new PathFollower(this, RobotStats.Picasso.Chassis.WHEEL_DIAMETER, 20, trajectories[0], trajectories[1], m_leftConfig, m_rightConfig);
     }
 
     public void initDefaultCommand() {
@@ -121,6 +122,7 @@ public class Chassis extends Subsystem implements IChassis {
 
     public void resetSensors() {
         resetEncoders();
+        Localizer.getInstance().reset();
     }
 
     public void resetLeftEncoder() {
@@ -134,6 +136,13 @@ public class Chassis extends Subsystem implements IChassis {
     public void resetEncoders() {
         resetLeftEncoder();
         resetRightEncoder();
+    }
+
+    public void forceEncodersReset() {
+        do {
+            resetLeftEncoder();
+            resetRightEncoder();
+        } while(m_leftEncoder.getTicks() != 0 || m_rightEncoder.getTicks() != 0);
     }
 
     public PathFollower getPathFollowerController() {
