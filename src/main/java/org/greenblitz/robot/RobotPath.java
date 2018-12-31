@@ -4,8 +4,7 @@ import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
-import org.greenblitz.motion.pathfinder.PathFollower;
-import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.motion.RobotStats;
 
 public class RobotPath {
 

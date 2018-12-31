@@ -2,14 +2,13 @@ package org.greenblitz.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jaci.pathfinder.Waypoint;
+import org.greenblitz.motion.RobotStats;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
 import org.greenblitz.motion.pathfinder.PathFollower;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotPath;
-import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.utils.CANRobotDrive;
 import org.greenblitz.utils.SmartEncoder;
@@ -55,9 +54,13 @@ public class Chassis extends Subsystem implements IChassis {
     private Chassis() {
         m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
                 RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
+        m_robotDrive.setInvetedMotor(CANRobotDrive.TalonID.FRONT_LEFT, true);
+        m_robotDrive.setInvetedMotor(CANRobotDrive.TalonID.FRONT_RIGHT, true);
+        m_robotDrive.setInvetedMotor(CANRobotDrive.TalonID.REAR_LEFT, true);
+        m_robotDrive.setInvetedMotor(CANRobotDrive.TalonID.REAR_RIGHT, true);
         m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER_LEFT);
         m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER_RIGHT);
-        m_rightEncoder.invert();
+        m_leftEncoder.invert();
         m_leftEncoder.reset();
         m_rightEncoder.reset();
     }
@@ -89,11 +92,11 @@ public class Chassis extends Subsystem implements IChassis {
     }
 
     public double getDistance() {
-        return -m_leftEncoder.getDistance() / 2 + m_rightEncoder.getDistance() / 2;
+        return m_leftEncoder.getDistance() / 2 + m_rightEncoder.getDistance() / 2;
     }
 
     public double getSpeed() {
-        return (-m_leftEncoder.getSpeed() + m_rightEncoder.getSpeed()) / 2;
+        return (m_leftEncoder.getSpeed() + m_rightEncoder.getSpeed()) / 2;
     }
 
     public double getLeftDistance() {

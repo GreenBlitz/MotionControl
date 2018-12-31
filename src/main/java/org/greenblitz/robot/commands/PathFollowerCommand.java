@@ -16,6 +16,7 @@ public class PathFollowerCommand extends Command {
 
     @Override
     protected void initialize() {
+        System.out.println("Path follower command has started!");
         m_controller.start();
     }
 
