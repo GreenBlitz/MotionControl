@@ -17,14 +17,15 @@ import java.util.TimerTask;
  */
 public class Localizer extends TimerTask {
 
-    private static Localizer instance = null;
+    private static Localizer instance = new Localizer();
 
     public static Localizer getInstance() {
-        if (instance == null)
-            instance = new Localizer();
         return instance;
     }
 
+    private Localizer(){
+
+    }
 
     private Position m_location; //Positive x direction is left
 
