@@ -3,13 +3,11 @@ package org.greenblitz.robot.subsystems;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
+import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.RobotStats;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
-import org.greenblitz.motion.pathfinder.GenerateTrajectory;
 import org.greenblitz.motion.pathfinder.PathFollower;
-import org.greenblitz.motion.pathfinder.PathfinderException;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotPath;
@@ -21,18 +19,19 @@ public class Chassis extends Subsystem implements IChassis {
 
     private static Chassis instance;
 
-    private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_VELOCITY;
-    private static final double TICKS_PER_METER_RIGHT = RobotStats.Picasso.EncoderMetreScale.RIGHT_VELOCITY;
+    private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_POWER;
+    private static final double TICKS_PER_METER_RIGHT = RobotStats.Picasso.EncoderMetreScale.RIGHT_POWER;
 
     private PathFollower follower;
 
-
     private SmartEncoder m_leftEncoder, m_rightEncoder;
 
+    @Override
     public IEncoder getLeftEncoder() {
         return m_leftEncoder;
     }
 
+    @Override
     public IEncoder getRightEncoder() {
         return m_rightEncoder;
     }
@@ -45,27 +44,6 @@ public class Chassis extends Subsystem implements IChassis {
 
     public static void init() {
         instance = new Chassis();
-        try {
-            SmartDashboard.putBoolean("Is using correct waypoints.", true);
-            instance.follower = new PathFollower(GenerateTrajectory.unsafeGenerate(
-                    new Waypoint[]{
-                            new Waypoint(0, 0, 0),
-                            new Waypoint(1, 1, Math.toRadians(45)),
-                    }, Trajectory.FitMethod.HERMITE_QUINTIC,
-                    10000,
-                    0.05
-            ),
-                    instance,
-                    RobotStats.Picasso.Chassis.WHEEL_RADIUS*2,
-                    50,
-                    new PathFollower.EncoderConfig(
-                            (int)(RobotStats.Picasso.EncoderRadianScale.LEFT_VELOCITY*2*
-                                    Math.PI),
-                            1, 1.0/RobotStats.Picasso.Chassis.MAX_VELOCITY)
-                    );
-        } catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     private Chassis() {
@@ -76,9 +54,15 @@ public class Chassis extends Subsystem implements IChassis {
         m_rightEncoder.invert();
         m_leftEncoder.reset();
         m_rightEncoder.reset();
+
+        initMotion(RobotPath.getTestTrajectory());
     }
 
-
+    private void initMotion(Trajectory[] trajectories) {
+        PathFollower.EncoderConfig m_leftConfig = new PathFollower.EncoderConfig((int) (m_leftEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
+        PathFollower.EncoderConfig m_rightConfig = new PathFollower.EncoderConfig((int) (m_rightEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
+        follower = new PathFollower(this, RobotStats.Picasso.Chassis.WHEEL_DIAMETER, 20, trajectories[0], trajectories[1], m_leftConfig, m_rightConfig);
+    }
 
     public void initDefaultCommand() {
         setDefaultCommand(new ArcadeDriveByJoystick(OI.getInstance().getMainJS()));
@@ -89,7 +73,7 @@ public class Chassis extends Subsystem implements IChassis {
         SmartDashboard.putString("Chassis current command", getCurrentCommandName());
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
-        SmartDashboard.putNumber("Chassis rightticks", getRightTicks());
+        SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
@@ -105,11 +89,11 @@ public class Chassis extends Subsystem implements IChassis {
     }
 
     public double getDistance() {
-        return -m_leftEncoder.getDistance() / 2 + m_rightEncoder.getDistance() / 2;
+        return m_leftEncoder.getDistance() / 2 + m_rightEncoder.getDistance() / 2;
     }
 
     public double getSpeed() {
-        return (-m_leftEncoder.getSpeed() + m_rightEncoder.getSpeed()) / 2;
+        return (m_leftEncoder.getSpeed() + m_rightEncoder.getSpeed()) / 2;
     }
 
     public double getLeftDistance() {
@@ -138,6 +122,7 @@ public class Chassis extends Subsystem implements IChassis {
 
     public void resetSensors() {
         resetEncoders();
+        Localizer.getInstance().reset();
     }
 
     public void resetLeftEncoder() {
@@ -151,6 +136,13 @@ public class Chassis extends Subsystem implements IChassis {
     public void resetEncoders() {
         resetLeftEncoder();
         resetRightEncoder();
+    }
+
+    public void forceEncodersReset() {
+        do {
+            resetLeftEncoder();
+            resetRightEncoder();
+        } while(m_leftEncoder.getTicks() != 0 || m_rightEncoder.getTicks() != 0);
     }
 
     public PathFollower getPathFollowerController() {

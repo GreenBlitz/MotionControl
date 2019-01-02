@@ -38,7 +38,7 @@ public class CANRobotDrive {
 		return null;
 	}
 
-	public void setInvetedMotor(TalonID id, boolean inverted) {
+	public void setInvertedMotor(TalonID id, boolean inverted) {
 		switch (id) {
 		case FRONT_LEFT:
 			m_frontLeftInverted = inverted ? -1 : 1;
@@ -54,6 +54,14 @@ public class CANRobotDrive {
 			break;
 		}
 	}
+
+	public void invert(TalonID id) {
+	    setInvertedMotor(id, true);
+    }
+
+    public void clear(TalonID id) {
+	    setInvertedMotor(id, false);
+    }
 
 	public void setOutputScale(double maxOutput) {
 		m_outputScale = maxOutput;

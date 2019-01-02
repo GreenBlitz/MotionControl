@@ -42,7 +42,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
-        //  System.out.println(Localizer.getInstance().getLocation());
         Scheduler.getInstance().run();
     }
 
@@ -60,7 +59,8 @@ public class Robot extends IterativeRobot {
     @Override
     public void disabledInit() {
         Chassis.getInstance().stop();
-        Chassis.getInstance().resetEncoders();
+        Chassis.getInstance().forceEncodersReset();
+        Chassis.getInstance().resetSensors();
         Localizer.getInstance().reset();
     }
 

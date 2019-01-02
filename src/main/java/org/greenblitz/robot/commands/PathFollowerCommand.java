@@ -2,6 +2,7 @@ package org.greenblitz.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.pathfinder.PathFollower;
 import org.greenblitz.robot.subsystems.Chassis;
 
@@ -16,19 +17,19 @@ public class PathFollowerCommand extends Command {
 
     @Override
     protected void initialize() {
+        System.out.println("Path follower command has started!");
         m_controller.start();
     }
 
     @Override
     protected void execute() {
-        if (isFinished())
-            end(); // If we don't do this, stop won't be called when using from OI (i.e whenPressed, whileHeld, etc.)
     }
 
     @Override
     protected void end() {
-        System.out.println("Path follower command has finished!");
+        System.out.println(Localizer.getInstance().getLocation());
         m_controller.stop();
+        System.out.println("Path follower command has finished!");
     }
 
     @Override

@@ -1,12 +1,11 @@
 package org.greenblitz.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.RobotStats;
-import org.greenblitz.motion.pathfinder.PathFollower;
-import org.greenblitz.robot.subsystems.Chassis;
 
 public class RobotPath {
 
@@ -24,7 +23,7 @@ public class RobotPath {
     private static void init() {
         Waypoint[] tests = new Waypoint[]{
                 new Waypoint(0, 0, 0),
-                new Waypoint(-1, 1, 0),
+                new Waypoint(-1, 1, -Math.PI / 4),
         };
 
         initPF(Trajectory.FitMethod.HERMITE_CUBIC,
@@ -41,13 +40,13 @@ public class RobotPath {
      */
     private static void initPF(Trajectory.FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
         Trajectory.Config config = new Trajectory.Config(fit, samples, dt,
-                RobotStats.Picasso.Chassis.MAX_VELOCITY / 3.5,
+                RobotStats.Picasso.Chassis.MAX_VELOCITY / 3.8,
                 RobotStats.Picasso.Chassis.MAX_ACCELERATION,
                 RobotStats.Picasso.Chassis.MAX_JERK);
 
         Trajectory trajectory = Pathfinder.generate(waypoints, config);
-        TankModifier mod = new TankModifier(trajectory);
-        mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
+        TankModifier mod = new TankModifier(trajectory).modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
+
         test[0] = mod.getLeftTrajectory();
         test[1] = mod.getRightTrajectory();
     }

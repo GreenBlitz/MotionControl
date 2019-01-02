@@ -1,11 +1,11 @@
 package org.greenblitz.motion.pathfinder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
-import org.greenblitz.motion.RobotStats;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Objects;
@@ -33,12 +33,18 @@ public class PathFollower {
 
         IEncoder left = m_chassis.getLeftEncoder();
         IEncoder right = m_chassis.getRightEncoder();
-        {
-            System.out.println("created follower task");
+
+        PathFollowerTask() {
+            reset();
         }
+
         @Override
         public void run() {
-            m_chassis.tankDrive(m_leftFollower.calculate(left.getTicks()), m_rightFollower.calculate(right.getTicks()));
+            double l = m_leftFollower.calculate(left.getTicks());
+            double r = m_rightFollower.calculate(right.getTicks());
+            m_chassis.tankDrive(l, r);
+            SmartDashboard.putNumber("left", l);
+            SmartDashboard.putNumber("right", r);
         }
     }
 
@@ -109,15 +115,15 @@ public class PathFollower {
 
     public PathFollower(Trajectory stateSpaceTrajectory,
                         IChassis chassis, double wheelDiameter, long period,
-                        EncoderConfig leftConfig, EncoderConfig rightConfig){
+                        EncoderConfig leftConfig, EncoderConfig rightConfig) {
 
         m_chassis = chassis;
         m_period = period;
         m_wheelDiameter = wheelDiameter;
 
         TankModifier mod = new TankModifier(stateSpaceTrajectory);
-        mod.modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
-        Trajectory leftTraj  = mod.getLeftTrajectory();
+        mod.modify(wheelDiameter);
+        Trajectory leftTraj = mod.getLeftTrajectory();
         Trajectory rightTraj = mod.getRightTrajectory();
 
         Chassis.getInstance().resetEncoders();
@@ -130,7 +136,7 @@ public class PathFollower {
 
     public PathFollower(Trajectory stateSpaceTrajectory,
                         IChassis chassis, double wheelDiameter, long period,
-                        EncoderConfig config){
+                        EncoderConfig config) {
         this(stateSpaceTrajectory, chassis, wheelDiameter, period, config, config);
     }
 
@@ -156,9 +162,7 @@ public class PathFollower {
 
     public void start() {
         if (isActive()) return;
-        System.out.println("Started follower!");
         m_isActive = true;
-        reset();
         m_currentFollowerTask = new PathFollowerTask();
         m_timer.schedule(m_currentFollowerTask, 0, m_period);
     }
@@ -170,7 +174,6 @@ public class PathFollower {
     public void stop() {
         m_currentFollowerTask.cancel();
         m_isActive = false;
-        System.out.println("Stopped follower!");
     }
 
     public boolean isFinished() {
@@ -181,6 +184,8 @@ public class PathFollower {
      * Sets the encoder followers relative start position to current encoder tick
      */
     public void reset() {
+        m_leftFollower.reset();
+        m_rightFollower.reset();
         configure(m_leftConfiguration, m_rightConfiguration);
     }
 }
