@@ -1,7 +1,7 @@
 package org.greenblitz.utils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import org.greenblitz.motion.base.IEncoder;
+import org.greenblitz.motion.base.abstraction.IEncoder;
 
 /**
  * This class has many functions that make using an encoder much simpler.

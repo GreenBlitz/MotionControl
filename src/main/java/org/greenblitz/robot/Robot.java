@@ -15,7 +15,7 @@ public class Robot extends IterativeRobot {
     public void robotInit() {
         Chassis.init();
 
-        Localizer.getInstance().configure(RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder(), Navx.getInstance());
+        Localizer.getInstance().configure(RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder(), null);//Navx.getInstance());
         Localizer.startLocalizer();
     }
 

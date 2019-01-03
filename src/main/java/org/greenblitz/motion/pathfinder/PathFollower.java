@@ -3,8 +3,8 @@ package org.greenblitz.motion.pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
-import org.greenblitz.motion.base.IChassis;
-import org.greenblitz.motion.base.IEncoder;
+import org.greenblitz.motion.base.abstraction.IChassis;
+import org.greenblitz.motion.base.abstraction.IEncoder;
 
 import java.util.Objects;
 import java.util.Timer;

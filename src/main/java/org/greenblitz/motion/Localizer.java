@@ -1,7 +1,10 @@
 package org.greenblitz.motion;
 
-import org.greenblitz.motion.base.IEncoder;
-import org.greenblitz.motion.base.IGyro;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import org.greenblitz.motion.base.abstraction.IEncoder;
+import org.greenblitz.motion.base.abstraction.IGyro;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
@@ -21,8 +24,17 @@ public class Localizer extends TimerTask {
         return instance;
     }
 
-    private Localizer() {
+    private NetworkTable m_table;
 
+    private NetworkTableEntry m_entryX;
+    private NetworkTableEntry m_entryY;
+    private NetworkTableEntry m_entryHeading;
+
+    private Localizer() {
+        m_table = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer");
+        m_entryX = m_table.getEntry("x");
+        m_entryY = m_table.getEntry("y");
+        m_entryHeading = m_table.getEntry("heading");
     }
 
     private Position m_location; //Positive x direction is left
@@ -129,12 +141,16 @@ public class Localizer extends TimerTask {
                 encR = getRightDistance();
         Point dXdY = calculateMovement(
                 encR - prevDistanceRight, encL - prevDistanceLeft,
-                m_wheelDistance, Localizer.getInstance().getLocation().getAngle());
+                m_wheelDistance, m_location.getAngle());
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle(gyro.getAngle());
             m_location.setAngle((encR - encL) / m_wheelDistance);
+            m_entryX.setDouble(m_location.getX());
+            m_entryY.setDouble(m_location.getY());
+            m_entryHeading.setDouble(m_location.getAngle());
+
+            NetworkTableInstance.getDefault().getTable("motion").getEntry("isUpdated").setBoolean(true);
         }
 
         prevDistanceLeft = encL;
