@@ -41,6 +41,7 @@ public class Robot extends IterativeRobot {
 
         Chassis.getInstance().resetSensors();
         Localizer.getInstance().reset();
+
     }
 
     @Override

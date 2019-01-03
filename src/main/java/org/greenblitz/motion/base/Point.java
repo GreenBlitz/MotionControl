@@ -121,7 +121,7 @@ public class Point {
     }
 
     public static Point weightedAvg(Point a, Point b, double bWeight) {
-        return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight * a.y + bWeight * b.y));
+        return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight) * a.y + bWeight * b.y);
     }
 
     @Override

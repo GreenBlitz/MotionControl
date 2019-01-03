@@ -42,6 +42,7 @@ public class Chassis extends Subsystem implements IChassis {
     private CANRobotDrive m_robotDrive;
 
     public static Chassis getInstance() {
+        if (instance == null) init();
         return instance;
     }
 
