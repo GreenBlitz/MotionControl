@@ -70,8 +70,7 @@ public class Point {
      *
      * @param radians
      */
-    public Point rotate(double radians)
-    {
+    public Point rotate(double radians) {
         double cos = Math.cos(radians),
                 sin = Math.sin(radians);
         Point temp = this.clone();
@@ -97,8 +96,7 @@ public class Point {
         this.y = y;
     }
 
-    public double getX()
-    {
+    public double getX() {
         return x;
     }
 
@@ -106,12 +104,24 @@ public class Point {
         this.x = x;
     }
 
-    public static Point sub(Point subtractee, Point subtractor){
+    public static Point sub(Point subtractee, Point subtractor) {
         return new Point(subtractee.x - subtractor.x, subtractee.y - subtractor.y);
     }
 
-    public static double dot(Point a, Point b){
-        return a.x*b.x + a.y*b.y;
+    public static double dot(Point a, Point b) {
+        return a.x * b.x + a.y * b.y;
+    }
+
+    public static double normSquared(Point point) {
+        return dot(point, point);
+    }
+
+    public static double distSqared(Point a, Point b) {
+        return normSquared(sub(a, b));
+    }
+
+    public static Point weightedAvg(Point a, Point b, double bWeight) {
+        return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight * a.y + bWeight * b.y));
     }
 
     @Override

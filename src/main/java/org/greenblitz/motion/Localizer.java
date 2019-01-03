@@ -133,7 +133,6 @@ public class Localizer extends TimerTask {
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle(gyro.getAngle());
             m_location.setAngle((encR - encL) / m_wheelDistance);
         }
 
