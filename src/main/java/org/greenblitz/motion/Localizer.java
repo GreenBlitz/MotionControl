@@ -1,11 +1,9 @@
 package org.greenblitz.motion;
 
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.motion.base.IEncoder;
+import org.greenblitz.motion.base.IGyro;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,7 +21,7 @@ public class Localizer extends TimerTask {
         return instance;
     }
 
-    private Localizer(){
+    private Localizer() {
 
     }
 
@@ -32,21 +30,25 @@ public class Localizer extends TimerTask {
     private double m_wheelDistance;
     private IEncoder leftEncoder;
     private IEncoder rightEncoder;
+    private IGyro gyro;
+
+    private boolean m_enable = false;
 
     private double prevDistanceLeft;
     private double prevDistanceRight;
 
     private static long SLEEP_TIME = 50L;
 
+    private static Timer localizerTimer = new Timer();
+
     private final Object LOCK = new Object();
 
-    private int runNumber;
 
     /**
      * <p>Get the org.greenblitz.robot location. This is the system: </p>
-     *      ^<br>
-     *      |<br>
-     *      |<br>
+     * ^<br>
+     * |<br>
+     * |<br>
      * <--- R
      * <br> <br> Where 'R' is the org.greenblitz.robot, up is the y coord and left is the x coord
      *
@@ -55,7 +57,6 @@ public class Localizer extends TimerTask {
     public Position getLocation() {
         synchronized (LOCK) {
             return m_location.clone();
-
         }
     }
 
@@ -66,14 +67,14 @@ public class Localizer extends TimerTask {
      * @param left
      * @param right
      */
-    public void configure(Position initialLocation, double wheelDistance, IEncoder left, IEncoder right) {
+    public void configure(Position initialLocation, double wheelDistance, IEncoder left, IEncoder right, IGyro gyro) {
         m_location = initialLocation;
         m_wheelDistance = wheelDistance;
         leftEncoder = left;
         rightEncoder = right;
         prevDistanceLeft = left.getDistance();
         prevDistanceRight = right.getDistance();
-        runNumber = 1;
+        this.gyro = gyro;
     }
 
     /**
@@ -81,11 +82,8 @@ public class Localizer extends TimerTask {
      * @param left
      * @param right
      */
-    public void configure(double wheelDistance, IEncoder left, IEncoder right)
-    {
-        configure(new Position(0, 0), wheelDistance, left, right);
-        assert (left == Chassis.getInstance().getLeftEncoder());
-        assert (right == Chassis.getInstance().getRightEncoder());
+    public void configure(double wheelDistance, IEncoder left, IEncoder right, IGyro gyro) {
+        configure(new Position(0, 0), wheelDistance, left, right, gyro);
     }
 
     /**
@@ -93,10 +91,6 @@ public class Localizer extends TimerTask {
      * You want to call this when reseting encoders for example
      */
     public void reset() {
-        SmartDashboard.putNumber("final robot x " + runNumber, SmartDashboard.getNumber("robot x", Integer.MAX_VALUE));
-        SmartDashboard.putNumber("final robot y " + runNumber, SmartDashboard.getNumber("robot y", Integer.MAX_VALUE));
-        SmartDashboard.putNumber("final robot angle " + runNumber, SmartDashboard.getNumber("robot angle", Integer.MAX_VALUE));
-        runNumber++;
         prevDistanceLeft = leftEncoder.getDistance();
         prevDistanceRight = rightEncoder.getDistance();
         m_location.set(0, 0, 0);
@@ -126,6 +120,11 @@ public class Localizer extends TimerTask {
 
     @Override
     public void run() {
+        if (m_enable) whenEnabled();
+        else whenDisabled();
+    }
+
+    private void whenEnabled() {
         double encL = getLeftDistance(),
                 encR = getRightDistance();
         Point dXdY = calculateMovement(
@@ -134,14 +133,24 @@ public class Localizer extends TimerTask {
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
+            m_location.setAngle(gyro.getAngle());
             m_location.setAngle((encR - encL) / m_wheelDistance);
-            SmartDashboard.putNumber("robot x", m_location.getX());
-            SmartDashboard.putNumber("robot y", m_location.getY());
-            SmartDashboard.putNumber("robot angle", Math.toDegrees(m_location.getAngle()));
         }
 
         prevDistanceLeft = encL;
         prevDistanceRight = encR;
+    }
+
+    private void whenDisabled() {
+
+    }
+
+    private void enable() {
+        m_enable = true;
+    }
+
+    private void disable() {
+        m_enable = false;
     }
 
     private double getLeftDistance() {
@@ -152,17 +161,16 @@ public class Localizer extends TimerTask {
         return rightEncoder.getDistance();
     }
 
-    private double altGetLeftDistance() {
-        return Chassis.getInstance().getLeftDistance();
-    }
-
-    private double altGetRightDistance() {
-        return Chassis.getInstance().getRightDistance();
-    }
-
     public static void startLocalizer() {
-        Timer t = new Timer();
-        t.schedule(getInstance(), 0, SLEEP_TIME);
+        localizerTimer.schedule(getInstance(), 0, SLEEP_TIME);
+        getInstance().enable();
     }
 
+    public static void stopLocalizer() {
+        getInstance().disable();
+    }
+
+    public static boolean isActive() {
+        return getInstance().m_enable;
+    }
 }

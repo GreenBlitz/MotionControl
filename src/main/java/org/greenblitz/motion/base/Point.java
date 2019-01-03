@@ -106,6 +106,13 @@ public class Point {
         this.x = x;
     }
 
+    public static Point sub(Point subtractee, Point subtractor){
+        return new Point(subtractee.x - subtractor.x, subtractee.y - subtractor.y);
+    }
+
+    public static double dot(Point a, Point b){
+        return a.x*b.x + a.y*b.y;
+    }
 
     @Override
     public String toString() {

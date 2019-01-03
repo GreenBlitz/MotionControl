@@ -1,8 +1,4 @@
-package org.greenblitz.motion;
-
-import org.greenblitz.robot.subsystems.Chassis;
-
-import java.io.CharArrayReader;
+package org.greenblitz.robot;
 
 public final class RobotStats {
     public enum Gear {
@@ -21,7 +17,7 @@ public final class RobotStats {
             /**
              * Distance between parallel wheels
              */
-            public static final double HORIZONTAL_DISTANCE = 0.565;// * ((Math.PI + 0.25) / (Math.PI));
+            public static final double HORIZONTAL_DISTANCE = 0.59;// 0.565 * ((Math.PI + 0.25) / (Math.PI));
 
             /**
              * Distance between 2 most radical wheels on same side

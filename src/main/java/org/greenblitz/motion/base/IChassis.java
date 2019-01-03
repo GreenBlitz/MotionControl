@@ -36,4 +36,8 @@ public interface IChassis {
     IEncoder getLeftEncoder();
 
     IEncoder getRightEncoder();
+
+    double getWheelRadius();
+
+    double getWheelbaseWidth();
 }

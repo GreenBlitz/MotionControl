@@ -4,9 +4,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
 import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.RobotStats;
+import org.greenblitz.robot.RobotStats;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathfinder.PathFollower;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
@@ -63,7 +64,7 @@ public class Chassis extends Subsystem implements IChassis {
     private void initMotion(Trajectory[] trajectories) {
         PathFollower.EncoderConfig m_leftConfig = new PathFollower.EncoderConfig((int) (m_leftEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
         PathFollower.EncoderConfig m_rightConfig = new PathFollower.EncoderConfig((int) (m_rightEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
-        follower = new PathFollower(this, RobotStats.Picasso.Chassis.WHEEL_DIAMETER, 20, trajectories[0], trajectories[1], m_leftConfig, m_rightConfig);
+        follower = new PathFollower(this, 20, trajectories[0], trajectories[1], m_leftConfig, m_rightConfig);
     }
 
     public void initDefaultCommand() {
@@ -76,6 +77,10 @@ public class Chassis extends Subsystem implements IChassis {
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
         SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
+        Position pos = Localizer.getInstance().getLocation();
+        SmartDashboard.putNumber("robot x", pos.getX());
+        SmartDashboard.putNumber("robot y", pos.getY());
+        SmartDashboard.putNumber("robot angle", Math.toDegrees(pos.getAngle()));
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
@@ -153,5 +158,15 @@ public class Chassis extends Subsystem implements IChassis {
 
     public PathFollower getPathFollowerController() {
         return follower;
+    }
+
+    @Override
+    public double getWheelRadius() {
+        return RobotStats.Picasso.Chassis.WHEEL_RADIUS;
+    }
+
+    @Override
+    public double getWheelbaseWidth() {
+        return RobotStats.Picasso.Chassis.VERTICAL_DISTANCE;
     }
 }

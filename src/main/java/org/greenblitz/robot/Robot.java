@@ -5,8 +5,9 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import jaci.pathfinder.Trajectory;
 import org.greenblitz.motion.Localizer;
 
-import org.greenblitz.motion.RobotStats;
 import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.utils.Navx;
+
 public class Robot extends IterativeRobot {
 
 
@@ -14,7 +15,7 @@ public class Robot extends IterativeRobot {
     public void robotInit() {
         Chassis.init();
 
-        Localizer.getInstance().configure(RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder());
+        Localizer.getInstance().configure(RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE, Chassis.getInstance().getLeftEncoder(), Chassis.getInstance().getRightEncoder(), Navx.getInstance());
         Localizer.startLocalizer();
     }
 
@@ -37,7 +38,9 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousInit() {
+
         Chassis.getInstance().resetSensors();
+        Localizer.getInstance().reset();
     }
 
     @Override
@@ -49,6 +52,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         Scheduler.getInstance().removeAll();
         Chassis.getInstance().resetSensors();
+        Localizer.getInstance().reset();
     }
 
     @Override
@@ -58,7 +62,6 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
-        Localizer.getInstance().reset();
         Chassis.getInstance().stop();
         Chassis.getInstance().forceEncodersReset();
         Chassis.getInstance().resetSensors();

@@ -1,6 +1,6 @@
 package org.greenblitz.robot.commands;
 
-import org.greenblitz.motion.RobotStats;
+import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import edu.wpi.first.wpilibj.command.Command;

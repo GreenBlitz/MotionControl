@@ -1,9 +1,7 @@
 package org.greenblitz.motion;
 
-import edu.wpi.first.wpilibj.command.Command;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
-import org.greenblitz.motion.pathfinder.GenerateTrajectory;
 import org.greenblitz.motion.pathfinder.PathfinderException;
 
 import java.util.Arrays;
@@ -15,7 +13,7 @@ import java.util.TimerTask;
  * TODO - Atsmon doesn't approve the name
  */
 @Deprecated
-public class BGController extends Command {
+public class BGController {
 
     protected Trajectory current;
     long miliDelay;
@@ -26,7 +24,7 @@ public class BGController extends Command {
         this.miliDelay = delay;
     }
 
-    private void updatePath(Trajectory.Segment desired, Waypoint currentloc){
+    /*private void updatePath(Trajectory.Segment desired, Waypoint currentloc){
         Waypoint desiredWaypoint = new Waypoint(desired.x, desired.y, desired.heading);
         Trajectory newPart;
         try {
@@ -49,25 +47,6 @@ public class BGController extends Command {
         System.arraycopy(currentPath, cutOffPoint , newFullPath, newPath.length, currentPath.length - cutOffPoint);
 
         current = new Trajectory(newFullPath);
-    }
+    }*/
 
-    @Override
-    protected boolean isFinished() {
-        return true;
-    }
-
-    @Override
-    protected void initialize() {
-
-    }
-
-    @Override
-    protected void execute() {
-
-    }
-
-    @Override
-    protected void end() {
-
-    }
 }

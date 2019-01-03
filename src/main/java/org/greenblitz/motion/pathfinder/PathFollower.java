@@ -1,12 +1,10 @@
 package org.greenblitz.motion.pathfinder;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 import org.greenblitz.motion.base.IChassis;
 import org.greenblitz.motion.base.IEncoder;
-import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Objects;
 import java.util.Timer;
@@ -21,7 +19,6 @@ public class PathFollower {
     private EncoderConfig m_rightConfiguration;
 
     private long m_period;
-    private double m_wheelDiameter;
     private IChassis m_chassis;
 
     private boolean m_isActive = false;
@@ -43,8 +40,6 @@ public class PathFollower {
             double l = m_leftFollower.calculate(left.getTicks());
             double r = m_rightFollower.calculate(right.getTicks());
             m_chassis.tankDrive(l, r);
-            SmartDashboard.putNumber("left", l);
-            SmartDashboard.putNumber("right", r);
         }
     }
 
@@ -101,11 +96,9 @@ public class PathFollower {
         }
     }
 
-    public PathFollower(IChassis chassis, double wheelDiameter, long period, Trajectory left, Trajectory right, EncoderConfig leftConfig, EncoderConfig rightConfig) {
+    public PathFollower(IChassis chassis, long period, Trajectory left, Trajectory right, EncoderConfig leftConfig, EncoderConfig rightConfig) {
         m_chassis = chassis;
         m_period = period;
-        m_wheelDiameter = wheelDiameter;
-
         m_leftFollower = new EncoderFollower(left);
         m_rightFollower = new EncoderFollower(right);
 
@@ -119,14 +112,14 @@ public class PathFollower {
 
         m_chassis = chassis;
         m_period = period;
-        m_wheelDiameter = wheelDiameter;
 
         TankModifier mod = new TankModifier(stateSpaceTrajectory);
         mod.modify(wheelDiameter);
         Trajectory leftTraj = mod.getLeftTrajectory();
         Trajectory rightTraj = mod.getRightTrajectory();
 
-        Chassis.getInstance().resetEncoders();
+        m_chassis.getLeftEncoder().reset();
+        m_chassis.getRightEncoder().reset();
 
         this.m_leftFollower = new EncoderFollower(leftTraj);
         this.m_rightFollower = new EncoderFollower(rightTraj);
@@ -147,14 +140,14 @@ public class PathFollower {
 
         m_leftFollower.configureEncoder(m_chassis.getLeftEncoder().getTicks(),
                 leftConfig.ticksPerRotation,
-                m_wheelDiameter);
+                m_chassis.getWheelRadius() * 2);
 
         m_leftFollower.configurePIDVA(leftConfig.kV, leftConfig.kI, leftConfig.kD,
                 leftConfig.kV, leftConfig.kA);
 
         m_rightFollower.configureEncoder(m_chassis.getRightEncoder().getTicks(),
                 rightConfig.ticksPerRotation,
-                m_wheelDiameter);
+                m_chassis.getWheelRadius() * 2);
 
         m_rightFollower.configurePIDVA(rightConfig.kV, rightConfig.kI, rightConfig.kD,
                 rightConfig.kV, rightConfig.kA);

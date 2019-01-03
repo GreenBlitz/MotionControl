@@ -1,9 +1,10 @@
-package org.greenblitz.motion.pathfinder;
+package org.greenblitz.utils;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
-import org.greenblitz.motion.RobotStats;
+import org.greenblitz.motion.pathfinder.PathfinderException;
+import org.greenblitz.robot.RobotStats;
 
 public class GenerateTrajectory {
 
