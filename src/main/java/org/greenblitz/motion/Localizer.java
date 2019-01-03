@@ -39,6 +39,8 @@ public class Localizer extends TimerTask {
 
     private final Object LOCK = new Object();
 
+    private int runNumber;
+
     /**
      * <p>Get the org.greenblitz.robot location. This is the system: </p>
      *      ^<br>
@@ -70,6 +72,7 @@ public class Localizer extends TimerTask {
         rightEncoder = right;
         prevDistanceLeft = left.getDistance();
         prevDistanceRight = right.getDistance();
+        runNumber = 1;
     }
 
     /**
@@ -89,6 +92,10 @@ public class Localizer extends TimerTask {
      * You want to call this when reseting encoders for example
      */
     public void reset() {
+        SmartDashboard.putNumber("final robot x " + runNumber, SmartDashboard.getNumber("robot x", Integer.MAX_VALUE));
+        SmartDashboard.putNumber("final robot y " + runNumber, SmartDashboard.getNumber("robot y", Integer.MAX_VALUE));
+        SmartDashboard.putNumber("final robot angle " + runNumber, SmartDashboard.getNumber("robot angle", Integer.MAX_VALUE));
+        runNumber++;
         prevDistanceLeft = leftEncoder.getDistance();
         prevDistanceRight = rightEncoder.getDistance();
         m_location.set(0, 0, 0);

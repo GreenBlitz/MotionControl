@@ -1,6 +1,5 @@
 package org.greenblitz.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
@@ -26,10 +25,7 @@ public class RobotPath {
                 new Waypoint(-1, 1, -Math.PI / 4),
         };
 
-        initPF(Trajectory.FitMethod.HERMITE_CUBIC,
-                Trajectory.Config.SAMPLES_HIGH,
-                0.05,
-                tests);
+        initPF(tests);
     }
 
     /**
@@ -40,7 +36,7 @@ public class RobotPath {
      */
     private static void initPF(Trajectory.FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
         Trajectory.Config config = new Trajectory.Config(fit, samples, dt,
-                RobotStats.Picasso.Chassis.MAX_VELOCITY / 3.8,
+                RobotStats.Picasso.Chassis.MAX_VELOCITY / 2,
                 RobotStats.Picasso.Chassis.MAX_ACCELERATION,
                 RobotStats.Picasso.Chassis.MAX_JERK);
 
@@ -49,6 +45,10 @@ public class RobotPath {
 
         test[0] = mod.getLeftTrajectory();
         test[1] = mod.getRightTrajectory();
+    }
+
+    private static void initPF(Waypoint[] waypoints) {
+        initPF(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, waypoints);
     }
 
 }

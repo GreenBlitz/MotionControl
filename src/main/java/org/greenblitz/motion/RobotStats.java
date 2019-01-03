@@ -21,7 +21,7 @@ public final class RobotStats {
             /**
              * Distance between parallel wheels
              */
-            public static final double HORIZONTAL_DISTANCE = 0.565 * ((Math.PI + 0.25) / (Math.PI));
+            public static final double HORIZONTAL_DISTANCE = 0.565;// * ((Math.PI + 0.25) / (Math.PI));
 
             /**
              * Distance between 2 most radical wheels on same side

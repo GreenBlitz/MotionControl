@@ -58,10 +58,10 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
+        Localizer.getInstance().reset();
         Chassis.getInstance().stop();
         Chassis.getInstance().forceEncodersReset();
         Chassis.getInstance().resetSensors();
-        Localizer.getInstance().reset();
     }
 
     @Override

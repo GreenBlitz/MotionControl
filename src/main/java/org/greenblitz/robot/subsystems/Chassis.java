@@ -17,6 +17,8 @@ import org.greenblitz.utils.SmartEncoder;
 
 public class Chassis extends Subsystem implements IChassis {
 
+    private static final double POWER_LIMIT = 0.7;
+
     private static Chassis instance;
 
     private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_POWER;
@@ -77,6 +79,10 @@ public class Chassis extends Subsystem implements IChassis {
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
+        if (Math.abs(moveValue) > POWER_LIMIT)
+            moveValue = Math.signum(moveValue) * POWER_LIMIT;
+        //if (Math.abs(rotateValue) > POWER_LIMIT)
+        //    rotateValue = Math.signum(rotateValue) * POWER_LIMIT;
         m_robotDrive.arcadeDrive(-moveValue, rotateValue);
     }
 
