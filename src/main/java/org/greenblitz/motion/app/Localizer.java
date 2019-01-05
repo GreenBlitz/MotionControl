@@ -11,7 +11,7 @@ import org.greenblitz.motion.base.Position;
  */
 public class Localizer {
 
-    private Position m_location; // Positive x direction is left
+    private Position m_location = new Position(0, 0, 0); // Positive x direction is left
 
     private double m_wheelDistance;
 

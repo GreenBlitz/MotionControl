@@ -1,11 +1,8 @@
 package org.greenblitz.example.robot;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import jaci.pathfinder.Trajectory;
-import org.greenblitz.motion.app.Localizer;
-
 import org.greenblitz.example.robot.subsystems.Chassis;
 
 public class Robot extends TimedRobot {
