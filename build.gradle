@@ -7,7 +7,9 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2018.06.21"
 }
 
-def ROBOT_MAIN_CLASS = "org.greenblitz.example.robot.Robot"
+
+def ROBOT_CLASS = "org.greenblitz.example.robot.Robot"
+
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -44,19 +46,24 @@ dependencies {
     compile pathfinder()
     testCompile pathfinder()
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testImplementation(
+            'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    )
+    testRuntimeOnly(
+            'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    )
 }
 
-jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    manifest GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-}
 
 test {
     useJUnitPlatform()
 }
 
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest GradleRIOPlugin.javaManifest(ROBOT_CLASS)
+}
+
 wrapper {
-    gradleVersion = '5.0'
+    gradleVersion = '4.9'
 }
