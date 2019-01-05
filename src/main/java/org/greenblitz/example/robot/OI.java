@@ -1,10 +1,10 @@
-package org.greenblitz.robot;
+package org.greenblitz.example.robot;
 
-import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
-import org.greenblitz.robot.commands.FindMaxValues;
-import org.greenblitz.robot.commands.PathFollowerCommand;
-import org.greenblitz.robot.subsystems.Chassis;
-import org.greenblitz.utils.SmartJoystick;
+import org.greenblitz.example.robot.commands.ArcadeDriveByJoystick;
+import org.greenblitz.example.robot.commands.FindMaxValues;
+import org.greenblitz.example.robot.commands.PathFollowerCommand;
+import org.greenblitz.example.robot.subsystems.Chassis;
+import org.greenblitz.example.utils.SmartJoystick;
 
 public class OI {
 

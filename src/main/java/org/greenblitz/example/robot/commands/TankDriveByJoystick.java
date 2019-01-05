@@ -1,8 +1,8 @@
-package org.greenblitz.robot.commands;
+package org.greenblitz.example.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import org.greenblitz.robot.subsystems.Chassis;
-import org.greenblitz.utils.SmartJoystick;
+import org.greenblitz.example.robot.subsystems.Chassis;
+import org.greenblitz.example.utils.SmartJoystick;
 
 public class TankDriveByJoystick extends Command {
     private SmartJoystick m_stick;

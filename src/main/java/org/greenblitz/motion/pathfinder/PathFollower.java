@@ -3,12 +3,8 @@ package org.greenblitz.motion.pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
-import org.greenblitz.motion.base.abstraction.IChassis;
-import org.greenblitz.motion.base.abstraction.IEncoder;
 
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class PathFollower {
 
@@ -18,35 +14,12 @@ public class PathFollower {
     private EncoderConfig m_leftConfiguration;
     private EncoderConfig m_rightConfiguration;
 
-    private long m_period;
-    private IChassis m_chassis;
-
-    private boolean m_isActive = false;
-    private PathFollowerTask m_currentFollowerTask;
-
-    private Timer m_timer = new Timer();
-
-    private class PathFollowerTask extends TimerTask {
-
-        IEncoder left = m_chassis.getLeftEncoder();
-        IEncoder right = m_chassis.getRightEncoder();
-
-        PathFollowerTask() {
-            reset();
-        }
-
-        @Override
-        public void run() {
-            double l = m_leftFollower.calculate(left.getTicks());
-            double r = m_rightFollower.calculate(right.getTicks());
-            m_chassis.tankDrive(l, r);
-        }
-    }
+    private double m_wheelDiameter;
 
     public static class EncoderConfig {
-        final int ticksPerRotation;
-
-        final double kP, kI, kD, kV, kA;
+        public final int ticksPerRotation;
+        public int initialTicks;
+        public final double kP, kI, kD, kV, kA;
 
         public EncoderConfig(int ticksPerRotation, double kP, double kI, double kD, double kV, double kA) {
             this.ticksPerRotation = ticksPerRotation;
@@ -96,41 +69,36 @@ public class PathFollower {
         }
     }
 
-    public PathFollower(IChassis chassis, long period, Trajectory left, Trajectory right, EncoderConfig leftConfig, EncoderConfig rightConfig) {
-        m_chassis = chassis;
-        m_period = period;
+    public PathFollower(Trajectory left, Trajectory right, EncoderConfig leftConfig, EncoderConfig rightConfig, double wheelDiameter) {
         m_leftFollower = new EncoderFollower(left);
         m_rightFollower = new EncoderFollower(right);
+
+        m_wheelDiameter = wheelDiameter;
 
         configure(leftConfig, rightConfig);
     }
 
 
     public PathFollower(Trajectory stateSpaceTrajectory,
-                        IChassis chassis, double wheelDiameter, long period,
+                        double wheelDiameter,
                         EncoderConfig leftConfig, EncoderConfig rightConfig) {
-
-        m_chassis = chassis;
-        m_period = period;
-
         TankModifier mod = new TankModifier(stateSpaceTrajectory);
         mod.modify(wheelDiameter);
         Trajectory leftTraj = mod.getLeftTrajectory();
         Trajectory rightTraj = mod.getRightTrajectory();
 
-        m_chassis.getLeftEncoder().reset();
-        m_chassis.getRightEncoder().reset();
+        m_leftFollower = new EncoderFollower(leftTraj);
+        m_rightFollower = new EncoderFollower(rightTraj);
 
-        this.m_leftFollower = new EncoderFollower(leftTraj);
-        this.m_rightFollower = new EncoderFollower(rightTraj);
+        m_wheelDiameter = wheelDiameter;
 
         configure(leftConfig, rightConfig);
     }
 
     public PathFollower(Trajectory stateSpaceTrajectory,
-                        IChassis chassis, double wheelDiameter, long period,
+                        double wheelDiameter,
                         EncoderConfig config) {
-        this(stateSpaceTrajectory, chassis, wheelDiameter, period, config, config);
+        this(stateSpaceTrajectory, wheelDiameter, config, config);
     }
 
 
@@ -138,39 +106,30 @@ public class PathFollower {
         m_leftConfiguration = leftConfig;
         m_rightConfiguration = rightConfig;
 
-        m_leftFollower.configureEncoder(m_chassis.getLeftEncoder().getTicks(),
+        m_leftFollower.configureEncoder(leftConfig.initialTicks,
                 leftConfig.ticksPerRotation,
-                m_chassis.getWheelRadius() * 2);
+                m_wheelDiameter);
 
         m_leftFollower.configurePIDVA(leftConfig.kV, leftConfig.kI, leftConfig.kD,
                 leftConfig.kV, leftConfig.kA);
 
-        m_rightFollower.configureEncoder(m_chassis.getRightEncoder().getTicks(),
+        m_rightFollower.configureEncoder(rightConfig.initialTicks,
                 rightConfig.ticksPerRotation,
-                m_chassis.getWheelRadius() * 2);
+                m_wheelDiameter);
 
         m_rightFollower.configurePIDVA(rightConfig.kV, rightConfig.kI, rightConfig.kD,
                 rightConfig.kV, rightConfig.kA);
     }
 
-    public void start() {
-        if (isActive()) return;
-        m_isActive = true;
-        m_currentFollowerTask = new PathFollowerTask();
-        m_timer.schedule(m_currentFollowerTask, 0, m_period);
-    }
-
-    private boolean isActive() {
-        return m_isActive;
-    }
-
-    public void stop() {
-        m_currentFollowerTask.cancel();
-        m_isActive = false;
-    }
-
-    public boolean isFinished() {
-        return m_leftFollower.isFinished() && m_rightFollower.isFinished();
+    /**
+     * The IO update function of the controller.
+     * Call this in fixed frequency or pathfinder and I will kill you in your sleep.
+     * @param currentLeftTicks  the current tick count of the left encoder
+     * @param currentRightTicks the current tick count of the right encoder
+     * @return the values that should be passed to the motors (in tank drive)
+     */
+    public double[] update(int currentLeftTicks, int currentRightTicks) {
+        return new double[] { m_leftFollower.calculate(currentLeftTicks), m_rightFollower.calculate(currentRightTicks) };
     }
 
     /**
@@ -180,5 +139,9 @@ public class PathFollower {
         m_leftFollower.reset();
         m_rightFollower.reset();
         configure(m_leftConfiguration, m_rightConfiguration);
+    }
+
+    public boolean isFinished() {
+        return m_leftFollower.isFinished() && m_rightFollower.isFinished();
     }
 }

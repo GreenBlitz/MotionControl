@@ -1,7 +1,6 @@
-package org.greenblitz.utils;
+package org.greenblitz.example.utils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import org.greenblitz.motion.base.abstraction.IEncoder;
 
 /**
  * This class has many functions that make using an encoder much simpler.
@@ -11,7 +10,7 @@ import org.greenblitz.motion.base.abstraction.IEncoder;
  * @see TalonSRX
  */
 
-public class SmartEncoder implements IEncoder {
+public class SmartEncoder {
     private final TalonSRX m_talon;
     private double m_ticksPerMeter;
     private int m_inverted = 1;
@@ -71,17 +70,14 @@ public class SmartEncoder implements IEncoder {
         m_talon.getSensorCollection().setQuadraturePosition(0, 30);
     }
 
-    @Override
     public int getTickRate() {
         return m_inverted * m_talon.getSensorCollection().getQuadratureVelocity();
     }
 
-    @Override
     public double getVelocity() {
         return getSpeed();
     }
 
-    @Override
     public double getTicksPerMeter() {
         return m_ticksPerMeter;
     }

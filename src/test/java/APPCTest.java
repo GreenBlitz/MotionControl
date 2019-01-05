@@ -1,9 +1,7 @@
-import org.greenblitz.motion.AdaptivePurePursuitController;
+import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.base.*;
 
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

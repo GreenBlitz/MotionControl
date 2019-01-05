@@ -1,10 +1,8 @@
-package org.greenblitz.utils;
+package org.greenblitz.example.utils;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SerialPort;
-import org.greenblitz.motion.base.abstraction.IGyro;
 
-public class Navx implements IGyro {
+public class Navx {
     private AHRS m_navx;
 
     private static Navx instance = null;// = new Navx();
@@ -18,7 +16,6 @@ public class Navx implements IGyro {
         return instance;
     }
 
-    @Override
     public double getAngle() {
         return m_navx.getAngle();
     }

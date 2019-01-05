@@ -1,6 +1,4 @@
-package org.greenblitz.utils;
-
-import org.greenblitz.utils.SmartTalon;
+package org.greenblitz.example.utils;
 
 public class CANRobotDrive {
 	private SmartTalon m_frontLeft, m_rearLeft, m_frontRight, m_rearRight;

@@ -1,4 +1,6 @@
-package org.greenblitz.motion.base;
+package org.greenblitz.motion.app;
+
+import org.greenblitz.motion.base.Point;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +9,7 @@ public class Path {
 
     private ArrayList<Point> m_path;
 
+    @SuppressWarnings("unchecked")
     public Path(ArrayList<Point> path) {
         m_path = (ArrayList<Point>) path.clone();
     }

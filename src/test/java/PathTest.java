@@ -1,3 +1,4 @@
+import org.greenblitz.motion.app.Path;
 import org.greenblitz.motion.base.*;
 
 import org.junit.jupiter.api.Test;

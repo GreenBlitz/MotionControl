@@ -1,4 +1,4 @@
-package org.greenblitz.robot;
+package org.greenblitz.example.robot;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
@@ -8,7 +8,6 @@ import jaci.pathfinder.modifiers.TankModifier;
 public class RobotPath {
 
     private static Trajectory[] test = new Trajectory[2];
-
 
     static {
         init();

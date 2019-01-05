@@ -3,7 +3,7 @@ package org.greenblitz.motion.base;
 import jaci.pathfinder.Waypoint;
 
 /**
- * Represent a position in 2D space (for example of a org.greenblitz.robot) that consists of x, y, and angle (heading, the direction the object faces)
+ * Represent a position in 2D space (for example of a org.greenblitz.example.robot) that consists of x, y, and angle (heading, the direction the object faces)
  *
  * @author Alexey
  */
