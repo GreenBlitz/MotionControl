@@ -1,7 +1,7 @@
 package org.greenblitz.motion;
 
 import org.greenblitz.motion.base.*;
-import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.motion.base.abstraction.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,16 +41,4 @@ public class AdaptivePurePursuitController {
         double[] motorValues = driveValuesTo(m_robotLoc, m_path.intersection(m_robotLoc, lookAhead), chasis.getWheelbaseWidth());
         chasis.tankDrive(motorValues[0], motorValues[1]);
     }
-    public static void main(String[] args) {
-        ArrayList list = new ArrayList<Point>();
-        list.add(new Point(0, 0));
-        list.add(new Point(0, 5));
-        list.add(new Point(5, 5));
-        list.add(new Point(5, 10));
-        Path path = new Path(list);
-        AdaptivePurePursuitController appc = new AdaptivePurePursuitController(path, new Position(0,0,0), 1, Chassis.getInstance());
-        double[] prt = appc.driveValuesTo(appc.m_robotLoc, new Point(Chassis.getInstance().getWheelbaseWidth(), Chassis.getInstance().getWheelbaseWidth()), appc.chasis.getWheelbaseWidth());
-        System.out.println(Arrays.toString(prt));
-    }
-
 }
