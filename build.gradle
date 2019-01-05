@@ -37,6 +37,11 @@ deploy {
     }
 }
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
@@ -44,6 +49,9 @@ dependencies {
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
 
@@ -55,6 +63,9 @@ jar {
     manifest GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 }
 
+test {
+    useJUnitPlatform()
+}
 
 wrapper {
     gradleVersion = '5.0'
