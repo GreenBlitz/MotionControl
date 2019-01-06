@@ -1,4 +1,4 @@
-package org.greenblitz.example.utils;
+package org.greenblitz.example.robot.commands;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.command.Command;

@@ -6,7 +6,7 @@ public abstract class PeriodicRunner {
     private final Notifier m_periodicRunner;
 
     private final long m_period;
-    private boolean m_active = false;
+    private volatile boolean m_active = false;
 
     public PeriodicRunner(long period) {
         m_period = period;

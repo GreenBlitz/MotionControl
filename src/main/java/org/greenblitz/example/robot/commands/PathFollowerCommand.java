@@ -1,8 +1,6 @@
 package org.greenblitz.example.robot.commands;
 
 import org.greenblitz.example.robot.subsystems.Chassis;
-import org.greenblitz.example.utils.PeriodicCommand;
-import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.motion.pathfinder.PathFollower;
 
 public class PathFollowerCommand extends PeriodicCommand {

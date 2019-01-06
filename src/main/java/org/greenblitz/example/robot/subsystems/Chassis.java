@@ -53,6 +53,9 @@ public class Chassis extends Subsystem {
         m_leftEncoder.reset();
         m_rightEncoder.reset();
 
+        m_robotDrive.invert(CANRobotDrive.TalonID.FRONT_RIGHT);
+        m_robotDrive.invert(CANRobotDrive.TalonID.REAR_RIGHT);
+
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();
 
