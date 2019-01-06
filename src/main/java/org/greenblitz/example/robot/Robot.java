@@ -4,8 +4,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
 import org.greenblitz.example.robot.subsystems.Chassis;
+import org.greenblitz.motion.app.AdaptivePurePursuitController;
+import org.greenblitz.motion.app.Path;
+import org.greenblitz.motion.base.Point;
+
+import java.util.ArrayList;
 
 public class Robot extends TimedRobot {
+
+    AdaptivePurePursuitController APPC;
 
     @Override
     public void robotInit() {
@@ -21,11 +28,19 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         Chassis.getInstance().resetSensors();
+        ArrayList<Point> list = new ArrayList<Point>();
+        list.add(new Point(0,0));
+        list.add(new Point(0.4,0.4));
+        list.add(new Point(1,1.2));
+        Path path = new Path(list);
+
+        APPC = new AdaptivePurePursuitController(path, 0.2, Chassis.getInstance().getWheelbaseWidth());
     }
 
     @Override
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
+        double[] values = APPC.iteration(Chassis.getInstance().getLocation());
     }
 
     @Override
