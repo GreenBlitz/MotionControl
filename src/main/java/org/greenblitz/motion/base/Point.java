@@ -104,24 +104,28 @@ public class Point {
         this.x = x;
     }
 
-    public static Point sub(Point subtractee, Point subtractor) {
+    public static Point subtract(Point subtractee, Point subtractor) {
         return new Point(subtractee.x - subtractor.x, subtractee.y - subtractor.y);
     }
 
-    public static double dot(Point a, Point b) {
+    public static double dotProduct(Point a, Point b) {
         return a.x * b.x + a.y * b.y;
     }
 
     public static double normSquared(Point point) {
-        return dot(point, point);
+        return dotProduct(point, point);
     }
 
     public static double distSqared(Point a, Point b) {
-        return normSquared(sub(a, b));
+        return normSquared(subtract(a, b));
     }
 
     public static Point weightedAvg(Point a, Point b, double bWeight) {
         return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight) * a.y + bWeight * b.y);
+    }
+
+    public static Point avg(Point a, Point b){
+        return weightedAvg(a, b, 0.5);
     }
 
     @Override

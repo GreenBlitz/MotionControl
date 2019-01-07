@@ -3,7 +3,6 @@ package org.greenblitz.motion.app;
 import org.greenblitz.motion.base.Point;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Path {
 
@@ -15,13 +14,13 @@ public class Path {
     }
 
     public static double[] intersections(Point robot, double radius, Point segStart, Point segEnd) {
-        Point segment = Point.sub(segEnd, segStart);
-        Point robToSeg = Point.sub(segStart, robot);
+        Point segment = Point.subtract(segEnd, segStart);
+        Point robToSeg = Point.subtract(segStart, robot);
 
         //squared equation a*t^2 + b*t + c = 0
-        double a = Point.dot(segment, segment),
-                b = 2 * Point.dot(robToSeg, segment),
-                c = Point.dot(robToSeg, robToSeg) - radius * radius;
+        double a = Point.dotProduct(segment, segment),
+                b = 2 * Point.dotProduct(robToSeg, segment),
+                c = Point.dotProduct(robToSeg, robToSeg) - radius * radius;
         double discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0) return null;
