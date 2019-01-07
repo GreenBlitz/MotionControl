@@ -30,7 +30,9 @@ public class Path {
         return new double[]{(-b + sqrtDis) / (2 * a), (-b - sqrtDis) / (2 * a)};
     }
 
-    public Point intersection(Point robotLoc, double lookAhead) {
+    public Point intersection(Point robotLoc, double lookAhead, double epsilon) {
+        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= epsilon)
+            return null;
         if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead)
             return m_path.get(m_path.size() - 1);
         Point closest = m_path.get(m_path.size() - 1);

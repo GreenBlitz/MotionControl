@@ -59,7 +59,7 @@ public class Chassis extends Subsystem {
         m_leftEncoder.reset();
         m_rightEncoder.reset();
 
-        m_robotDrive.setOutputScale(0.5);
+        //m_robotDrive.setOutputScale(0.5);
 
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();
@@ -95,6 +95,8 @@ public class Chassis extends Subsystem {
     }
 
     public void tankDrive(double leftValue, double rightValue) {
+        SmartDashboard.putNumber("LEFT_POWER", leftValue);
+        SmartDashboard.putNumber("RIGHT_POWER", rightValue);
         m_robotDrive.tankDrive(-leftValue, -rightValue);
     }
 

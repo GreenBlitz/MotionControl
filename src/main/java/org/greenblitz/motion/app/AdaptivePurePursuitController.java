@@ -33,6 +33,9 @@ public class AdaptivePurePursuitController {
     }
 
     public double[] iteration(Position robotLoc) {
-        return driveValuesTo(robotLoc, m_path.intersection(robotLoc, m_lookAhead), m_wheelBase);
+        Point target = m_path.intersection(robotLoc, m_lookAhead, 0.05);
+        if(target == null)
+            return null;
+        return driveValuesTo(robotLoc, target, m_wheelBase);
     }
 }
