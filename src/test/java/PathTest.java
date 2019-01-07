@@ -27,7 +27,7 @@ public class PathTest {
         list.add(new Point(5, 5));
         list.add(new Point(5, 10));
         Path path = new Path(list);
-        Point intersection = path.intersection(new Point(0,10), 5 * Math.sqrt(5) / 2);
+        Point intersection = path.getGoalPoint(new Point(0,10), 5 * Math.sqrt(5) / 2);
         assertEquals(intersection.getX(), 5, EPSILON);
         assertEquals(intersection.getY(), 7.5, EPSILON);
     }

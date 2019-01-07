@@ -19,7 +19,9 @@ public class AdaptivePurePursuitController {
     public static double[] driveValuesTo(Position robotLoc, Point target, double wheelDist) {
         SmartDashboard.putNumber("target x", target.getX());
         SmartDashboard.putNumber("target y", target.getY());
+
         Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
+
         double curvature = 2 * diff.getX() / Point.normSquared(diff);
         if (curvature == 0)
             return new double[]{1, 1};
@@ -33,8 +35,8 @@ public class AdaptivePurePursuitController {
     }
 
     public double[] iteration(Position robotLoc) {
-        Point target = m_path.intersection(robotLoc, m_lookAhead, 0.05);
-        if(target == null)
+        Point target = m_path.getGoalPoint(robotLoc, m_lookAhead, 0.05);
+        if (target == null)
             return null;
         return driveValuesTo(robotLoc, target, m_wheelBase);
     }
