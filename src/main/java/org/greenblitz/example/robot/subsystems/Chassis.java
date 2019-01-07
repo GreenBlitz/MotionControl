@@ -46,15 +46,20 @@ public class Chassis extends Subsystem {
 
     private Chassis() {
         m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
-                RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
+                                         RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
+
+        //m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.FRONT_LEFT, true);
+        //m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.REAR_LEFT, true);
+        m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.FRONT_RIGHT, true);
+        //m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.REAR_RIGHT, true);
+
         m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER_LEFT);
         m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER_RIGHT);
         m_rightEncoder.invert();
         m_leftEncoder.reset();
         m_rightEncoder.reset();
 
-        m_robotDrive.invert(CANRobotDrive.TalonID.FRONT_RIGHT);
-        m_robotDrive.invert(CANRobotDrive.TalonID.REAR_RIGHT);
+        m_robotDrive.setOutputScale(0.5);
 
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();

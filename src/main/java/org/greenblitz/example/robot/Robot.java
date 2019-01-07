@@ -30,17 +30,19 @@ public class Robot extends TimedRobot {
         Chassis.getInstance().resetSensors();
         ArrayList<Point> list = new ArrayList<Point>();
         list.add(new Point(0,0));
-        list.add(new Point(0.4,0.4));
-        list.add(new Point(1,1.2));
+        list.add(new Point(-1.2,1.2));
+        list.add(new Point(-1.2,3));
         Path path = new Path(list);
 
-        APPC = new AdaptivePurePursuitController(path, 0.2, Chassis.getInstance().getWheelbaseWidth());
+        APPC = new AdaptivePurePursuitController(path, 0.4, Chassis.getInstance().getWheelbaseWidth());
     }
 
     @Override
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
-        double[] values = APPC.iteration(Chassis.getInstance().getLocation());
+        double speedLimit = 0.7;
+        double[] veryFastDrive = APPC.iteration(Chassis.getInstance().getLocation());
+        Chassis.getInstance().tankDrive(speedLimit * veryFastDrive[0], speedLimit * veryFastDrive[1]);
     }
 
     @Override
@@ -52,6 +54,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        Chassis.getInstance().update();
     }
 
     @Override

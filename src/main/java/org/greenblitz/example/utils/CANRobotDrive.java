@@ -1,13 +1,17 @@
 package org.greenblitz.example.utils;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CANRobotDrive {
-	private WPI_TalonSRX m_frontLeft, m_rearLeft, m_frontRight, m_rearRight;
+	private TalonSRX m_frontLeft, m_rearLeft, m_frontRight, m_rearRight;
+	private int m_frontLeftInverted = 1, m_rearLeftInverted = 1, m_frontRightInverted = 1, m_rearRightInverted = 1;
 	private double m_outputScale = 1;
 	private double m_powerLimit = 1;
 
-	public CANRobotDrive(WPI_TalonSRX frontLeft, WPI_TalonSRX rearLeft, WPI_TalonSRX frontRight, WPI_TalonSRX rearRight) {
+	public CANRobotDrive(TalonSRX frontLeft, TalonSRX rearLeft, TalonSRX frontRight, TalonSRX rearRight) {
 		m_frontLeft = frontLeft;
 		m_rearLeft = rearLeft;
 		m_frontRight = frontRight;
@@ -15,15 +19,15 @@ public class CANRobotDrive {
 	}
 
 	public CANRobotDrive(int frontLeft, int rearLeft, int frontRight, int rearRight) {
-		this(new WPI_TalonSRX(frontLeft), new WPI_TalonSRX(rearLeft), new WPI_TalonSRX(frontRight),
-				new WPI_TalonSRX(rearRight));
+		this(new TalonSRX(frontLeft), new TalonSRX(rearLeft), new TalonSRX(frontRight),
+				new TalonSRX(rearRight));
 	}
 
 	public enum TalonID {
 		FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT
 	}
 
-	public WPI_TalonSRX getTalon(TalonID id) {
+	public TalonSRX getTalon(TalonID id) {
 		switch (id) {
 		case FRONT_LEFT:
 			return m_frontLeft;
@@ -40,16 +44,20 @@ public class CANRobotDrive {
 	public void setInvertedMotor(TalonID id, boolean inverted) {
 		switch (id) {
 		case FRONT_LEFT:
-			m_frontLeft.setInverted(inverted);
+			//m_frontLeft.setInverted(inverted);
+			m_frontLeftInverted = inverted ? -1 : 1;
 			break;
 		case FRONT_RIGHT:
-			m_rearRight.setInverted(inverted);
+			//m_rearRight.setInverted(inverted);
+			m_frontRightInverted = inverted ? -1 : 1;
 			break;
 		case REAR_LEFT:
-			m_rearLeft.setInverted(inverted);
+			//m_rearLeft.setInverted(inverted);
+			m_rearLeftInverted = inverted ? -1 : 1;
 			break;
 		case REAR_RIGHT:
-			m_rearRight.setInverted(inverted);
+			//m_rearRight.setInverted(inverted);
+			m_rearRightInverted = inverted ? -1 : 1;
 			break;
 		}
 	}
@@ -108,9 +116,9 @@ public class CANRobotDrive {
 	}
 
 	public void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
-		m_frontLeft.set(limit(leftOutput) * m_outputScale);
-		m_rearLeft.set(limit(leftOutput) * m_outputScale);
-		m_frontRight.set(limit(rightOutput) * m_outputScale);
-		m_rearRight.set(limit(rightOutput) * m_outputScale);
+		m_frontLeft.set(ControlMode.PercentOutput, limit(leftOutput) * m_outputScale * m_frontLeftInverted);
+		m_rearLeft.set(ControlMode.PercentOutput, limit(leftOutput) * m_outputScale * m_rearLeftInverted);
+		m_frontRight.set(ControlMode.PercentOutput, limit(rightOutput) * m_outputScale * m_frontRightInverted);
+		m_rearRight.set(ControlMode.PercentOutput, limit(rightOutput) * m_outputScale * m_rearRightInverted);
 	}
 }
