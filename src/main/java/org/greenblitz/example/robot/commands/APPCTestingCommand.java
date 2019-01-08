@@ -29,7 +29,7 @@ public class APPCTestingCommand extends PeriodicCommand {
         this(50, lookahead, wheelbase, points);
     }
 
-    public APPCTestingCommand(double lookahead, double wheelbase, Point... points){
+    public APPCTestingCommand(double lookahead, double wheelbase, Position... points){
         this(50, lookahead, wheelbase, (ArrayList<Position>) Arrays.asList(points));
     }
 
