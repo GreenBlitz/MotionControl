@@ -24,6 +24,9 @@ public class Path {
 
     public void interpolatePoints(int samples) {
         List<Position> newPath = new ArrayList<>();
+        if (m_path.size() == 0){
+            return;
+        }
         newPath.add(m_path.get(0));
         for (int i = 0; i < m_path.size() - 1; i++) {
             Position first = m_path.get(i);
@@ -63,7 +66,8 @@ public class Path {
                 double section = j / samples;
                 double currentX = x1 + (x2 - x1)*section;
                 Position newPoint = new Position(currentX,
-                        a*Math.pow(currentX, 3) + b*Math.pow(currentX, 2) + c*currentX + d);
+                        a*Math.pow(currentX, 3) + b*Math.pow(currentX, 2) + c*currentX + d,
+                        Math.atan(3*a*Math.pow(currentX, 2) + 2*b*currentX + c));
                 if (eqX)
                     newPoint.rotate(-Math.PI / 2);
                 newPath.add(newPoint);

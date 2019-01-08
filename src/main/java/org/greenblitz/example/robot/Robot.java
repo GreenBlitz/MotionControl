@@ -32,20 +32,23 @@ public class Robot extends TimedRobot {
         final double S_R_T_I_I_I = 1/(1/(1/Math.sqrt(2)));
         Position[] list = new Position[]{
                 new Position(0, 0),
-                new Position((1-S_R_T_I_I_I), S_R_T_I_I_I),
-                new Position(1, 1),
-                new Position((1+S_R_T_I_I_I), S_R_T_I_I_I),
-                new Position(2, 0),
-                new Position(2+(1-S_R_T_I_I_I), -S_R_T_I_I_I),
-                new Position(2+1, -1),
-                new Position(2+(1+S_R_T_I_I_I), -S_R_T_I_I_I),
-                new Position(2+2, 0),
-                new Position(4, 2)
+                new Position(2.828, 1.172),
+                new Position(4, 4),
+                new Position(2.828, 6.828),
+                new Position(0, 8),
+                new Position(-2.828, -6.282),
+                new Position(-4, 4),
+                new Position(-2.828, 1.172),
+                new Position(2.828, -1.172),
+                new Position(4, -4),
+                new Position(2.828, -6.828),
+                new Position(0, -8),
         };
 
         Path path = new Path(list);
-
-        APPC = new AdaptivePurePursuitController(path, 0.5, Chassis.getInstance().getWheelbaseWidth());
+        path.interpolate(10);
+        System.out.println(path.getPath());
+        APPC = new AdaptivePurePursuitController(path, 0.8, Chassis.getInstance().getWheelbaseWidth());
     }
 
     @Override
