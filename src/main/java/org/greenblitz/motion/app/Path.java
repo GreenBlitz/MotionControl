@@ -1,5 +1,6 @@
 package org.greenblitz.motion.app;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
@@ -93,6 +94,14 @@ public class Path {
         return new Path(ret);
     }
 
+    /**
+     *
+     * @param robot
+     * @param radius
+     * @param segStart
+     * @param segEnd
+     * @return
+     */
     public static double[] intersections(Point robot, double radius, Point segStart, Point segEnd) {
         Point segment = Point.subtract(segEnd, segStart);
         Point robToSeg = Point.subtract(segStart, robot);
@@ -110,22 +119,23 @@ public class Path {
     }
 
     public Point getGoalPoint(Point robotLoc, double lookAhead, double epsilon) {
-        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= epsilon)
+        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= epsilon*epsilon) {
             return null;
-        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead)
+        }
+        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead*lookAhead)
             return m_path.get(m_path.size() - 1);
         Point closest = m_path.get(m_path.size() - 1);
-        double[] potInt; //potential intersections
+        double[] ptlInt; //potential intersections
         for (int ind = m_path.size() - 2; ind >= 0; ind--) {
             if (Point.distSqared(m_path.get(ind), robotLoc) < Point.distSqared(closest, robotLoc))
                 closest = m_path.get(ind);
-            potInt = intersections(robotLoc, lookAhead, m_path.get(ind), m_path.get(ind + 1));
-            if (potInt == null)
+            ptlInt = intersections(robotLoc, lookAhead, m_path.get(ind), m_path.get(ind + 1));
+            if (ptlInt == null)
                 continue;
-            if (potInt[0] >= 0 && potInt[0] <= 1)
-                return Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), potInt[0]);
-            if (potInt[1] >= 0 && potInt[1] <= 1)
-                return Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), potInt[1]);
+            if (ptlInt[0] >= 0 && ptlInt[0] <= 1)
+                return Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[0]);
+            if (ptlInt[1] >= 0 && ptlInt[1] <= 1)
+                return Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[1]);
         }
         return closest;
     }

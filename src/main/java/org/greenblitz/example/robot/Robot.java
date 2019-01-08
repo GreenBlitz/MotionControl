@@ -2,6 +2,7 @@ package org.greenblitz.example.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
 import org.greenblitz.example.robot.subsystems.Chassis;
 import org.greenblitz.example.utils.GenerateTrajectory;
@@ -29,12 +30,17 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         Chassis.getInstance().resetSensors();
         final double S_R_T_I_I_I = 1/(1/(1/Math.sqrt(2)));
-        Point[] list = new Point[]{
-                new Point(0, 0),
-                new Point(1-S_R_T_I_I_I, S_R_T_I_I_I),
-                new Point(1, 1),
-                new Point(1+S_R_T_I_I_I, S_R_T_I_I_I),
-                new Point(2, 0),
+        Position[] list = new Position[]{
+                new Position(0, 0),
+                new Position((1-S_R_T_I_I_I), S_R_T_I_I_I),
+                new Position(1, 1),
+                new Position((1+S_R_T_I_I_I), S_R_T_I_I_I),
+                new Position(2, 0),
+                new Position(2+(1-S_R_T_I_I_I), -S_R_T_I_I_I),
+                new Position(2+1, -1),
+                new Position(2+(1+S_R_T_I_I_I), -S_R_T_I_I_I),
+                new Position(2+2, 0),
+                new Position(4, 2)
         };
 
         Path path = new Path(list);
@@ -45,18 +51,53 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
-        double speedLimit = 0.7;
+        double speedLimit = 0.9;
         double[] veryFastDrive = APPC.iteration(Chassis.getInstance().getLocation());
         if (veryFastDrive != null)
             Chassis.getInstance().tankDrive(speedLimit * veryFastDrive[0], speedLimit * veryFastDrive[1]);
         else
             Chassis.getInstance().setBrake();
+        SmartDashboard.putNumber("Left intended power", veryFastDrive != null ? speedLimit * veryFastDrive[0] : 0);
+        SmartDashboard.putNumber("Right intended power", veryFastDrive != null ? speedLimit * veryFastDrive[1] : 0);
+        SmartDashboard.putBoolean("Is running?", veryFastDrive != null);
+    }
+
+    @Override
+    public void testInit() {
+        Chassis.getInstance().resetSensors();
+        final double S_R_T_I_I_I = 1/(1/(1/Math.sqrt(2)));
+        Position[] list = new Position[]{
+                new Position(0, 0),
+                new Position(-(1-S_R_T_I_I_I), S_R_T_I_I_I),
+                new Position(-1, 1),
+                new Position(-(1+S_R_T_I_I_I), S_R_T_I_I_I),
+                new Position(2, 0)
+        };
+
+        Path path = new Path(list);
+
+        APPC = new AdaptivePurePursuitController(path, 0.5, Chassis.getInstance().getWheelbaseWidth());
+    }
+
+    @Override
+    public void testPeriodic() {
+        Scheduler.getInstance().run();
+        double speedLimit = 1;
+        double[] veryFastDrive = APPC.iteration(Chassis.getInstance().getLocation());
+        if (veryFastDrive != null)
+            Chassis.getInstance().tankDrive(speedLimit * veryFastDrive[0], speedLimit * veryFastDrive[1]);
+        else
+            Chassis.getInstance().setBrake();
+        SmartDashboard.putNumber("Left intended power", veryFastDrive != null ? speedLimit * veryFastDrive[0] : 0);
+        SmartDashboard.putNumber("Right intended power", veryFastDrive != null ? speedLimit * veryFastDrive[1] : 0);
+        SmartDashboard.putBoolean("Is running?", veryFastDrive != null);
     }
 
     @Override
     public void teleopInit() {
         Scheduler.getInstance().removeAll();
         Chassis.getInstance().resetSensors();
+        Chassis.getInstance().setCoast();
     }
 
     @Override

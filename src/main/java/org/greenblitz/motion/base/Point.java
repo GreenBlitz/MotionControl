@@ -120,15 +120,19 @@ public class Point {
         return normSquared(subtract(a, b));
     }
 
-    public static boolean isFuzzyEqual(double first, double second, double epsilon){
+    public static double dist(Point a, Point b) {
+        return Math.hypot(subtract(a, b).x, subtract(a, b).y);
+    }
+
+    public static boolean isFuzzyEqual(double first, double second, double epsilon) {
         return Math.abs(first - second) < epsilon;
     }
 
-    public static boolean isFuzzyEqual(double first, double second){
+    public static boolean isFuzzyEqual(double first, double second) {
         return isFuzzyEqual(first, second, 1E-6);
     }
 
-    public static boolean fuzzyEquals(Point fir, Point sec, double epsilon){
+    public static boolean fuzzyEquals(Point fir, Point sec, double epsilon) {
         return isFuzzyEqual(fir.getX(), sec.getX(), epsilon) && isFuzzyEqual(fir.getY(), sec.getY(), epsilon);
     }
 
@@ -136,7 +140,7 @@ public class Point {
         return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight) * a.y + bWeight * b.y);
     }
 
-    public static Point avg(Point a, Point b){
+    public static Point avg(Point a, Point b) {
         return weightedAvg(a, b, 0.5);
     }
 

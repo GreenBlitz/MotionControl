@@ -75,7 +75,7 @@ public class Localizer {
      */
     public static Point calculateMovement(double rightDist, double leftDist, double wheelDistance, double robotAng) {
         if (rightDist == leftDist) {
-            return new Position(new Point(0, rightDist).rotate(robotAng), 0);
+            return new Point(0, rightDist).rotate(robotAng);
         }
 
         double distance = (rightDist + leftDist) / 2;

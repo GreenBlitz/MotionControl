@@ -11,7 +11,7 @@ public class APPCTest {
 
     static final double EPSILON = 1E-6;
 
-    @Test
+    /*@Test
     void driveValuesTest1(){
         double[] values = AdaptivePurePursuitController.driveValuesTo(new Position(-1,1,Math.PI/2), new Point(1,1), 1);
         assertEquals(values[0], 1, EPSILON);
@@ -31,5 +31,5 @@ public class APPCTest {
         assertEquals(values[0], 5.5/8.5, EPSILON);
         assertEquals(values[1], 1, EPSILON);
     }
-
+    */
 }
