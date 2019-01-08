@@ -3,6 +3,7 @@ package org.greenblitz.example.utils;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathfinder.PathfinderException;
 import org.greenblitz.example.robot.RobotStats;
 
@@ -21,6 +22,13 @@ public class GenerateTrajectory {
                 RobotStats.Picasso.Chassis.MAX_ACCELERATION,
                 RobotStats.Picasso.Chassis.MAX_JERK);
         return Pathfinder.generate(waypoints, config);
+    }
+
+    public static Trajectory unsafeGenerate(Position[] waypoints, Trajectory.FitMethod fit, int samples, double dt){
+        Waypoint[] pp = new Waypoint[waypoints.length];
+        for (int i = 0; i < waypoints.length; i++)
+            pp[i] = new Waypoint(waypoints[i].getX(), waypoints[i].getY(), waypoints[i].getAngle());
+        return unsafeGenerate(pp, fit, samples, dt);
     }
 
     public static Trajectory generateTrajectory(Waypoint[] waypoints, Trajectory.FitMethod fit, int samples, double dt)

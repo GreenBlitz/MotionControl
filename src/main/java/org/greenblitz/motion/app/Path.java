@@ -1,17 +1,56 @@
 package org.greenblitz.motion.app;
 
+import jaci.pathfinder.Trajectory;
+import javafx.geometry.Pos;
 import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.base.Position;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Path {
 
-    private List<Point> m_path;
+    private List<Position> m_path;
 
     @SuppressWarnings("unchecked")
-    public Path(ArrayList<Point> path) {
-        m_path = (ArrayList<Point>) path.clone();
+    public Path(ArrayList<Position> path) {
+        m_path = (ArrayList<Position>) path.clone();
+    }
+
+    public Path(Position... points){
+        m_path = Arrays.asList(points);
+    }
+
+    public void interpolatePoints(int samples){
+        List<Position> newPath = new ArrayList<>();
+        for (int i = 0; i < m_path.size() - 1; i++){
+            newPath.add(m_path.get(i));
+            Position first = m_path.get(i);
+            Position last = m_path.get(i + 1);
+        }
+    }
+
+    public void interpolateAngles(){
+        for (int i = 1; i < m_path.size() - 1; i++){
+            m_path.get(i).setAngle(Math.atan2(
+                    m_path.get(i+1).getY() - m_path.get(i-1).getY(),
+                    m_path.get(i+1).getX() - m_path.get(i-1).getX()
+            ));
+        }
+    }
+
+    public void interpolate(int samples){
+        interpolateAngles();
+        interpolatePoints(samples);
+    }
+
+    public static Path pathfinderPathToGBPath(Trajectory traj){
+        ArrayList<Position> ret = new ArrayList<>();
+        for (Trajectory.Segment seg : traj.segments){
+            ret.add(new Position(seg.x, seg.y ,seg.heading));
+        }
+        return new Path(ret);
     }
 
     protected static double[] intersections(Point robot, double radius, Point segStart, Point segEnd) {
