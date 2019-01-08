@@ -7,6 +7,7 @@ import org.greenblitz.example.robot.subsystems.Chassis;
 import org.greenblitz.example.utils.GenerateTrajectory;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.app.Path;
+import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
 public class Robot extends TimedRobot {
@@ -27,28 +28,29 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         Chassis.getInstance().resetSensors();
-        Position[] list = new Position[]{
-                new Position(0, 0, -Math.PI/2),
-                new Position(1, 1, 0),
-                new Position(0, 2, Math.PI/2),
-                new Position(-1, 1, Math.PI),
-                new Position(0, 0, -Math.PI/2)
+        final double S_R_T_I_I_I = 1/(1/(1/Math.sqrt(2)));
+        Point[] list = new Point[]{
+                new Point(0, 0),
+                new Point(1-S_R_T_I_I_I, S_R_T_I_I_I),
+                new Point(1, 1),
+                new Point(1+S_R_T_I_I_I, S_R_T_I_I_I),
+                new Point(2, 0),
         };
 
-        Path path = Path.pathfinderPathToGBPath(GenerateTrajectory.unsafeGenerate(
-                list, Trajectory.FitMethod.HERMITE_CUBIC, 100, 0.02
-        ));
+        Path path = new Path(list);
 
-        APPC = new AdaptivePurePursuitController(path, 0.6, Chassis.getInstance().getWheelbaseWidth());
+        APPC = new AdaptivePurePursuitController(path, 0.5, Chassis.getInstance().getWheelbaseWidth());
     }
 
     @Override
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
-        double speedLimit = 0.5;
+        double speedLimit = 0.7;
         double[] veryFastDrive = APPC.iteration(Chassis.getInstance().getLocation());
         if (veryFastDrive != null)
             Chassis.getInstance().tankDrive(speedLimit * veryFastDrive[0], speedLimit * veryFastDrive[1]);
+        else
+            Chassis.getInstance().setBrake();
     }
 
     @Override

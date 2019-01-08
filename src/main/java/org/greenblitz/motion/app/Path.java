@@ -11,23 +11,23 @@ import java.util.List;
 
 public class Path {
 
-    private List<Position> m_path;
+    private List<Point> m_path;
 
     @SuppressWarnings("unchecked")
-    public Path(ArrayList<Position> path) {
-        m_path = (ArrayList<Position>) path.clone();
+    public Path(List<Point> path) {
+        m_path = path;
     }
 
-    public Path(Position... points){
+    public Path(Point... points){
         m_path = Arrays.asList(points);
     }
 
-    public void interpolatePoints(int samples){
-        List<Position> newPath = new ArrayList<>();
+    /*public void interpolatePoints(int samples){
+        List<Point> newPath = new ArrayList<>();
         for (int i = 0; i < m_path.size() - 1; i++){
             newPath.add(m_path.get(i));
-            Position first = m_path.get(i);
-            Position last = m_path.get(i + 1);
+            Point first = m_path.get(i);
+            Point last = m_path.get(i + 1);
         }
     }
 
@@ -46,12 +46,12 @@ public class Path {
     }
 
     public static Path pathfinderPathToGBPath(Trajectory traj){
-        ArrayList<Position> ret = new ArrayList<>();
+        ArrayList<Point> ret = new ArrayList<>();
         for (Trajectory.Segment seg : traj.segments){
-            ret.add(new Position(seg.x, seg.y ,seg.heading));
+            ret.add(new Point(seg.x, seg.y ,seg.heading));
         }
         return new Path(ret);
-    }
+    }*/
 
     protected static double[] intersections(Point robot, double radius, Point segStart, Point segEnd) {
         Point segment = Point.subtract(segEnd, segStart);
@@ -88,6 +88,10 @@ public class Path {
                 return Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), potInt[1]);
         }
         return closest;
+    }
+
+    public Point getLast(){
+        return m_path.get(m_path.size()-1);
     }
 
 }

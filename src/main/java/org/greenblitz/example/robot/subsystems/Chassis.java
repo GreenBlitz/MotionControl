@@ -1,5 +1,6 @@
 package org.greenblitz.example.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Trajectory;
@@ -34,6 +35,8 @@ public class Chassis extends Subsystem {
     }
 
     private CANRobotDrive m_robotDrive;
+
+    boolean isCoast = true;
 
     public static Chassis getInstance() {
         if (instance == null) init();
@@ -102,6 +105,26 @@ public class Chassis extends Subsystem {
 
     public void stop() {
         tankDrive(0, 0);
+    }
+
+    public void setBrake(){
+        if(!isCoast)
+            return;
+        isCoast = false;
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Brake);
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_RIGHT).setNeutralMode(NeutralMode.Brake);
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT).setNeutralMode(NeutralMode.Brake);
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT).setNeutralMode(NeutralMode.Brake);
+    }
+
+    public void setCoast(){
+        if(isCoast)
+            return;
+        isCoast = true;
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Coast);
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_RIGHT).setNeutralMode(NeutralMode.Coast);
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT).setNeutralMode(NeutralMode.Coast);
+        m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT).setNeutralMode(NeutralMode.Coast);
     }
 
     public double getDistance() {
