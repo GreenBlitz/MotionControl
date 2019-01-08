@@ -1,7 +1,6 @@
 package org.greenblitz.motion.app;
 
 import jaci.pathfinder.Trajectory;
-import javafx.geometry.Pos;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
@@ -11,49 +10,90 @@ import java.util.List;
 
 public class Path {
 
-    private List<Point> m_path;
+    private List<Position> m_path;
 
     @SuppressWarnings("unchecked")
-    public Path(List<Point> path) {
+    public Path(List<Position> path) {
         m_path = path;
     }
 
-    public Path(Point... points){
+    public Path(Position... points){
         m_path = Arrays.asList(points);
     }
 
-    /*public void interpolatePoints(int samples){
-        List<Point> newPath = new ArrayList<>();
-        for (int i = 0; i < m_path.size() - 1; i++){
-            newPath.add(m_path.get(i));
-            Point first = m_path.get(i);
-            Point last = m_path.get(i + 1);
+    public void interpolatePoints(int samples) {
+        List<Position> newPath = new ArrayList<>();
+        newPath.add(m_path.get(0));
+        for (int i = 0; i < m_path.size() - 1; i++) {
+            Position first = m_path.get(i);
+            Position last = m_path.get(i + 1);
+            boolean eqX = false;
+            if (Point.isFuzzyEqual(first.getX(), last.getX(), 10E-4) &&
+                    Point.isFuzzyEqual(first.getY(), last.getY(), 10E-4))
+                continue;
+            if (Point.isFuzzyEqual(first.getX(), last.getX(), 10E-4)) {
+                first.rotate(Math.PI / 2.0);
+                last.rotate(Math.PI / 2.0);
+                eqX = true;
+            }
+            double x1 = first.getX();
+            double x2 = last.getX();
+            double y1 = first.getY();
+            double y2 = last.getY();
+            double v1 = Math.tan(first.getAngle());
+            double v2 = Math.tan(last.getAngle());
+
+            double denominator = Math.pow(x1 - x2, 3);
+
+            // Matrix magic gives this;
+            double a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
+                    / denominator;
+            double b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2
+                    + v2 * x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
+                    / denominator;
+            double c = (2 * v1 * x1 * x1 * x2 - v1 * x1 * x2 * x2 - v1 * Math.pow(x2, 3) + v2 * Math.pow(x1, 3)
+                    + v2 * x1 * x1 * x2 - 2 * v2 * x1 * x2 * x2 - 6 * x1 * x2 * y1 + 6 * x1 * x2 * y2)
+                    / denominator;
+            double d = (-v1 * x1 * x1 * x2 * x2 + v1 * x1 * Math.pow(x2, 3) - v2 * Math.pow(x1, 3) * x2 + v2 * x1 * x1 * x2 * x2
+                    + Math.pow(x1, 3) * y2 - 3 * x1 * x1 * x2 * y2 + 3 * x1 * x2 * x2 * y1 - Math.pow(x2, 3) * y1)
+                    / denominator;
+
+            for (double j = 1; j <= samples; j++){
+                double section = j / samples;
+                double currentX = x1 + (x2 - x1)*section;
+                Position newPoint = new Position(currentX,
+                        a*Math.pow(currentX, 3) + b*Math.pow(currentX, 2) + c*currentX + d);
+                if (eqX)
+                    newPoint.rotate(-Math.PI / 2);
+                newPath.add(newPoint);
+            }
         }
+        m_path = newPath;
     }
 
-    public void interpolateAngles(){
-        for (int i = 1; i < m_path.size() - 1; i++){
+    public void interpolateAngles() {
+        for (int i = 1; i < m_path.size() - 1; i++) {
             m_path.get(i).setAngle(Math.atan2(
-                    m_path.get(i+1).getY() - m_path.get(i-1).getY(),
-                    m_path.get(i+1).getX() - m_path.get(i-1).getX()
+                    m_path.get(i + 1).getY() - m_path.get(i - 1).getY(),
+                    m_path.get(i + 1).getX() - m_path.get(i - 1).getX()
             ));
         }
     }
 
-    public void interpolate(int samples){
+    public void interpolate(int samples) {
         interpolateAngles();
         interpolatePoints(samples);
     }
 
-    public static Path pathfinderPathToGBPath(Trajectory traj){
-        ArrayList<Point> ret = new ArrayList<>();
-        for (Trajectory.Segment seg : traj.segments){
-            ret.add(new Point(seg.x, seg.y ,seg.heading));
+    public static Path pathfinderPathToGBPath(Trajectory traj) {
+        ArrayList<Position> ret = new ArrayList<>();
+        for (Trajectory.Segment seg : traj.segments) {
+            ret.add(new Position(seg.x, seg.y, seg.heading));
         }
         return new Path(ret);
-    }*/
+    }
 
-    protected static double[] intersections(Point robot, double radius, Point segStart, Point segEnd) {
+    public static double[] intersections(Point robot, double radius, Point segStart, Point segEnd) {
         Point segment = Point.subtract(segEnd, segStart);
         Point robToSeg = Point.subtract(segStart, robot);
 
@@ -90,8 +130,12 @@ public class Path {
         return closest;
     }
 
-    public Point getLast(){
-        return m_path.get(m_path.size()-1);
+    public Point getLast() {
+        return m_path.get(m_path.size() - 1);
+    }
+
+    public List<Position> getPath(){
+        return m_path;
     }
 
 }

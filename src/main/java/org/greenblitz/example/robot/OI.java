@@ -29,11 +29,7 @@ public class OI {
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
         mainJS.A.whenPressed(new FindMaxValues());
         mainJS.B.whenPressed(new ArcadeDriveByJoystick(mainJS));
-        mainJS.Y.whenPressed(
-                new APPCTestingCommand(0.5, RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE,
-                        new Point(0, 0),
-                        new Point(1,1)
-                ));
+        mainJS.Y.whenPressed(null);
     }
 
     public SmartJoystick getMainJS() {

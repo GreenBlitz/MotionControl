@@ -1,4 +1,5 @@
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
+import org.greenblitz.motion.app.Path;
 import org.greenblitz.motion.base.*;
 
 import org.junit.jupiter.api.Test;
@@ -30,4 +31,5 @@ public class APPCTest {
         assertEquals(values[0], 5.5/8.5, EPSILON);
         assertEquals(values[1], 1, EPSILON);
     }
+
 }

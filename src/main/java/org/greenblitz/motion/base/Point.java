@@ -120,6 +120,18 @@ public class Point {
         return normSquared(subtract(a, b));
     }
 
+    public static boolean isFuzzyEqual(double first, double second, double epsilon){
+        return Math.abs(first - second) < epsilon;
+    }
+
+    public static boolean isFuzzyEqual(double first, double second){
+        return isFuzzyEqual(first, second, 1E-6);
+    }
+
+    public static boolean fuzzyEquals(Point fir, Point sec, double epsilon){
+        return isFuzzyEqual(fir.getX(), sec.getX(), epsilon) && isFuzzyEqual(fir.getY(), sec.getY(), epsilon);
+    }
+
     public static Point weightedAvg(Point a, Point b, double bWeight) {
         return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight) * a.y + bWeight * b.y);
     }
@@ -137,7 +149,24 @@ public class Point {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return x == ((Point) obj).x && y == ((Point) obj).y;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Point point = (Point) o;
+
+        return (Point.isFuzzyEqual(this.getX(), point.getX()))
+                && isFuzzyEqual(this.getY(), point.getY());
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 }
