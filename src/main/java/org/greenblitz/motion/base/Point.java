@@ -132,6 +132,9 @@ public class Point {
         return isFuzzyEqual(first, second, 1E-6);
     }
 
+    //bad fussy equal
+    //use distance
+    //udi
     public static boolean fuzzyEquals(Point fir, Point sec, double epsilon) {
         return isFuzzyEqual(fir.getX(), sec.getX(), epsilon) && isFuzzyEqual(fir.getY(), sec.getY(), epsilon);
     }

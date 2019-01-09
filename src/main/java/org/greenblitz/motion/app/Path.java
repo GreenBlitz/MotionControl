@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * a list of point / segments for the robot to follow
+ *
+ * @author Udi    ~ MudiAtalon
+ * @author Alexey ~ savioor
+ */
 public class Path {
 
     private List<Position> m_path;
@@ -99,16 +105,21 @@ public class Path {
     }
 
     /**
+     * finds values representing potential intersections between a circle and a segment
+     * 0 -> segStart
+     * 1 -> segEnd
+     * negative/greater than one -> not on the segment
      *
-     * @param robot
-     * @param radius
-     * @param segStart
-     * @param segEnd
-     * @return
+     * @param center the circle center
+     * @param radius the circle radius
+     * @param segStart the start of the segment
+     * @param segEnd the end of the segment
+     * @return null iff there is no line-circle intersections
+     *      [high value, low value] of potential intersections O.W.
      */
-    public static double[] intersections(Point robot, double radius, Point segStart, Point segEnd) {
+    public static double[] intersections(Point center, double radius, Point segStart, Point segEnd) {
         Point segment = Point.subtract(segEnd, segStart);
-        Point robToSeg = Point.subtract(segStart, robot);
+        Point robToSeg = Point.subtract(segStart, center);
 
         //squared equation a*t^2 + b*t + c = 0
         double a = Point.normSquared(segment),
@@ -122,10 +133,15 @@ public class Path {
         return new double[]{(-b + sqrtDis) / (2 * a), (-b - sqrtDis) / (2 * a)};
     }
 
-    public Point getGoalPoint(Point robotLoc, double lookAhead, double epsilon) {
-        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= epsilon*epsilon) {
-            return null;
-        }
+    /**
+     * finds the goal point (the point to witch the robot drives) according to the APPC algorithm
+     *
+     * @param robotLoc the robot location
+     * @param lookAhead look ahead distance
+     * @return the last intersection on the path with the look ahead circle iff such intersection exists
+     *      the closest point on the path O.W.
+     */
+    public Point getGoalPoint(Point robotLoc, double lookAhead) {
         if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead*lookAhead)
             return m_path.get(m_path.size() - 1);
         Point closest = m_path.get(m_path.size() - 1);

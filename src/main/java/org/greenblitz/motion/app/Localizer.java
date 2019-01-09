@@ -6,7 +6,7 @@ import org.greenblitz.motion.base.Position;
 /**
  * runs in a seperate thread calculating the org.greenblitz.example.robot position
  *
- * @author Udi    ~ mudiAtalon
+ * @author Udi    ~ MudiAtalon
  * @author Alexey ~ savioor
  */
 public class Localizer {
