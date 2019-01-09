@@ -28,6 +28,11 @@ public class Path {
         m_path = Arrays.asList(points);
     }
 
+    /**
+     * Given a set op points (the current path) it will add point between given points to complete a path.
+     * This is done using cubic splines (and thus the angle of the point matters).
+     * @param samples The number of new point to add between each old pair
+     */
     public void interpolatePoints(int samples) {
         List<Position> newPath = new ArrayList<>();
         if (m_path.size() == 0){
@@ -82,6 +87,10 @@ public class Path {
         m_path = newPath;
     }
 
+    /**
+     * Chooses reasonable angles for all points using the position of adjacent points.
+     * Doesn't affect the angle of the first and last point.
+     */
     public void interpolateAngles() {
         for (int i = 1; i < m_path.size() - 1; i++) {
             m_path.get(i).setAngle(Math.atan2(
@@ -91,6 +100,10 @@ public class Path {
         }
     }
 
+    /**
+     * Calls interpolateAngles() and afterwards interpolatePoints()
+     * @param samples
+     */
     public void interpolate(int samples) {
         interpolateAngles();
         interpolatePoints(samples);
