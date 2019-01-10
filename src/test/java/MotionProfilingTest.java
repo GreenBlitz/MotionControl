@@ -13,13 +13,13 @@ public class MotionProfilingTest {
     void printTest(){
         List<ActuatorLocation> locs = new ArrayList<>();
         locs.add(new ActuatorLocation(0, 0));
-        locs.add(new ActuatorLocation(10, 8));
+        locs.add(new ActuatorLocation(10, 5));
         MotionProfile prof;
         try {
              prof = OneDProfiler.generateProfile(
                     locs,
                     10,
-                    2,
+                    5,
                     -2
             );
         } catch (PathfinderException e){

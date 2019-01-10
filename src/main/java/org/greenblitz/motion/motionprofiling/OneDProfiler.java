@@ -8,7 +8,7 @@ public class OneDProfiler {
     public static MotionProfile generateProfile(List<ActuatorLocation> points,
                                                 double maxV, double maxASpeedup, double maxASlowdown)
     throws PathfinderException {
-        double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0;
+        double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0, underRoot;
         List<MotionProfile.Segment> segments = new ArrayList<>();
         for (int i = 0; i < points.size() - 1; i++) {
             ActuatorLocation curr = points.get(i);
@@ -28,10 +28,14 @@ public class OneDProfiler {
             double minDistPass = minTime*v1 + 0.5*a1*minTime*minTime;
             if (Math.abs(minDistPass) > Math.abs(S) && Math.signum(minDistPass) == Math.signum(S))
                 throw new PathfinderException("Not enough space to accelerate, minimum "
-                + minDistPass + "m required."
+                + minDistPass + "m required. Occurred when profiling between point " + i + " and point " + (i + 1) + "."
                 );
 
-            root = Math.sqrt((a2 - a1)*(2*a1*a2*S + a2*v1*v1 - a1*v2*v2));
+            underRoot = (a2 - a1)*(2*a1*a2*S + a2*v1*v1 - a1*v2*v2);
+            if (underRoot < 0)
+                throw new PathfinderException("Path not calculable, root is negative between point "
+                        + i + " and " + (i + 1) + ".");
+            root = Math.sqrt(underRoot);
             sum = -a1*v2 + a2*v2;
             denominator = a2*(a2 - a1);
 
@@ -39,7 +43,8 @@ public class OneDProfiler {
             t1 = (v2 - a2*t2 - v1)/a1;
 
             if (!(t1 > 0 && t2 > 0))
-                throw new PathfinderException("Path entered not valid for some reason");
+                throw new PathfinderException("Path entered not valid for unknown reason. " +
+                        "Occurred when profiling between point " + i + " and point " + (i + 1) + ".");
 
             t0 = i == 0 ? 0 : segments.get(segments.size() - 1).tStart;
 
