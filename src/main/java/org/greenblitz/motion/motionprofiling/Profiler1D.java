@@ -5,12 +5,28 @@ import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 
 public class Profiler1D {
 
+    /**
+     *
+     * @param points The set of ActuatorLocations to pass through
+     * @param maxV The highest velocity possible (lowest velocity is -maxV)
+     * @param maxASpeedup Highest acceleration when speed increases (should be positive)
+     * @param maxASlowdown Highest acceleration when speed decreases (should be negative)
+     * @return The relevant MotionProfile
+     * @throws ProfilingException Profiling isn't always possible. When so this exception is thrown.
+     */
     public static MotionProfile generateProfile(List<ActuatorLocation> points,
                                                 double maxV, double maxASpeedup, double maxASlowdown)
     throws ProfilingException {
+
+        if (Math.signum(maxASlowdown) == Math.signum(maxASpeedup))
+            throw new ProfilingException("Sign of max speedup and max slowdown can't be the same.");
+        if (maxV == 0 || maxASlowdown == 0 || maxASpeedup == 0)
+            throw new ProfilingException("One of the actuator constants is 0 but isn't allowed to be.");
+
         double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0, underRoot,
                 intersectionOne, intersectionTwo, areaLost, timeToAdd, midSecStart, midSecEnd, lastSecEnd;
         List<MotionProfile.Segment> segments = new ArrayList<>();
