@@ -97,7 +97,7 @@ public class MotionProfile {
             if (!isTimePartOfSegment(t))
                 throw timeException;
             double timePassed = (t - tStart);
-            return startLocation + timePassed*startVelocity + 0.5*Math.pow(timePassed, 2)*accel;
+            return startLocation + timePassed*startVelocity + 0.5*timePassed*timePassed*accel;
         }
 
         public double getTStart() {

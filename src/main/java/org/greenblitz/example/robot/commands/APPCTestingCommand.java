@@ -23,7 +23,7 @@ public class APPCTestingCommand extends PeriodicCommand {
         m_chasis = Chassis.getInstance();
         requires(m_chasis);
         m_path = new Path(points);
-        m_controller = new AdaptivePurePursuitController(m_path, lookahead, wheelbase);
+        m_controller = new AdaptivePurePursuitController(m_path, lookahead, wheelbase, false);
     }
 
     public APPCTestingCommand(double lookahead, double wheelbase, List<Position> points){

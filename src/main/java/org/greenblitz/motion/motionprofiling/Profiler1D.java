@@ -6,26 +6,41 @@ import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * this is class of one function no documentation
+ *
+ * @author Alexey ~ Savioor
+ */
 public class Profiler1D {
 
-    public static MotionProfile generateProfile(List<ActuatorLocation> points,
-                                                double maxV, double maxASpeedup, double maxASlowdown)
+    /**
+     * generates the quickest motion brofile going through all the waypoints at the specified velocities.
+     *
+     * @param waypoints
+     * @param maxV maximum velocity
+     * @param maxAcc maximum acceleration, used to accelerate
+     * @param minAcc minimum acceleration, used to decelerate
+     * @return the motion brofile
+     * @throws ProfilingException
+     */
+    public static MotionProfile generateProfile(List<ActuatorLocation> waypoints,
+                                                double maxV, double maxAcc, double minAcc)
     throws ProfilingException {
         double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0, underRoot,
                 intersectionOne, intersectionTwo, areaLost, timeToAdd, midSecStart, midSecEnd, lastSecEnd;
         List<MotionProfile.Segment> segments = new ArrayList<>();
-        for (int i = 0; i < points.size() - 1; i++) {
-            ActuatorLocation curr = points.get(i);
-            ActuatorLocation next = points.get(i + 1);
+        for (int i = 0; i < waypoints.size() - 1; i++) {
+            ActuatorLocation curr = waypoints.get(i);
+            ActuatorLocation next = waypoints.get(i + 1);
             v1 = curr.getV();
             v2 = next.getV();
             S = next.x - curr.x;
             if (S > 0){
-                a1 = maxASpeedup;
-                a2 = maxASlowdown;
+                a1 = maxAcc;
+                a2 = minAcc;
             } else {
-                a1 = maxASlowdown;
-                a2 = maxASpeedup;
+                a1 = minAcc;
+                a2 = maxAcc;
             }
 
             if (Math.abs(v2) > maxV)
