@@ -1,5 +1,6 @@
 package org.greenblitz.example.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -53,7 +54,7 @@ public class Robot extends TimedRobot {
         Path path = new Path(list);
         path.interpolate(10);
         System.out.println(path.getPath());
-        APPC = new AdaptivePurePursuitController(path, 0.8, Chassis.getInstance().getWheelbaseWidth());
+        APPC = new AdaptivePurePursuitController(path, 0.8, Chassis.getInstance().getWheelbaseWidth(), false);
     }
 
     @Override
@@ -64,7 +65,7 @@ public class Robot extends TimedRobot {
         if (veryFastDrive != null)
             Chassis.getInstance().tankDrive(speedLimit * veryFastDrive[0], speedLimit * veryFastDrive[1]);
         else
-            Chassis.getInstance().setBrake();
+            //Chassis.getInstance().setBrake();
         SmartDashboard.putNumber("Left intended power", veryFastDrive != null ? speedLimit * veryFastDrive[0] : 0);
         SmartDashboard.putNumber("Right intended power", veryFastDrive != null ? speedLimit * veryFastDrive[1] : 0);
         SmartDashboard.putBoolean("Is running?", veryFastDrive != null);
@@ -84,7 +85,7 @@ public class Robot extends TimedRobot {
 
         Path path = new Path(list);
 
-        APPC = new AdaptivePurePursuitController(path, 0.5, Chassis.getInstance().getWheelbaseWidth());
+        APPC = new AdaptivePurePursuitController(path, 0.5, Chassis.getInstance().getWheelbaseWidth(), false);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class Robot extends TimedRobot {
         if (veryFastDrive != null)
             Chassis.getInstance().tankDrive(speedLimit * veryFastDrive[0], speedLimit * veryFastDrive[1]);
         else
-            Chassis.getInstance().setBrake();
+            //Chassis.getInstance().setBrake();
         SmartDashboard.putNumber("Left intended power", veryFastDrive != null ? speedLimit * veryFastDrive[0] : 0);
         SmartDashboard.putNumber("Right intended power", veryFastDrive != null ? speedLimit * veryFastDrive[1] : 0);
         SmartDashboard.putBoolean("Is running?", veryFastDrive != null);
@@ -105,7 +106,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         Scheduler.getInstance().removeAll();
         Chassis.getInstance().resetSensors();
-        Chassis.getInstance().setCoast();
+        //Chassis.getInstance().setCoast();
     }
 
     @Override
@@ -128,5 +129,9 @@ public class Robot extends TimedRobot {
 
     public void updateSubsystems() {
         Chassis.getInstance().update();
+    }
+
+    public static void main(String[] args) {
+        RobotBase.startRobot(Robot::new);
     }
 }

@@ -4,7 +4,7 @@ import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.pathfinder.PathfinderException;
+import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
 import org.greenblitz.example.robot.RobotStats;
 
 public class GenerateTrajectory {
@@ -32,7 +32,7 @@ public class GenerateTrajectory {
     }
 
     public static Trajectory generateTrajectory(Waypoint[] waypoints, Trajectory.FitMethod fit, int samples, double dt)
-    throws PathfinderException {
+    throws ProfilingException {
         Trajectory[] ret = new Trajectory[1];
         ret[0] = null;
 
@@ -51,20 +51,20 @@ public class GenerateTrajectory {
         thread.interrupt();
 
         if (ret[0] == null)
-            throw new PathfinderException("generator in infinite loop");
+            throw new ProfilingException("generator in infinite loop");
 
         return ret[0];
     }
 
-    public static Trajectory generateTrajectory(Waypoint[] waypoints, int samples, double dt) throws PathfinderException{
+    public static Trajectory generateTrajectory(Waypoint[] waypoints, int samples, double dt) throws ProfilingException {
         return generateTrajectory(waypoints, Trajectory.FitMethod.HERMITE_CUBIC, samples, dt);
     }
 
-    public static Trajectory generateTrajectory(Waypoint[] waypoints, double dt) throws PathfinderException{
+    public static Trajectory generateTrajectory(Waypoint[] waypoints, double dt) throws ProfilingException {
         return generateTrajectory(waypoints, Trajectory.Config.SAMPLES_HIGH, dt);
     }
 
-    public static Trajectory generateTrajectory(Waypoint[] waypoints) throws PathfinderException{
+    public static Trajectory generateTrajectory(Waypoint[] waypoints) throws ProfilingException {
         return generateTrajectory(waypoints, 0.05);
     }
 
