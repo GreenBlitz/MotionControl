@@ -5,6 +5,7 @@ import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 
 /**
  * this is class of one function no documentation
@@ -14,6 +15,7 @@ import java.util.List;
 public class Profiler1D {
 
     /**
+<<<<<<< HEAD
      * generates the quickest motion brofile going through all the waypoints at the specified velocities.
      *
      * @param waypoints
@@ -21,11 +23,17 @@ public class Profiler1D {
      * @param maxAcc maximum acceleration, used to accelerate
      * @param minAcc minimum acceleration, used to decelerate
      * @return the motion brofile
-     * @throws ProfilingException
+     * @throws ProfilingException Profiling isn't always possible. When so this exception is thrown.
      */
     public static MotionProfile generateProfile(List<ActuatorLocation> waypoints,
                                                 double maxV, double maxAcc, double minAcc)
     throws ProfilingException {
+
+        if (Math.signum(minAcc) == Math.signum(maxAcc))
+            throw new ProfilingException("Sign of max speedup and max slowdown can't be the same.");
+        if (maxV == 0 || minAcc == 0 || maxAcc == 0)
+            throw new ProfilingException("One of the actuator constants is 0 but isn't allowed to be.");
+
         double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0, underRoot,
                 intersectionOne, intersectionTwo, areaLost, timeToAdd, midSecStart, midSecEnd, lastSecEnd;
         List<MotionProfile.Segment> segments = new ArrayList<>();
@@ -94,8 +102,11 @@ public class Profiler1D {
                 lastSecEnd = t1 + t2 + timeToAdd;
             }
 
+            if (midSecEnd < 0 || midSecStart < 0 || lastSecEnd < 0){
+                throw new ProfilingException("Some error occurred between point " + i + " and point " + (i + 1) + " when cutting triangle.");
+            }
 
-            t0 = i == 0 ? 0 : segments.get(segments.size() - 1).tStart;
+            t0 = i == 0 ? 0 : segments.get(segments.size() - 1).tEnd;
 
             if (midSecStart == midSecEnd) {
                 MotionProfile.Segment first = new MotionProfile.Segment(
@@ -142,7 +153,9 @@ public class Profiler1D {
                 segments.add(last);
             }
         }
-        return new MotionProfile(segments);
+        MotionProfile ret = new MotionProfile(segments);
+        ret.removeBugSegments();
+        return ret;
     }
 
 }

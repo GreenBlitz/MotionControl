@@ -14,11 +14,14 @@ public class MotionProfilingTest {
         List<ActuatorLocation> locs = new ArrayList<>();
         locs.add(new ActuatorLocation(0, 0));
         locs.add(new ActuatorLocation(-10, -6));
+        locs.add(new ActuatorLocation(2, 3));
+        locs.add(new ActuatorLocation(6, 6));
+        locs.add(new ActuatorLocation(15, 10));
         MotionProfile prof;
         try {
              prof = Profiler1D.generateProfile(
                     locs,
-                    5.1,
+                    10,
                     5,
                     -2
             );
@@ -26,8 +29,8 @@ public class MotionProfilingTest {
             e.printStackTrace();
             return;
         }
-        System.out.println(prof.getLocation(prof.getSegments().get(prof.getSegments().size() - 1).getTEnd()));
-        System.out.println(prof.getVelocity(prof.getSegments().get(prof.getSegments().size() - 1).getTEnd()));
+        System.out.println(prof.getLocation(prof.getTEnd()));
+        System.out.println(prof.getVelocity(prof.getTEnd()));
         System.out.println(prof);
     }
 
