@@ -1,4 +1,4 @@
-package org.greenblitz.motion.pathfinder;
+package org.greenblitz.motion.motionprofiling;
 
 public class PathfinderException extends Exception {
 

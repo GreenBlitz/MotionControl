@@ -42,7 +42,7 @@ public class AdaptivePurePursuitController {
         SmartDashboard.putNumber("target y", target.getY());
 
         double speed = target != m_path.getLast() ?
-                1 : Point.dist(robotLoc, target) / maxSpeedDist;
+                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
         if(speed < minSpeed)
             speed = minSpeed;
         Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
