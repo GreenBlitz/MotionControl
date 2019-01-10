@@ -13,10 +13,13 @@ public class AdaptivePurePursuitController {
     public final double m_lookAhead;
     private final double m_wheelBase;
 
-    public AdaptivePurePursuitController(Path path, double lookAhead, double wheelBase) {
+    public final boolean isBackwards;
+
+    public AdaptivePurePursuitController(Path path, double lookAhead, double wheelBase, boolean isBackwards) {
         m_path = path;
         m_lookAhead = lookAhead;
         m_wheelBase = wheelBase;
+        this.isBackwards = isBackwards;
     }
 
     /**
@@ -43,9 +46,9 @@ public class AdaptivePurePursuitController {
         if(speed < minSpeed)
             speed = minSpeed;
         Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
-        /*if(target.getY() < 0 && Math.abs(target.getX()) < Math.abs(target.getY()))
+        if(isBackwards)
             speed *= -1;
-        */
+
         double curvature = 2 * diff.getX() / Point.normSquared(diff);
         if (curvature == 0)
             return new double[]{speed, speed};

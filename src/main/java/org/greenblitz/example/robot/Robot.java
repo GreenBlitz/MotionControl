@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
         Path path = new Path(list);
         path.interpolate(10);
         System.out.println(path.getPath());
-        APPC = new AdaptivePurePursuitController(path, 0.8, Chassis.getInstance().getWheelbaseWidth());
+        APPC = new AdaptivePurePursuitController(path, 0.8, Chassis.getInstance().getWheelbaseWidth(), false);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
 
         Path path = new Path(list);
 
-        APPC = new AdaptivePurePursuitController(path, 0.5, Chassis.getInstance().getWheelbaseWidth());
+        APPC = new AdaptivePurePursuitController(path, 0.5, Chassis.getInstance().getWheelbaseWidth(), false);
     }
 
     @Override
