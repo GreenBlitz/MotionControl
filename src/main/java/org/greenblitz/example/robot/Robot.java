@@ -1,5 +1,6 @@
 package org.greenblitz.example.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -127,5 +128,9 @@ public class Robot extends TimedRobot {
 
     public void updateSubsystems() {
         Chassis.getInstance().update();
+    }
+
+    public static void main(String[] args) {
+        RobotBase.startRobot(Robot::new);
     }
 }
