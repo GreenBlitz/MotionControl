@@ -60,7 +60,12 @@ public class Path {
 
             double denominator = Math.pow(x1 - x2, 3);
 
-            // Matrix magic gives this;
+            // Dirug of the following matrix:
+            // x1**3 x1**2 x1 1 | y1
+            // x2**3 x2**2 x2 1 | y2
+            // 3*x1**2 2*x1 1 0 | v1
+            // 3*x2**2 2*x2 1 0 | v2
+            // gives this:
             double a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
                     / denominator;
             double b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2

@@ -40,7 +40,6 @@ public class ActuatorLocation {
     }
 
     public double getX() {
-
         return x;
     }
 

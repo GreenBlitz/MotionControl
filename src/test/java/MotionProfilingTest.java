@@ -1,7 +1,7 @@
 import org.greenblitz.motion.motionprofiling.ActuatorLocation;
 import org.greenblitz.motion.motionprofiling.MotionProfile;
-import org.greenblitz.motion.motionprofiling.OneDProfiler;
-import org.greenblitz.motion.motionprofiling.PathfinderException;
+import org.greenblitz.motion.motionprofiling.Profiler1D;
+import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -13,20 +13,21 @@ public class MotionProfilingTest {
     void printTest(){
         List<ActuatorLocation> locs = new ArrayList<>();
         locs.add(new ActuatorLocation(0, 0));
-        locs.add(new ActuatorLocation(10, 5));
+        locs.add(new ActuatorLocation(-10, -6));
         MotionProfile prof;
         try {
-             prof = OneDProfiler.generateProfile(
+             prof = Profiler1D.generateProfile(
                     locs,
-                    10,
+                    5.1,
                     5,
                     -2
             );
-        } catch (PathfinderException e){
+        } catch (ProfilingException e){
             e.printStackTrace();
             return;
         }
-        System.out.println(prof.getLocation(prof.getSegments().get(1).getTEnd()));
+        System.out.println(prof.getLocation(prof.getSegments().get(prof.getSegments().size() - 1).getTEnd()));
+        System.out.println(prof.getVelocity(prof.getSegments().get(prof.getSegments().size() - 1).getTEnd()));
         System.out.println(prof);
     }
 
