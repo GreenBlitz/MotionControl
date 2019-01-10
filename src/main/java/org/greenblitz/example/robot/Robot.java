@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         Chassis.getInstance().resetSensors();
+        Chassis.getInstance().setCoast();
         final double S_R_T_I_I_I = 1/(1/(1/Math.sqrt(2)));
         Position[] list = new Position[]{
                 new Position(0, 0),
