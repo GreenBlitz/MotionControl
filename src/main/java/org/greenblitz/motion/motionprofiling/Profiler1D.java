@@ -79,8 +79,11 @@ public class Profiler1D {
                 lastSecEnd = t1 + t2 + timeToAdd;
             }
 
+            if (midSecEnd < 0 || midSecStart < 0 || lastSecEnd < 0){
+                throw new ProfilingException("Some error occurred between point " + i + " and point " + (i + 1) + " when cutting triangle.");
+            }
 
-            t0 = i == 0 ? 0 : segments.get(segments.size() - 1).tStart;
+            t0 = i == 0 ? 0 : segments.get(segments.size() - 1).tEnd;
 
             if (midSecStart == midSecEnd) {
                 MotionProfile.Segment first = new MotionProfile.Segment(
@@ -127,7 +130,9 @@ public class Profiler1D {
                 segments.add(last);
             }
         }
-        return new MotionProfile(segments);
+        MotionProfile ret = new MotionProfile(segments);
+        ret.removeBugSegments();
+        return ret;
     }
 
 }

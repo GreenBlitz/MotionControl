@@ -5,12 +5,14 @@ import java.util.List;
 
 public class MotionProfile {
 
-    public MotionProfile() {
-        segments = new ArrayList<>();
+    protected List<Segment> segments;
+
+    public MotionProfile(List<Segment> segs) {
+        segments = segs;
     }
 
-    public MotionProfile(List<Segment> segs){
-        segments = segs;
+    public MotionProfile() {
+        this(new ArrayList<>());
     }
 
     @Override
@@ -24,34 +26,83 @@ public class MotionProfile {
         return segments;
     }
 
-    protected List<Segment> segments;
+    /**
+     * @param t point in time (in seconds)
+     * @return The segment matching that point of time
+     */
+    public Segment getSegment(double t) {
+        int lower = 0;
+        int upper = segments.size() - 1;
+        int testing;
+        while (true){
+            if (lower == upper)
+                if (segments.get(lower).isTimePartOfSegment(t))
+                    return segments.get(lower);
+                else
+                    throw new IndexOutOfBoundsException("No segment with such time");
 
-    public Segment getSegment(double t){
-        for (Segment seg : segments){
-            if (seg.isTimePartOfSegment(t))
-                return seg;
+            testing = (lower + upper) / 2;
+            if (segments.get(testing).isTimePartOfSegment(t))
+                return segments.get(testing);
+            if (segments.get(testing).tStart > t)
+                upper = testing - 1;
+            else
+                lower = testing + 1;
         }
-        throw new IndexOutOfBoundsException("No segment with such time");
     }
 
-    public boolean isOver(double t){
-        return t >= segments.get(segments.size() - 1).tEnd;
+    /**
+     * @return The time in which the profile finishes
+     */
+    public double getTEnd() {
+        return segments.get(segments.size() - 1).tEnd;
     }
 
-    public double getAcceleration(double t){
+    /**
+     * @param t point in time (in seconds)
+     * @return whether or not the profile is finished by that time
+     */
+    public boolean isOver(double t) {
+        return t >= getTEnd();
+    }
+
+    /**
+     * @param t point in time (in seconds)
+     * @return the acceleration at that time
+     */
+    public double getAcceleration(double t) {
         return getSegment(t).getAcceleration(t);
     }
 
-    public double getVelocity(double t){
+    /**
+     * @param t point in time (in seconds)
+     * @return the velocity at that time
+     */
+    public double getVelocity(double t) {
         return getSegment(t).getVelocity(t);
     }
 
-    public double getLocation(double t){
+    /**
+     * @param t point in time (in seconds)
+     * @return the location at that time
+     */
+    public double getLocation(double t) {
         return getSegment(t).getLocation(t);
     }
 
     /**
-     *
+     * Removes all segments with time length less then a milisecond.
+     */
+    public void removeBugSegments() {
+        List<Segment> goodSegments = new ArrayList<>();
+        for (Segment s : segments) {
+            if (Math.abs(s.tEnd - s.tStart) > 1E-3)
+                goodSegments.add(s);
+        }
+        segments = goodSegments;
+    }
+
+    /**
      * @param tStart
      * @param tEnd
      * @param accel
@@ -59,7 +110,7 @@ public class MotionProfile {
      * @param startLocation
      * @return
      */
-    public static Segment createSegment(double tStart, double tEnd, double accel, double startVelocity, double startLocation){
+    public static Segment createSegment(double tStart, double tEnd, double accel, double startVelocity, double startLocation) {
         return new Segment(tStart, tEnd, accel, startVelocity, startLocation);
     }
 
@@ -77,27 +128,27 @@ public class MotionProfile {
             this.startLocation = startLocation;
         }
 
-        public boolean isTimePartOfSegment(double t){
+        public boolean isTimePartOfSegment(double t) {
             return t >= tStart && t <= tEnd;
         }
 
-        public double getAcceleration(double t){
+        public double getAcceleration(double t) {
             if (!isTimePartOfSegment(t))
                 throw timeException;
             return accel;
         }
 
-        public double getVelocity(double t){
+        public double getVelocity(double t) {
             if (!isTimePartOfSegment(t))
                 throw timeException;
-            return startVelocity + (t - tStart)*accel;
+            return startVelocity + (t - tStart) * accel;
         }
 
-        public double getLocation(double t){
+        public double getLocation(double t) {
             if (!isTimePartOfSegment(t))
                 throw timeException;
             double timePassed = (t - tStart);
-            return startLocation + timePassed*startVelocity + 0.5*Math.pow(timePassed, 2)*accel;
+            return startLocation + timePassed * startVelocity + 0.5 * Math.pow(timePassed, 2) * accel;
         }
 
         public double getTStart() {
