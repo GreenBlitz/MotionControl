@@ -33,6 +33,8 @@ public class Profiler1D {
             throw new ProfilingException("Sign of max speedup and max slowdown can't be the same.");
         if (maxV == 0 || minAcc == 0 || maxAcc == 0)
             throw new ProfilingException("One of the actuator constants is 0 but isn't allowed to be.");
+        if (waypoints.size() > 0 && Math.abs(waypoints.get(0).getV()) > Math.abs(maxV))
+            throw new ProfilingException("Can't accelerate past +-" + maxV + "m/s. " + waypoints.get(0).getV() + "m/s was given on point 0");
 
         double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0, underRoot,
                 intersectionOne, intersectionTwo, areaLost, timeToAdd, midSecStart, midSecEnd, lastSecEnd;
@@ -51,7 +53,7 @@ public class Profiler1D {
                 a2 = maxAcc;
             }
 
-            if (Math.abs(v2) > maxV)
+            if (Math.abs(v2) > Math.abs(maxV))
                 throw new ProfilingException("Can't accelerate past +-" + maxV + "m/s. " + v2 + "m/s was given on point " + (i + 1));
 
             double minTime = Math.abs((v2 - v1)/a1);
