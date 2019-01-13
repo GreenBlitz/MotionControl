@@ -5,7 +5,6 @@ import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PropertyPermission;
 
 /**
  * this is class of one function no documentation
@@ -15,7 +14,6 @@ import java.util.PropertyPermission;
 public class Profiler1D {
 
     /**
-<<<<<<< HEAD
      * generates the quickest motion brofile going through all the waypoints at the specified velocities.
      *
      * @param waypoints
@@ -74,7 +72,7 @@ public class Profiler1D {
             t2 = Math.max((sum + root)/denominator, (sum - root)/denominator);
             t1 = (v2 - a2*t2 - v1)/a1;
 
-            if (!(t1 > 0 && t2 > 0))
+            if (t1 < 0 || t2 < 0)
                 throw new ProfilingException("Path entered not valid for unknown reason. " +
                         "Occurred when profiling between point " + i + " and point " + (i + 1) + ".");
 
@@ -104,7 +102,7 @@ public class Profiler1D {
                 lastSecEnd = t1 + t2 + timeToAdd;
             }
 
-            if (midSecEnd < 0 || midSecStart < 0 || lastSecEnd < 0){
+            if (midSecEnd < midSecStart || midSecStart < 0 || lastSecEnd < midSecEnd){
                 throw new ProfilingException("Some error occurred between point " + i + " and point " + (i + 1) + " when cutting triangle.");
             }
 
@@ -161,4 +159,3 @@ public class Profiler1D {
     }
 
 }
-//((v_x - v_2)/a_2 + t_1 + t_2 - (v_x - v_1)/a_1)*(a_1*(v_2-v_1-a_2*(t_1+t_2))/(a_1-a_2) + v_1 - v_x)/(2*v_x)
