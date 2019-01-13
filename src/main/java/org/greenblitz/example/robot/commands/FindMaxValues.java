@@ -46,8 +46,10 @@ public class FindMaxValues extends Command {
 
     @Override
     protected void execute() {
-        Chassis.getInstance().arcadeDrive(OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y),
-                OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_X));
+        double leftInput = OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.LEFT_Y);
+        double rightInput = OI.getInstance().getMainJS().getAxisValue(SmartJoystick.JoystickAxis.RIGHT_X);
+
+        Chassis.getInstance().arcadeDrive(leftInput, rightInput);
 
         double newSpeedR = Chassis.getInstance().getRightSpeed();
         double newSpeedL = Chassis.getInstance().getLeftSpeed();
@@ -88,7 +90,6 @@ public class FindMaxValues extends Command {
         SmartDashboard.putNumber("right A max", maxAccR);
         SmartDashboard.putNumber("left J max", maxJerkL);
         SmartDashboard.putNumber("right J max", maxJerkR);
-
     }
 
     @Override

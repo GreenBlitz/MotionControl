@@ -124,20 +124,25 @@ public class PathFollower {
     /**
      * The IO update function of the controller.
      * Call this in fixed frequency or pathfinder and I will kill you in your sleep.
+     *
      * @param currentLeftTicks  the current tick count of the left encoder
      * @param currentRightTicks the current tick count of the right encoder
      * @return the values that should be passed to the motors (in tank drive)
      */
     public double[] update(int currentLeftTicks, int currentRightTicks) {
-        return new double[] { m_leftFollower.calculate(currentLeftTicks), m_rightFollower.calculate(currentRightTicks) };
+        var left = m_leftFollower.calculate(currentLeftTicks);
+        var right = m_rightFollower.calculate(currentRightTicks);
+        return new double[]{left, right};
     }
 
     /**
      * Sets the encoder followers relative start position to current encoder tick
      */
-    public void reset() {
+    public void reset(int left, int right) {
         m_leftFollower.reset();
         m_rightFollower.reset();
+        m_leftConfiguration.initialTicks = left;
+        m_rightConfiguration.initialTicks = right;
         configure(m_leftConfiguration, m_rightConfiguration);
     }
 

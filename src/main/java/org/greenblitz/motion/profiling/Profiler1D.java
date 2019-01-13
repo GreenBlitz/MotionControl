@@ -1,7 +1,7 @@
-package org.greenblitz.motion.motionprofiling;
+package org.greenblitz.motion.profiling;
 
-import org.greenblitz.motion.motionprofiling.exception.NotEnoughAcceleratingSpace;
-import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
+import org.greenblitz.motion.profiling.exception.NotEnoughAcceleratingSpace;
+import org.greenblitz.motion.profiling.exception.ProfilingException;
 
 import java.util.ArrayList;
 import java.util.List;

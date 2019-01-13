@@ -1,4 +1,4 @@
-package org.greenblitz.motion.base;
+package org.greenblitz.motion.pid;
 
 public class PIDController {
 

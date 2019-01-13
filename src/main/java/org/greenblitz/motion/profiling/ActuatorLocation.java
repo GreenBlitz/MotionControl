@@ -1,4 +1,4 @@
-package org.greenblitz.motion.motionprofiling;
+package org.greenblitz.motion.profiling;
 
 public class ActuatorLocation {
 

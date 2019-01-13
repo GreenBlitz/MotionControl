@@ -9,6 +9,8 @@ public class RobotPath {
 
     private static Trajectory[] test = new Trajectory[2];
 
+    public static final double dt = 20 / 1000.0;
+
     static {
         init();
     }
@@ -20,7 +22,7 @@ public class RobotPath {
     private static void init() {
         Waypoint[] tests = new Waypoint[]{
                 new Waypoint(0, 0, 0),
-                new Waypoint(-1, 1, -Math.PI / 4),
+                new Waypoint(2, 2, -Math.PI / 2),
         };
 
         initPF(tests);
@@ -34,19 +36,19 @@ public class RobotPath {
      */
     private static void initPF(Trajectory.FitMethod fit, int samples, double dt, Waypoint[] waypoints) {
         Trajectory.Config config = new Trajectory.Config(fit, samples, dt,
-                RobotStats.Picasso.Chassis.MAX_VELOCITY / 3,
+                RobotStats.Picasso.Chassis.MAX_VELOCITY / 2,
                 RobotStats.Picasso.Chassis.MAX_ACCELERATION,
                 RobotStats.Picasso.Chassis.MAX_JERK);
 
         Trajectory trajectory = Pathfinder.generate(waypoints, config);
-        TankModifier mod = new TankModifier(trajectory).modify(RobotStats.Picasso.Chassis.VERTICAL_DISTANCE);
+        TankModifier mod = new TankModifier(trajectory).modify(RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE);
 
         test[0] = mod.getLeftTrajectory();
         test[1] = mod.getRightTrajectory();
     }
 
     private static void initPF(Waypoint[] waypoints) {
-        initPF(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, waypoints);
+        initPF(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, dt, waypoints);
     }
 
 }
