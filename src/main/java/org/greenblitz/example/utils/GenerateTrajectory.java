@@ -4,7 +4,7 @@ import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
+import org.greenblitz.motion.profiling.exception.ProfilingException;
 import org.greenblitz.example.robot.RobotStats;
 
 public class GenerateTrajectory {

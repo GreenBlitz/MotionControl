@@ -1,5 +1,8 @@
 package org.greenblitz.example.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import org.greenblitz.example.utils.PeriodicRunner;
 import org.greenblitz.example.utils.SmartEncoder;

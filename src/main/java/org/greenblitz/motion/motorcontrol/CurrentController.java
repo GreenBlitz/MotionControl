@@ -1,6 +1,6 @@
 package org.greenblitz.motion.motorcontrol;
 
-import org.greenblitz.motion.base.PIDController;
+import org.greenblitz.motion.pid.PIDController;
 
 // TODO
 public class CurrentController extends PIDController {

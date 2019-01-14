@@ -1,10 +1,14 @@
 package org.greenblitz.example.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jaci.pathfinder.Trajectory;
-import org.greenblitz.example.robot.*;
+import org.greenblitz.example.robot.LocalizerRunner;
+import org.greenblitz.example.robot.OI;
+import org.greenblitz.example.robot.RobotMap;
+import org.greenblitz.example.robot.RobotStats;
 import org.greenblitz.example.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.example.utils.CANRobotDrive;
 import org.greenblitz.example.utils.SmartEncoder;
@@ -12,6 +16,10 @@ import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathfinder.PathFollower;
 
 public class Chassis extends Subsystem {
+    private NetworkTableEntry updateEntry = NetworkTableInstance.getDefault().getTable("motion").getEntry("isUpdated");
+    private NetworkTableEntry xEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("x");
+    private NetworkTableEntry yEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("y");
+    private NetworkTableEntry headingEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("heading");
 
     private static final double POWER_LIMIT = 1.0;
 
@@ -19,8 +27,6 @@ public class Chassis extends Subsystem {
 
     private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_POWER;
     private static final double TICKS_PER_METER_RIGHT = RobotStats.Picasso.EncoderMetreScale.RIGHT_POWER;
-
-    private PathFollower follower;
 
     private LocalizerRunner m_localizer;
 
@@ -36,7 +42,7 @@ public class Chassis extends Subsystem {
 
     private CANRobotDrive m_robotDrive;
 
-    boolean isCoast = true;
+    private boolean isCoast = true;
 
     public static Chassis getInstance() {
         if (instance == null) init();
@@ -51,10 +57,8 @@ public class Chassis extends Subsystem {
         m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
                                          RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
 
-        //m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.FRONT_LEFT, true);
-        //m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.REAR_LEFT, true);
-        m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.FRONT_RIGHT, true);
-        //m_robotDrive.setInvertedMotor(CANRobotDrive.TalonID.REAR_RIGHT, true);
+        m_robotDrive.invert(CANRobotDrive.TalonID.FRONT_RIGHT);
+        m_robotDrive.invert(CANRobotDrive.TalonID.REAR_RIGHT);
 
         m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER_LEFT);
         m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER_RIGHT);
@@ -62,18 +66,8 @@ public class Chassis extends Subsystem {
         m_leftEncoder.reset();
         m_rightEncoder.reset();
 
-        //m_robotDrive.setOutputScale(0.5);
-
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();
-
-        initMotion(RobotPath.getTestTrajectory());
-    }
-
-    private void initMotion(Trajectory[] trajectories) {
-        PathFollower.EncoderConfig m_leftConfig = new PathFollower.EncoderConfig((int) (m_leftEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
-        PathFollower.EncoderConfig m_rightConfig = new PathFollower.EncoderConfig((int) (m_rightEncoder.getTicksPerMeter() * RobotStats.Picasso.Chassis.WHEEL_CIRCUMFERENCE), 1.0, 1 / RobotStats.Picasso.Chassis.MAX_VELOCITY);
-        follower = new PathFollower(trajectories[0], trajectories[1], m_leftConfig, m_rightConfig, getWheelbaseWidth());
     }
 
     public void initDefaultCommand() {
@@ -89,6 +83,10 @@ public class Chassis extends Subsystem {
         SmartDashboard.putNumber("robot x", pos.getX());
         SmartDashboard.putNumber("robot y", pos.getY());
         SmartDashboard.putNumber("robot angle", Math.toDegrees(pos.getAngle()));
+        xEntry.setNumber(pos.getX());
+        yEntry.setNumber(pos.getY());
+        headingEntry.setNumber(pos.getAngle());
+        updateEntry.setBoolean(true);
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
@@ -98,8 +96,6 @@ public class Chassis extends Subsystem {
     }
 
     public void tankDrive(double leftValue, double rightValue) {
-        SmartDashboard.putNumber("LEFT_POWER", leftValue);
-        SmartDashboard.putNumber("RIGHT_POWER", rightValue);
         m_robotDrive.tankDrive(-leftValue, -rightValue);
     }
 
@@ -182,10 +178,6 @@ public class Chassis extends Subsystem {
             resetLeftEncoder();
             resetRightEncoder();
         } while(m_leftEncoder.getTicks() != 0 || m_rightEncoder.getTicks() != 0);
-    }
-
-    public PathFollower getPathFollowerController() {
-        return follower;
     }
 
     public double getWheelRadius() {

@@ -1,4 +1,4 @@
-package org.greenblitz.motion.motionprofiling.exception;
+package org.greenblitz.motion.profiling.exception;
 
 public class ProfilingException extends Exception {
 

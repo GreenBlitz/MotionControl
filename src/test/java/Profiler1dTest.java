@@ -1,6 +1,6 @@
-import org.greenblitz.motion.motionprofiling.ActuatorLocation;
-import org.greenblitz.motion.motionprofiling.MotionProfile;
-import org.greenblitz.motion.motionprofiling.Profiler1D;
+import org.greenblitz.motion.profiling.ActuatorLocation;
+import org.greenblitz.motion.profiling.MotionProfile;
+import org.greenblitz.motion.profiling.Profiler1D;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
