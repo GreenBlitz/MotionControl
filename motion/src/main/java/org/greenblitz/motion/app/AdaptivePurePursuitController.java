@@ -1,6 +1,5 @@
 package org.greenblitz.motion.app;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
@@ -34,13 +33,9 @@ public class AdaptivePurePursuitController {
      */
     public double[] driveValuesTo(Position robotLoc, Point target, double maxSpeedDist, double minSpeed, double tolerance) {
         if (Point.distSqared(target, robotLoc) <= tolerance*tolerance) {
-            SmartDashboard.putNumber("target x", Integer.MIN_VALUE);
-            SmartDashboard.putNumber("target y", Integer.MIN_VALUE);
             return null;
         }
-        SmartDashboard.putNumber("target x", target.getX());
-        SmartDashboard.putNumber("target y", target.getY());
-
+		
         double speed = target != m_path.getLast() ?
                 1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
         if(speed < minSpeed)
