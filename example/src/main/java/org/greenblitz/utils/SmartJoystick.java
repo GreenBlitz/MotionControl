@@ -1,4 +1,4 @@
-package org.greenblitz.example.utils;
+package org.greenblitz.utils;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;

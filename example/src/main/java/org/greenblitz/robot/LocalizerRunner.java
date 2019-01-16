@@ -1,11 +1,11 @@
-package org.greenblitz.example.robot;
+package org.greenblitz.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import org.greenblitz.example.utils.PeriodicRunner;
-import org.greenblitz.example.utils.SmartEncoder;
+import org.greenblitz.utils.PeriodicRunner;
+import org.greenblitz.utils.SmartEncoder;
 import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.motion.base.Position;
 

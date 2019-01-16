@@ -1,7 +1,7 @@
-package org.greenblitz.example.robot.commands.elevator;
+package org.greenblitz.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
-import org.greenblitz.example.robot.subsystems.ElevatorPrototype;
+import org.greenblitz.robot.subsystems.ElevatorPrototype;
 
 public class StopElevator extends Command {
 

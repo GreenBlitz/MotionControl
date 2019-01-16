@@ -1,7 +1,7 @@
-package org.greenblitz.example.robot.commands;
+package org.greenblitz.robot.commands;
 
-import org.greenblitz.example.robot.RobotStats;
-import org.greenblitz.example.robot.subsystems.Chassis;
+import org.greenblitz.robot.RobotStats;
+import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.app.Path;
 import org.greenblitz.motion.base.Point;

@@ -1,13 +1,12 @@
-package org.greenblitz.example.robot;
+package org.greenblitz.robot;
 
-import org.greenblitz.example.robot.commands.ArcadeDriveByJoystick;
-import org.greenblitz.example.robot.commands.FindMaxValues;
-import org.greenblitz.example.robot.commands.PathFollowerCommand;
-import org.greenblitz.example.robot.commands.elevator.ManualElevator;
-import org.greenblitz.example.robot.commands.elevator.MoveByProfileElevator;
-import org.greenblitz.example.robot.commands.elevator.StopElevator;
-import org.greenblitz.example.robot.subsystems.Chassis;
-import org.greenblitz.example.utils.SmartJoystick;
+import org.greenblitz.utils.SmartJoystick;
+import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
+import org.greenblitz.robot.commands.FindMaxValues;
+import org.greenblitz.robot.commands.elevator.ManualElevator;
+import org.greenblitz.robot.commands.elevator.MoveByProfileElevator;
+import org.greenblitz.robot.commands.elevator.StopElevator;
+import org.greenblitz.robot.subsystems.Chassis;
 
 public class OI {
 
@@ -25,7 +24,7 @@ public class OI {
     }
 
     private OI() {
-        mainJS = new SmartJoystick(RobotMap.JoystickID.MAIN);
+        mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
         //mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         //mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
         //mainJS.A.whenPressed(new FindMaxValues());

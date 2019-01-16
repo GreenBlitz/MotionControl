@@ -1,10 +1,10 @@
-package org.greenblitz.example.robot.subsystems;
+package org.greenblitz.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.example.robot.commands.elevator.StopElevator;
+import org.greenblitz.robot.commands.elevator.StopElevator;
 
 public class ElevatorPrototype extends Subsystem {
 

@@ -1,3 +1,5 @@
+package org.greenblitz.motion;
+
 import org.greenblitz.motion.profiling.ActuatorLocation;
 import org.greenblitz.motion.profiling.MotionProfile;
 import org.greenblitz.motion.profiling.Profiler1D;
@@ -21,7 +23,7 @@ public class MotionProfilingTest {
         try {
              prof = Profiler1D.generateProfile(
                     locs,
-                    10,
+                    12,
                     5,
                     -2
             );
@@ -29,9 +31,8 @@ public class MotionProfilingTest {
             e.printStackTrace();
             return;
         }
-        System.out.println(prof.getLocation(prof.getTEnd()));
-        System.out.println(prof.getVelocity(prof.getTEnd()));
-        System.out.println(prof);
+
+        System.out.println(prof.generateCSV("./profile_graphs/profile.csv", 100));
     }
 
 }

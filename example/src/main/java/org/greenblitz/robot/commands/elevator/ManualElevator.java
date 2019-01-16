@@ -1,8 +1,8 @@
-package org.greenblitz.example.robot.commands.elevator;
+package org.greenblitz.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
-import org.greenblitz.example.robot.subsystems.ElevatorPrototype;
-import org.greenblitz.example.utils.SmartJoystick;
+import org.greenblitz.robot.subsystems.ElevatorPrototype;
+import org.greenblitz.utils.SmartJoystick;
 
 public class ManualElevator extends Command {
 

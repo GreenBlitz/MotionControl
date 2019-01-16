@@ -1,19 +1,19 @@
-package org.greenblitz.example.robot;
+package org.greenblitz.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.example.robot.subsystems.ElevatorPrototype;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
-import org.greenblitz.example.robot.subsystems.Chassis;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.app.Path;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.robot.OI;
+import org.greenblitz.robot.subsystems.ElevatorPrototype;
 
 import java.util.Timer;
 import java.util.TimerTask;

@@ -1,4 +1,4 @@
-package org.greenblitz.example.utils;
+package org.greenblitz.utils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 

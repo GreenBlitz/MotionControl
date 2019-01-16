@@ -1,12 +1,12 @@
-package org.greenblitz.example.robot.commands.elevator;
+package org.greenblitz.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.example.robot.subsystems.ElevatorPrototype;
-import org.greenblitz.motion.motionprofiling.ActuatorLocation;
-import org.greenblitz.motion.motionprofiling.MotionProfile;
-import org.greenblitz.motion.motionprofiling.Profiler1D;
-import org.greenblitz.motion.motionprofiling.exception.ProfilingException;
+import org.greenblitz.robot.subsystems.ElevatorPrototype;
+import org.greenblitz.motion.profiling.ActuatorLocation;
+import org.greenblitz.motion.profiling.MotionProfile;
+import org.greenblitz.motion.profiling.Profiler1D;
+import org.greenblitz.motion.profiling.exception.ProfilingException;
 
 import java.util.ArrayList;
 import java.util.List;

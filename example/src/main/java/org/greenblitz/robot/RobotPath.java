@@ -1,9 +1,10 @@
-package org.greenblitz.example.robot;
+package org.greenblitz.robot;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
+import org.greenblitz.robot.RobotStats;
 
 public class RobotPath {
 
