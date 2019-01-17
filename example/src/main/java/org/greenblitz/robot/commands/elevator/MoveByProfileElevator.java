@@ -102,7 +102,7 @@ public class MoveByProfileElevator extends Command implements Runnable {
             }
 
             if (printer != null)
-                printer.addValues(t, profile.getVelocity(t), ElevatorPrototype.getInstance().getSpeed());
+                printer.addValues(t, profile.getVelocity(t), prototype.getSpeed());
 
             vPower = kV * profile.getVelocity(t);
             aPower = kA * profile.getAcceleration(t);
