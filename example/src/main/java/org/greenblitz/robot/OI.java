@@ -1,5 +1,6 @@
 package org.greenblitz.robot;
 
+import org.greenblitz.motion.profiling.ActuatorLocation;
 import org.greenblitz.utils.SmartJoystick;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.FindMaxValues;
@@ -31,7 +32,10 @@ public class OI {
         //mainJS.B.whenPressed(new ArcadeDriveByJoystick(mainJS));
         //mainJS.Y.whenPressed(null);
         mainJS.A.whileHeld(new ManualElevator(mainJS));
-        mainJS.B.whenPressed(new MoveByProfileElevator());
+        mainJS.B.whenPressed(new MoveByProfileElevator(
+                new ActuatorLocation(0 ,0),
+                new ActuatorLocation(1, 0)
+        ));
         mainJS.Y.whenPressed(new StopElevator());
 
     }

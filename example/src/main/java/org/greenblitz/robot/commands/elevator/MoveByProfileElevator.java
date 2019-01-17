@@ -11,10 +11,7 @@ import org.greenblitz.robot.commands.PeriodicCommand;
 import org.greenblitz.robot.subsystems.ElevatorPrototype;
 import org.greenblitz.utils.CSVWrapper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class MoveByProfileElevator extends PeriodicCommand {
 
@@ -25,14 +22,18 @@ public class MoveByProfileElevator extends PeriodicCommand {
     private static final double MAX_ACCEL = 115 / 10.0;//79;//33000000;
     private static final long PERIOD = 1;
 
-    private static final double kV = 0,
+    private static final double kV = 1.0 / MAX_VEL,
             kA = 0,
             kP = 0,
-            ff = 0;
+            ff = 0.3;
 
     private PIDController locationController;
 
     private CSVWrapper printer;
+
+    public MoveByProfileElevator(ActuatorLocation... locs){
+        this(Arrays.asList(locs));
+    }
 
     public MoveByProfileElevator(List<ActuatorLocation> locs) {
         super(PERIOD);
@@ -57,6 +58,7 @@ public class MoveByProfileElevator extends PeriodicCommand {
     protected void initialize() {
         startTime = System.currentTimeMillis();
         done = false;
+        start();
     }
 
     @Override
