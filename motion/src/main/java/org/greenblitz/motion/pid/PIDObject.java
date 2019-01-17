@@ -3,6 +3,18 @@ package org.greenblitz.motion.pid;
 public class PIDObject {
 
     protected double m_kp, m_kd, m_ki, m_kf;
+
+    @Override
+    public String toString() {
+        return "PIDObject{" +
+                "m_kp=" + m_kp +
+                ", m_kd=" + m_kd +
+                ", m_ki=" + m_ki +
+                ", m_kf=" + m_kf +
+                ", integral=" + integral +
+                '}';
+    }
+
     protected double integral;
     protected double previousError;
 

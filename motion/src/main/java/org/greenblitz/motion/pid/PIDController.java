@@ -2,67 +2,40 @@ package org.greenblitz.motion.pid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class PIDController {
 
-    protected List<PIDObject> pidObjects;
+    protected PIDObject obj;
     protected long previousTime;
 
-    public PIDController(PIDObject... objs){
-        pidObjects = Arrays.asList(objs);
+    public PIDController(PIDObject object){
+        obj = object;
     }
 
-    public PIDController(List<PIDObject> objs){
-        pidObjects = objs;
-    }
-
-    public static PIDController generateSingle(double m_kp, double m_ki, double m_kd, double m_kf) {
-        var controller = new ArrayList<PIDObject>();
-        controller.add(new PIDObject(m_kp, m_ki, m_kd, m_kf));
-        return new PIDController(controller);
-    }
-
-    public static PIDController generateSingle(double kp, double ki, double kd){
-        return generateSingle(kp, kd, ki, 0);
-    }
-
-    public static PIDController generateSingle(double kp, double ki){
-        return generateSingle(kp, ki, 0);
-    }
-
-    public static PIDController generateSingle(double kp){
-        return generateSingle(kp, 0);
-    }
 
     /**
      * Calling this implies starting to use the controller
-     * @param values Name of controller with [goal, value0] as values
+     * @param goal
+     * @param value
      */
-    public void init(double[] goals, double[] values){
-        for (int i = 0; i < pidObjects.size(); i++)
-            pidObjects.get(i).init(goals[i], values[i]);
+    public void init(double goal, double value){
+        obj.init(goal, value);
         previousTime = System.currentTimeMillis();
     }
 
     /**
      *
-     * @param goals
+     * @param goal
      * @param current
      * @return
      */
-    public double[] calculatePID(double[] goals, double[] current){
+    public double calculatePID(double goal, double current){
 
         double secsPassed = (System.currentTimeMillis() - previousTime) / 1000.0;
         previousTime = System.currentTimeMillis();
 
-        double[] pidVals = new double[pidObjects.size()];
-
-        for (int i = 0; i < pidObjects.size(); i++)
-            pidVals[i] = pidObjects.get(i).calculatePID(goals[i], current[i], secsPassed);
-
-        return pidVals;
+        return obj.calculatePID(goal, current, secsPassed);
     }
 
     /**
@@ -76,8 +49,8 @@ public class PIDController {
         return Math.abs(goal - current) <= maxAllowedError;
     }
 
-    public PIDObject getPidObject(int index){
-        return pidObjects.get(index);
+    public PIDObject getPidObject(){
+        return obj;
     }
 
 }

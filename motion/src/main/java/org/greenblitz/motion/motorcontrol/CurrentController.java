@@ -1,9 +1,9 @@
 /*package org.greenblitz.motion.motorcontrol;
 
-import org.greenblitz.motion.pid.PIDController;
+import org.greenblitz.motion.pid.MultivariablePIDController;
 
 // TODO
-public class CurrentController extends PIDController {
+public class CurrentController extends MultivariablePIDController {
 
 
     public CurrentController(double m_kp, double m_ki, double m_kd, double m_kf) {
