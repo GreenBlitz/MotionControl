@@ -1,6 +1,7 @@
 package org.greenblitz.motion.pid;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,6 +9,10 @@ public class PIDController {
 
     protected List<PIDObject> pidObjects;
     protected long previousTime;
+
+    public PIDController(PIDObject... objs){
+        pidObjects = Arrays.asList(objs);
+    }
 
     public PIDController(List<PIDObject> objs){
         pidObjects = objs;

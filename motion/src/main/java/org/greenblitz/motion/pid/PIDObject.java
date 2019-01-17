@@ -29,7 +29,7 @@ public class PIDObject {
      * Calling this implies starting to use the controller
      */
     public void init(double goal, double value0){
-        integral = 0;
+        resetIntegral();
         previousError = goal - value0;
     }
 

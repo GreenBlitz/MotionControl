@@ -21,11 +21,14 @@ public class CSVWrapper {
      */
     public static CSVWrapper generateWrapper(String name, int len, String... headers){
         CSVWrapper newW;
-        if (len != 0 && headers.length != len)
+        if (len != 0 && headers.length != len) {
+            System.err.println("Len doesn't match headers");
             return null;
+        }
         try{
             newW = new CSVWrapper(name, len, headers);
         } catch (IOException e){
+            e.printStackTrace();
             return null;
         }
         return newW;
@@ -35,6 +38,15 @@ public class CSVWrapper {
         printer = CSVFormat.EXCEL.withHeader(headers)
                 .print(new File(name), Charset.defaultCharset());
         this.len = len;
+    }
+
+    public boolean flush(){
+        try {
+            printer.flush();
+        } catch (IOException e){
+            return false;
+        }
+        return true;
     }
 
     public boolean addValues(Object... values){

@@ -1,4 +1,4 @@
-package org.greenblitz.motion.motorcontrol;
+/*package org.greenblitz.motion.motorcontrol;
 
 import org.greenblitz.motion.pid.PIDController;
 
@@ -22,3 +22,4 @@ public class CurrentController extends PIDController {
         super(kp);
     }
 }
+*/

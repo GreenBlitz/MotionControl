@@ -8,7 +8,7 @@ import org.greenblitz.robot.commands.elevator.StopElevator;
 
 public class ElevatorPrototype extends Subsystem {
 
-    private static final double MAX_HEIGHT = 1.5;
+    private static final double MAX_HEIGHT = 1.4;
     private static final double TICKS_PER_METER = 40000;
 
     private static ElevatorPrototype instance;
@@ -36,8 +36,8 @@ public class ElevatorPrototype extends Subsystem {
     }
 
     public void set(double power) {
-        if (getDistance() > MAX_HEIGHT && power < -0.25)
-            power = -0.25;
+        if (getDistance() > MAX_HEIGHT && power < -0.3)
+            power = -0.3;
         power = Math.min(-0.1, power);
         m_motor.set(ControlMode.PercentOutput, power);
     }
@@ -59,6 +59,8 @@ public class ElevatorPrototype extends Subsystem {
     }
 
     public void update() {
+        SmartDashboard.putNumber("Elevator::Location", getDistance());
+        SmartDashboard.putNumber("Evelator::Velocity", getSpeed());
         SmartDashboard.putString("Elevator::Command", getCurrentCommandName());
     }
 }
