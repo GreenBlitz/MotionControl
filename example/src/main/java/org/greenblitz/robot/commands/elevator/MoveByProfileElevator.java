@@ -52,7 +52,7 @@ public class MoveByProfileElevator extends Command implements Runnable {
         locationController = new PIDController(new PIDObject(kP));
 
         System.out.println(profile);
-    }++++++++
+    }
 
     @Override
     protected void initialize() {
