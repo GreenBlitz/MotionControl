@@ -2,6 +2,7 @@ package org.greenblitz.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.robot.commands.elevator.StopElevator;
@@ -14,6 +15,7 @@ public class ElevatorPrototype extends Subsystem {
     private static ElevatorPrototype instance;
 
     private TalonSRX m_motor;
+    private AnalogInput currentSensor;
 
     public static void init() {
         if (instance == null)
@@ -28,6 +30,7 @@ public class ElevatorPrototype extends Subsystem {
 
     private ElevatorPrototype() {
         m_motor = new TalonSRX(6);
+        currentSensor = new AnalogInput(2);
     }
 
     @Override
@@ -62,5 +65,9 @@ public class ElevatorPrototype extends Subsystem {
         SmartDashboard.putNumber("Elevator::Location", getDistance());
         SmartDashboard.putNumber("Evelator::Velocity", getSpeed());
         SmartDashboard.putString("Elevator::Command", getCurrentCommandName());
+    }
+
+    public double getCurrent() {
+        return currentSensor.getVoltage();
     }
 }

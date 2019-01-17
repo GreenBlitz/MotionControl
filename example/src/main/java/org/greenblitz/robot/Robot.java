@@ -1,22 +1,13 @@
 package org.greenblitz.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
-import jaci.pathfinder.followers.EncoderFollower;
-import jaci.pathfinder.modifiers.TankModifier;
-import org.greenblitz.motion.app.AdaptivePurePursuitController;
-import org.greenblitz.motion.app.Path;
-import org.greenblitz.motion.base.Position;
-import org.greenblitz.robot.OI;
 import org.greenblitz.robot.subsystems.ElevatorPrototype;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class Robot extends TimedRobot {
 
@@ -42,15 +33,16 @@ public class Robot extends TimedRobot {
     }
 
     long prevTime;
+
     @Override
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
         SmartDashboard.putNumber("Ticks", ElevatorPrototype.getInstance().getDistance());
         if (ElevatorPrototype.getInstance().getSpeed() >
-        SmartDashboard.getNumber("Vel", 0))
+                SmartDashboard.getNumber("Vel", 0))
             SmartDashboard.putNumber("Vel", ElevatorPrototype.getInstance().getSpeed());
-        double acc = ElevatorPrototype.getInstance().getSpeed()/
-                ((System.currentTimeMillis() - prevTime)/1000.0);
+        double acc = ElevatorPrototype.getInstance().getSpeed() /
+                ((System.currentTimeMillis() - prevTime) / 1000.0);
         if (acc > SmartDashboard.getNumber("Acc", 0))
             SmartDashboard.putNumber("Acc", acc);
         prevTime = System.currentTimeMillis();
