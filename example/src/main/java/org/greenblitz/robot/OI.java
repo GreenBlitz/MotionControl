@@ -1,6 +1,9 @@
 package org.greenblitz.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import org.greenblitz.motion.profiling.ActuatorLocation;
+import org.greenblitz.robot.commands.vision.DriveToPanel;
 import org.greenblitz.utils.SmartJoystick;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.FindMaxValues;
@@ -12,6 +15,8 @@ import org.greenblitz.robot.subsystems.Chassis;
 public class OI {
 
     private static OI instance;
+
+    private NetworkTable visionTable;
 
     private SmartJoystick mainJS;
 
@@ -37,11 +42,23 @@ public class OI {
                 new ActuatorLocation(1, 0)
         ));
         mainJS.Y.whenPressed(new StopElevator());
-
+        mainJS.X.whenPressed(new DriveToPanel());
+        visionTable = NetworkTableInstance.getDefault().getTable("VisionTable");
     }
 
     public SmartJoystick getMainJS() {
         return mainJS;
     }
 
+    public NetworkTable getVisionTable() {
+        return visionTable;
+    }
+
+    public double getHatchDistance(){
+        return visionTable.getEntry("Hatch::Distance").getDouble(0);
+    }
+
+    public double getHatchAngle(){
+        return visionTable.getEntry("Hatch::Angle").getDouble(0);
+    }
 }

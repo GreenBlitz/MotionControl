@@ -71,8 +71,12 @@ public class MultivariablePIDController {
      * @param maxAllowedError
      * @return
      */
-    public boolean isFinished(double goal, double current, double maxAllowedError){
-        return Math.abs(goal - current) <= maxAllowedError;
+    public boolean isFinished(double[] goal, double[] current, double maxAllowedError){
+        for (int i = 0; i < goal.length; i++){
+            if (Math.abs(goal[i] - current[i]) > maxAllowedError)
+                return false;
+        }
+        return true;
     }
 
     public PIDObject getPidObject(int index){
