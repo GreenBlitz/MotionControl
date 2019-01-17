@@ -1,6 +1,7 @@
 package org.greenblitz.robot.commands.elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.ActuatorLocation;
@@ -20,9 +21,8 @@ public class MoveByProfileElevator extends Command implements Runnable {
     private boolean done = false;
     private static final double MAX_VEL = 1.5;
     private static final double MAX_ACCEL = 115 / 10.0;
-    private static final long PERIOD = 1;
 
-    private static final double kV = 1.0 / MAX_VEL,
+    private static final double kV = 30.0 / MAX_VEL,
             kA = 0,
             kP = 0,
             ff = 0.3;
@@ -36,7 +36,6 @@ public class MoveByProfileElevator extends Command implements Runnable {
     }
 
     public MoveByProfileElevator(List<ActuatorLocation> locs) {
-        super(PERIOD);
         requires(ElevatorPrototype.getInstance());
 
         try {
@@ -50,13 +49,13 @@ public class MoveByProfileElevator extends Command implements Runnable {
                 "t", "Profile Velocity", "Actual Velocity");
 
         locationController = new PIDController(new PIDObject(kP));
-        thread = new Thread(this);
 
         System.out.println(profile);
     }
 
     @Override
     protected void initialize() {
+        thread = new Thread(this);
         ElevatorPrototype.getInstance().resetEncoder();
         if (!thread.isAlive())
             thread.start();
@@ -109,6 +108,7 @@ public class MoveByProfileElevator extends Command implements Runnable {
 
             power = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t),
                     prototype.getDistance());
+            SmartDashboard.putNumber("power", power);
 
             prototype.set(-power);
         }
