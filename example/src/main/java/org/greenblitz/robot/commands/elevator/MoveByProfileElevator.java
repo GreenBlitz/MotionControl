@@ -28,8 +28,8 @@ public class MoveByProfileElevator extends Command implements Runnable {
             ff = 0.3;
 
     private PIDController locationController;
-
     private CSVWrapper printer;
+    private Thread thread;
 
     public MoveByProfileElevator(ActuatorLocation... locs) {
         this(Arrays.asList(locs));
@@ -50,6 +50,7 @@ public class MoveByProfileElevator extends Command implements Runnable {
                 "t", "Profile Velocity", "Actual Velocity");
 
         locationController = new PIDController(new PIDObject(kP));
+        thread = new Thread(this);
 
         System.out.println(profile);
     }
@@ -57,6 +58,8 @@ public class MoveByProfileElevator extends Command implements Runnable {
     @Override
     protected void initialize() {
         ElevatorPrototype.getInstance().resetEncoder();
+        if (!thread.isAlive())
+            thread.start();
         done = false;
     }
 
@@ -82,6 +85,7 @@ public class MoveByProfileElevator extends Command implements Runnable {
         done = false;
         ElevatorPrototype.getInstance().stop();
     }
+
 
     @Override
     public void run() {
