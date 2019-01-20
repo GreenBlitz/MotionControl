@@ -6,6 +6,9 @@ import org.greenblitz.motion.profiling.Profiler1D;
 import org.greenblitz.motion.profiling.exception.ProfilingException;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +34,6 @@ public class MotionProfilingTest {
             e.printStackTrace();
             return;
         }
-
-        System.out.println(prof.generateCSV("./profile_graphs/profile.csv", 100));
     }
 
 }

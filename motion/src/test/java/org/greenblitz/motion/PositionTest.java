@@ -1,3 +1,5 @@
+package org.greenblitz.motion;
+
 import org.greenblitz.motion.base.Position;
 import org.junit.jupiter.api.Test;
 
