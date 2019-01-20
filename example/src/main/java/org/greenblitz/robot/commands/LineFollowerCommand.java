@@ -6,20 +6,21 @@ import org.greenblitz.utils.ColorSensor;
 
 public class LineFollowerCommand extends PeriodicCommand{
 
-    private Chassis m_chassis;
-    private double speed;
-    private boolean m_finished;
-    private boolean m_firstRun;
-    private LineFollower m_controller;
-    private ColorSensor sensor;
+    protected Chassis m_chassis;
+    protected double speed;
+    protected boolean m_finished;
+    protected boolean m_firstRun;
+    protected LineFollower m_controller;
+    protected ColorSensor sensor;
     // red , green , blue
-    private short[] line;
-    private short[] backround;
-    private double distance;
-    private double initDistance;
+    protected short[] line;
+    protected short[] backround;
+    protected double distance;
+    protected double initDistance;
+    private int side; // right side = 1
 
-
-    public LineFollowerCommand(long period, double kp, double ki, double kd, double speed, ColorSensor sensor, double distance){
+// right side = true
+    public LineFollowerCommand(long period, double kp, double ki, double kd, double speed, ColorSensor sensor, double distance, boolean side){
         super(period);
         m_chassis = Chassis.getInstance();
         requires(m_chassis);
@@ -28,20 +29,21 @@ public class LineFollowerCommand extends PeriodicCommand{
         this.sensor = sensor;
         this.distance = distance;
         m_firstRun = true;
+        this.side = side ? 1: -1;
     }
 
-    public LineFollowerCommand(double kp, double ki, double kd, double speed, ColorSensor sensor, double distance){
-        this(50, kp, ki, kd, speed, sensor, distance);
+    public LineFollowerCommand(double kp, double ki, double kd, double speed, ColorSensor sensor, double distance, boolean side){
+        this(50, kp, ki, kd, speed, sensor, distance, side);
     }
 
     @Override
     protected void periodic() {
         if(m_firstRun){
-            m_controller.init(50.0,getPrecentage());
+            m_controller.init(50.0,getPrecentage(sensor.read()));
             initDistance = Chassis.getInstance().getDistance();
             m_firstRun = false;
         }
-        m_chassis.arcadeDrive(speed,m_controller.calculatePID(50.0, getPrecentage()));
+        m_chassis.arcadeDrive(speed,side * m_controller.calculatePID(50.0, getPrecentage(sensor.read())));
 
         synchronized (this){
             m_finished = Chassis.getInstance().getDistance() > initDistance + distance;
@@ -55,10 +57,10 @@ public class LineFollowerCommand extends PeriodicCommand{
         }
     }
 
-    public double getPrecentage(){
-        short[] current = sensor.read();
-        return 100.0*((current[0]- backround[0])/3.0/(line[0]-backround[0])
-                + (current[1]- backround[1])/3.0/(line[1]- backround[1])
-                + (current[2]- backround[2])/3.0/(line[2]-backround[2]));
+    protected double getPrecentage(short[] rgb){
+        short[] current = rgb;
+        return 100.0/3.0*((current[0]- backround[0])/(line[0]-backround[0])
+                + (current[1]- backround[1])/(line[1]- backround[1])
+                + (current[2]- backround[2])/(line[2]-backround[2]));
     }
 }
