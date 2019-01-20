@@ -17,9 +17,9 @@ public class MultivariablePIDController {
         pidObjects = objs;
     }
 
-    public static MultivariablePIDController generateSingle(double m_kp, double m_ki, double m_kd, double m_kf) {
-        var controller = new ArrayList<PIDObject>();
-        controller.add(new PIDObject(m_kp, m_ki, m_kd, m_kf));
+    public static MultivariablePIDController generateSingle(double kp, double ki, double kd, double kf) {
+        List<PIDObject> controller = new ArrayList<>();
+        controller.add(new PIDObject(kp, ki, kd, kf));
         return new MultivariablePIDController(controller);
     }
 
