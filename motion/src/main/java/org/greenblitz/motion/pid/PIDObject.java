@@ -63,7 +63,7 @@ public class PIDObject {
         // Set Int(e)dt
         integral += err * dt;
 
-        return m_kp * err + m_ki * integral + m_kd * errD + m_kf * current;
+        return m_kp * err + m_ki * integral + m_kd * errD + m_kf * goal;
     }
 
     public void resetIntegral(){

@@ -47,7 +47,7 @@ public class ColorSensor {
 
 
 
-    public ColorSensorData read() {
+    public short[] read() {
         short red = 0, green = 0, blue = 0, prox = 0;
         buffy.clear();
         sensor.read(CMD | MULTI_BYTE_BIT | RDATA_REGISTER, 8, buffy);
@@ -64,7 +64,7 @@ public class ColorSensor {
         prox = buffy.getShort(6);
         if(prox < 0) { prox += 0b10000000000000000; }
 
-        return new ColorSensorData(red, green, blue, prox);
+        return new short[]{red, green, blue};
     }
 
     public int status() {
@@ -77,29 +77,4 @@ public class ColorSensor {
         sensor.free();
     }
 
-    public class ColorSensorData{
-        private short red, green, blue, prox;
-        private ColorSensorData(short red, short green, short blue, short prox ){
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
-            this.prox = prox;
-        }
-
-        public short getBlue() {
-            return blue;
-        }
-
-        public short getRed() {
-            return red;
-        }
-
-        public short getGreen() {
-            return green;
-        }
-
-        public short getProx() {
-            return prox;
-        }
-    }
 }
