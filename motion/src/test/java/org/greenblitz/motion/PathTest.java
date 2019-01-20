@@ -15,21 +15,22 @@ public class PathTest {
     @Test
     void testSegmentIntersection(){
         double[] intersections = Path.intersections(new Point(5,7), 5, new Point(10,5), new Point(8, 3));
-        assertEquals(intersections[0], 1, EPSILON);
-        assertEquals(intersections[1], 0.5, EPSILON);
+        assertEquals(intersections[0], 0.75, EPSILON);
+        assertEquals(intersections[1], 1, EPSILON);
+        assertEquals(intersections[2], 0.5, EPSILON);
     }
 
     @Test
     void testPathIntersection(){
-        ArrayList list = new ArrayList<Point>();
-        list.add(new Point(0, 0));
-        list.add(new Point(0, 5));
-        list.add(new Point(5, 5));
-        list.add(new Point(5, 10));
+        ArrayList list = new ArrayList<Position>();
+        list.add(new Position(0, 0));
+        list.add(new Position(0, 5));
+        list.add(new Position(5, 5));
+        list.add(new Position(5, 10));
         Path path = new Path(list);
-        Point intersection = path.getGoalPoint(new Point(0,10), 5 * Math.sqrt(5) / 2);
+        Point intersection = path.getGoalPoint(new Point(7.5,7.5), 2.5 * Math.sqrt(5) / 2);
         assertEquals(intersection.getX(), 5, EPSILON);
-        assertEquals(intersection.getY(), 7.5, EPSILON);
+        assertEquals(intersection.getY(), 8.75, EPSILON);
     }
 
     @Test

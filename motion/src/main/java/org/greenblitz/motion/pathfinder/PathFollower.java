@@ -130,8 +130,8 @@ public class PathFollower {
      * @return the values that should be passed to the motors (in tank drive)
      */
     public double[] update(int currentLeftTicks, int currentRightTicks) {
-        var left = m_leftFollower.calculate(currentLeftTicks);
-        var right = m_rightFollower.calculate(currentRightTicks);
+        double left = m_leftFollower.calculate(currentLeftTicks);
+        double right = m_rightFollower.calculate(currentRightTicks);
         return new double[]{left, right};
     }
 

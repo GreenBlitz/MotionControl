@@ -13,6 +13,13 @@ public class PIDController {
         obj = object;
     }
 
+    public PIDController(double kP, double kI, double kD, double kF) {
+        this(new PIDObject(kP, kI, kD, kF));
+    }
+
+    public PIDController(double kP, double kI, double kD) {
+        this(kP, kI, kD, 0);
+    }
 
     /**
      * Calling this implies starting to use the controller

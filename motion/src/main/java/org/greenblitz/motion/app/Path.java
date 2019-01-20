@@ -18,9 +18,10 @@ public class Path {
 
     private List<Position> m_path;
 
-    @SuppressWarnings("unchecked")
-    public Path(List<Position> path) {
-        m_path = path;
+     public Path(List<Position> path) {
+        m_path = new ArrayList<>();
+        for(Position pos : path)
+            m_path.add(pos);
     }
 
     public Path(Position... points) {
@@ -42,12 +43,11 @@ public class Path {
             Position first = m_path.get(i);
             Position last = m_path.get(i + 1);
             boolean eqX = false;
-            if (Point.isFuzzyEqual(first.getX(), last.getX(), 10E-4) &&
-                    Point.isFuzzyEqual(first.getY(), last.getY(), 10E-4))
+            if (Point.fuzzyEquals(first, last, 10E-4))
                 continue;
             if (Point.isFuzzyEqual(first.getX(), last.getX(), 10E-4)) {
-                first.rotate(Math.PI / 2.0);
-                last.rotate(Math.PI / 2.0);
+                first.rotate(Math.PI / 2);
+                last.rotate(Math.PI / 2);
                 eqX = true;
             }
             double x1 = first.getX();
@@ -143,7 +143,6 @@ public class Path {
                 b = 2 * Point.dotProduct(robToSeg, segment),
                 c = Point.normSquared(robToSeg) - radius * radius;
         double discriminant = b * b - 4 * a * c;
-
         if (discriminant < 0) return new double[]{-b / (2 * a)};
 
         double sqrtDis = Math.sqrt(discriminant);
@@ -174,10 +173,11 @@ public class Path {
      * @return the last intersection on the path with the look ahead circle iff such intersection exists
      * the closest point on the path O.W.
      */
-    public Point getGoalPoint(Point robotLoc, double lookAhead) {
-        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead * lookAhead)
+    public Position getGoalPoint(Point robotLoc, double lookAhead) {
+        if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead * lookAhead) {
             return m_path.get(m_path.size() - 1);
-        Point closest = m_path.get(m_path.size() - 1);
+        }
+        Position closest = m_path.get(m_path.size() - 1);
         double[] ptlInt; //potential intersections
         for (int ind = m_path.size() - 2; ind >= 0; ind--) {
             ptlInt = intersections(robotLoc, lookAhead, m_path.get(ind), m_path.get(ind + 1));
@@ -185,10 +185,11 @@ public class Path {
                 closest = m_path.get(ind);
             if (ptlInt.length == 1)
                 continue;
-            if (ptlInt[0] >= 0 && ptlInt[0] <= 1)
-                return Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[0]);
-            if (ptlInt[1] >= 0 && ptlInt[1] <= 1)
-                return Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[1]);
+            if (ptlInt[1] >= 0 && ptlInt[1] <= 1) {
+                return Position.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[1]);
+            }
+            if (ptlInt[2] >= 0 && ptlInt[2] <= 1)
+                return Position.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[2]);
         }
         return closest;
     }
