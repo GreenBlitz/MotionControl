@@ -1,10 +1,5 @@
 package org.greenblitz.motion;
 
-<<<<<<< HEAD
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-=======
->>>>>>> f55d84ae75e4fc2cbcd126b04f9da0b07b638ca0
 import org.greenblitz.motion.profiling.ActuatorLocation;
 import org.greenblitz.motion.profiling.MotionProfile;
 import org.greenblitz.motion.profiling.Profiler1D;
