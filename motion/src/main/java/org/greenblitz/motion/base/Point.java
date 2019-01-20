@@ -27,6 +27,10 @@ public class Point {
         this.setY(y);
     }
 
+    public static Point cis(double ang, double len){
+        return new Point(len*Math.sin(ang), len*Math.cos(ang));
+    }
+
     /**
      * Returns a new point in the same location
      */
@@ -132,9 +136,6 @@ public class Point {
         return isFuzzyEqual(first, second, 1E-6);
     }
 
-    //bad fussy equal
-    //use distance
-    //udi
     public static boolean fuzzyEquals(Point fir, Point sec, double epsilon) {
         return isFuzzyEqual(fir.getX(), sec.getX(), epsilon) && isFuzzyEqual(fir.getY(), sec.getY(), epsilon);
     }
@@ -145,6 +146,23 @@ public class Point {
 
     public static Point avg(Point a, Point b) {
         return weightedAvg(a, b, 0.5);
+    }
+
+    /**
+     * calculates a point on a Bazier curve.
+     * @param locInCurve the location of the point along the curve. 0 iff start, 1 iff end
+     * @param corners the corners of the curve
+     * @return the desired point
+     */
+    public static Point bazierSample(double locInCurve, Point... corners){
+        return bazierSample(corners, corners.length, locInCurve);
+    }
+
+    private static Point bazierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
+        if (cornersUsedLength == 1) return corners[0];
+        for (int ind = 0; ind < cornersUsedLength-1; ind++)
+            corners[ind] = weightedAvg(corners[ind], corners[ind + 1], locInCurve);
+        return bazierSample(corners, cornersUsedLength - 1, locInCurve);
     }
 
     @Override

@@ -1,20 +1,18 @@
+package org.greenblitz.motion;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.greenblitz.motion.base.Point;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class PointTest {
-
-    private static boolean fuzzyPointEquals(Point actual, Point expected, double fuzz) {
-//        System.out.println("Actual: " + actual + "; Expected: " + expected);
-        return (Math.abs(actual.getX() - expected.getX()) < fuzz)
-                && (Math.abs(actual.getY() - expected.getY()) < fuzz);
-    }
-
-    private static Point cis(double ang, double len){
-        return new Point(len*Math.sin(ang), len*Math.cos(ang));
-    }
 
     @Test
     void translateTest() {
@@ -39,23 +37,54 @@ public class PointTest {
 
     @Test
     void rotateTest() {
-        double fuzz = Math.pow(10, -8);
+        double fuzz = 1E-8;
         Point p1 = new Point(1, 1);
         p1.rotate(Math.PI);
-        assertTrue(fuzzyPointEquals(p1, new Point(-1, -1), fuzz));
+        assertTrue(Point.fuzzyEquals(p1, new Point(-1, -1), fuzz));
         p1 = new Point(-1, 0);
         p1.rotate(Math.PI / 2);
-        assertTrue(fuzzyPointEquals(p1, new Point(0, 1), fuzz));
-        p1 = cis(Math.PI / 8, 7);
+        assertTrue(Point.fuzzyEquals(p1, new Point(0, 1), fuzz));
+        p1 = Point.cis(Math.PI / 8, 7);
         p1.rotate(Math.PI / 4);
-        assertTrue(fuzzyPointEquals(p1, cis(3*Math.PI / 8, 7), fuzz));
+        assertTrue(Point.fuzzyEquals(p1, Point.cis(3*Math.PI / 8, 7), fuzz));
         for (int i = 0; i < 100; i++){
             double ang = Math.random() * 100 * Math.PI;
             double len = Math.random() * 50;
-            p1 = cis(ang, len);
+            p1 = Point.cis(ang, len);
             double rot = Math.random() * 100 - 50;
             p1.rotate(rot);
-            assertTrue(fuzzyPointEquals(p1, cis(ang + rot, len), fuzz));
+            assertTrue(Point.fuzzyEquals(p1, Point.cis(ang + rot, len), fuzz));
+        }
+    }
+
+    @Test
+    void bazierTest(){
+        double fuzz = 1E-8;
+        Point first = new Point(3,5);
+        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, first), first, fuzz));
+        Point second = new Point(7,3);
+        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, first, second), new Point(3 + 0.3*(7-3), 5 + 0.3*(3-5)), fuzz));
+        Point third = new Point(6,7);
+        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, second, third), new Point(7 + 0.3*(6-7), 3 + 0.3*(7-3)), fuzz));
+        Point fs = new Point(first.getX() + 0.3*(second.getX()-first.getX()), first.getY() + 0.3*(second.getY()-first.getY()));
+        Point st = new Point(second.getX() + 0.3*(third.getX()-second.getX()), second.getY() + 0.3*(third.getY()-second.getY()));
+        Point res = new Point(fs.getX() + 0.3*(st.getX()-fs.getX()), fs.getY() + 0.3*(st.getY()-fs.getY()));
+        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, Point.bazierSample(0.3, first, second), Point.bazierSample(0.3, second, third)), res, fuzz));
+        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, first, second, third), res, fuzz));
+        Point forth = new Point(0, 10);
+
+        try {
+            File f = new File("filename.csv");
+            CSVPrinter p = CSVFormat.EXCEL.withHeader("x", "y").print(f, Charset.defaultCharset());
+            Point print;
+            for(double i = 0; i<=1+1E-5; i+=0.02){
+                print = Point.bazierSample(i, first, second, third, forth);
+                p.printRecord(print.getX(), print.getY());
+                System.out.println(print);
+            }
+            p.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

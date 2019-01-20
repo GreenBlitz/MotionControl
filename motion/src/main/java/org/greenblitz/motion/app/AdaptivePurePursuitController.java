@@ -21,29 +21,10 @@ public class AdaptivePurePursuitController {
         this.isBackwards = isBackwards;
     }
 
-    /**
-     * arcDrive. calculates the values the motors should get to get to the target point
-     * @param robotLoc the robot location + angle
-     * @param target the target point
-     * @param maxSpeedDist the minimum distance at witch you still drive at maximum speed
-     * @param minSpeed minimum speed
-     * @param tolerance the distance to the final point at witch the algorithm stops
-     * @return [left motor value, right motor value] iff still driving
-     *      null O.W.
-     */
-    public double[] driveValuesTo(Position robotLoc, Point target, double maxSpeedDist, double minSpeed, double tolerance) {
-        if (Point.distSqared(target, robotLoc) <= tolerance*tolerance) {
-            return null;
-        }
-		
-        double speed = target != m_path.getLast() ?
-                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
-        if(speed < minSpeed)
-            speed = minSpeed;
-        Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
-        if(isBackwards)
-            speed *= -1;
+    public double[] rawArcDriveValuesTo(Position robotLoc, Point target, double speed) {
+        speed *= isBackwards ? -1 : 1;
 
+        Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
         double curvature = 2 * diff.getX() / Point.normSquared(diff);
         if (curvature == 0)
             return new double[]{speed, speed};
@@ -56,8 +37,50 @@ public class AdaptivePurePursuitController {
             return new double[]{speed, speed * rightRadius / leftRadius};
     }
 
+    /**
+     * arcDrive. calculates the values the motors should get to get to the target point in an arc
+     *
+     * @param robotLoc     the robot location + angle
+     * @param target       the target point
+     * @param maxSpeedDist the minimum distance at witch you still drive at maximum speed
+     * @param minSpeed     minimum speed
+     * @param tolerance    the distance to the final point at witch the algorithm stops
+     * @return [left motor value, right motor value] iff still driving
+     * null O.W.
+     */
+    public double[] arcDriveValuesTo(Position robotLoc, Point target, double maxSpeedDist, double minSpeed, double tolerance) {
+        if (Point.distSqared(target, robotLoc) <= tolerance * tolerance) {
+            return null;
+        }
+
+        double speed = target != m_path.getLast() ?
+                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
+        if (speed < minSpeed)
+            speed = minSpeed;
+
+        double[] ret = rawArcDriveValuesTo(robotLoc, target, speed);
+        return ret;
+    }
+
+    public double[] bazierDriveValuesTo(double locInBazierCurve, Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance) {
+        if (Point.distSqared(target, robotLoc) <= tolerance * tolerance) {
+            return null;
+        }
+        Point afterRobot = robotLoc.clone().translate(Point.cis(isBackwards ? -1 : 1, robotLoc.getAngle()));
+        Point beforeTarget = target.clone().translate(Point.cis(isBackwards ? 1 : -1, target.getAngle()));
+        Point arcTarget = Point.bazierSample(locInBazierCurve, robotLoc, afterRobot, beforeTarget, target);
+
+        double speed = target != m_path.getLast() ?
+                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
+        if (speed < minSpeed)
+            speed = minSpeed;
+
+        double[] ret = rawArcDriveValuesTo(robotLoc, arcTarget, speed);
+        return ret;
+    }
+
     public double[] iteration(Position robotLoc) {
-        Point target = m_path.getGoalPoint(robotLoc, m_lookAhead);
-        return driveValuesTo(robotLoc, target, m_lookAhead, 0.3, 0.2);
+        Position target = m_path.getGoalPoint(robotLoc, m_lookAhead);
+        return bazierDriveValuesTo(0.1, robotLoc, target, m_lookAhead, 0.3, 0.2);
     }
 }

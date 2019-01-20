@@ -1,17 +1,17 @@
-package org.greenblitz.example.robot.subsystems;
+package org.greenblitz.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.example.robot.LocalizerRunner;
-import org.greenblitz.example.robot.OI;
-import org.greenblitz.example.robot.RobotMap;
-import org.greenblitz.example.robot.RobotStats;
-import org.greenblitz.example.robot.commands.ArcadeDriveByJoystick;
-import org.greenblitz.example.utils.CANRobotDrive;
-import org.greenblitz.example.utils.SmartEncoder;
+import org.greenblitz.robot.LocalizerRunner;
+import org.greenblitz.robot.OI;
+import org.greenblitz.robot.RobotMap;
+import org.greenblitz.robot.RobotStats;
+import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
+import org.greenblitz.utils.CANRobotDrive;
+import org.greenblitz.utils.SmartEncoder;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathfinder.PathFollower;
 

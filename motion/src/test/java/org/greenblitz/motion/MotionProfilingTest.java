@@ -1,9 +1,16 @@
+package org.greenblitz.motion;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.greenblitz.motion.profiling.ActuatorLocation;
 import org.greenblitz.motion.profiling.MotionProfile;
 import org.greenblitz.motion.profiling.Profiler1D;
 import org.greenblitz.motion.profiling.exception.ProfilingException;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +39,7 @@ public class MotionProfilingTest {
         System.out.println(prof.getLocation(prof.getTEnd()));
         System.out.println(prof.getVelocity(prof.getTEnd()));
         System.out.println(prof);
+
     }
 
 }

@@ -1,4 +1,4 @@
-package org.greenblitz.example.robot;
+package org.greenblitz.robot;
 
 public class RobotMap {
 

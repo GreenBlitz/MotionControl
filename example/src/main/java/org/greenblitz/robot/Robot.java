@@ -1,4 +1,4 @@
-package org.greenblitz.example.robot;
+package org.greenblitz.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -9,7 +9,7 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
-import org.greenblitz.example.robot.subsystems.Chassis;
+import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.app.Path;
 import org.greenblitz.motion.base.Position;

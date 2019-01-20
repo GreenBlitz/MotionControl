@@ -1,3 +1,5 @@
+package org.greenblitz.motion;
+
 import org.greenblitz.motion.profiling.ActuatorLocation;
 import org.greenblitz.motion.profiling.MotionProfile;
 import org.greenblitz.motion.profiling.Profiler1D;
@@ -18,11 +20,11 @@ public class Profiler1dTest {
         points.add(new ActuatorLocation(0, 0));
         points.add(new ActuatorLocation(10, 0));
 
-        var parr = new MotionProfile[1];
+        MotionProfile[] parr = new MotionProfile[1];
         assertDoesNotThrow(() -> {
             parr[0] = Profiler1D.generateProfile(points, 1, 1, -1);
         });
-        var p = parr[0];
+        MotionProfile p = parr[0];
 
 
         assertEquals(p.getAcceleration(0.5), 1, EPSILON);
@@ -43,11 +45,11 @@ public class Profiler1dTest {
         ArrayList<ActuatorLocation> points = new ArrayList<>();
         points.add(new ActuatorLocation(0, 0));
         points.add(new ActuatorLocation(10, 0));
-        var parr = new MotionProfile[1];
+        MotionProfile[] parr = new MotionProfile[1];
         assertDoesNotThrow(() -> {
             parr[0] = Profiler1D.generateProfile(points, 2, 4, -0.5);
         });
-        var p = parr[0];
+        MotionProfile p = parr[0];
         assertEquals(p.getAcceleration(0.25), 4, EPSILON);
         assertEquals(p.getAcceleration(1), 0, EPSILON);
         assertEquals(p.getAcceleration(4), -0.5, EPSILON);
@@ -67,11 +69,11 @@ public class Profiler1dTest {
         points.add(new ActuatorLocation(0, 0));
         points.add(new ActuatorLocation(15, -1));
         points.add(new ActuatorLocation(10, 0));
-        var parr = new MotionProfile[1];
+        MotionProfile[] parr = new MotionProfile[1];
         assertDoesNotThrow(() -> {
             parr[0] = Profiler1D.generateProfile(points, 2, 4, -0.5);
         });
-        var p = parr[0];
+        MotionProfile p = parr[0];
         assertEquals(p.getAcceleration(0.25), 4, EPSILON);
         assertEquals(p.getAcceleration(1), 0, EPSILON);
         assertEquals(p.getAcceleration(0.5 + 5.75 + 0.3 * 6), -0.5, EPSILON);
