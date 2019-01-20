@@ -3,6 +3,8 @@ package org.greenblitz.motion.app;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
+import java.sql.ResultSetMetaData;
+
 /**
  * runs in a seperate thread calculating the org.greenblitz.example.robot position
  *
@@ -84,6 +86,7 @@ public class Localizer {
 
         double dy = circleRadius * Math.sin(angle);
         double dx = circleRadius * (1 - Math.cos(angle));
+
         return new Point(dx, dy).rotate(robotAng);
     }
 

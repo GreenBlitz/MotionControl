@@ -31,6 +31,7 @@ public class ElevatorPrototype extends Subsystem {
     private ElevatorPrototype() {
         m_motor = new TalonSRX(6);
         currentSensor = new AnalogInput(2);
+        m_motor.setInverted(true);
     }
 
     @Override
@@ -39,9 +40,9 @@ public class ElevatorPrototype extends Subsystem {
     }
 
     public void set(double power) {
-        if (getDistance() > MAX_HEIGHT && power < -0.3)
-            power = -0.3;
-        power = Math.min(-0.1, power);
+        if (getDistance() > MAX_HEIGHT && power > 0.3)
+            power = 0.3;
+        power = Math.max(0.1, power);
         m_motor.set(ControlMode.PercentOutput, power);
     }
 
@@ -50,11 +51,11 @@ public class ElevatorPrototype extends Subsystem {
     }
 
     public double getDistance() {
-        return m_motor.getSensorCollection().getQuadraturePosition() / TICKS_PER_METER;
+        return -m_motor.getSensorCollection().getQuadraturePosition() / TICKS_PER_METER;
     }
 
     public double getSpeed() {
-        return (10*m_motor.getSensorCollection().getQuadratureVelocity()) / TICKS_PER_METER;
+        return -(10*m_motor.getSensorCollection().getQuadratureVelocity()) / TICKS_PER_METER;
     }
 
     public void resetEncoder() {
@@ -63,7 +64,7 @@ public class ElevatorPrototype extends Subsystem {
 
     public void update() {
         SmartDashboard.putNumber("Elevator::Location", getDistance());
-        SmartDashboard.putNumber("Evelator::Velocity", getSpeed());
+        //SmartDashboard.putNumber("Evelator::Velocity", getSpeed());
         SmartDashboard.putString("Elevator::Command", getCurrentCommandName());
     }
 

@@ -19,18 +19,17 @@ public class MoveByProfileElevator extends Command implements Runnable {
     private long startTime;
     private MotionProfile profile;
     private boolean done = false;
-    private static final double MAX_VEL = 1.5;
+    private static final double MAX_VEL = 1.4;
     private static final double MAX_ACCEL = 115 / 10.0;
 
-    private static final double kV = 30.0 / MAX_VEL,
-            kA = 0,
+    private static final double kV = (1 / MAX_VEL) * 1.37,
+            kA = 0, //   1/MAX_ACCEL,
             kP = 0,
             ff = 0.3;
 
     private PIDController locationController;
     private CSVWrapper printer;
     private Thread thread;
-
     public MoveByProfileElevator(ActuatorLocation... locs) {
         this(Arrays.asList(locs));
     }
@@ -88,6 +87,8 @@ public class MoveByProfileElevator extends Command implements Runnable {
 
     @Override
     public void run() {
+//        int cntr = 1;
+
         locationController.init(0, 0);
         startTime = System.currentTimeMillis();
         ElevatorPrototype prototype = ElevatorPrototype.getInstance();
@@ -97,20 +98,26 @@ public class MoveByProfileElevator extends Command implements Runnable {
 
             if (profile.isOver(t)) {
                 done = true;
+//                System.out.println(cntr);
                 return;
             }
-
+//            SmartDashboard.putNumber("COUNTER::", cntr);
             if (printer != null)
                 printer.addValues(t, profile.getVelocity(t), prototype.getSpeed());
 
             vPower = kV * profile.getVelocity(t);
             aPower = kA * profile.getAcceleration(t);
 
-            power = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t),
-                    prototype.getDistance());
+            //power = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t), prototype.getDistance());
+            power = vPower;
             SmartDashboard.putNumber("power", power);
 
-            prototype.set(-power);
+            SmartDashboard.putNumber("Elevator::actual velocity", ElevatorPrototype.getInstance().getSpeed());
+            SmartDashboard.putNumber("Elevator::expected profile velocity", profile.getVelocity(t));
+            SmartDashboard.putNumber("Elevator::velocity difference", ElevatorPrototype.getInstance().getSpeed()-profile.getVelocity(t));
+
+            prototype.set(power + ff);
+//            cntr++;
         }
     }
 
