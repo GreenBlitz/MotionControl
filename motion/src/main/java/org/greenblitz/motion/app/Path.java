@@ -186,10 +186,10 @@ public class Path {
             if (ptlInt.length == 1)
                 continue;
             if (ptlInt[1] >= 0 && ptlInt[1] <= 1) {
-                return Position.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[1]);
+                return new Position(Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[1]), m_path.get(ind).getAngle());
             }
             if (ptlInt[2] >= 0 && ptlInt[2] <= 1)
-                return Position.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[2]);
+                return new Position(Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[2]), m_path.get(ind).getAngle());
         }
         return closest;
     }

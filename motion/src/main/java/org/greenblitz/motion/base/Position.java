@@ -116,19 +116,11 @@ public class Position extends Point {
 
     /**
      * Will automatically normalize the angle
-     *הארה
+     *
      * @param angle
      */
     public void setAngle(double angle) {
         this.angle = normalizeAngle(angle);
-    }
-
-    public static Position weightedAvg(Position a, Position b, double bWeight){
-        return new Position(
-                (1-bWeight)*a.x + bWeight*b.x,
-                (1-bWeight)*a.y + bWeight*b.y,
-                (1-bWeight)*a.angle + bWeight*b.angle
-        );
     }
 
     @Override

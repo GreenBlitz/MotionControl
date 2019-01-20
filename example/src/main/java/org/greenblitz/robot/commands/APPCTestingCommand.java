@@ -18,20 +18,20 @@ public class APPCTestingCommand extends PeriodicCommand {
     private Path m_path;
     private AdaptivePurePursuitController m_controller;
 
-    public APPCTestingCommand(long period, double lookahead, double wheelbase, List<Position> points) {
+    public APPCTestingCommand(long period, double lookahead, double wheelbase, Path points) {
         super(period);
         m_chasis = Chassis.getInstance();
         requires(m_chasis);
-        m_path = new Path(points);
+        m_path = points;
         m_controller = new AdaptivePurePursuitController(m_path, lookahead, wheelbase, false);
     }
 
-    public APPCTestingCommand(double lookahead, double wheelbase, List<Position> points){
+    public APPCTestingCommand(double lookahead, double wheelbase, Path points){
         this(50, lookahead, wheelbase, points);
     }
 
     public APPCTestingCommand(double lookahead, double wheelbase, Position... points){
-        this(50, lookahead, wheelbase, (ArrayList<Position>) Arrays.asList(points));
+        this(50, lookahead, wheelbase, new Path( Arrays.asList(points)));
     }
 
     @Override

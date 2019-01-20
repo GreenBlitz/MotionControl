@@ -74,6 +74,10 @@ public class PointTest {
         Point forth = new Point(0, 10);
 
         try {
+            first = new Point(0,0);
+            second = new Point(0,1);
+            third = new Point(-1, 1);
+            forth = new Point(0, 1);
             File f = new File("filename.csv");
             CSVPrinter p = CSVFormat.EXCEL.withHeader("x", "y").print(f, Charset.defaultCharset());
             Point print;

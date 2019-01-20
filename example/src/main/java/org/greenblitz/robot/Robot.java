@@ -3,7 +3,8 @@ package org.greenblitz.robot;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.greenblitz.motion.base.Position;
+import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.subsystems.ElevatorPrototype;
 
 import java.util.Timer;
@@ -36,16 +37,28 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        SmartDashboard.putNumber("Ticks", ElevatorPrototype.getInstance().getDistance());
-        if (ElevatorPrototype.getInstance().getSpeed() >
-                SmartDashboard.getNumber("Vel", 0))
-            SmartDashboard.putNumber("Vel", ElevatorPrototype.getInstance().getSpeed());
-        double acc = ElevatorPrototype.getInstance().getSpeed() /
-                ((System.currentTimeMillis() - prevTime) / 1000.0);
-        if (acc > SmartDashboard.getNumber("Acc", 0))
-            SmartDashboard.putNumber("Acc", acc);
-        prevTime = System.currentTimeMillis();
 
+    }
+
+    @Override
+    public void autonomousInit() {
+        Scheduler.getInstance().removeAll();
+        Scheduler.getInstance().add(new APPCTestingCommand(0.5, RobotStats.Picasso.Chassis.HORIZONTAL_DISTANCE,
+                new Position(0, 0, 0),
+                new Position(0, 1, Math.PI/2),
+                new Position(1, 1, 0),
+                new Position(1, 2, 0)
+        ));
+    }
+
+    @Override
+    public void autonomousPeriodic(){
+        Scheduler.getInstance().run();
+    }
+
+    @Override
+    public void disabledInit(){
+        Scheduler.getInstance().removeAll();
     }
 
     @Override

@@ -14,6 +14,9 @@ public class AdaptivePurePursuitController {
 
     public final boolean isBackwards;
 
+    boolean first = true;
+    boolean alsoFirst = true;
+
     public AdaptivePurePursuitController(Path path, double lookAhead, double wheelBase, boolean isBackwards) {
         m_path = path;
         m_lookAhead = lookAhead;
@@ -26,6 +29,11 @@ public class AdaptivePurePursuitController {
 
         Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
         double curvature = 2 * diff.getX() / Point.normSquared(diff);
+        if (alsoFirst) {
+            System.out.println("robot location: " + robotLoc + ", target: " + target);
+            System.out.println("curvature: " + curvature);
+            alsoFirst = false;
+        }
         if (curvature == 0)
             return new double[]{speed, speed};
         double radius = 1 / curvature;
@@ -66,8 +74,9 @@ public class AdaptivePurePursuitController {
         if (Point.distSqared(target, robotLoc) <= tolerance * tolerance) {
             return null;
         }
-        Point afterRobot = robotLoc.clone().translate(Point.cis(isBackwards ? -1 : 1, robotLoc.getAngle()));
-        Point beforeTarget = target.clone().translate(Point.cis(isBackwards ? 1 : -1, target.getAngle()));
+        double dist = Point.dist(robotLoc, target);
+        Point afterRobot = robotLoc.clone().translate(Point.cis(isBackwards ? -dist/3 : dist/3, robotLoc.getAngle()));
+        Point beforeTarget = target.clone().translate(Point.cis(isBackwards ? dist/3 : -dist/3, target.getAngle()));
         Point arcTarget = Point.bazierSample(locInBazierCurve, robotLoc, afterRobot, beforeTarget, target);
 
         double speed = target != m_path.getLast() ?
@@ -81,6 +90,10 @@ public class AdaptivePurePursuitController {
 
     public double[] iteration(Position robotLoc) {
         Position target = m_path.getGoalPoint(robotLoc, m_lookAhead);
+        if (first) {
+            System.out.println("robot location: " + robotLoc + ", target: " + target);
+            first = false;
+        }
         return bazierDriveValuesTo(0.1, robotLoc, target, m_lookAhead, 0.3, 0.2);
     }
 }

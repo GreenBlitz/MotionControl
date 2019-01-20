@@ -3,6 +3,7 @@ package org.greenblitz.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import org.greenblitz.motion.profiling.ActuatorLocation;
+import org.greenblitz.robot.commands.TankDriveByJoystick;
 import org.greenblitz.robot.commands.elevator.ManualElevator;
 import org.greenblitz.robot.commands.elevator.MoveByProfileElevator;
 import org.greenblitz.robot.commands.elevator.StopElevator;
@@ -40,6 +41,7 @@ public class OI {
         ));
         mainJS.Y.whenPressed(new StopElevator());
         mainJS.X.whenPressed(new DriveToPanel());
+        mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));
         visionTable = NetworkTableInstance.getDefault().getTable("VisionTable");
     }
 
