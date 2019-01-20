@@ -1,5 +1,11 @@
 package org.greenblitz.motion.profiling;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,6 +106,37 @@ public class MotionProfile {
                 goodSegments.add(s);
         }
         segments = goodSegments;
+    }
+
+    public boolean generateCSV(String name, double dt) {
+        CSVPrinter printer;
+
+        try {
+            printer = CSVFormat.EXCEL.withHeader(
+                    "t",
+                    "Location",
+                    "Velocity",
+                    "Acceleration"
+            ).print(new File(name), Charset.defaultCharset());
+        } catch (IOException e){
+            return false;
+        }
+
+        double t = 0;
+        while (!isOver(t)){
+            try {
+                printer.printRecord(t, getLocation(t), getVelocity(t), getAcceleration(t));
+            } catch (IOException e){
+                return false;
+            }
+            t += dt;
+        }
+
+        return true;
+    }
+
+    public boolean generateCSV(String name, int samplesPerSecond){
+        return generateCSV(name, 1.0/samplesPerSecond);
     }
 
     /**
