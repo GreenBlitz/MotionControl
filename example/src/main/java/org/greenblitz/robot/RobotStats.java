@@ -46,7 +46,7 @@ public final class RobotStats {
             /**
              * Encoder ticks per meter on each side in each gear
              */
-            public static final double LEFT_VELOCITY = 2549, LEFT_POWER = 2549, RIGHT_VELOCITY = 2569, RIGHT_POWER = 2569;
+            public static final double LEFT_VELOCITY = -Double.MAX_VALUE, LEFT_POWER = 1355/2, RIGHT_VELOCITY = Double.MIN_VALUE, RIGHT_POWER = 1353/2;
 
             /**
              * @param gear The gear in which the scale was measured

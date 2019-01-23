@@ -6,6 +6,7 @@ import org.greenblitz.motion.base.Position;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Udi    ~ MudiAtalon
  * @author Alexey ~ savioor
  */
-public class Path {
+public class Path implements Iterable<Position>{
 
     private List<Position> m_path;
 
@@ -195,11 +196,17 @@ public class Path {
     }
 
     public Point getLast() {
-        return m_path.get(m_path.size() - 1);
+        return new Position(m_path.get(m_path.size() - 1));
     }
 
+    @Deprecated
     public List<Position> getPath() {
         return m_path;
+    }
+
+    @Override
+    public Iterator<Position> iterator() {
+        return m_path.iterator();
     }
 
 }

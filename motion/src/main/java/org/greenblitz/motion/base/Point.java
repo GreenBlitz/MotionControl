@@ -149,20 +149,20 @@ public class Point {
     }
 
     /**
-     * calculates a point on a Bazier curve.
+     * calculates a point on a Bezier curve.
      * @param locInCurve the location of the point along the curve. 0 iff start, 1 iff end
      * @param corners the corners of the curve
      * @return the desired point
      */
-    public static Point bazierSample(double locInCurve, Point... corners){
-        return bazierSample(corners, corners.length, locInCurve);
+    public static Point bezierSample(double locInCurve, Point... corners){
+        return bezierSample(corners, corners.length, locInCurve);
     }
 
-    private static Point bazierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
+    private static Point bezierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
         if (cornersUsedLength == 1) return corners[0];
         for (int ind = 0; ind < cornersUsedLength-1; ind++)
             corners[ind] = weightedAvg(corners[ind], corners[ind + 1], locInCurve);
-        return bazierSample(corners, cornersUsedLength - 1, locInCurve);
+        return bezierSample(corners, cornersUsedLength - 1, locInCurve);
     }
 
     @Override

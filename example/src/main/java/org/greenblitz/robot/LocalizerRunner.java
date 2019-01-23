@@ -20,9 +20,10 @@ public class LocalizerRunner extends PeriodicRunner {
 
     public LocalizerRunner(long period, double wheelBase, SmartEncoder leftEncoder, SmartEncoder rightEncoder) {
         super(period);
-        m_localizer = new Localizer(wheelBase);
-        m_leftEncoder = leftEncoder;
-        m_rightEncoder = rightEncoder;
+        m_localizer = Localizer.getInstance();
+        m_localizer.configure(wheelBase, 0, 0);
+        m_leftEncoder = leftEncoder; leftEncoder.reset();
+        m_rightEncoder = rightEncoder; rightEncoder.reset();
     }
 
     public LocalizerRunner(double wheelBase, SmartEncoder leftEncoder, SmartEncoder rightEncoder) {

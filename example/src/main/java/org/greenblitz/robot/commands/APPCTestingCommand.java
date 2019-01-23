@@ -1,15 +1,11 @@
 package org.greenblitz.robot.commands;
 
-import org.greenblitz.robot.RobotStats;
-import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.app.Path;
-import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.robot.subsystems.Chassis;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class APPCTestingCommand extends PeriodicCommand {
 
@@ -36,7 +32,7 @@ public class APPCTestingCommand extends PeriodicCommand {
 
     @Override
     protected void periodic() {
-        double[] moveValues = m_controller.iteration(m_chasis.getLocation());
+        double[] moveValues = m_controller.iteration(m_chasis.getLocation(), 0.5);
         if (moveValues == null){
             m_chasis.tankDrive(0,0);
             m_finished = true;

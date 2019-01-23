@@ -1,14 +1,10 @@
 package org.greenblitz.robot.commands.vision;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.motion.pid.MultivariablePIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.subsystems.Chassis;
-import org.greenblitz.utils.SmartJoystick;
-
-import java.nio.charset.Charset;
 
 public class DriveToPanel extends Command {
 

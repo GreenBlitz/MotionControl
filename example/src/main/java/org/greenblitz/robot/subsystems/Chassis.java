@@ -1,10 +1,10 @@
 package org.greenblitz.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.greenblitz.debug.RemoteGuydeBugger;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.LocalizerRunner;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
@@ -12,17 +12,9 @@ import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.utils.CANRobotDrive;
 import org.greenblitz.utils.SmartEncoder;
-import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.pathfinder.PathFollower;
-import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 
 public class Chassis extends Subsystem {
-    private NetworkTableEntry updateEntry = NetworkTableInstance.getDefault().getTable("motion").getEntry("isUpdated");
-    private NetworkTableEntry xEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("x");
-    private NetworkTableEntry yEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("y");
-    private NetworkTableEntry headingEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("heading");
-
-    private static final double POWER_LIMIT = 1.0;
+    private static final double POWER_LIMIT = 0.7; // 1.0;
 
     private static Chassis instance;
 
@@ -84,10 +76,7 @@ public class Chassis extends Subsystem {
         SmartDashboard.putNumber("robot x", pos.getX());
         SmartDashboard.putNumber("robot y", pos.getY());
         SmartDashboard.putNumber("robot angle", Math.toDegrees(pos.getAngle()));
-        xEntry.setNumber(pos.getX());
-        yEntry.setNumber(pos.getY());
-        headingEntry.setNumber(pos.getAngle());
-        updateEntry.setBoolean(true);
+        RemoteGuydeBugger.report(pos.getX(), pos.getY(), pos.getAngle());
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {

@@ -1,5 +1,6 @@
 package org.greenblitz.motion.app;
 
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
@@ -20,10 +21,20 @@ public class Localizer {
 
     private final Object LOCK = new Object();
 
-    public Localizer(double wheelBase) {
-        m_wheelDistance = wheelBase;
+    private final RemoteCSVTarget m_logger;
+    private final long timeOffset;
+
+    private Localizer() {
+        RemoteCSVTarget.initTarget("location", "x", "y");
+        m_logger = RemoteCSVTarget.getTarget("location");
+        timeOffset = System.currentTimeMillis();
     }
 
+    private static final Localizer instance = new Localizer();
+
+    public static Localizer getInstance(){
+        return instance;
+    }
 
     /**
      * <p>Get the org.greenblitz.example.robot location. This is the system: </p>
@@ -44,15 +55,12 @@ public class Localizer {
     /**
      * sets initial values of Localizer, functions as constructor.
      *
-     * @param initialLocation
      * @param leftTicks
      * @param rightTicks
      */
-    public void configure(Position initialLocation, double wheelDistance, int leftTicks, int rightTicks) {
-        m_location = initialLocation;
+    public void configure(double wheelDistance, int leftTicks, int rightTicks) {
         m_wheelDistance = wheelDistance;
-        prevDistanceLeft = leftTicks;
-        prevDistanceRight = rightTicks;
+        reset(leftTicks, rightTicks);
     }
 
     /**
@@ -96,6 +104,8 @@ public class Localizer {
             m_location.translate(dXdY);
             m_location.setAngle((currentRightDistance - currentLeftDistance) / m_wheelDistance);
         }
+
+        m_logger.report(m_location.getX(), m_location.getY());
 
         prevDistanceLeft = currentLeftDistance;
         prevDistanceRight = currentRightDistance;
