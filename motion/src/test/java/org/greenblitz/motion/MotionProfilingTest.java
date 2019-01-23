@@ -14,26 +14,28 @@ import java.util.List;
 
 public class MotionProfilingTest {
 
+    private static final double MAX_VEL = 1.5;
+    private static final double MAX_ACCEL = 115 / 10.0;
+
     @Test
     void printTest(){
         List<ActuatorLocation> locs = new ArrayList<>();
         locs.add(new ActuatorLocation(0, 0));
-        locs.add(new ActuatorLocation(-10, -6));
-        locs.add(new ActuatorLocation(2, 3));
-        locs.add(new ActuatorLocation(6, 6));
-        locs.add(new ActuatorLocation(15, 10));
+        locs.add(new ActuatorLocation(1, 0));
         MotionProfile prof;
         try {
              prof = Profiler1D.generateProfile(
                     locs,
-                    12,
-                    5,
-                    -2
+                    MAX_VEL,
+                    MAX_ACCEL,
+                    -MAX_ACCEL
             );
         } catch (ProfilingException e){
             e.printStackTrace();
             return;
         }
+        System.out.println(prof);
+        prof.generateCSV("elevatorGraph.csv", 500);
     }
 
 }
