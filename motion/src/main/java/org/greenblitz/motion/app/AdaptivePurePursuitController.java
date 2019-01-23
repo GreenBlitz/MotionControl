@@ -24,7 +24,7 @@ public class AdaptivePurePursuitController {
         this.isBackwards = isBackwards;
     }
 
-    public double[] rawArcDriveValuesTo(Position robotLoc, Point target, double speed) {
+    private double[] rawArcDriveValuesTo(Position robotLoc, Point target, double speed) {
         speed *= isBackwards ? -1 : 1;
 
         Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
@@ -33,7 +33,7 @@ public class AdaptivePurePursuitController {
         return arcDrive(curvature, speed);
     }
 
-    public double[] arcDrive(double curvature, double speed){
+    private double[] arcDrive(double curvature, double speed){
         if (alsoFirst) {
             System.out.println("curvature: " + curvature);
             alsoFirst = false;
@@ -47,6 +47,14 @@ public class AdaptivePurePursuitController {
             return new double[]{speed * leftRadius / rightRadius, speed};
         else
             return new double[]{speed, speed * rightRadius / leftRadius};
+    }
+
+    private double getSpeed(Position robotLoc, Point target, double maxSpeedDist, double minSpeed){
+        double speed = target != m_path.getLast() ?
+                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
+        if (speed < minSpeed)
+            speed = minSpeed;
+        return speed;
     }
 
     /**
@@ -65,16 +73,18 @@ public class AdaptivePurePursuitController {
             return null;
         }
 
-        double speed = target != m_path.getLast() ?
-                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
-        if (speed < minSpeed)
-            speed = minSpeed;
+        double speed = getSpeed(robotLoc, target, maxSpeedDist, minSpeed);
 
         double[] ret = rawArcDriveValuesTo(robotLoc, target, speed);
         return ret;
     }
 
-    public double[] driveByPolinom(Position robotLoc, Position target, double speed){
+    private double[] driveByPolinom(Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance){
+
+        if (Point.distSqared(target, robotLoc) <= tolerance * tolerance)
+            return null;
+
+        double speed = getSpeed(robotLoc, target, maxSpeedDist, minSpeed);
 
         double x1 = robotLoc.getX();
         double x2 = target.getX();
@@ -102,7 +112,7 @@ public class AdaptivePurePursuitController {
         return arcDrive(curvature, speed);
     }
 
-    public double[] bazierDriveValuesTo(double locInBazierCurve, Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance) {
+    private double[] bazierDriveValuesTo(double locInBazierCurve, Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance) {
         if (Point.distSqared(target, robotLoc) <= tolerance * tolerance) {
             return null;
         }
@@ -126,6 +136,6 @@ public class AdaptivePurePursuitController {
             System.out.println("robot location: " + robotLoc + ", target: " + target);
             first = false;
         }
-        return bazierDriveValuesTo(0.1, robotLoc, target, m_lookAhead, 0.3, 0.2);
+        return driveByPolinom(robotLoc, target, m_lookAhead, 0.3, 0.2);
     }
 }
