@@ -29,8 +29,12 @@ public class AdaptivePurePursuitController {
 
         Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
         double curvature = 2 * diff.getX() / Point.normSquared(diff);
+        System.out.println("robot location: " + robotLoc + ", target: " + target);
+        return arcDrive(curvature, speed);
+    }
+
+    public double[] arcDrive(double curvature, double speed){
         if (alsoFirst) {
-            System.out.println("robot location: " + robotLoc + ", target: " + target);
             System.out.println("curvature: " + curvature);
             alsoFirst = false;
         }
@@ -68,6 +72,34 @@ public class AdaptivePurePursuitController {
 
         double[] ret = rawArcDriveValuesTo(robotLoc, target, speed);
         return ret;
+    }
+
+    public double[] driveByPolinom(Position robotLoc, Position target, double speed){
+
+        double x1 = robotLoc.getX();
+        double x2 = target.getX();
+        double y1 = robotLoc.getY();
+        double y2 = target.getY();
+        double v1 = Math.tan(robotLoc.getAngle());
+        double v2 = Math.tan(target.getAngle());
+
+        if (x1 == x2){
+            return arcDrive(0, speed);
+        }
+
+        double denominator = Math.pow(x1 - x2, 3);
+
+        double a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
+                / denominator;
+        double b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2
+                + v2 * x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
+                / denominator;
+        double c = (2 * v1 * x1 * x1 * x2 - v1 * x1 * x2 * x2 - v1 * Math.pow(x2, 3) + v2 * Math.pow(x1, 3)
+                + v2 * x1 * x1 * x2 - 2 * v2 * x1 * x2 * x2 - 6 * x1 * x2 * y1 + 6 * x1 * x2 * y2)
+                / denominator;
+
+        double curvature = (6*a*x1 + 2*b) / Math.pow(1 + Math.pow(3*a*x1*x1 + 2*b*x1 + c, 2), 1.5);
+        return arcDrive(curvature, speed);
     }
 
     public double[] bazierDriveValuesTo(double locInBazierCurve, Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance) {
