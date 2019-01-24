@@ -5,7 +5,11 @@ import org.greenblitz.motion.base.Position;
 
 /**
  * @author Udi ~ MudiAtalon
+ * @author Alexey ~ Savioor
+ *
+ * @deprecated it just doesn't seem to work at all
  */
+@Deprecated
 public class AdaptivePolynomialPursuitController {
     private Path m_path;
 
