@@ -79,7 +79,7 @@ public class AdaptivePurePursuitController {
         return ret;
     }
 
-    private double[] polinomDriveValuesTo(Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance){
+    private double[] polynomDriveValuesTo(Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance){
 
         if (Point.distSqared(target, robotLoc) <= tolerance * tolerance)
             return null;
@@ -97,18 +97,20 @@ public class AdaptivePurePursuitController {
             return arcDrive(0, speed);
         }
 
-        double denominator = Math.pow(x1 - x2, 3);
+        double denominator = 1.0/Math.pow(x1 - x2, 3);
 
-        double a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
-                / denominator;
-        double b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2
-                + v2 * x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
-                / denominator;
-        double c = (2 * v1 * x1 * x1 * x2 - v1 * x1 * x2 * x2 - v1 * Math.pow(x2, 3) + v2 * Math.pow(x1, 3)
-                + v2 * x1 * x1 * x2 - 2 * v2 * x1 * x2 * x2 - 6 * x1 * x2 * y1 + 6 * x1 * x2 * y2)
-                / denominator;
+        double v1x1 = v1 * x1;
+        double v1x2 = v1 * x2;
+        double v2x1 = v2 * x1;
+        double v2x2 = v2 * x2;
 
-        double curvature = (6*a*x1 + 2*b) / Math.pow(1 + Math.pow(3*a*x1*x1 + 2*b*x1 + c, 2), 1.5);
+        double a = (v1x1 - v1x2 + v2x1 - v2x2 - 2*y1 + 2*y2)
+                * denominator;
+        double b = (-v1x1 * x1 - v1x1 * x2 + 2 * v1x2 * x2 - 2 * v2x1 * x1 + v2x1 * x2
+                + v2x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
+                * denominator;
+
+        double curvature = (6*a*x1 + 2*b) / Math.pow(1 + Math.pow(v1, 2), 1.5);
         return arcDrive(curvature, speed);
     }
 
@@ -136,6 +138,6 @@ public class AdaptivePurePursuitController {
             System.out.println("robot location: " + robotLoc + ", target: " + target);
             first = false;
         }
-        return polinomDriveValuesTo(robotLoc, target, m_lookAhead, 0.3, 0.2);
+        return polynomDriveValuesTo(robotLoc, target, m_lookAhead, 0.3, 0.2);
     }
 }
