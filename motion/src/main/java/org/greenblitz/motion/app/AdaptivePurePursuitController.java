@@ -98,11 +98,16 @@ public class AdaptivePurePursuitController {
         }
 
         double denominator = Math.pow(x1 - x2, 3);
+        
+        double v1x1 = v1 * x1;
+        double v1x2 = v1 * x2;
+        double v2x1 = v2 * x1;
+        double v2x2 = v2 * x2;
 
-        double a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
+        double a = (v1x1 - v1x2 + v2x1 - v2x2 - 2*y1 + 2*y2)
                 / denominator;
-        double b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2
-                + v2 * x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
+        double b = (-v1x1 * x1 - v1x1 * x2 + 2 * v1x2 * x2 - 2 * v2x1 * x1 + v2x1 * x2
+                + v2x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
                 / denominator;
 
         double curvature = (6*a*x1 + 2*b) / Math.pow(1 + Math.pow(v1, 2), 1.5);
