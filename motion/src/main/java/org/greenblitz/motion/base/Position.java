@@ -128,7 +128,7 @@ public class Position extends Point {
         return "Position{" +
                 "x=" + x +
                 ", y=" + y +
-                ", angle=" + angle +
+                ", angle=" + angle*180/Math.PI +
                 '}';
     }
 }

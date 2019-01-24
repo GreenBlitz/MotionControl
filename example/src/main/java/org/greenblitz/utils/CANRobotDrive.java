@@ -116,8 +116,6 @@ public class CANRobotDrive {
 	}
 
 	public void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
-        System.out.println("left: "+leftOutput);
-        System.out.println("right: "+ rightOutput);
 		m_frontLeft.set(ControlMode.PercentOutput, limit(leftOutput) * m_outputScale * m_frontLeftInverted);
 		m_rearLeft.set(ControlMode.PercentOutput, limit(leftOutput) * m_outputScale * m_rearLeftInverted);
 		m_frontRight.set(ControlMode.PercentOutput, limit(rightOutput) * m_outputScale * m_frontRightInverted);

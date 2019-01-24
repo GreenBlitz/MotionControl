@@ -32,7 +32,7 @@ public class APPCTestingCommand extends PeriodicCommand {
 
     @Override
     protected void periodic() {
-        double[] moveValues = m_controller.iteration(m_chasis.getLocation(), 0.5);
+        double[] moveValues = m_controller.iteration(m_chasis.getLocation());
         if (moveValues == null){
             m_chasis.tankDrive(0,0);
             m_finished = true;

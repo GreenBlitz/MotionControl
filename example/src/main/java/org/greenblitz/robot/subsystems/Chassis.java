@@ -11,25 +11,26 @@ import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.utils.CANRobotDrive;
-import org.greenblitz.utils.SmartEncoder;
+import org.greenblitz.utils.encoder.IEncoder;
+import org.greenblitz.utils.encoder.RoborioEncoder;
 
 public class Chassis extends Subsystem {
     private static final double POWER_LIMIT = 0.7; // 1.0;
 
     private static Chassis instance;
 
-    private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_POWER;
-    private static final double TICKS_PER_METER_RIGHT = RobotStats.Picasso.EncoderMetreScale.RIGHT_POWER;
+    private static final double TICKS_PER_METER_LEFT = RobotStats.Ragnarok.EncoderTicksPerMeter.LEFT_POWER;
+    private static final double TICKS_PER_METER_RIGHT = RobotStats.Ragnarok.EncoderTicksPerMeter.RIGHT_POWER;
 
     private LocalizerRunner m_localizer;
 
-    private SmartEncoder m_leftEncoder, m_rightEncoder;
+    private IEncoder m_leftEncoder, m_rightEncoder;
 
-    public SmartEncoder getLeftEncoder() {
+    public IEncoder getLeftEncoder() {
         return m_leftEncoder;
     }
 
-    public SmartEncoder getRightEncoder() {
+    public IEncoder getRightEncoder() {
         return m_rightEncoder;
     }
 
@@ -48,16 +49,17 @@ public class Chassis extends Subsystem {
 
     private Chassis() {
         m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
-                                         RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
+                RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
 
         m_robotDrive.invert(CANRobotDrive.TalonID.FRONT_RIGHT);
         m_robotDrive.invert(CANRobotDrive.TalonID.REAR_RIGHT);
 
-        m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER_LEFT);
-        m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER_RIGHT);
-        m_rightEncoder.invert();
+        m_leftEncoder = new RoborioEncoder(RobotMap.ChassisPort.LEFT_ENCODER_PORT_A, RobotMap.ChassisPort.LEFT_ENCODER_PORT_B, TICKS_PER_METER_LEFT);
+        m_rightEncoder = new RoborioEncoder(RobotMap.ChassisPort.RIGHT_ENCODER_PORT_A, RobotMap.ChassisPort.RIGHT_ENCODER_PORT_B, TICKS_PER_METER_RIGHT);
         m_leftEncoder.reset();
         m_rightEncoder.reset();
+
+        m_rightEncoder.setInverted(true);
 
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();
@@ -93,8 +95,8 @@ public class Chassis extends Subsystem {
         tankDrive(0, 0);
     }
 
-    public void setBrake(){
-        if(!isCoast)
+    public void setBrake() {
+        if (!isCoast)
             return;
         isCoast = false;
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Brake);
@@ -103,8 +105,8 @@ public class Chassis extends Subsystem {
         m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT).setNeutralMode(NeutralMode.Brake);
     }
 
-    public void setCoast(){
-        if(isCoast)
+    public void setCoast() {
+        if (isCoast)
             return;
         isCoast = true;
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Coast);
@@ -130,11 +132,11 @@ public class Chassis extends Subsystem {
     }
 
     public int getLeftTicks() {
-        return m_leftEncoder.getTicks();
+        return m_leftEncoder.getRawTicks();
     }
 
     public int getRightTicks() {
-        return m_rightEncoder.getTicks();
+        return m_rightEncoder.getRawTicks();
     }
 
     public double getLeftSpeed() {
@@ -167,15 +169,15 @@ public class Chassis extends Subsystem {
         do {
             resetLeftEncoder();
             resetRightEncoder();
-        } while(m_leftEncoder.getTicks() != 0 || m_rightEncoder.getTicks() != 0);
+        } while (m_leftEncoder.getRawTicks() != 0 || m_rightEncoder.getRawTicks() != 0);
     }
 
     public double getWheelRadius() {
-        return RobotStats.Picasso.Chassis.WHEEL_RADIUS;
+        return RobotStats.Ragnarok.WHEEL_RADIUS;
     }
 
     public double getWheelbaseWidth() {
-        return RobotStats.Picasso.Chassis.VERTICAL_DISTANCE;
+        return RobotStats.Ragnarok.WHEELBASE;
     }
 
     public Position getLocation() {

@@ -1,32 +1,31 @@
 package org.greenblitz.robot;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import org.greenblitz.utils.PeriodicRunner;
-import org.greenblitz.utils.SmartEncoder;
 import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.utils.PeriodicRunner;
+import org.greenblitz.utils.encoder.IEncoder;
 
 public class LocalizerRunner extends PeriodicRunner {
 
     private Localizer m_localizer;
 
-    private SmartEncoder m_leftEncoder;
-    private SmartEncoder m_rightEncoder;
+    private IEncoder m_leftEncoder;
+    private IEncoder m_rightEncoder;
 
     private boolean m_resetOnDisable = false;
 
-    public LocalizerRunner(long period, double wheelBase, SmartEncoder leftEncoder, SmartEncoder rightEncoder) {
+    public LocalizerRunner(long period, double wheelBase, IEncoder leftEncoder, IEncoder rightEncoder) {
         super(period);
         m_localizer = Localizer.getInstance();
         m_localizer.configure(wheelBase, 0, 0);
-        m_leftEncoder = leftEncoder; leftEncoder.reset();
-        m_rightEncoder = rightEncoder; rightEncoder.reset();
+        m_leftEncoder = leftEncoder;
+        leftEncoder.reset();
+        m_rightEncoder = rightEncoder;
+        rightEncoder.reset();
     }
 
-    public LocalizerRunner(double wheelBase, SmartEncoder leftEncoder, SmartEncoder rightEncoder) {
+    public LocalizerRunner(double wheelBase, IEncoder leftEncoder, IEncoder rightEncoder) {
         this(20, wheelBase, leftEncoder, rightEncoder);
     }
 
