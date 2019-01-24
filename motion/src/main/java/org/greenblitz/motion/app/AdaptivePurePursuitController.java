@@ -79,7 +79,7 @@ public class AdaptivePurePursuitController {
         return ret;
     }
 
-    private double[] driveByPolinom(Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance){
+    private double[] driveByPolynomial(Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance){
 
         if (Point.distSqared(target, robotLoc) <= tolerance * tolerance)
             return null;
@@ -138,6 +138,6 @@ public class AdaptivePurePursuitController {
             System.out.println("robot location: " + robotLoc + ", target: " + target);
             first = false;
         }
-        return driveByPolinom(robotLoc, target, m_lookAhead, 0.3, 0.2);
+        return driveByPolynomial(robotLoc, target, m_lookAhead, 0.3, 0.2);
     }
 }
