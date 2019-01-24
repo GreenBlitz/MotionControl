@@ -6,7 +6,7 @@ import org.greenblitz.motion.base.Position;
 /**
  * @author Udi ~ MudiAtalon
  */
-public class AdaptivePurePursuitController {
+public class AdaptivePolynomialPursuitController {
     private Path m_path;
 
     public final double m_lookAhead;
@@ -17,7 +17,7 @@ public class AdaptivePurePursuitController {
     boolean first = true;
     boolean alsoFirst = true;
 
-    public AdaptivePurePursuitController(Path path, double lookAhead, double wheelBase, boolean isBackwards) {
+    public AdaptivePolynomialPursuitController(Path path, double lookAhead, double wheelBase, boolean isBackwards) {
         m_path = path;
         m_lookAhead = lookAhead;
         m_wheelBase = wheelBase;
@@ -75,9 +75,62 @@ public class AdaptivePurePursuitController {
 
         double speed = getSpeed(robotLoc, target, maxSpeedDist, minSpeed);
 
-        return rawArcDriveValuesTo(robotLoc, target, speed);
+        double[] ret = rawArcDriveValuesTo(robotLoc, target, speed);
+        return ret;
     }
 
+    private double[] polynomDriveValuesTo(Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance){
+
+        if (Point.distSqared(target, robotLoc) <= tolerance * tolerance)
+            return null;
+
+        double speed = getSpeed(robotLoc, target, maxSpeedDist, minSpeed);
+
+        double x1 = robotLoc.getX();
+        double x2 = target.getX();
+        double y1 = robotLoc.getY();
+        double y2 = target.getY();
+        double v1 = Math.tan(robotLoc.getAngle());
+        double v2 = Math.tan(target.getAngle());
+
+        if (x1 == x2){
+            return arcDrive(0, speed);
+        }
+
+        double denominator = 1.0/Math.pow(x1 - x2, 3);
+
+        double v1x1 = v1 * x1;
+        double v1x2 = v1 * x2;
+        double v2x1 = v2 * x1;
+        double v2x2 = v2 * x2;
+
+        double a = (v1x1 - v1x2 + v2x1 - v2x2 - 2*y1 + 2*y2)
+                * denominator;
+        double b = (-v1x1 * x1 - v1x1 * x2 + 2 * v1x2 * x2 - 2 * v2x1 * x1 + v2x1 * x2
+                + v2x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
+                * denominator;
+
+        double curvature = (6*a*x1 + 2*b) / Math.pow(1 + Math.pow(v1, 2), 1.5);
+        return arcDrive(curvature, speed);
+    }
+
+    private double[] bazierDriveValuesTo(double locInBazierCurve, Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance) {
+        if (Point.distSqared(target, robotLoc) <= tolerance * tolerance) {
+            return null;
+        }
+        double dist = Point.dist(robotLoc, target);
+        Point afterRobot = robotLoc.clone().translate(Point.cis(isBackwards ? -dist/3 : dist/3, robotLoc.getAngle()));
+        Point beforeTarget = target.clone().translate(Point.cis(isBackwards ? dist/3 : -dist/3, target.getAngle()));
+        Point arcTarget = Point.bezierSample(locInBazierCurve, robotLoc, afterRobot, beforeTarget, target);
+
+        double speed = target != m_path.getLast() ?
+                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
+        if (speed < minSpeed)
+            speed = minSpeed;
+
+        double[] ret = rawArcDriveValuesTo(robotLoc, arcTarget, speed);
+        return ret;
+    }
 
     public double[] iteration(Position robotLoc) {
         Position target = m_path.getGoalPoint(robotLoc, m_lookAhead);
@@ -85,6 +138,6 @@ public class AdaptivePurePursuitController {
             System.out.println("robot location: " + robotLoc + ", target: " + target);
             first = false;
         }
-        return arcDriveValuesTo(robotLoc, target, m_lookAhead, 0.3, 0.2);
+        return polynomDriveValuesTo(robotLoc, target, m_lookAhead, 0.3, 0.2);
     }
 }

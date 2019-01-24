@@ -1,5 +1,6 @@
 package org.greenblitz.robot.commands;
 
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.app.Path;
 import org.greenblitz.motion.base.Position;
@@ -27,7 +28,7 @@ public class APPCTestingCommand extends PeriodicCommand {
     }
 
     public APPCTestingCommand(double lookahead, double wheelbase, Position... points){
-        this(50, lookahead, wheelbase, new Path( Arrays.asList(points)));
+        this(50, lookahead, wheelbase, new Path(Arrays.asList(points)));
     }
 
     @Override
