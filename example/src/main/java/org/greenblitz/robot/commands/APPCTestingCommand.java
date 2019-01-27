@@ -1,7 +1,10 @@
 package org.greenblitz.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.motion.app.AdaptivePolynomialPursuitController;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
+import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.motion.app.Path;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.subsystems.Chassis;
@@ -32,6 +35,12 @@ public class APPCTestingCommand extends PeriodicCommand {
     }
 
     @Override
+    protected void initialize() {
+        m_chasis.setBrake();
+        super.initialize();
+    }
+
+    @Override
     protected void periodic() {
         double[] moveValues = m_controller.iteration(m_chasis.getLocation());
         if (moveValues == null){
@@ -40,6 +49,13 @@ public class APPCTestingCommand extends PeriodicCommand {
             return;
         }
         m_chasis.tankDrive(moveValues[0], moveValues[1]);
+    }
+
+    @Override
+    protected void end(){
+        m_chasis.setCoast();
+        SmartDashboard.putNumber("APPC final x", m_chasis.getLocation().getX());
+        SmartDashboard.putNumber("APPC final y", m_chasis.getLocation().getY());
     }
 
     @Override
