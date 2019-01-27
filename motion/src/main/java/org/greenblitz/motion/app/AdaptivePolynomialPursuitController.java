@@ -92,25 +92,22 @@ public class AdaptivePolynomialPursuitController {
         double x2 = target.getX();
         double y1 = robotLoc.getY();
         double y2 = target.getY();
-        double v1 = Math.tan(robotLoc.getAngle());
-        double v2 = Math.tan(target.getAngle());
+        double v1 = Math.tan(robotLoc.getAngle()%(2*Math.PI) == 0 ? 1E-5 : robotLoc.getAngle());
+        double v2 = Math.tan(target.getAngle()%(2*Math.PI) == 0 ? 1E-5 : target.getAngle());
 
         if (x1 == x2){
             return arcDrive(0, speed);
         }
 
-        double denominator = 1.0/Math.pow(x1 - x2, 3);
+        double denominator = Math.pow(x1 - x2, 3);
 
-        double v1x1 = v1 * x1;
-        double v1x2 = v1 * x2;
-        double v2x1 = v2 * x1;
-        double v2x2 = v2 * x2;
+        double a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
+                / denominator;
+        double b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2
+                + v2 * x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
+                / denominator;
 
-        double a = (v1x1 - v1x2 + v2x1 - v2x2 - 2*y1 + 2*y2)
-                * denominator;
-        double b = (-v1x1 * x1 - v1x1 * x2 + 2 * v1x2 * x2 - 2 * v2x1 * x1 + v2x1 * x2
-                + v2x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
-                * denominator;
+        System.out.println(a + "*x^3 + " + b + "*x^2");
 
         double curvature = (6*a*x1 + 2*b) / Math.pow(1 + Math.pow(v1, 2), 1.5);
         return arcDrive(curvature, speed);

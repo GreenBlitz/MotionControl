@@ -10,10 +10,11 @@ public class RemoteCSVTarget {
 
     private static Map<String, RemoteCSVTarget> targets = new HashMap<>();
 
-    public static void initTarget(String fileName, String... names) {
+    public static RemoteCSVTarget initTarget(String fileName, String... names) {
         if (!targets.containsKey(fileName)) {
             targets.put(fileName, new RemoteCSVTarget(fileName, names));
         }
+        return targets.get(fileName);
     }
 
     public static RemoteCSVTarget getTarget(String fileName) {

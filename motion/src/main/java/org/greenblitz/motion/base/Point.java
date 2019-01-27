@@ -184,6 +184,14 @@ public class Point {
                 && isFuzzyEqual(this.getY(), point.getY());
     }
 
+    public Point frcToMathCoords(){
+        return new Point(-x,y);
+    }
+
+    public Point mathToFrcCoords(){
+        return frcToMathCoords();
+    }
+
     @Override
     public int hashCode() {
         int result;

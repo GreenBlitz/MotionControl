@@ -65,12 +65,23 @@ public class PathTest {
 
     @Test
     void simpleSquaredTest(){
-        Path test = new Path(new Position(1,1, Math.atan(2)),
-                new Position(3, 9, Math.atan(6)));
+        Path test = new Path(new Position(1,1, Math.atan(1.0/2)),
+                new Position(3, 9, Math.atan(1.0/6)));
         test.interpolatePoints(15);
         for (int i = 0; i <= 15; i++){
             assertTrue(test.getPath().get(i).equals(new Position((1 + (2*i/15.0)),(1 + (2*i/15.0))*(1 + (2*i/15.0)))));
         }
+    }
+
+    @Test
+    void csvPath(){
+        Path test = new Path(
+                new Position(0, 0),
+                new Position(1, 0),
+                new Position(1, 1)
+        );
+        test.interpolatePoints(999);
+        test.saveAsCSV("testPath.csv");
     }
 
     @Test
@@ -80,14 +91,14 @@ public class PathTest {
             double b = Math.random()*100 - 50;
             double c = Math.random()*100 - 50;
             double d = Math.random()*100 - 50;
-            Path test = new Path(new Position(1, a+b+c+d, Math.atan(3*a + 2*b + c)),
-                    new Position(100, a*Math.pow(100, 3) + b*100*100 + c*100 + d, Math.atan(3*100*100*a + 2*100*b + c)));
+            Path test = new Path(new Position(1, a+b+c+d, Math.atan(1.0/(3*a + 2*b + c))),
+                    new Position(100, a*Math.pow(100, 3) + b*100*100 + c*100 + d, Math.atan(1.0/(3*100*100*a + 2*100*b + c))));
             test.interpolatePoints(100);
             for (int i = 0; i <= 100; i++){
                 assertTrue(Point.fuzzyEquals(test.getPath().get(i), new Position(
                         1 + (99.0*i/100.0),
                         a*Math.pow(1 + (99.0*i/100.0), 3) + b*Math.pow(1 + (99.0*i/100.0), 2) + c*(1 + (99.0*i/100.0)) + d
-                ), 10E-2*0.5));
+                ), 1E-2));
             }
         }
     }

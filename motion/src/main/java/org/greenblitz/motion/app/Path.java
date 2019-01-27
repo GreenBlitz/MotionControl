@@ -1,9 +1,15 @@
 package org.greenblitz.motion.app;
 
 import jaci.pathfinder.Trajectory;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -15,14 +21,15 @@ import java.util.List;
  * @author Udi    ~ MudiAtalon
  * @author Alexey ~ savioor
  */
-public class Path implements Iterable<Position>{
+public class Path implements Iterable<Position> {
 
     private List<Position> m_path;
 
-     public Path(List<Position> path) {
+    private static final double HALF_PI = Math.PI / 2;
+
+    public Path(List<Position> path) {
         m_path = new ArrayList<>();
-        for(Position pos : path)
-            m_path.add(pos);
+        m_path.addAll(path);
     }
 
     public Path(Position... points) {
@@ -32,6 +39,7 @@ public class Path implements Iterable<Position>{
     /**
      * Given a set op points (the current path) it will add point between given points to complete a path.
      * This is done using cubic splines (and thus the angle of the point matters).
+     *
      * @param samples The number of new point to add between each old pair
      */
     public void interpolatePoints(int samples) {
@@ -40,25 +48,51 @@ public class Path implements Iterable<Position>{
             return;
         }
         newPath.add(m_path.get(0));
+
+        double v1, v2, x1, x2, y1, y2, a, b, c, d, denominator, addAngle;
+
         for (int i = 0; i < m_path.size() - 1; i++) {
             Position first = m_path.get(i);
             Position last = m_path.get(i + 1);
-            boolean eqX = false;
+            first = first.frcToMathCoords();
+            last = last.frcToMathCoords();
             if (Point.fuzzyEquals(first, last, 10E-4))
                 continue;
+            addAngle = 0;
             if (Point.isFuzzyEqual(first.getX(), last.getX(), 10E-4)) {
-                first.rotate(Math.PI / 2);
-                last.rotate(Math.PI / 2);
-                eqX = true;
+                first.rotate(HALF_PI);
+                first.changeAngleBy(HALF_PI);
+                last.rotate(HALF_PI);
+                last.changeAngleBy(HALF_PI);
+                addAngle += HALF_PI;
             }
-            double x1 = first.getX();
-            double x2 = last.getX();
-            double y1 = first.getY();
-            double y2 = last.getY();
-            double v1 = Math.tan(first.getAngle());
-            double v2 = Math.tan(last.getAngle());
 
-            double denominator = Math.pow(x1 - x2, 3);
+            double rotateAng = 0;
+            if (Point.isFuzzyEqual(first.getAngle()%(HALF_PI), 0, 5E-2)
+            && !Point.isFuzzyEqual(first.getAngle()%(2*HALF_PI), 0, 5E-2)){
+                rotateAng = HALF_PI - last.getAngle() + 1;
+                if (Point.isFuzzyEqual(rotateAng, 0, 1E-3))
+                    rotateAng = 1.1;
+            } else if(Point.isFuzzyEqual(last.getAngle()%(HALF_PI), 0, 5E-2)
+                    && !Point.isFuzzyEqual(last.getAngle()%(2*HALF_PI), 0, 5E-2)){
+                rotateAng = HALF_PI - first.getAngle() + 1;
+                if (Point.isFuzzyEqual(rotateAng, 0, 1E-3))
+                    rotateAng = 1.1;
+            }
+            addAngle += rotateAng;
+            first.rotate(rotateAng);
+            first.changeAngleBy(rotateAng);
+            last.rotate(rotateAng);
+            last.changeAngleBy(rotateAng);
+
+            x1 = first.getX();
+            x2 = last.getX();
+            y1 = first.getY();
+            y2 = last.getY();
+            v1 = Math.tan(first.getAngle());
+            v2 = Math.tan(last.getAngle());
+
+            denominator = Math.pow(x1 - x2, 3);
 
             // Dirug of the following matrix:
             // x1**3 x1**2 x1 1 | y1
@@ -66,17 +100,20 @@ public class Path implements Iterable<Position>{
             // 3*x1**2 2*x1 1 0 | v1
             // 3*x2**2 2*x2 1 0 | v2
             // gives this:
-            double a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
+            a = (v1 * x1 - v1 * x2 + v2 * x1 - v2 * x2 - 2 * y1 + 2 * y2)
                     / denominator;
-            double b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2
+            b = (-v1 * x1 * x1 - v1 * x1 * x2 + 2 * v1 * x2 * x2 - 2 * v2 * x1 * x1 + v2 * x1 * x2
                     + v2 * x2 * x2 + 3 * x1 * y1 - 3 * x1 * y2 + 3 * x2 * y1 - 3 * x2 * y2)
                     / denominator;
-            double c = (2 * v1 * x1 * x1 * x2 - v1 * x1 * x2 * x2 - v1 * Math.pow(x2, 3) + v2 * Math.pow(x1, 3)
+            c = (2 * v1 * x1 * x1 * x2 - v1 * x1 * x2 * x2 - v1 * Math.pow(x2, 3) + v2 * Math.pow(x1, 3)
                     + v2 * x1 * x1 * x2 - 2 * v2 * x1 * x2 * x2 - 6 * x1 * x2 * y1 + 6 * x1 * x2 * y2)
                     / denominator;
-            double d = (-v1 * x1 * x1 * x2 * x2 + v1 * x1 * Math.pow(x2, 3) - v2 * Math.pow(x1, 3) * x2 + v2 * x1 * x1 * x2 * x2
+            d = (-v1 * x1 * x1 * x2 * x2 + v1 * x1 * Math.pow(x2, 3) - v2 * Math.pow(x1, 3) * x2 + v2 * x1 * x1 * x2 * x2
                     + Math.pow(x1, 3) * y2 - 3 * x1 * x1 * x2 * y2 + 3 * x1 * x2 * x2 * y1 - Math.pow(x2, 3) * y1)
                     / denominator;
+
+            if (samples == 999)
+                System.out.println(a + " " + b + " " + c + " " + d);
 
             for (double j = 1; j <= samples; j++) {
                 double section = j / samples;
@@ -84,9 +121,11 @@ public class Path implements Iterable<Position>{
                 Position newPoint = new Position(currentX,
                         a * Math.pow(currentX, 3) + b * Math.pow(currentX, 2) + c * currentX + d,
                         Math.atan(3 * a * Math.pow(currentX, 2) + 2 * b * currentX + c));
-                if (eqX)
-                    newPoint.rotate(-Math.PI / 2);
-                newPath.add(newPoint);
+                newPoint.rotate(-addAngle);
+                newPoint.changeAngleBy(-addAngle);
+                if (samples == 999)
+                    System.out.println(newPoint.mathToFrcCoords());
+                newPath.add(newPoint.mathToFrcCoords());
             }
         }
         m_path = newPath;
@@ -107,6 +146,7 @@ public class Path implements Iterable<Position>{
 
     /**
      * Calls interpolateAngles() and afterwards interpolatePoints()
+     *
      * @param samples
      */
     public void interpolate(int samples) {
@@ -197,6 +237,30 @@ public class Path implements Iterable<Position>{
 
     public Point getLast() {
         return new Position(m_path.get(m_path.size() - 1));
+    }
+
+    public void sendToCSV(String fileName) {
+        RemoteCSVTarget printer = RemoteCSVTarget.getTarget(fileName);
+        for (Position p : m_path) {
+            printer.report(p.getX(), p.getY());
+        }
+    }
+
+    public void saveAsCSV(String fileName){
+        try {
+            CSVPrinter printer = CSVFormat.EXCEL.withHeader(
+                    "x",
+                    "y"
+            ).print(new File(fileName), Charset.defaultCharset());
+
+            for (Point p : m_path){
+                printer.printRecord(p.getX(), p.getY());
+            }
+
+            printer.flush();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Deprecated

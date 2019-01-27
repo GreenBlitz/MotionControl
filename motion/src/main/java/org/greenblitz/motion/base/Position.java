@@ -124,6 +124,16 @@ public class Position extends Point {
     }
 
     @Override
+    public Position frcToMathCoords(){
+        return new Position(-x,y,angle+Math.PI/2);
+    }
+
+    @Override
+    public Position mathToFrcCoords(){
+        return new Position(-x,y,angle-Math.PI/2);
+    }
+
+    @Override
     public String toString() {
         return "Position{" +
                 "x=" + x +
