@@ -1,4 +1,4 @@
-import org.greenblitz.motion.app.Path;
+import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.motion.base.*;
 
 import org.junit.jupiter.api.Test;
@@ -78,26 +78,29 @@ public class PathTest {
         Path test = new Path(
                 new Position(0, 0),
                 new Position(1, 0),
-                new Position(1, 1)
+                new Position(1, 1),
+                new Position(5, 3),
+                new Position(4, 7),
+                new Position(3, -1)
         );
-        test.interpolatePoints(999);
+        test.interpolate(999);
         test.saveAsCSV("testPath.csv");
     }
 
     @Test
     void complexCubicTest(){
-        for (int k = 0; k < 100; k++){
-            double a = Math.random()*100 - 50;
-            double b = Math.random()*100 - 50;
-            double c = Math.random()*100 - 50;
-            double d = Math.random()*100 - 50;
-            Path test = new Path(new Position(1, a+b+c+d, Math.atan(1.0/(3*a + 2*b + c))),
-                    new Position(100, a*Math.pow(100, 3) + b*100*100 + c*100 + d, Math.atan(1.0/(3*100*100*a + 2*100*b + c))));
-            test.interpolatePoints(100);
-            for (int i = 0; i <= 100; i++){
+        for (int k = 0; k < 100; k++) {
+            double a = Math.random() * 20 - 10;
+            double b = Math.random() * 20 - 10;
+            double c = Math.random() * 20 - 10;
+            double d = Math.random() * 20 - 10;
+            Path test = new Path(new Position(1, a + b + c + d, Math.atan(1.0 / (3 * a + 2 * b + c))),
+                    new Position(10, a * Math.pow(100, 3) + b * 100 * 100 + c * 100 + d, Math.atan(1.0 / (3 * 100 * 100 * a + 2 * 100 * b + c))));
+            test.interpolatePoints(10);
+            for (int i = 0; i <= 10; i++){
                 assertTrue(Point.fuzzyEquals(test.getPath().get(i), new Position(
-                        1 + (99.0*i/100.0),
-                        a*Math.pow(1 + (99.0*i/100.0), 3) + b*Math.pow(1 + (99.0*i/100.0), 2) + c*(1 + (99.0*i/100.0)) + d
+                        1 + (9.0*i/10),
+                        a*Math.pow(1 + (9.0*i/10), 3) + b*Math.pow(1 + (9.0*i/10), 2) + c*(1 + (9.0*i/10)) + d
                 ), 1E-2));
             }
         }
