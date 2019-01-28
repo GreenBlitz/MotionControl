@@ -27,16 +27,17 @@ public abstract class AbstractPurePursuitController {
         this.m_lookahead = m_tolerance;
         this.m_wheelBase = m_wheelBase;
         this.m_tolerance = m_tolerance;
+        this.m_lookahead = m_lookahead;
         this.m_toleranceSquared = m_tolerance * m_tolerance;
     }
 
     /**
-     * Given data, this should return the values
+     * Given data, this should return the curvature
      * @param robotLoc
      * @param goalPoint
      * @return
      */
-    protected abstract double drive(Position robotLoc, Position goalPoint);
+    protected abstract double getCurvature(Position robotLoc, Position goalPoint);
 
     /**
      * What should be the power of the fast side of the robot?
@@ -68,7 +69,7 @@ public abstract class AbstractPurePursuitController {
         if (isFinished(robotLoc))
             return new double[] {0, 0};
         Position goalPoint = getGoalPoint(robotLoc, getLookahead(robotLoc));
-        return arcDrive(drive(robotLoc, goalPoint), getSpeed(robotLoc, goalPoint));
+        return arcDrive(getCurvature(robotLoc, goalPoint), getSpeed(robotLoc, goalPoint));
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.greenblitz.motion.pathing.interpolation;
+package org.greenblitz.motion.pathing;
 
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;

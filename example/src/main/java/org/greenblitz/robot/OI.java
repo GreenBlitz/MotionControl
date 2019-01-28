@@ -44,7 +44,7 @@ public class OI {
                         new Position(0, 1)
                 ),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.8, false, 0.3, 0.5)
+                        0.08, false, 0.3, 0.5)
         ));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));

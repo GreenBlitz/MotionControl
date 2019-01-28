@@ -35,7 +35,7 @@ public class AdaptivePolynomialPursuitController extends AbstractPurePursuitCont
     }
 
     @Override
-    protected double drive(Position robotLoc, Position target){
+    protected double getCurvature(Position robotLoc, Position target){
 
         double x1 = robotLoc.getX();
         double x2 = target.getX();

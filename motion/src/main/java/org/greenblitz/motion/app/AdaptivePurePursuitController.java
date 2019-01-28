@@ -23,7 +23,7 @@ public class AdaptivePurePursuitController extends AbstractPurePursuitController
     }
 
     @Override
-    protected double drive(Position robotLoc, Position goalPoint) {
+    protected double getCurvature(Position robotLoc, Position goalPoint) {
         Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle());
         return 2 * diff.getX() / Point.normSquared(diff);
     }

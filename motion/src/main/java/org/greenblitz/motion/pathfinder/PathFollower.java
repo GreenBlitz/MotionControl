@@ -127,7 +127,7 @@ public class PathFollower {
      *
      * @param currentLeftTicks  the current tick count of the left encoder
      * @param currentRightTicks the current tick count of the right encoder
-     * @return the values that should be passed to the motors (in tank drive)
+     * @return the values that should be passed to the motors (in tank getCurvature)
      */
     public double[] update(int currentLeftTicks, int currentRightTicks) {
         double left = m_leftFollower.calculate(currentLeftTicks);
