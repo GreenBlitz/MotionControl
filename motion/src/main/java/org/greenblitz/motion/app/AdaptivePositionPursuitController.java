@@ -7,15 +7,15 @@ import org.greenblitz.motion.pathing.Path;
 /**
  * @author Udi ~ MudiAtalon
  */
-public class AdaptivePurePursuitController extends AbstractPurePursuitController {
+public class AdaptivePositionPursuitController extends AbstractPositionPursuitController {
 
     protected final boolean isBackwards;
     protected final double minSpeed;
     protected final double maxSpeedDist;
 
-    public AdaptivePurePursuitController(Path path, double lookAhead, double wheelBase,
-                                         double tolerance, boolean isBackwards,
-                                         double minSpeed, double maxSpeedDist) {
+    public AdaptivePositionPursuitController(Path path, double lookAhead, double wheelBase,
+                                             double tolerance, boolean isBackwards,
+                                             double minSpeed, double maxSpeedDist) {
         super(path, lookAhead, wheelBase, tolerance);
         this.isBackwards = isBackwards;
         this.minSpeed = minSpeed;

@@ -2,14 +2,13 @@ package org.greenblitz.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import org.greenblitz.motion.app.AdaptivePurePursuitController;
+import org.greenblitz.motion.app.AdaptivePositionPursuitController;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.ResetLocalizer;
 import org.greenblitz.robot.commands.TankDriveByJoystick;
-import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.SmartJoystick;
 
 public class OI {
@@ -39,7 +38,7 @@ public class OI {
         //mainJS.X.whenPressed(new DriveToPanel());
         mainJS.B.whenPressed(new ResetLocalizer());
         mainJS.A.whenPressed(new APPCTestingCommand(
-                new AdaptivePurePursuitController(new Path(
+                new AdaptivePositionPursuitController(new Path(
                         new Position(0, 0),
                         new Position(0, 1)
                 ),

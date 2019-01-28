@@ -7,7 +7,7 @@ import org.greenblitz.motion.pathing.Path;
 /**
  * This represents any controller that goes after a Path using lookahead and curve driving
  */
-public abstract class AbstractPurePursuitController {
+public abstract class AbstractPositionPursuitController {
 
     protected Path m_path;
     protected double m_wheelBase;
@@ -22,7 +22,7 @@ public abstract class AbstractPurePursuitController {
      * @param m_wheelBase
      * @param m_tolerance
      */
-    public AbstractPurePursuitController(Path m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
+    public AbstractPositionPursuitController(Path m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
         this.m_path = m_path;
         this.m_lookahead = m_tolerance;
         this.m_wheelBase = m_wheelBase;

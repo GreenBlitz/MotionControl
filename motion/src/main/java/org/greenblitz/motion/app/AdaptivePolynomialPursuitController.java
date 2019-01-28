@@ -9,7 +9,7 @@ import org.greenblitz.motion.pathing.Path;
  * @author Alexey ~ Savioor
  *
  */
-public class AdaptivePolynomialPursuitController extends AbstractPurePursuitController {
+public class AdaptivePolynomialPursuitController extends AbstractPositionPursuitController {
 
     protected final boolean isBackwards;
     protected final double minSpeed;
