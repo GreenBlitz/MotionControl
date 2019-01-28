@@ -1,4 +1,4 @@
-package org.greenblitz.motion.app;
+package org.greenblitz.motion;
 
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
