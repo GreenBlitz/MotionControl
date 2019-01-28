@@ -56,7 +56,7 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
 
         deltaVect.rotate(Math.PI / 4);
         double x2 = deltaVect.getX();
-        x2 = Math.max(Math.abs(x2), 10E-6)*Math.signum(x2);
+        x2 = Math.max(Math.abs(x2), 1E-6)*Math.signum(x2);
         double y2 = deltaVect.getY();
         v2 = Math.tan(ang + (Math.PI / 4));
         //v1 = Math.tan(Math.PI / 4) = 1;
