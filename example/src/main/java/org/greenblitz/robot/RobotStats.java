@@ -7,8 +7,8 @@ public final class RobotStats {
 
     public static class Ragnarok {
         public static class EncoderTicksPerMeter {
-            public static final double LEFT_POWER = 735;
-            public static final double RIGHT_POWER = 735;
+            public static final double LEFT_POWER = 267.5;
+            public static final double RIGHT_POWER = 267.5;
         }
 
         public static final double WHEELBASE = 0.69;

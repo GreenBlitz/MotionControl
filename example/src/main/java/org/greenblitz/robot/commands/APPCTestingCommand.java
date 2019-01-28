@@ -18,26 +18,31 @@ public class APPCTestingCommand extends Command {
     private Chassis m_chasis;
     private boolean m_finished;
     private Path m_path;
-    private AdaptivePolynomialPursuitController m_controller;
+    private AdaptivePurePursuitController m_controller;
 
-    public APPCTestingCommand(long period, double lookahead, double wheelbase, Path points) {
-        super(period);
+    public APPCTestingCommand(double lookahead, double wheelbase, Path points, double factor) {
         m_chasis = Chassis.getInstance();
+        m_chasis.setOutputScale(factor);
         requires(m_chasis);
         m_path = points;
         m_path.interpolatePoints( 100);
 
         RemoteCSVTarget.initTarget("path", "x", "y");
 
-        m_controller = new AdaptivePolynomialPursuitController(m_path, lookahead, wheelbase, false);
+        m_controller = new AdaptivePurePursuitController(m_path, lookahead*factor, wheelbase, false);
     }
 
-    public APPCTestingCommand(double lookahead, double wheelbase, Path points){
-        this(50, lookahead, wheelbase, points);
+    public APPCTestingCommand(double lookahead, double wheelbase, Path points) {
+        this(lookahead, wheelbase, points, 1);
     }
+
 
     public APPCTestingCommand(double lookahead, double wheelbase, Position... points){
-        this(50, lookahead, wheelbase, new Path(Arrays.asList(points)));
+        this(lookahead, wheelbase, new Path(Arrays.asList(points)));
+    }
+
+    public APPCTestingCommand(double lookahead, double wheelbase, double factor, Position... points){
+        this(lookahead, wheelbase, new Path(Arrays.asList(points)), factor);
     }
 
     @Override
@@ -55,6 +60,8 @@ public class APPCTestingCommand extends Command {
             m_finished = true;
             return;
         }
+        System.out.println(Arrays.toString(moveValues));
+        System.out.println("driving");
         m_chasis.tankDrive(moveValues[0], moveValues[1]);
     }
 

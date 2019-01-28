@@ -115,6 +115,10 @@ public class Chassis extends Subsystem {
         m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT).setNeutralMode(NeutralMode.Coast);
     }
 
+    public void setOutputScale(double factor){
+        m_robotDrive.setOutputScale(factor);
+    }
+
     public double getDistance() {
         return m_leftEncoder.getDistance() / 2 + m_rightEncoder.getDistance() / 2;
     }

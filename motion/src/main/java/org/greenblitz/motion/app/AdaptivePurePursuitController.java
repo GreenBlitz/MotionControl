@@ -49,9 +49,14 @@ public class AdaptivePurePursuitController {
             return new double[]{speed, speed * rightRadius / leftRadius};
     }
 
+    private double getDynamicLookahead(Position robotLoc){
+        double tmpLookahead = Point.dist(m_path.getLast(), robotLoc);
+        return Math.min(Math.max(tmpLookahead, 0.1), m_lookAhead);
+    }
+
     private double getSpeed(Position robotLoc, Point target, double maxSpeedDist, double minSpeed){
         double speed = target != m_path.getLast() ?
-                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
+                1 : Point.dist(robotLoc, target) / maxSpeedDist;
         if (speed < minSpeed)
             speed = minSpeed;
         return speed;
@@ -85,6 +90,6 @@ public class AdaptivePurePursuitController {
             System.out.println("robot location: " + robotLoc + ", target: " + target);
             first = false;
         }
-        return arcDriveValuesTo(robotLoc, target, m_lookAhead, 0.3, 0.2);
+        return arcDriveValuesTo(robotLoc, target, m_lookAhead, 0.3, 0.2*0.3);
     }
 }
