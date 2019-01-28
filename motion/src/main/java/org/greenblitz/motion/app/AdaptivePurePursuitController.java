@@ -3,6 +3,7 @@ package org.greenblitz.motion.app;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
+import org.opencv.core.Mat;
 
 /**
  * @author Udi ~ MudiAtalon
@@ -34,7 +35,7 @@ public class AdaptivePurePursuitController extends AbstractPositionPursuitContro
                 1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
         if (speed < minSpeed)
             speed = minSpeed;
-        return speed;
+        return Math.min(speed, 0.45);
     }
 
     @Override
