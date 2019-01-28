@@ -62,7 +62,7 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
         //v1 = Math.tan(Math.PI / 4) = 1;
 
         // 2*b/(1 + 1)**1.5 = 0.707*b
-        return x2 == 0 ? 0 : 0.7071*(2 * x2 + v2 * x2 - 3 * y2) / -Math.pow(x2, 2);
+        return 0.7071*(2 * x2 + v2 * x2 - 3 * y2) / -Math.pow(x2, 2);
     }
 
 }
