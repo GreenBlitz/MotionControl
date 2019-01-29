@@ -37,6 +37,7 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
         if (Math.abs(speed) < minSpeed)
             speed = minSpeed*Math.signum(speed);
         return Math.min(Math.abs(speed), 0.5)*Math.signum(speed);
+
     }
 
     @Override
@@ -51,13 +52,13 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
 
         double v2 = Math.tan(ang);
 
-        if (Math.abs(v2) <= 1000) { // Angle is less then 0.999*(PI/2) or more then 1.001*(PI/2)
+        if (Math.abs(v2) <= 500) { // Angle is less then 0.999*(PI/2) or more then 1.001*(PI/2)
 
             double x2 = deltaVect.getX();
             x2 = Math.max(Math.abs(x2), ZERO_APPROX)*Math.signum(x2);
             double y2 = deltaVect.getY();
 
-            return 2 * (v2 * x2 - 3 * y2) / -Math.pow(x2, 2);
+            return 2 * (v2 * x2 - 3 * y2) / Math.pow(x2, 2);
         }
 
         deltaVect.rotate(QUARTER_PI);

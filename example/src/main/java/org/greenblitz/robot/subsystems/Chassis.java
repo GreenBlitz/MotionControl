@@ -3,6 +3,7 @@ package org.greenblitz.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.debug.RemoteGuydeBugger;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.LocalizerRunner;
@@ -10,9 +11,12 @@ import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
+import org.greenblitz.robot.commands.TankDriveByJoystick;
 import org.greenblitz.utils.CANRobotDrive;
 import org.greenblitz.utils.encoder.IEncoder;
 import org.greenblitz.utils.encoder.RoborioEncoder;
+
+import java.rmi.Remote;
 
 public class Chassis extends Subsystem {
     private static final double POWER_LIMIT = 0.7; // 1.0;
@@ -23,6 +27,8 @@ public class Chassis extends Subsystem {
     private static final double TICKS_PER_METER_RIGHT = RobotStats.Ragnarok.EncoderTicksPerMeter.RIGHT_POWER;
 
     private LocalizerRunner m_localizer;
+
+    private RemoteCSVTarget m_motorPowers;
 
     private IEncoder m_leftEncoder, m_rightEncoder;
 
@@ -63,6 +69,7 @@ public class Chassis extends Subsystem {
 
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();
+        setCoast();
     }
 
     public void initDefaultCommand() {
@@ -96,8 +103,6 @@ public class Chassis extends Subsystem {
     }
 
     public void setBrake() {
-        if (!isCoast)
-            return;
         isCoast = false;
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Brake);
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_RIGHT).setNeutralMode(NeutralMode.Brake);
@@ -106,8 +111,6 @@ public class Chassis extends Subsystem {
     }
 
     public void setCoast() {
-        if (isCoast)
-            return;
         isCoast = true;
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Coast);
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_RIGHT).setNeutralMode(NeutralMode.Coast);

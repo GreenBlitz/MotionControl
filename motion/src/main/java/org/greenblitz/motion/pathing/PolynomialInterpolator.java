@@ -19,7 +19,7 @@ public class PolynomialInterpolator {
      *
      * @param samples The number of new point to add between each old pair
      */
-    public static Path interpolatePoints(Path original, int samples){
+    public static Path  interpolatePoints(Path original, int samples){
         List<Position> newPath = new ArrayList<>();
         List<Position> m_path = original.getPath();
         if (m_path.size() == 0) {
