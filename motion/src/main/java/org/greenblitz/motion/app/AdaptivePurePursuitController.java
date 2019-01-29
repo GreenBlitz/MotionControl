@@ -35,7 +35,7 @@ public class AdaptivePurePursuitController extends AbstractPositionPursuitContro
                 1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
         if (speed < minSpeed)
             speed = minSpeed;
-        return Math.min(speed, 0.45);
+        return Math.min(speed, 0.5);
     }
 
     @Override

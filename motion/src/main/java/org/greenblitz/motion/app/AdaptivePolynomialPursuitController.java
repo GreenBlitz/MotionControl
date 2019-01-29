@@ -16,6 +16,10 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
     protected final double minSpeed;
     protected final double maxSpeedDist;
 
+    private static final double ROOT_HALF = Math.sqrt(0.5);
+    private static final double QUARTER_PI = Math.PI / 4;
+    private static final double ZERO_APPROX = 1E-7;
+
 
     public AdaptivePolynomialPursuitController(Path path, double lookAhead, double wheelBase,
                                          double tolerance, boolean isBackwards,
@@ -30,17 +34,19 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
     protected double getSpeed(Position robotLoc, Position target){
         double speed = target != m_path.getLast() ?
                 1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
-        if (speed < minSpeed)
-            speed = minSpeed;
-        return Math.min(speed, 0.5);
+        if (Math.abs(speed) < minSpeed)
+            speed = minSpeed*Math.signum(speed);
+        return Math.min(Math.abs(speed), 0.5)*Math.signum(speed);
     }
 
     @Override
     protected double getCurvature(Position robotLoc, Position target){
         Position roboMath = robotLoc.frcToMathCoords();
         Position targMath = target.frcToMathCoords();
+
         Point deltaVect = Point.subtract(targMath,
                 roboMath).rotate(-roboMath.getAngle());
+
         double ang = targMath.getAngle() - roboMath.getAngle();
 
         double v2 = Math.tan(ang);
@@ -48,21 +54,21 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
         if (Math.abs(v2) <= 1000) { // Angle is less then 0.999*(PI/2) or more then 1.001*(PI/2)
 
             double x2 = deltaVect.getX();
-            x2 = Math.max(Math.abs(x2), 1E-6)*Math.signum(x2);
+            x2 = Math.max(Math.abs(x2), ZERO_APPROX)*Math.signum(x2);
             double y2 = deltaVect.getY();
 
             return 2 * (v2 * x2 - 3 * y2) / -Math.pow(x2, 2);
         }
 
-        deltaVect.rotate(Math.PI / 4);
+        deltaVect.rotate(QUARTER_PI);
         double x2 = deltaVect.getX();
-        x2 = Math.max(Math.abs(x2), 1E-6)*Math.signum(x2);
+        x2 = Math.max(Math.abs(x2), ZERO_APPROX)*Math.signum(x2);
         double y2 = deltaVect.getY();
-        v2 = Math.tan(ang + (Math.PI / 4));
+        //v2 = Math.tan(ang + (Math.PI / 4)) = -1;
         //v1 = Math.tan(Math.PI / 4) = 1;
 
         // 2*b/(1 + 1)**1.5 = 0.707*b
-        return 0.7071*(2 * x2 + v2 * x2 - 3 * y2) / -Math.pow(x2, 2);
+        return ROOT_HALF*(x2 - 3 * y2) / -Math.pow(x2, 2);
     }
 
 }
