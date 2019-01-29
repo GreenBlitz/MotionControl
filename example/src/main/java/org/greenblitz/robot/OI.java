@@ -2,10 +2,12 @@ package org.greenblitz.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import org.greenblitz.motion.app.AdaptivePolynomialPursuitController;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
+import org.greenblitz.motion.pathing.PolynomialInterpolator;
 import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.ResetLocalizer;
@@ -43,9 +45,10 @@ public class OI {
             lst.add(new Position(Point.bezierSample(i, p1, p2, p3, p4)));
         }
         mainJS.A.whenPressed(new APPCTestingCommand(
-                new AdaptivePurePursuitController(new Path(lst),
+                new AdaptivePolynomialPursuitController(
+                new Path(lst),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.08, false, 0.3, 0.5, 0.6)
+                        0.1, false, 0.2, 0.5)
         ));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));

@@ -8,6 +8,8 @@ import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.robot.subsystems.Chassis;
 
+import java.util.Arrays;
+
 public class APPCTestingCommand extends Command {
 
     private Chassis m_chassis;
@@ -15,6 +17,7 @@ public class APPCTestingCommand extends Command {
     private AbstractPositionPursuitController m_controller;
 
     public APPCTestingCommand(AbstractPositionPursuitController controller) {
+        requires(Chassis.getInstance());
         m_controller = controller;
         m_path = controller.getM_path();
         m_chassis = Chassis.getInstance();
@@ -31,6 +34,7 @@ public class APPCTestingCommand extends Command {
     @Override
     protected void execute() {
         double[] moveValues = m_controller.iteration(m_chassis.getLocation());
+        System.out.println("Move vals - " + Arrays.toString(moveValues));
         m_chassis.tankDrive(moveValues[0], moveValues[1]);
     }
 

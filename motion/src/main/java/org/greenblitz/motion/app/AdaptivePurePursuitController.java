@@ -37,10 +37,11 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
     public double getSpeed(Position robotLoc, Position target) {
         return isBackwards * Math.max(
 
-                (1/maxSpeedDist)* maxSpeed * Math.min(
+                (1/maxSpeedDist) * maxSpeed * Math.min(
                         maxSpeedDist,
                         Point.dist(robotLoc, m_path.getLast()) / 2
                 ),
+
                 minSpeed
         );
     }
