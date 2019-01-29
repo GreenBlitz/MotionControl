@@ -56,7 +56,6 @@ public abstract class AbstractPositionPursuitController {
      * @return
      */
     protected double getLookahead(Position robotLoc){
-        System.err.println("Using default lookahead function of APPC is not recommended!");
         return m_lookahead;
     }
 

@@ -12,7 +12,6 @@ public class APPCTestingCommand extends Command {
 
     private Chassis m_chassis;
     private Path m_path;
-
     private AbstractPositionPursuitController m_controller;
 
     public APPCTestingCommand(AbstractPositionPursuitController controller) {
@@ -20,7 +19,7 @@ public class APPCTestingCommand extends Command {
         m_path = controller.getM_path();
         m_chassis = Chassis.getInstance();
         RemoteCSVTarget.initTarget("m_path", "x", "y");
-     }
+    }
 
     @Override
     protected void initialize() {

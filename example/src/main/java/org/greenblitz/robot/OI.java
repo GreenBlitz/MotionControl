@@ -3,6 +3,7 @@ package org.greenblitz.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
+import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.commands.APPCTestingCommand;
@@ -10,6 +11,8 @@ import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.ResetLocalizer;
 import org.greenblitz.robot.commands.TankDriveByJoystick;
 import org.greenblitz.utils.SmartJoystick;
+
+import java.util.ArrayList;
 
 public class OI {
 
@@ -30,20 +33,19 @@ public class OI {
 
     private OI() {
         mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
-        //mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
-        //mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
-        //mainJS.A.whenPressed(new FindMaxValues());
-        //mainJS.B.whenPressed(new ArcadeDriveByJoystick(mainJS));
-        //mainJS.Y.whenPressed(null);
-        //mainJS.X.whenPressed(new DriveToPanel());
         mainJS.B.whenPressed(new ResetLocalizer());
+        Point p1 = new Point(0,0);
+        Point p2 = new Point(0,1);
+        Point p3 = new Point(1,0);
+        Point p4 = new Point(1,1);
+        ArrayList<Position> lst = new ArrayList<>();
+        for(double i=0; i<=1; i++){
+            lst.add(new Position(Point.bezierSample(i, p1, p2, p3, p4)));
+        }
         mainJS.A.whenPressed(new APPCTestingCommand(
-                new AdaptivePurePursuitController(new Path(
-                        new Position(0, 0),
-                        new Position(0, 1)
-                ),
+                new AdaptivePurePursuitController(new Path(lst),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.08, false, 0.3, 0.5)
+                        0.08, false, 0.1, 0.5, 0.3)
         ));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));
