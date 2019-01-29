@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.commands.APPCTestingCommand;
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        RemoteCSVTarget.initTarget("location", "x", "y");
         Scheduler.getInstance().removeAll();
         prevTime = System.currentTimeMillis();
     }

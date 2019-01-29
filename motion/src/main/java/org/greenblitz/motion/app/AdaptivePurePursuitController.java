@@ -3,6 +3,7 @@ package org.greenblitz.motion.app;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
+import org.opencv.core.Mat;
 
 /**
  * @author Udi ~ MudiAtalon

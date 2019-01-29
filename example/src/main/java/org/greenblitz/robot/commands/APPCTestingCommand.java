@@ -23,7 +23,7 @@ public class APPCTestingCommand extends Command {
 
     @Override
     protected void initialize() {
-        m_chassis.setBrake();
+        m_chassis.setCoast();
         m_path.sendToCSV("m_path");
         super.initialize();
     }
@@ -38,7 +38,6 @@ public class APPCTestingCommand extends Command {
     protected void end(){
         SmartDashboard.putNumber("APPC final x", m_chassis.getLocation().getX());
         SmartDashboard.putNumber("APPC final y", m_chassis.getLocation().getY());
-        m_chassis.setCoast();
     }
 
     protected void savePath(String fileName){
@@ -47,7 +46,6 @@ public class APPCTestingCommand extends Command {
 
     @Override
     protected boolean isFinished() {
-        return m_controller.isFinished(m_chassis.getLocation()) &&
-                Point.isFuzzyEqual(Chassis.getInstance().getSpeed(), 0, 0.5);
+        return m_controller.isFinished(m_chassis.getLocation());
     }
 }
