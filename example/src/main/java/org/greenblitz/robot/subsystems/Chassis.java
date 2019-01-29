@@ -73,7 +73,7 @@ public class Chassis extends Subsystem {
     }
 
     public void initDefaultCommand() {
-        setDefaultCommand(new TankDriveByJoystick(OI.getInstance().getMainJS()));
+        setDefaultCommand(new ArcadeDriveByJoystick(OI.getInstance().getMainJS()));
     }
 
     public void update() {

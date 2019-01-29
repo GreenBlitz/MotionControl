@@ -39,16 +39,16 @@ public class OI {
         Point p1 = new Point(0, 0);
         Point p2 = new Point(0, 1);
         Point p3 = new Point(1, 0);
-        Point p4 = new Point(1, 1);
+        Point p4 = new Point(1, 2);
         ArrayList<Position> lst = new ArrayList<>();
         for (double i = 0; i <= 1; i++) {
             lst.add(new Position(Point.bezierSample(i, p1, p2, p3, p4)));
         }
         mainJS.A.whenPressed(new APPCTestingCommand(
-                new AdaptivePolynomialPursuitController(
+                new AdaptivePurePursuitController(
                 new Path(lst),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.1, false, 0.2, 0.5)
+                        0.1, false, 0.3, 0.5, 0.7)
         ));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));
