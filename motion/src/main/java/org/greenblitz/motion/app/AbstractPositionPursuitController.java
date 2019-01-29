@@ -4,6 +4,8 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
 
+import java.util.Arrays;
+
 /**
  * This represents any controller that goes after a Path using lookahead and curve driving
  */
@@ -16,7 +18,6 @@ public abstract class AbstractPositionPursuitController {
     protected double m_lookahead;
 
     /**
-     *
      * @param m_path
      * @param m_lookahead
      * @param m_wheelBase
@@ -33,6 +34,7 @@ public abstract class AbstractPositionPursuitController {
 
     /**
      * Given data, this should return the curvature
+     *
      * @param robotLoc
      * @param goalPoint
      * @return
@@ -41,34 +43,41 @@ public abstract class AbstractPositionPursuitController {
 
     /**
      * What should be the power of the fast side of the robot?
+     *
      * @param robotLoc
      * @param goalPoint
      * @return
      */
-    protected double getSpeed(Position robotLoc, Position goalPoint){
+    protected double getSpeed(Position robotLoc, Position goalPoint) {
         System.err.println("Using default speed function of APPC is not recommended!");
         return 1;
     }
 
     /**
      * Used for dynamic lookahead
+     *
      * @param robotLoc
      * @return
      */
-    protected double getLookahead(Position robotLoc){
+    protected double getLookahead(Position robotLoc) {
         return m_lookahead;
     }
 
     /**
      * Should be ran every cycle by a command
+     *
      * @param robotLoc
      * @return The values to be passed to the motors
      */
     public double[] iteration(Position robotLoc) {
         if (isFinished(robotLoc))
-            return new double[] {0, 0};
+            return new double[]{0, 0};
+        System.out.println("robot location = " + robotLoc);
         Position goalPoint = getGoalPoint(robotLoc, getLookahead(robotLoc));
-        return arcDrive(getCurvature(robotLoc, goalPoint), getSpeed(robotLoc, goalPoint));
+        System.out.println("goal point = " + goalPoint);
+        double[] ret = arcDrive(getCurvature(robotLoc, goalPoint), getSpeed(robotLoc, goalPoint));
+        System.out.println(Arrays.toString(ret));
+        return ret;
     }
 
     /**
@@ -102,20 +111,22 @@ public abstract class AbstractPositionPursuitController {
 
     /**
      * Quite obvious, remember to use in utilizing command
+     *
      * @param robotLoc
      * @return
      */
-    public final boolean isFinished(Position robotLoc){
+    public final boolean isFinished(Position robotLoc) {
         return Position.distSqared(robotLoc, m_path.getLast()) <= m_toleranceSquared;
     }
 
     /**
      * Drives along a curvature
+     *
      * @param curvature
      * @param speed
      * @return
      */
-    protected final double[] arcDrive(double curvature, double speed){
+    protected final double[] arcDrive(double curvature, double speed) {
         if (curvature == 0)
             return new double[]{speed, speed};
         double radius = 1 / curvature;

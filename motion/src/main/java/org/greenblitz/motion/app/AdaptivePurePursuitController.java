@@ -3,7 +3,6 @@ package org.greenblitz.motion.app;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
-import org.opencv.core.Mat;
 
 /**
  * @author Udi ~ MudiAtalon
@@ -30,30 +29,33 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
     public double getCurvature(Position robotLoc, Position goalPoint) {
         Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle());
         double curv = 2 * diff.getX() / Point.normSquared(diff);
-        System.out.println("curvature=" + curv);
+        System.out.println("curvature = " + curv);
         return curv;
     }
 
     @Override
     public double getSpeed(Position robotLoc, Position target) {
         return isBackwards * Math.max(
-                maxSpeed * Math.min(
+
+                (1/maxSpeedDist)* maxSpeed * Math.min(
                         maxSpeedDist,
                         Point.dist(robotLoc, m_path.getLast()) / 2
-                ) / maxSpeedDist,
+                ),
                 minSpeed
         );
     }
 
     @Override
     public double getLookahead(Position robotLoc) {
-        return m_lookahead * Math.max(
-                Math.min(
+        double ret = m_lookahead * Math.max(
+                (1/maxSpeedDist)*Math.min(
                         maxSpeedDist,
                         Point.dist(robotLoc, m_path.getLast()) / 2
-                ) / maxSpeedDist,
-                maxSpeed / minSpeed
+                ),
+                minSpeed/maxSpeed
         );
+        System.out.println("lookahead = " + ret);
+        return ret;
     }
 
 }

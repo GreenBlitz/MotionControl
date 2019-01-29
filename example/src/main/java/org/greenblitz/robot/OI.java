@@ -2,18 +2,15 @@ package org.greenblitz.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import org.greenblitz.motion.app.AdaptivePolynomialPursuitController;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
-import org.greenblitz.motion.pathing.PolynomialInterpolator;
 import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.robot.commands.ResetLocalizer;
 import org.greenblitz.robot.commands.TankDriveByJoystick;
 import org.greenblitz.utils.SmartJoystick;
-import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 
@@ -37,18 +34,18 @@ public class OI {
     private OI() {
         mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
         mainJS.B.whenPressed(new ResetLocalizer());
-        Point p1 = new Point(0,0);
-        Point p2 = new Point(0,1);
-        Point p3 = new Point(1,0);
-        Point p4 = new Point(1,1);
+        Point p1 = new Point(0, 0);
+        Point p2 = new Point(0, 1);
+        Point p3 = new Point(1, 0);
+        Point p4 = new Point(1, 1);
         ArrayList<Position> lst = new ArrayList<>();
-        for(double i=0; i<=1; i++){
+        for (double i = 0; i <= 1; i++) {
             lst.add(new Position(Point.bezierSample(i, p1, p2, p3, p4)));
         }
         mainJS.A.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(new Path(lst),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.08, false, 0.1, 0.5, 0.3)
+                        0.08, false, 0.3, 0.5, 0.6)
         ));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));
