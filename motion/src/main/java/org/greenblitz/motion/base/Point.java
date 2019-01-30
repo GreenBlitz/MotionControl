@@ -7,6 +7,8 @@ package org.greenblitz.motion.base;
  */
 public class Point {
 
+    public static final Point ORIGIN = new Point(0, 0);
+
     /**
      * the x coordinate: right to left
      * positive direction left
@@ -68,6 +70,17 @@ public class Point {
         return this;
     }
 
+    public static Point add(Point first, Point other){
+        return first.clone().translate(other);
+    }
+
+    /**
+     *
+     * @return The negative of this point
+     */
+    public Point negate(){
+        return new Point(-getX(), -getY());
+    }
 
     /**
      * Rotate the point COUNTER-CLOCKWISE around (0, 0)
@@ -109,7 +122,7 @@ public class Point {
     }
 
     public static Point subtract(Point subtractee, Point subtractor) {
-        return new Point(subtractee.x - subtractor.x, subtractee.y - subtractor.y);
+        return Point.add(subtractee, subtractor.clone().negate());
     }
 
     public static double dotProduct(Point a, Point b) {
@@ -190,6 +203,14 @@ public class Point {
 
     public Point mathToFrcCoords(){
         return frcToMathCoords();
+    }
+
+    /**
+     *
+     * @return first element is the length, second is the angle
+     */
+    public double[] toPolarCoords(){
+        return new double[] {dist(Point.ORIGIN, this), Math.atan2(getY(), getX())};
     }
 
     @Override
