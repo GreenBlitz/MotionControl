@@ -7,6 +7,7 @@ import org.greenblitz.motion.pathing.Path;
 
 import java.util.List;
 
+@Deprecated
 public class AdaptivePStatePursuitController extends AbstractPositionPursuitController<State> {
 
     /**

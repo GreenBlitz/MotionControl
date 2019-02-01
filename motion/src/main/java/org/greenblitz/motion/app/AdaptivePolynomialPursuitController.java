@@ -13,7 +13,7 @@ import org.opencv.core.Mat;
 public class AdaptivePolynomialPursuitController extends AbstractPositionPursuitController<Position> {
 
     protected final boolean isBackwards;
-    protected final double minSpeed;
+    protected final double minSpeed, maxSpeed;
     protected final double maxSpeedDist;
 
     private static final double ROOT_HALF = Math.sqrt(0.5);
@@ -23,27 +23,35 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
 
     public AdaptivePolynomialPursuitController(Path path, double lookAhead, double wheelBase,
                                          double tolerance, boolean isBackwards,
-                                         double minSpeed, double maxSpeedDist) {
+                                         double minSpeed, double maxSpeedDist,
+                                               double maxSpeed) {
         super(path, lookAhead, wheelBase, tolerance);
         this.isBackwards = isBackwards;
         this.minSpeed = minSpeed;
+        this.maxSpeed = maxSpeed;
         this.maxSpeedDist = maxSpeedDist;
     }
 
     @Override
     protected double getSpeed(Position robotLoc, Position target){
-        double speed = target != m_path.getLast() ?
-                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
-        if (Math.abs(speed) < minSpeed)
-            speed = minSpeed*Math.signum(speed);
-        return Math.min(Math.abs(speed), 0.5)*Math.signum(speed);
+        return (isBackwards ? -1 : 1) * Math.max(
 
+                (1/maxSpeedDist) * maxSpeed * Math.min(
+                        maxSpeedDist,
+                        Point.dist(robotLoc, m_path.getLast()) / 2
+                ),
+
+                minSpeed
+        );
     }
 
     @Override
     protected double getCurvature(Position robotLoc, Position target){
         Position roboMath = robotLoc.frcToMathCoords();
         Position targMath = target.frcToMathCoords();
+
+        if (isBackwards)
+            roboMath = (Position) roboMath.rotate(Math.PI / 2);
 
         Point deltaVect = Point.subtract(targMath,
                 roboMath).rotate(-roboMath.getAngle());
