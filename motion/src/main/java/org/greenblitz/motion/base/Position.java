@@ -133,8 +133,18 @@ public class Position extends Point {
     }
 
     @Override
-    public Position frcToMathCoords(){
+    public Position localizerToMathCoords(){
         return new Position(-x,y,angle+Math.PI/2);
+    }
+
+    @Override
+    public Position weaverToLocalizerCoords() {
+        return new Position(-x, -y, 0); // TODO ask atsmon
+    }
+
+    @Override
+    public Point mathToWeaverCoords() {
+        return new Position(-y, x, 0); // TODO ask atsmon
     }
 
     @Override

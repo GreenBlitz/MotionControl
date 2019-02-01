@@ -102,7 +102,7 @@ public class State extends Position {
     }
 
     @Override
-    public State frcToMathCoords(){
+    public State localizerToMathCoords(){
         return new State(-x,y,angle+Math.PI/2,
                 new Vector2D(-velocity.x, velocity.y),
                 new Vector2D(-acceleration.x, acceleration.y));

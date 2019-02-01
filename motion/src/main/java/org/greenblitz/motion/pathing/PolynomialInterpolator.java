@@ -2,10 +2,7 @@ package org.greenblitz.motion.pathing;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.pathing.Path;
-import org.opencv.core.Mat;
 
-import java.lang.management.MemoryManagerMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +29,8 @@ public class PolynomialInterpolator {
         for (int i = 0; i < m_path.size() - 1; i++) {
             Position first = m_path.get(i);
             Position last = m_path.get(i + 1);
-            first = first.frcToMathCoords();
-            last = last.frcToMathCoords();
+            first = first.localizerToMathCoords();
+            last = last.localizerToMathCoords();
 
             if (Point.fuzzyEquals(first, last, 10E-4))
                 continue;

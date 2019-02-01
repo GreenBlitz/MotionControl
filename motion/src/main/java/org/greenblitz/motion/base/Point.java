@@ -7,6 +7,21 @@ package org.greenblitz.motion.base;
  */
 public class Point {
 
+    public enum CoordinateSystems{
+        MATH(0),
+        LOCALIZER(1),
+        WEAVER(2);
+
+        int index;
+        CoordinateSystems(int ind){
+            index = ind;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
+
     public static final Point ORIGIN = new Point(0, 0);
 
     /**
@@ -197,12 +212,40 @@ public class Point {
                 && isFuzzyEqual(this.getY(), point.getY());
     }
 
-    public Point frcToMathCoords(){
+    public Point localizerToMathCoords(){
         return new Point(-x,y);
     }
 
+    public Point mathToWeaverCoords(){
+        return new Point(-y, x);
+    }
+
+    public Point weaverToLocalizerCoords(){
+        return new Point(-x, -y);
+    }
+
+    public Point changeCoords(CoordinateSystems src, CoordinateSystems dest){
+        if (src == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
+            return localizerToMathCoords();
+        } else if (src == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
+            return mathToWeaverCoords();
+        } else if (src == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
+            return weaverToLocalizerCoords();
+        }
+        switch (src){
+            case MATH:
+                return mathToWeaverCoords().changeCoords(CoordinateSystems.WEAVER, dest);
+            case LOCALIZER:
+                return localizerToMathCoords().changeCoords(CoordinateSystems.MATH, dest);
+            case WEAVER:
+                return weaverToLocalizerCoords().changeCoords(CoordinateSystems.LOCALIZER, dest);
+        }
+        throw new IllegalArgumentException("What");
+    }
+
+    @Deprecated
     public Point mathToFrcCoords(){
-        return frcToMathCoords();
+        return localizerToMathCoords();
     }
 
     /**

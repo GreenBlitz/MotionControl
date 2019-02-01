@@ -3,7 +3,6 @@ package org.greenblitz.motion.app;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
-import org.opencv.core.Mat;
 
 /**
  * @author Udi ~ MudiAtalon
@@ -47,8 +46,8 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
 
     @Override
     protected double getCurvature(Position robotLoc, Position target){
-        Position roboMath = robotLoc.frcToMathCoords();
-        Position targMath = target.frcToMathCoords();
+        Position roboMath = robotLoc.localizerToMathCoords();
+        Position targMath = target.localizerToMathCoords();
 
         if (isBackwards)
             roboMath = (Position) roboMath.rotate(Math.PI / 2);
