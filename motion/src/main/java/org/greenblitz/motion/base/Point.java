@@ -56,24 +56,13 @@ public class Point {
      */
     protected double y;
 
-    CoordinateSystems system;
-
     /**
      * @param x
      * @param y
      */
     public Point(double x, double y) {
-        this(x, y, CoordinateSystems.LOCALIZER);
-    }
-
-    /**
-     * @param x
-     * @param y
-     */
-    public Point(double x, double y, CoordinateSystems system) {
         this.setX(x);
         this.setY(y);
-        this.system = system;
     }
 
     public static Point cis(double ang, double len){
@@ -245,36 +234,33 @@ public class Point {
     }
 
     public Point localizerToMathCoords(){
-        return new Point(-x, y, CoordinateSystems.MATH);
+        return new Point(-x, y);
     }
 
     public Point mathToWeaverCoords(){
-        return new Point(-y, x, CoordinateSystems.WEAVER);
+        return new Point(-y, x);
     }
 
     public Point weaverToLocalizerCoords(){
-        return new Point(-x, -y, CoordinateSystems.LOCALIZER);
+        return new Point(-x, -y);
     }
 
-    public CoordinateSystems getCoordsSystem() {
-        return system;
-    }
 
-    public Point changeCoords(CoordinateSystems dest){
-        if (system == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
+    public Point changeCoords(CoordinateSystems src, CoordinateSystems dest){
+        if (src == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
             return localizerToMathCoords();
-        } else if (system == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
+        } else if (src == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
             return mathToWeaverCoords();
-        } else if (system == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
+        } else if (src == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
             return weaverToLocalizerCoords();
         }
-        switch (system){
+        switch (src){
             case MATH:
-                return mathToWeaverCoords().changeCoords(dest);
+                return mathToWeaverCoords().changeCoords(CoordinateSystems.WEAVER, dest);
             case LOCALIZER:
-                return localizerToMathCoords().changeCoords(dest);
+                return localizerToMathCoords().changeCoords(CoordinateSystems.MATH, dest);
             case WEAVER:
-                return weaverToLocalizerCoords().changeCoords(dest);
+                return weaverToLocalizerCoords().changeCoords(CoordinateSystems.LOCALIZER, dest);
         }
         throw new IllegalArgumentException("What");
     }
