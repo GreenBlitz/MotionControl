@@ -153,12 +153,12 @@ public class Point {
         return isFuzzyEqual(fir.getX(), sec.getX(), epsilon) && isFuzzyEqual(fir.getY(), sec.getY(), epsilon);
     }
 
-    public static Point weightedAvg(Point a, Point b, double bWeight) {
-        return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight) * a.y + bWeight * b.y);
+    public Point weightedAvg(Point b, double bWeight) {
+        return new Point((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y);
     }
 
-    public static Point avg(Point a, Point b) {
-        return weightedAvg(a, b, 0.5);
+    public Point avg(Point b) {
+        return weightedAvg(b, 0.5);
     }
 
     /**
@@ -174,7 +174,7 @@ public class Point {
     private static Point bezierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
         if (cornersUsedLength == 1) return corners[0];
         for (int ind = 0; ind < cornersUsedLength-1; ind++)
-            corners[ind] = weightedAvg(corners[ind], corners[ind + 1], locInCurve);
+            corners[ind] = corners[ind].weightedAvg(corners[ind + 1], locInCurve);
         return bezierSample(corners, cornersUsedLength - 1, locInCurve);
     }
 

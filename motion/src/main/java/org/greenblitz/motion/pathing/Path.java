@@ -21,32 +21,32 @@ import java.util.List;
  * @author Udi    ~ MudiAtalon
  * @author Alexey ~ savioor
  */
-public class Path implements Iterable<Position> {
+public class Path<T extends Point> implements Iterable<T> {
 
-    private List<Position> m_path;
+    private List<T> m_path;
 
-    public Path(List<Position> path) {
+    public Path(List<T> path) {
         m_path = new ArrayList<>();
         m_path.addAll(path);
     }
 
-    public Path(Position... points) {
+    public Path(T... points) {
         m_path = Arrays.asList(points);
     }
 
-    public static Path pathfinderPathToGBPath(Trajectory traj) {
+    public static Path<Position> pathfinderPathToGBPath(Trajectory traj) {
         ArrayList<Position> ret = new ArrayList<>();
         for (Trajectory.Segment seg : traj.segments) {
             ret.add(new Position(seg.x, seg.y, seg.heading));
         }
-        return new Path(ret);
+        return new Path<>(ret);
     }
 
-    public Position getLast() {
-        return new Position(m_path.get(m_path.size() - 1));
+    public T getLast() {
+        return m_path.get(m_path.size() - 1);
     }
 
-    public Position get(int ind){
+    public T get(int ind){
         return m_path.get(ind);
     }
 
@@ -56,7 +56,7 @@ public class Path implements Iterable<Position> {
 
     public void sendToCSV(String fileName) {
         RemoteCSVTarget printer = RemoteCSVTarget.getTarget(fileName);
-        for (Position p : m_path) {
+        for (T p : m_path) {
             printer.report(p.getX(), p.getY());
         }
     }
@@ -78,16 +78,16 @@ public class Path implements Iterable<Position> {
         }
     }
 
-    public List<Position> getPath() {
-        List<Position> toSend = new ArrayList<>();
-        for (Position p:m_path){
-            toSend.add(p.clone());
+    public List<T> getPath() {
+        List<T> toSend = new ArrayList<>();
+        for (T p:m_path){
+            toSend.add((T)p.clone());
         }
         return toSend;
     }
 
     @Override
-    public Iterator<Position> iterator() {
+    public Iterator<T> iterator() {
         return m_path.iterator();
     }
 
@@ -127,12 +127,12 @@ public class Path implements Iterable<Position> {
      * @param lineMinValue the minimum value of the line of the segment
      * @return minimum of segment
      */
-    public static Point getSegmentMinimum(Point segStart, Point segEnd, double lineMinValue) {
+    public T getSegmentMinimum(T segStart, T segEnd, double lineMinValue) {
         if (lineMinValue < 0)
             return segStart;
         if (lineMinValue > 1)
             return segEnd;
-        return Point.weightedAvg(segStart, segEnd, lineMinValue);
+        return (T)segStart.weightedAvg(segEnd, lineMinValue);
     }
 
 }

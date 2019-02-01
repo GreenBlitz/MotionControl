@@ -9,9 +9,9 @@ import java.util.Arrays;
 /**
  * This represents any controller that goes after a Path using lookahead and curve driving
  */
-public abstract class AbstractPositionPursuitController {
+public abstract class AbstractPositionPursuitController<T extends Point> {
 
-    protected Path m_path;
+    protected Path<T> m_path;
     protected double m_wheelBase;
     protected double m_tolerance;
     protected double m_toleranceSquared;
@@ -23,7 +23,7 @@ public abstract class AbstractPositionPursuitController {
      * @param m_wheelBase
      * @param m_tolerance
      */
-    public AbstractPositionPursuitController(Path m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
+    public AbstractPositionPursuitController(Path<T> m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
         this.m_path = m_path;
         this.m_lookahead = m_tolerance;
         this.m_wheelBase = m_wheelBase;
@@ -39,7 +39,7 @@ public abstract class AbstractPositionPursuitController {
      * @param goalPoint
      * @return
      */
-    protected abstract double getCurvature(Position robotLoc, Position goalPoint);
+    protected abstract double getCurvature(T robotLoc, T goalPoint);
 
     /**
      * What should be the power of the fast side of the robot?
@@ -48,7 +48,7 @@ public abstract class AbstractPositionPursuitController {
      * @param goalPoint
      * @return
      */
-    protected double getSpeed(Position robotLoc, Position goalPoint) {
+    protected double getSpeed(T robotLoc, T goalPoint) {
         System.err.println("Using default speed function of APPC is not recommended!");
         return 1;
     }
@@ -59,7 +59,7 @@ public abstract class AbstractPositionPursuitController {
      * @param robotLoc
      * @return
      */
-    protected double getLookahead(Position robotLoc) {
+    protected double getLookahead(T robotLoc) {
         return m_lookahead;
     }
 
@@ -69,10 +69,10 @@ public abstract class AbstractPositionPursuitController {
      * @param robotLoc
      * @return The values to be passed to the motors
      */
-    public double[] iteration(Position robotLoc) {
+    public double[] iteration(T robotLoc) {
         if (isFinished(robotLoc))
             return new double[]{0, 0};
-        Position goalPoint = getGoalPoint(robotLoc, getLookahead(robotLoc));
+        T goalPoint = getGoalPoint(robotLoc, getLookahead(robotLoc));
         return arcDrive(getCurvature(robotLoc, goalPoint), getSpeed(robotLoc, goalPoint));
     }
 
@@ -84,23 +84,24 @@ public abstract class AbstractPositionPursuitController {
      * @return the last intersection on the m_path with the look ahead circle iff such intersection exists
      * the closest point on the m_path O.W.
      */
-    protected Position getGoalPoint(Point robotLoc, double lookAhead) {
+    @SuppressWarnings("unchecked")
+    protected T getGoalPoint(T robotLoc, double lookAhead) {
         if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead * lookAhead) {
             return m_path.get(m_path.size() - 1);
         }
-        Position closest = m_path.get(m_path.size() - 1);
+        T closest = m_path.get(m_path.size() - 1);
         double[] ptlInt; //potential intersections
         for (int ind = m_path.size() - 2; ind >= 0; ind--) {
             ptlInt = Path.intersections(robotLoc, lookAhead, m_path.get(ind), m_path.get(ind + 1));
-            if (Point.distSqared(Path.getSegmentMinimum(m_path.get(ind), m_path.get(ind + 1), ptlInt[0]), robotLoc) < Point.distSqared(closest, robotLoc))
+            if (Point.distSqared(m_path.getSegmentMinimum(m_path.get(ind), m_path.get(ind + 1), ptlInt[0]), robotLoc) < Point.distSqared(closest, robotLoc))
                 closest = m_path.get(ind);
             if (ptlInt.length == 1)
                 continue;
             if (ptlInt[1] >= 0 && ptlInt[1] <= 1) {
-                return new Position(Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[1]), m_path.get(ind).getAngle());
+                return (T) m_path.get(ind).weightedAvg(m_path.get(ind + 1), ptlInt[1]).clone();
             }
             if (ptlInt[2] >= 0 && ptlInt[2] <= 1)
-                return new Position(Point.weightedAvg(m_path.get(ind), m_path.get(ind + 1), ptlInt[2]), m_path.get(ind).getAngle());
+                return (T) m_path.get(ind).weightedAvg(m_path.get(ind + 1), ptlInt[2]).clone();
         }
         return closest;
     }
@@ -111,7 +112,7 @@ public abstract class AbstractPositionPursuitController {
      * @param robotLoc
      * @return
      */
-    public final boolean isFinished(Position robotLoc) {
+    public final boolean isFinished(T robotLoc) {
         return Position.distSqared(robotLoc, m_path.getLast()) <= m_toleranceSquared;
     }
 
