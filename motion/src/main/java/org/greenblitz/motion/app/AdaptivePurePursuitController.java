@@ -29,7 +29,6 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
     public double getCurvature(Position robotLoc, Position goalPoint) {
         Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle());
         double curv = 2 * diff.getX() / Point.normSquared(diff);
-        System.out.println("curvature = " + curv);
         return curv;
     }
 
@@ -55,7 +54,6 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
                 ),
                 minSpeed/maxSpeed
         );
-        System.out.println("lookahead = " + ret);
         return ret;
     }
 

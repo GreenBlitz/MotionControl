@@ -13,8 +13,8 @@ public class Position extends Point {
      * The angle of this position.
      * This representation is like in math:
      * 1. In radians
-     * 2. Between 0 and 2*PI
-     * 3. 0 radians = facing positive y
+     * 2. Between -PI and PI
+     * 3. 0 radians = facing positive y (in FRC coords)
      * 4. Goes counter clockwise
      */
     protected double angle;
@@ -100,6 +100,15 @@ public class Position extends Point {
     public Position changeAngleBy(double angle) {
         setAngle(getAngle() + angle);
         return this;
+    }
+
+    /**
+     * Calls changeAngleBy and afterwards rotate.
+     * @param angle
+     * @return
+     */
+    public Position rotateWithAngle(double angle){
+        return (Position) changeAngleBy(angle).rotate(angle);
     }
 
     /**

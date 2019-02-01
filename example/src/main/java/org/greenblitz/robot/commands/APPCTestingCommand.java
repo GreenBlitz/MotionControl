@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.app.AbstractPositionPursuitController;
 import org.greenblitz.motion.pathing.Path;
-import org.greenblitz.motion.base.Point;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Arrays;

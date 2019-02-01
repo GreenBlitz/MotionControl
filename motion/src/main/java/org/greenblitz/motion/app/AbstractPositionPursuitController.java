@@ -72,12 +72,8 @@ public abstract class AbstractPositionPursuitController {
     public double[] iteration(Position robotLoc) {
         if (isFinished(robotLoc))
             return new double[]{0, 0};
-        System.out.println("robot location = " + robotLoc);
         Position goalPoint = getGoalPoint(robotLoc, getLookahead(robotLoc));
-        System.out.println("goal point = " + goalPoint);
-        double[] ret = arcDrive(getCurvature(robotLoc, goalPoint), getSpeed(robotLoc, goalPoint));
-        System.out.println(Arrays.toString(ret));
-        return ret;
+        return arcDrive(getCurvature(robotLoc, goalPoint), getSpeed(robotLoc, goalPoint));
     }
 
     /**
