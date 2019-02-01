@@ -8,8 +8,29 @@ package org.greenblitz.motion.base;
 public class Point {
 
     public enum CoordinateSystems{
+        /**
+         * Regular mathematics coordinate system.
+         * positive x is right
+         * positive y is forwards
+         * angle 0 is facing positive x
+         * angle rotation is counter clockwise.
+         */
         MATH(0),
+        /**
+         * Locations used by localizer and follower commands such as APPC.
+         * positive x is left.
+         * positive y is forwards.
+         * angle 0 is facing positive y.
+         * angle rotation is counter clockwise.
+         */
         LOCALIZER(1),
+        /**
+         * The coordinates of WPILib's weaver. Similar to picture/matrix coordinates.
+         * positive x is down.
+         * positive y is right.
+         * angle 0 is ???
+         * angle rotation is ???.
+         */
         WEAVER(2);
 
         int index;
@@ -35,13 +56,24 @@ public class Point {
      */
     protected double y;
 
+    CoordinateSystems system;
+
     /**
      * @param x
      * @param y
      */
     public Point(double x, double y) {
+        this(x, y, CoordinateSystems.LOCALIZER);
+    }
+
+    /**
+     * @param x
+     * @param y
+     */
+    public Point(double x, double y, CoordinateSystems system) {
         this.setX(x);
         this.setY(y);
+        this.system = system;
     }
 
     public static Point cis(double ang, double len){
@@ -213,32 +245,36 @@ public class Point {
     }
 
     public Point localizerToMathCoords(){
-        return new Point(-x,y);
+        return new Point(-x, y, CoordinateSystems.MATH);
     }
 
     public Point mathToWeaverCoords(){
-        return new Point(-y, x);
+        return new Point(-y, x, CoordinateSystems.WEAVER);
     }
 
     public Point weaverToLocalizerCoords(){
-        return new Point(-x, -y);
+        return new Point(-x, -y, CoordinateSystems.LOCALIZER);
     }
 
-    public Point changeCoords(CoordinateSystems src, CoordinateSystems dest){
-        if (src == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
+    public CoordinateSystems getCoordsSystem() {
+        return system;
+    }
+
+    public Point changeCoords(CoordinateSystems dest){
+        if (system == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
             return localizerToMathCoords();
-        } else if (src == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
+        } else if (system == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
             return mathToWeaverCoords();
-        } else if (src == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
+        } else if (system == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
             return weaverToLocalizerCoords();
         }
-        switch (src){
+        switch (system){
             case MATH:
-                return mathToWeaverCoords().changeCoords(CoordinateSystems.WEAVER, dest);
+                return mathToWeaverCoords().changeCoords(dest);
             case LOCALIZER:
-                return localizerToMathCoords().changeCoords(CoordinateSystems.MATH, dest);
+                return localizerToMathCoords().changeCoords(dest);
             case WEAVER:
-                return weaverToLocalizerCoords().changeCoords(CoordinateSystems.LOCALIZER, dest);
+                return weaverToLocalizerCoords().changeCoords(dest);
         }
         throw new IllegalArgumentException("What");
     }
