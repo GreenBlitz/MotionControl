@@ -1,8 +1,9 @@
-group = 'com.github.GreenBlitz'
-
 plugins {
     id "java"
 }
+
+group = 'com.github.GreenBlitz'
+
 
 wrapper {
     gradleVersion = '5.0'

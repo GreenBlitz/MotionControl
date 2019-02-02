@@ -16,7 +16,7 @@ import org.greenblitz.utils.encoder.IEncoder;
 import org.greenblitz.utils.encoder.RoborioEncoder;
 
 public class Chassis extends Subsystem {
-    private static final double POWER_LIMIT = 0.7; // 1.0;
+    private static final double POWER_LIMIT = 1.0; // 1.0;
 
     private static Chassis instance;
 

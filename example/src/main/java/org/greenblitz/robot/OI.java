@@ -47,21 +47,9 @@ public class OI {
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
         mainJS.B.whenPressed(new ResetLocalizer());
-        Point p1 = new Point(0, 0);
-        Point p2 = new Point(0, 1);
-        Point p3 = new Point(1, 0);
-        Point p4 = new Point(1, 2);
-
-        ArrayList<Position> lst = new ArrayList<>();
-        var a = getPath("Double Hatch Cargoship1.pf1.csv");
-        for (int i = 0; i < a.length; i++)
-            lst.add(new Position(a[i]));
-        // for (double i = 0; i <= 1; i++) {
-        //     lst.add(new Position(Point.bezierSample(i, p1, p2, p3, p4)));
-        // }
         mainJS.A.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(
-                new Path(lst),
+                new Path<>(getPath("Double Hatch Cargoship1_0.pf1.csv")),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
                         0.1, false, 0.3, 0.5, 0.5)
         ));
@@ -86,19 +74,19 @@ public class OI {
         return visionTable.getEntry("Hatch::Angle").getDouble(0);
     }
 
-    private Point[] getPath(String filename) {
+    private Position[] getPath(String filename) {
         CSVParser read;
             try {
                 read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/output/" + filename)));
-                ArrayList<Point> path = new ArrayList<>();
+                ArrayList<Position> path = new ArrayList<>();
                 List<CSVRecord> records = read.getRecords();
                 for (int i = 1; i < records.size() ; i++) {
-                    path.add(new Point(Double.parseDouble(records.get(i).get(2)), Double.parseDouble(records.get(i).get(1))));
+                    path.add(new Position(new Point(Double.parseDouble(records.get(i).get(2)), Double.parseDouble(records.get(i).get(1)))));
                 }
                 System.out.println(path);
-                return path.toArray(new Point[path.size()]);
+                return path.toArray(new Position[path.size()]);
             } catch (Exception e) { e.printStackTrace(); }
         System.out.println("Failed to read file");
-        return new Point[0];
+        return new Position[0];
     } 
 }
