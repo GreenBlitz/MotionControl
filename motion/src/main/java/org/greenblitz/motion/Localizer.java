@@ -110,4 +110,9 @@ public class Localizer {
         prevDistanceLeft = currentLeftDistance;
         prevDistanceRight = currentRightDistance;
     }
+
+    public void forceSetLocation(Position location, double currentLeftDistance, double currentRightDistance) {
+        reset(currentLeftDistance, currentRightDistance);
+        m_location = location;
+    }
 }

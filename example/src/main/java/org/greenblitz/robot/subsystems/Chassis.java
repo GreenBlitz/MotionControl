@@ -11,12 +11,9 @@ import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
-import org.greenblitz.robot.commands.TankDriveByJoystick;
 import org.greenblitz.utils.CANRobotDrive;
 import org.greenblitz.utils.encoder.IEncoder;
 import org.greenblitz.utils.encoder.RoborioEncoder;
-
-import java.rmi.Remote;
 
 public class Chassis extends Subsystem {
     private static final double POWER_LIMIT = 0.7; // 1.0;
@@ -189,5 +186,9 @@ public class Chassis extends Subsystem {
 
     public Position getLocation() {
         return m_localizer.getLocation();
+    }
+
+    public void setLocation(Position location) {
+        m_localizer.forceSetLocation(location, getLeftDistance(), getRightDistance());
     }
 }

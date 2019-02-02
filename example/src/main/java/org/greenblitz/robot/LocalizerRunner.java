@@ -68,4 +68,8 @@ public class LocalizerRunner extends PeriodicRunner {
     public void reset() {
         m_localizer.reset(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
     }
+
+    public void forceSetLocation(Position location, double currentLeftDistance, double currentRightDistance) {
+        m_localizer.forceSetLocation(location, currentLeftDistance, currentRightDistance);
+    }
 }

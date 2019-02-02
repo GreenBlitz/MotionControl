@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.greenblitz.motion.app.AdaptivePolynomialPursuitController;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.base.Point;
@@ -19,8 +20,10 @@ import org.greenblitz.utils.SmartJoystick;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class OI {
 
@@ -41,6 +44,8 @@ public class OI {
 
     private OI() {
         mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
+        mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
+        mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
         mainJS.B.whenPressed(new ResetLocalizer());
         Point p1 = new Point(0, 0);
         Point p2 = new Point(0, 1);
@@ -48,9 +53,9 @@ public class OI {
         Point p4 = new Point(1, 2);
 
         ArrayList<Position> lst = new ArrayList<>();
-        for (double i = 0; i <= 1; i++) {
-            lst.add(new Position(Point.bezierSample(i, getPath("Double Hatch Cargoship1.pf1.csv"))));
-        }
+        var a = getPath("Double Hatch Cargoship1.pf1.csv");
+        for (int i = 0; i < a.length; i++)
+            lst.add(new Position(a[i]));
         // for (double i = 0; i <= 1; i++) {
         //     lst.add(new Position(Point.bezierSample(i, p1, p2, p3, p4)));
         // }
@@ -58,7 +63,7 @@ public class OI {
                 new AdaptivePurePursuitController(
                 new Path(lst),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.1, false, 0.3, 0.5, 0.7)
+                        0.1, false, 0.3, 0.5, 0.5)
         ));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));
@@ -81,16 +86,19 @@ public class OI {
         return visionTable.getEntry("Hatch::Angle").getDouble(0);
     }
 
-    private static Point[] getPath(String filename) {
+    private Point[] getPath(String filename) {
         CSVParser read;
             try {
-                File f= new File(Paths.class.getResource("output\\" + filename).toURI());
-                read = CSVFormat.EXCEL.parse(new FileReader(f)); 
+                read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/output/" + filename)));
                 ArrayList<Point> path = new ArrayList<>();
-                for (var record : read) 
-                    path.add(new Point(Double.parseDouble(record.get("x")), Double.parseDouble(record.get("y"))));
-                return (Point[])path.toArray();          
-            } catch (Exception e) {}
+                List<CSVRecord> records = read.getRecords();
+                for (int i = 1; i < records.size() ; i++) {
+                    path.add(new Point(Double.parseDouble(records.get(i).get(2)), Double.parseDouble(records.get(i).get(1))));
+                }
+                System.out.println(path);
+                return path.toArray(new Point[path.size()]);
+            } catch (Exception e) { e.printStackTrace(); }
+        System.out.println("Failed to read file");
         return new Point[0];
     } 
 }

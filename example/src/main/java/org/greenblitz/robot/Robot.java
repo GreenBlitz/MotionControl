@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
         RemoteCSVTarget.initTarget("location", "x", "y");
         Scheduler.getInstance().removeAll();
         prevTime = System.currentTimeMillis();
+        Chassis.getInstance().setLocation(new Position(3.073, 0, 0));
     }
 
     long prevTime;
