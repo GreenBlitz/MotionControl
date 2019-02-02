@@ -135,7 +135,7 @@ public abstract class AbstractPositionPursuitController<T extends Point> {
             return new double[]{speed, speed * rightRadius / leftRadius};
     }
 
-    public Path getM_path() {
+    public Path<T> getM_path() {
         return m_path;
     }
 

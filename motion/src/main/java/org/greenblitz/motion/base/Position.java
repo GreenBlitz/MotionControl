@@ -54,6 +54,11 @@ public class Position extends Point {
         this(point, 0);
     }
 
+    @Override
+    public Position weightedAvg(Point b, double bWeight) {
+        return new Position((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y);
+    }
+
     public static Waypoint toWaypoint(Position p){
         return new Waypoint(p.getX(), p.getY(), p.getAngle());
     }

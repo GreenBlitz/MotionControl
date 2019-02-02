@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.app.AbstractPositionPursuitController;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.subsystems.Chassis;
 
@@ -13,9 +14,9 @@ public class APPCTestingCommand extends Command {
 
     private Chassis m_chassis;
     private Path m_path;
-    private AbstractPositionPursuitController m_controller;
+    private AbstractPositionPursuitController<Position> m_controller;
 
-    public APPCTestingCommand(AbstractPositionPursuitController controller) {
+    public APPCTestingCommand(AbstractPositionPursuitController<Position> controller) {
         requires(Chassis.getInstance());
         m_controller = controller;
         m_path = controller.getM_path();
