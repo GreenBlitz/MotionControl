@@ -3,17 +3,16 @@ package org.greenblitz.motion.app;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
-import org.opencv.core.Mat;
 
 /**
  * @author Udi ~ MudiAtalon
  * @author Alexey ~ Savioor
  *
  */
-public class AdaptivePolynomialPursuitController extends AbstractPositionPursuitController {
+public class AdaptivePolynomialPursuitController extends AbstractPositionPursuitController<Position> {
 
     protected final boolean isBackwards;
-    protected final double minSpeed;
+    protected final double minSpeed, maxSpeed;
     protected final double maxSpeedDist;
 
     private static final double ROOT_HALF = Math.sqrt(0.5);
@@ -23,27 +22,35 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
 
     public AdaptivePolynomialPursuitController(Path path, double lookAhead, double wheelBase,
                                          double tolerance, boolean isBackwards,
-                                         double minSpeed, double maxSpeedDist) {
+                                         double minSpeed, double maxSpeedDist,
+                                               double maxSpeed) {
         super(path, lookAhead, wheelBase, tolerance);
         this.isBackwards = isBackwards;
         this.minSpeed = minSpeed;
+        this.maxSpeed = maxSpeed;
         this.maxSpeedDist = maxSpeedDist;
     }
 
     @Override
     protected double getSpeed(Position robotLoc, Position target){
-        double speed = target != m_path.getLast() ?
-                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
-        if (Math.abs(speed) < minSpeed)
-            speed = minSpeed*Math.signum(speed);
-        return Math.min(Math.abs(speed), 0.5)*Math.signum(speed);
+        return (isBackwards ? -1 : 1) * Math.max(
 
+                (1/maxSpeedDist) * maxSpeed * Math.min(
+                        maxSpeedDist,
+                        Point.dist(robotLoc, m_path.getLast()) / 2
+                ),
+
+                minSpeed
+        );
     }
 
     @Override
     protected double getCurvature(Position robotLoc, Position target){
-        Position roboMath = robotLoc.frcToMathCoords();
-        Position targMath = target.frcToMathCoords();
+        Position roboMath = robotLoc.localizerToMathCoords();
+        Position targMath = target.localizerToMathCoords();
+
+        if (isBackwards)
+            roboMath = (Position) roboMath.rotate(Math.PI / 2);
 
         Point deltaVect = Point.subtract(targMath,
                 roboMath).rotate(-roboMath.getAngle());
@@ -51,6 +58,7 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
         double ang = targMath.getAngle() - roboMath.getAngle();
 
         double v2 = Math.tan(ang);
+        double ret;
 
         if (Math.abs(v2) <= 500) { // Angle is less then 0.999*(PI/2) or more then 1.001*(PI/2)
 
@@ -58,18 +66,27 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
             x2 = Math.max(Math.abs(x2), ZERO_APPROX)*Math.signum(x2);
             double y2 = deltaVect.getY();
 
-            return 2 * (v2 * x2 - 3 * y2) / Math.pow(x2, 2);
+            ret = 2 * (v2 * x2 - 3 * y2) / Math.pow(x2, 2);
+            if (ret == 0 || 1/ret > m_wheelBase){
+                return ret; // make sure we are not spinning in a circle
+            }
+            // better to use regular APPC than to spin
+            return -2 * deltaVect.getX() / Point.normSquared(deltaVect);
         }
-
+        // We got here if tan is too high
         deltaVect.rotate(QUARTER_PI);
         double x2 = deltaVect.getX();
-        x2 = Math.max(Math.abs(x2), ZERO_APPROX)*Math.signum(x2);
+        x2 = Math.max(Math.abs(x2), ZERO_APPROX) * Math.signum(x2);
         double y2 = deltaVect.getY();
-        //v2 = Math.tan(ang + (Math.PI / 4)) = -1;
-        //v1 = Math.tan(Math.PI / 4) = 1;
 
-        // 2*b/(1 + 1)**1.5 = 0.707*b
-        return ROOT_HALF*(x2 - 3 * y2) / -Math.pow(x2, 2);
+        ret = ROOT_HALF * (x2 - 3 * y2) / Math.pow(x2, 2);
+
+        if (ret == 0 || 1/ret > m_wheelBase){
+            return ret; // make sure we are not spinning in a circle
+        }
+        // better to use regular APPC than to spin
+        deltaVect.rotate(-QUARTER_PI); // Rotate back to correct position
+        return -2 * deltaVect.getX() / Point.normSquared(deltaVect);
     }
 
 }

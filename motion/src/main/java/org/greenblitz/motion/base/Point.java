@@ -7,6 +7,42 @@ package org.greenblitz.motion.base;
  */
 public class Point {
 
+    public enum CoordinateSystems{
+        /**
+         * Regular mathematics coordinate system.
+         * positive x is right
+         * positive y is forwards
+         * angle 0 is facing positive x
+         * angle rotation is counter clockwise.
+         */
+        MATH(0),
+        /**
+         * Locations used by localizer and follower commands such as APPC.
+         * positive x is left.
+         * positive y is forwards.
+         * angle 0 is facing positive y.
+         * angle rotation is counter clockwise.
+         */
+        LOCALIZER(1),
+        /**
+         * The coordinates of WPILib's weaver. Similar to picture/matrix coordinates.
+         * positive x is down.
+         * positive y is right.
+         * angle 0 is ???
+         * angle rotation is ???.
+         */
+        WEAVER(2);
+
+        int index;
+        CoordinateSystems(int ind){
+            index = ind;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
+
     public static final Point ORIGIN = new Point(0, 0);
 
     /**
@@ -153,12 +189,12 @@ public class Point {
         return isFuzzyEqual(fir.getX(), sec.getX(), epsilon) && isFuzzyEqual(fir.getY(), sec.getY(), epsilon);
     }
 
-    public static Point weightedAvg(Point a, Point b, double bWeight) {
-        return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight) * a.y + bWeight * b.y);
+    public Point weightedAvg(Point b, double bWeight) {
+        return new Point((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y);
     }
 
-    public static Point avg(Point a, Point b) {
-        return weightedAvg(a, b, 0.5);
+    public Point avg(Point b) {
+        return weightedAvg(b, 0.5);
     }
 
     /**
@@ -174,7 +210,7 @@ public class Point {
     private static Point bezierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
         if (cornersUsedLength == 1) return corners[0];
         for (int ind = 0; ind < cornersUsedLength-1; ind++)
-            corners[ind] = weightedAvg(corners[ind], corners[ind + 1], locInCurve);
+            corners[ind] = corners[ind].weightedAvg(corners[ind + 1], locInCurve);
         return bezierSample(corners, cornersUsedLength - 1, locInCurve);
     }
 
@@ -197,12 +233,41 @@ public class Point {
                 && isFuzzyEqual(this.getY(), point.getY());
     }
 
-    public Point frcToMathCoords(){
-        return new Point(-x,y);
+    public Point localizerToMathCoords(){
+        return new Point(-x, y);
     }
 
+    public Point mathToWeaverCoords(){
+        return new Point(-y, x);
+    }
+
+    public Point weaverToLocalizerCoords(){
+        return new Point(-x, -y);
+    }
+
+
+    public Point changeCoords(CoordinateSystems src, CoordinateSystems dest){
+        if (src == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
+            return localizerToMathCoords();
+        } else if (src == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
+            return mathToWeaverCoords();
+        } else if (src == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
+            return weaverToLocalizerCoords();
+        }
+        switch (src){
+            case MATH:
+                return mathToWeaverCoords().changeCoords(CoordinateSystems.WEAVER, dest);
+            case LOCALIZER:
+                return localizerToMathCoords().changeCoords(CoordinateSystems.MATH, dest);
+            case WEAVER:
+                return weaverToLocalizerCoords().changeCoords(CoordinateSystems.LOCALIZER, dest);
+        }
+        throw new IllegalArgumentException("What");
+    }
+
+    @Deprecated
     public Point mathToFrcCoords(){
-        return frcToMathCoords();
+        return localizerToMathCoords();
     }
 
     /**

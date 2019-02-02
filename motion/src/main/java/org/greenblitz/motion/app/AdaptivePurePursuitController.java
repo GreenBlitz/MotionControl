@@ -7,7 +7,7 @@ import org.greenblitz.motion.pathing.Path;
 /**
  * @author Udi ~ MudiAtalon
  */
-public final class AdaptivePurePursuitController extends AbstractPositionPursuitController {
+public final class AdaptivePurePursuitController extends AbstractPositionPursuitController<Position> {
 
     private final int isBackwards;
     private final double minSpeed;
@@ -27,9 +27,10 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
 
     @Override
     public double getCurvature(Position robotLoc, Position goalPoint) {
-        Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle());
-        double curv = 2 * diff.getX() / Point.normSquared(diff);
-        return curv;
+        Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle()
+        + (isBackwards() ? Math.PI/2 : 0)); // This line is here because if the robot
+                                            // goes backwards he is "facing" the opposite direction
+        return 2 * diff.getX() / Point.normSquared(diff);
     }
 
     @Override
@@ -55,6 +56,10 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
                 minSpeed/maxSpeed
         );
         return ret;
+    }
+
+    public boolean isBackwards(){
+        return isBackwards == -1;
     }
 
 }

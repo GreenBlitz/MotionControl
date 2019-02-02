@@ -18,6 +18,7 @@ public class Localizer {
 
     private double prevDistanceLeft;
     private double prevDistanceRight;
+    private double zeroDistanceLeft, zeroDistanceRight;
 
     private final Object LOCK = new Object();
 
@@ -67,10 +68,20 @@ public class Localizer {
      * Reset prevDistanceLeft and prevDistanceRight.
      * You want to call this when reseting encoders for example
      */
-    public void reset(double currentLeftDistance, double currentRightDistance) {
+    public void reset(double currentLeftDistance, double currentRightDistance, Position newPos) {
         prevDistanceLeft = currentLeftDistance;
         prevDistanceRight = currentRightDistance;
-        m_location.set(0, 0, 0);
+        zeroDistanceLeft = currentLeftDistance;
+        zeroDistanceRight = currentRightDistance;
+        m_location = newPos.clone();
+    }
+
+    /**
+     * Reset prevDistanceLeft and prevDistanceRight.
+     * You want to call this when reseting encoders for example
+     */
+    public void reset(double currentLeftDistance, double currentRightDistance) {
+        reset(currentLeftDistance, currentRightDistance, new Position(0, 0, 0));
     }
 
     /**
@@ -102,7 +113,8 @@ public class Localizer {
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle((currentRightDistance - currentLeftDistance) / m_wheelDistance);
+            m_location.setAngle((currentRightDistance - zeroDistanceRight
+                    - currentLeftDistance + zeroDistanceLeft) / m_wheelDistance);
         }
 
         m_logger.report(m_location.getX(), m_location.getY());
