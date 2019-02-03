@@ -34,6 +34,7 @@ public class Path<T extends Point> implements Iterable<T> {
         m_path = Arrays.asList(points);
     }
 
+    @Deprecated
     public static Path<Position> pathfinderPathToGBPath(Trajectory traj) {
         ArrayList<Position> ret = new ArrayList<>();
         for (Trajectory.Segment seg : traj.segments) {
