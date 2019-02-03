@@ -33,6 +33,10 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
         return 2 * diff.getX() / Point.normSquared(diff);
     }
 
+    public boolean isBackwards(){
+        return isBackwards == -1;
+    }
+
     @Override
     public double getSpeed(Position robotLoc, Position target) {
         return isBackwards * Math.max(
@@ -58,8 +62,4 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
         return ret;
     }
 
-    public boolean isBackwards(){
-        return isBackwards == -1;
-    }
-
-}
+  }
