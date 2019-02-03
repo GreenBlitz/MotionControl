@@ -3,6 +3,7 @@ package org.greenblitz.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.app.AbstractPositionPursuitController;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
@@ -14,21 +15,24 @@ public class APPCTestingCommand extends Command {
 
     private Chassis m_chassis;
     private Path m_path;
+    private Position startLoc;
     private AbstractPositionPursuitController<Position> m_controller;
 
-    public APPCTestingCommand(AbstractPositionPursuitController<Position> controller) {
+    public APPCTestingCommand(AbstractPositionPursuitController<Position> controller, Position startLoc) {
         requires(Chassis.getInstance());
         m_controller = controller;
         m_path = controller.getM_path();
         System.out.println(m_path);
         m_path.sendToCSV("the_path");
         m_chassis = Chassis.getInstance();
+        this.startLoc = startLoc;
         RemoteCSVTarget.initTarget("m_path", "x", "y");
     }
 
     @Override
     protected void initialize() {
         m_chassis.setCoast();
+        Localizer.getInstance().reset(m_chassis.getLeftDistance(), m_chassis.getRightDistance(), startLoc);
         m_path.sendToCSV("m_path");
         super.initialize();
     }

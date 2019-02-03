@@ -25,7 +25,6 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
      */
     public AbstractPositionPursuitController(Path<T> m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
         this.m_path = m_path;
-        this.m_lookahead = m_tolerance;
         this.m_wheelBase = m_wheelBase;
         this.m_tolerance = m_tolerance;
         this.m_lookahead = m_lookahead;

@@ -54,7 +54,7 @@ public class OI {
                                 getPath("Double Hatch Cargoship1_0.pf1.csv")),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
                         0.1, false, 0.3, 0.6, 1)
-        ));
+                , new Position(3.073, 1.5)));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));
         visionTable = NetworkTableInstance.getDefault().getTable("VisionTable");

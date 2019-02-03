@@ -28,7 +28,7 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
     @Override
     public double getCurvature(Position robotLoc, Position goalPoint) {
         Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle()
-        + (isBackwards() ? Math.PI/2 : 0)); // This line is here because if the robot
+        + (isBackwards() ? Math.PI : 0)); // This line is here because if the robot
                                             // goes backwards he is "facing" the opposite direction
         return 2 * diff.getX() / Point.normSquared(diff);
     }
