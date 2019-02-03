@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.motion.base.Vector2D;
 
 /**
  * runs in a seperate thread calculating the org.greenblitz.example.robot position
@@ -101,12 +102,6 @@ public class Localizer {
         double distance = (rightDist + leftDist) / 2;
         double angle = (rightDist - leftDist) / wheelDistance;
         double circleRadius = distance / angle;
-
-        SmartDashboard.putNumber("rightDist", rightDist);
-        SmartDashboard.putNumber("leftDist", leftDist);
-        SmartDashboard.putNumber("dist", distance);
-        SmartDashboard.putNumber("angle", angle);
-        SmartDashboard.putNumber("R", circleRadius);
 
         double dy = circleRadius * Math.sin(angle);
         double dx = circleRadius * (1 - Math.cos(angle));

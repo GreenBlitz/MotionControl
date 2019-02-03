@@ -60,6 +60,7 @@ public class Position extends Point {
                 (1 - bWeight)*angle + bWeight*b.getAngle());
     }
 
+    @Deprecated
     public static Waypoint toWaypoint(Position p){
         return new Waypoint(p.getX(), p.getY(), p.getAngle());
     }
@@ -145,12 +146,12 @@ public class Position extends Point {
 
     @Override
     public Position weaverToLocalizerCoords() {
-        return new Position(-x, -y, 0); // TODO ask atsmon
+        return new Position(-x, -y, angle - Math.PI/2);
     }
 
     @Override
     public Point mathToWeaverCoords() {
-        return new Position(-y, x, 0); // TODO ask atsmon
+        return new Position(-y, x, angle);
     }
 
     @Override

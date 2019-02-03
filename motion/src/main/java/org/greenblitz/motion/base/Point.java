@@ -28,8 +28,8 @@ public class Point {
          * The coordinates of WPILib's weaver. Similar to picture/matrix coordinates.
          * positive x is down.
          * positive y is right.
-         * angle 0 is ???
-         * angle rotation is ???.
+         * angle 0 is facing positive y.
+         * angle rotation is counter clockwise.
          */
         WEAVER(2);
 
@@ -47,12 +47,10 @@ public class Point {
 
     /**
      * the x coordinate: right to left
-     * positive direction left
      */
     protected double x;
     /**
      * the y coordinate: forwards & backwards
-     * positive direction forwards
      */
     protected double y;
 
