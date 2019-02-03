@@ -130,8 +130,8 @@ public class Localizer {
         prevDistanceRight = currentRightDistance;
     }
 
+    @Deprecated
     public void forceSetLocation(Position location, double currentLeftDistance, double currentRightDistance) {
-        reset(currentLeftDistance, currentRightDistance);
-        m_location = location;
+        reset(currentLeftDistance, currentRightDistance, location);
     }
 }
