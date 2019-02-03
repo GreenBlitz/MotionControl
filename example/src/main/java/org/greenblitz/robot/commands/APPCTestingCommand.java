@@ -20,6 +20,8 @@ public class APPCTestingCommand extends Command {
         requires(Chassis.getInstance());
         m_controller = controller;
         m_path = controller.getM_path();
+        System.out.println(m_path);
+        m_path.sendToCSV("the_path");
         m_chassis = Chassis.getInstance();
         RemoteCSVTarget.initTarget("m_path", "x", "y");
     }

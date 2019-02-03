@@ -50,14 +50,10 @@ public class OI {
         mainJS.B.whenPressed(new ResetLocalizer());
         mainJS.A.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(
-                        PolynomialInterpolator.interpolatePoints(BasicAngleInterpolator.interpolateAngles(new Path<>(
-                        new Position(0,0),
-                        new Position(0, .5),
-                        new Position(.5, .5),
-                        new Position(.5, 1)
-                )), 100),
+                        new Path<>(
+                                getPath("Double Hatch Cargoship1.pf1.csv")),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.1, false, 0.3, 0.5, 0.5)
+                        0.1, false, 0.3, 0.6, 1)
         ));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));

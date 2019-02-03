@@ -55,7 +55,7 @@ public class Path<T extends Point> implements Iterable<T> {
     }
 
     public void sendToCSV(String fileName) {
-        RemoteCSVTarget printer = RemoteCSVTarget.getTarget(fileName);
+        RemoteCSVTarget printer = RemoteCSVTarget.initTarget(fileName);
         for (T p : m_path) {
             printer.report(p.getX(), p.getY());
         }
@@ -135,4 +135,10 @@ public class Path<T extends Point> implements Iterable<T> {
         return (T)segStart.weightedAvg(segEnd, lineMinValue);
     }
 
+    @Override
+    public String toString() {
+        return "Path{" +
+                "m_path=" + m_path +
+                '}';
+    }
 }

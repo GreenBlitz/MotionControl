@@ -1,5 +1,6 @@
 package org.greenblitz.motion;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
@@ -100,6 +101,12 @@ public class Localizer {
         double distance = (rightDist + leftDist) / 2;
         double angle = (rightDist - leftDist) / wheelDistance;
         double circleRadius = distance / angle;
+
+        SmartDashboard.putNumber("rightDist", rightDist);
+        SmartDashboard.putNumber("leftDist", leftDist);
+        SmartDashboard.putNumber("dist", distance);
+        SmartDashboard.putNumber("angle", angle);
+        SmartDashboard.putNumber("R", circleRadius);
 
         double dy = circleRadius * Math.sin(angle);
         double dx = circleRadius * (1 - Math.cos(angle));
