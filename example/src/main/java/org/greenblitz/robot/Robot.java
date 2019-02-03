@@ -1,5 +1,7 @@
 package org.greenblitz.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogOutput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -10,15 +12,19 @@ import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.subsystems.Chassis;
 
+
 import java.util.Timer;
 
 public class Robot extends TimedRobot {
+
+    private AnalogInput colorSensor;
 
     @Override
     public void robotInit() {
         Chassis.init();
         Chassis.getInstance().setCoast();
         OI.init();
+      //  colorSensor = new AnalogInput(0);
     }
 
     @Override
@@ -44,6 +50,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("right ticks", Chassis.getInstance().getRightTicks());
         SmartDashboard.putNumber("left distance", Chassis.getInstance().getLeftDistance());
         SmartDashboard.putNumber("right distance", Chassis.getInstance().getRightDistance());
+       // SmartDashboard.putNumber("Color Sensor", colorSensor.getValue());
     }
 
     Timer t = new Timer();
