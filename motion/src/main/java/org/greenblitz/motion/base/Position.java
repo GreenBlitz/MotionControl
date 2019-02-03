@@ -54,9 +54,10 @@ public class Position extends Point {
         this(point, 0);
     }
 
-    @Override
-    public Position weightedAvg(Point b, double bWeight) {
-        return new Position((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y);
+
+    public Position weightedAvg(Position b, double bWeight) {
+        return new Position((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y,
+                (1 - bWeight)*angle + bWeight*b.getAngle());
     }
 
     public static Waypoint toWaypoint(Position p){

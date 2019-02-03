@@ -10,6 +10,7 @@ import org.greenblitz.motion.app.AdaptivePolynomialPursuitController;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.motion.pathing.BasicAngleInterpolator;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.motion.pathing.PolynomialInterpolator;
 import org.greenblitz.robot.commands.APPCTestingCommand;
@@ -49,7 +50,12 @@ public class OI {
         mainJS.B.whenPressed(new ResetLocalizer());
         mainJS.A.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(
-                new Path<>(getPath("Double Hatch Cargoship1_0.pf1.csv")),
+                        PolynomialInterpolator.interpolatePoints(BasicAngleInterpolator.interpolateAngles(new Path<>(
+                        new Position(0,0),
+                        new Position(0, .5),
+                        new Position(.5, .5),
+                        new Position(.5, 1)
+                )), 100),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
                         0.1, false, 0.3, 0.5, 0.5)
         ));

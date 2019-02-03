@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * This represents any controller that goes after a Path using lookahead and curve driving
  */
-public abstract class AbstractPositionPursuitController<T extends Point> {
+public abstract class AbstractPositionPursuitController<T extends Position> {
 
     protected Path<T> m_path;
     protected double m_wheelBase;

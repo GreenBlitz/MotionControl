@@ -17,6 +17,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         Chassis.init();
+        Chassis.getInstance().setCoast();
         OI.init();
     }
 
