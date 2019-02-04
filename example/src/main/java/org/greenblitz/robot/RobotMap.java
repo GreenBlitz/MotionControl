@@ -13,5 +13,8 @@ public class RobotMap {
 
     }
 
-
+    public static class Shifter {
+        public static final int FORWARD = 5;
+        public static final int REVERSE = 4;
+    }
 }

@@ -3,6 +3,7 @@ package org.greenblitz.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -13,10 +14,9 @@ import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.BasicAngleInterpolator;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.motion.pathing.PolynomialInterpolator;
-import org.greenblitz.robot.commands.APPCTestingCommand;
-import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
-import org.greenblitz.robot.commands.ResetLocalizer;
-import org.greenblitz.robot.commands.TankDriveByJoystick;
+import org.greenblitz.robot.commands.*;
+import org.greenblitz.robot.commands.shifter.SwitchShift;
+import org.greenblitz.robot.commands.vision.DriveToVisionTarget;
 import org.greenblitz.utils.SmartJoystick;
 
 import java.io.File;
@@ -47,17 +47,19 @@ public class OI {
         mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
-        mainJS.B.whenPressed(new ResetLocalizer());
+        mainJS.B.whileHeld(new DriveToVisionTarget());
+        mainJS.Y.whenPressed(new MotionAndVision());
         mainJS.A.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(
                         new Path<>(
-                                getPath("Double Hatch Cargoship1_0.pf1.csv")),
+                                getPath("Test Path.pf1.csv")),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
                         0.1, false, 0.3, 0.6, 1)
                 , new Position(3.073, 1.5)));
         mainJS.X.whenPressed(new ArcadeDriveByJoystick(mainJS));
         mainJS.R1.whenPressed(new TankDriveByJoystick(mainJS));
-        visionTable = NetworkTableInstance.getDefault().getTable("VisionTable");
+        mainJS.L1.whenPressed(new SwitchShift());
+        visionTable = NetworkTableInstance.getDefault().getTable("vision");
     }
 
     public SmartJoystick getMainJS() {
@@ -69,11 +71,11 @@ public class OI {
     }
 
     public double getHatchDistance() {
-        return visionTable.getEntry("Hatch::Distance").getDouble(0);
+        return visionTable.getEntry("hatch::distance").getDouble(0);
     }
 
     public double getHatchAngle() {
-        return visionTable.getEntry("Hatch::Angle").getDouble(0);
+        return visionTable.getEntry("hatch::ang").getDouble(0);
     }
 
     private Position[] getPath(String filename) {

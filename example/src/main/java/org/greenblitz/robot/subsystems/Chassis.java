@@ -78,11 +78,15 @@ public class Chassis extends Subsystem {
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
         SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
+        SmartDashboard.putNumber("Chassis tick rate", getSpeed());
         Position pos = m_localizer.getLocation();
         SmartDashboard.putNumber("robot x", pos.getX());
         SmartDashboard.putNumber("robot y", pos.getY());
         SmartDashboard.putNumber("robot angle", Math.toDegrees(pos.getAngle()));
         RemoteGuydeBugger.report(pos.getX(), pos.getY(), pos.getAngle());
+        SmartDashboard.putNumber("Hatch::Distance", OI.getInstance().getHatchDistance());
+        SmartDashboard.putNumber("Hatch::Angle", OI.getInstance().getHatchAngle());
+        SmartDashboard.putString("Chassis::Shift", Shifter.getInstance().getCurrentShift().name());
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
@@ -125,6 +129,10 @@ public class Chassis extends Subsystem {
 
     public double getSpeed() {
         return (m_leftEncoder.getSpeed() + m_rightEncoder.getSpeed()) / 2;
+    }
+
+    public double getAbsoluteSpeed() {
+        return (Math.abs(m_leftEncoder.getSpeed()) + Math.abs(m_rightEncoder.getSpeed())) / 2;
     }
 
     public double getLeftDistance() {

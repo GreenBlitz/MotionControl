@@ -18,11 +18,15 @@ public class Localizer {
 
     private double m_wheelDistance;
 
+    private double angle0;
     private double prevDistanceLeft;
     private double prevDistanceRight;
     private double zeroDistanceLeft, zeroDistanceRight;
+    private long wakeTime;
+    private boolean awake;
 
     private final Object LOCK = new Object();
+    private final Object SLEEP_LOCK = new Object();
 
     private final RemoteCSVTarget m_logger;
     private final long timeOffset;
@@ -31,6 +35,9 @@ public class Localizer {
         RemoteCSVTarget.initTarget("location", "x", "y");
         m_logger = RemoteCSVTarget.getTarget("location");
         timeOffset = System.currentTimeMillis();
+        angle0 = 0;
+        awake = false;
+        wakeTime = System.currentTimeMillis();
     }
 
     private static final Localizer instance = new Localizer();
@@ -75,7 +82,17 @@ public class Localizer {
         prevDistanceRight = currentRightDistance;
         zeroDistanceLeft = currentLeftDistance;
         zeroDistanceRight = currentRightDistance;
+        angle0 = newPos.getAngle();
         m_location = newPos.clone();
+    }
+
+    /**
+     * Location is the same, encoder values are reset
+     * @param currLeft
+     * @param currRight
+     */
+    public void resetEncoderes(double currLeft, double currRight){
+        reset(currLeft, currRight, getLocation());
     }
 
     /**
@@ -108,15 +125,59 @@ public class Localizer {
         return new Point(dx, dy).rotate(robotAng);
     }
 
+    double sleepSpeedL;
+    double sleepSpeedR;
+    double sleepTime;
+    public void setSleep(long milis, double leftSpeed, double rightSpeed){
+        synchronized (SLEEP_LOCK) {
+            awake = false;
+            wakeTime = System.currentTimeMillis() + milis;
+        }
+        sleepTime = milis / 1000.0;
+        sleepSpeedL = leftSpeed;
+        sleepSpeedR = rightSpeed;
+    }
+
+    public void wakeUp(){
+        synchronized (SLEEP_LOCK) {
+            wakeTime = System.currentTimeMillis();
+        }
+    }
+
     public void update(double currentLeftDistance, double currentRightDistance) {
+        synchronized (SLEEP_LOCK) {
+            double dt = (System.currentTimeMillis() - wakeTime) / 1000.0;
+            if (dt < 0) return;
+            else if (!awake) {
+                dt += sleepTime;
+                sleepTime = 0;
+                awake = true;
+                resetEncoderes(currentLeftDistance, currentRightDistance);
+
+                Point keepUp = calculateMovement(
+                        sleepSpeedR*dt,
+                        sleepSpeedL*dt,
+                        m_wheelDistance,
+                        m_location.getAngle()
+                );
+                synchronized (LOCK) {
+                    m_location.translate(keepUp);
+                    m_location.setAngle(angle0 + (sleepSpeedR - sleepSpeedL) * dt / m_wheelDistance);
+                }
+                angle0 = m_location.getAngle();
+
+                return;
+
+            }
+        }
         Point dXdY = calculateMovement(
                 currentRightDistance - prevDistanceRight, currentLeftDistance - prevDistanceLeft,
                 m_wheelDistance, m_location.getAngle());
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle((currentRightDistance - zeroDistanceRight
-                    - currentLeftDistance + zeroDistanceLeft) / m_wheelDistance);
+            m_location.setAngle(angle0 + ((currentRightDistance - zeroDistanceRight
+                    - currentLeftDistance + zeroDistanceLeft) / m_wheelDistance));
         }
 
         m_logger.report(m_location.getX(), m_location.getY());

@@ -1,9 +1,6 @@
 package org.greenblitz.robot;
 
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.AnalogOutput;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
@@ -18,6 +15,7 @@ import java.util.Timer;
 public class Robot extends TimedRobot {
 
     private AnalogInput colorSensor;
+    private Relay LEDs;
 
     @Override
     public void robotInit() {
@@ -25,11 +23,17 @@ public class Robot extends TimedRobot {
         Chassis.getInstance().setCoast();
         OI.init();
       //  colorSensor = new AnalogInput(0);
+        LEDs = new Relay(0, Relay.Direction.kForward);
+        LEDs.setSafetyEnabled(false);
+        OI.getInstance().getVisionTable().getEntry("LEDs").setBoolean(true);
     }
 
     @Override
     public void robotPeriodic() {
         updateSubsystems();
+//        LEDs.set(OI.getInstance().getVisionTable().getEntry("LEDs").getValue().getBoolean() ?
+//                 Relay.Value.kOn : Relay.Value.kOff);
+        LEDs.set(Relay.Value.kOn);
     }
 
 

@@ -11,11 +11,11 @@ import org.greenblitz.robot.subsystems.Chassis;
 
 public class DriveToVisionTarget extends Command implements PIDSource, PIDOutput {
 
-    private static final double kP = 0.75, kI = 0, kD = 0, turnkP = 0.03;
+    private static final double kP = 1.1, kI = 0, kD = 0, turnkP = 0.035;
     private PIDController m_controller;
-    private static final long TIME_ON_TARGET = 200;
+    private static final long TIME_ON_TARGET = 100;
     private long m_onTarget = -1;
-    private static final double MINIMUM_OUTPUT = 0.35;
+    private static final double MINIMUM_OUTPUT = 0.15;
 
     public DriveToVisionTarget() {
         requires(Chassis.getInstance());
@@ -26,7 +26,7 @@ public class DriveToVisionTarget extends Command implements PIDSource, PIDOutput
     protected void initialize() {
         m_onTarget = -1;
         m_controller.setAbsoluteTolerance(0.1);
-        m_controller.setSetpoint(0.5);
+        m_controller.setSetpoint(0.75);
         m_controller.setOutputRange(-0.8, 0.8);
         m_controller.enable();
     }
@@ -42,8 +42,7 @@ public class DriveToVisionTarget extends Command implements PIDSource, PIDOutput
 
     @Override
     protected boolean isFinished() {
-        //return m_controller.onTarget() && System.currentTimeMillis() - m_onTarget > TIME_ON_TARGET;
-        return false;
+        return m_controller.onTarget() && System.currentTimeMillis() - m_onTarget > TIME_ON_TARGET;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class DriveToVisionTarget extends Command implements PIDSource, PIDOutput
         if (Math.abs(output) < MINIMUM_OUTPUT)
             output = Math.signum(output) * MINIMUM_OUTPUT;
         SmartDashboard.putNumber("PID Output", output);
-        Chassis.getInstance().arcadeDrive(-output, -turnkP*(OI.getInstance().getHatchAngle()));
+        Chassis.getInstance().arcadeDrive(-output, turnkP*(OI.getInstance().getHatchAngle()));
     }
 
     @Override
