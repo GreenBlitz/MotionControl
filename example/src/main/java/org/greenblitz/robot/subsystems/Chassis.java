@@ -1,6 +1,7 @@
 package org.greenblitz.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
@@ -22,6 +23,8 @@ public class Chassis extends Subsystem {
 
     private static final double TICKS_PER_METER_LEFT = RobotStats.Ragnarok.EncoderTicksPerMeter.LEFT_POWER;
     private static final double TICKS_PER_METER_RIGHT = RobotStats.Ragnarok.EncoderTicksPerMeter.RIGHT_POWER;
+
+    private AnalogInput m_colorSensor;
 
     private LocalizerRunner m_localizer;
 
@@ -64,6 +67,8 @@ public class Chassis extends Subsystem {
 
         m_rightEncoder.setInverted(true);
 
+        m_colorSensor = new AnalogInput(0);
+
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();
         setCoast();
@@ -87,12 +92,24 @@ public class Chassis extends Subsystem {
         SmartDashboard.putNumber("Hatch::Distance", OI.getInstance().getHatchDistance());
         SmartDashboard.putNumber("Hatch::Angle", OI.getInstance().getHatchAngle());
         SmartDashboard.putString("Chassis::Shift", Shifter.getInstance().getCurrentShift().name());
+        SmartDashboard.putNumber("ColorSensor::Value", normalizeColorInput(m_colorSensor.getValue()));
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
         if (Math.abs(moveValue) > POWER_LIMIT)
             moveValue = Math.signum(moveValue) * POWER_LIMIT;
         m_robotDrive.arcadeDrive(-moveValue, rotateValue);
+    }
+
+    public double normalizeColorInput(double input) {
+        input =  (input-1690)/1150;
+        if (input < 0) input =0;
+        else if (input > 1) input = 1;
+        return input;
+    }
+
+    public double getColorSensorValue() {
+        return normalizeColorInput(m_colorSensor.getValue());
     }
 
     public void tankDrive(double leftValue, double rightValue) {

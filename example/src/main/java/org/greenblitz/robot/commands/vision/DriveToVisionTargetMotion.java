@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.pid.MultivariablePIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.robot.OI;
@@ -14,7 +15,7 @@ import org.greenblitz.robot.subsystems.Chassis;
 public class DriveToVisionTargetMotion extends Command {
 
     private static final PIDObject LinearPID = new PIDObject(-1.1),
-    AngularPID = new PIDObject(-0.04);
+    AngularPID = new PIDObject(0.04);
     private MultivariablePIDController m_controller;
     private static final long TIME_ON_TARGET = 100;
     private long m_onTarget = -1;

@@ -48,12 +48,13 @@ public class OI {
         mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
-        mainJS.B.whenPressed(new APPCTestingCommand(
+        /*mainJS.B.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(
                         new Path<>(
                                 getPath("Double Hatch Cargoship2.pf1.csv")),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.1, true, 0.3, 0.5, 0.6), new Position(2.68, 6.614)));
+                        0.1, true, 0.3, 0.5, 0.6), new Position(2.68, 6.614)));*/
+        mainJS.B.whenPressed(new LineFollowerCommandFLLSensor(0.8, 0, 0.015, 0.7, 1.2, false));
         mainJS.Y.whenPressed(new MotionAndVision());
         mainJS.A.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(
