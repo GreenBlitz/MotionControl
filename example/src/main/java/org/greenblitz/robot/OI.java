@@ -17,6 +17,7 @@ import org.greenblitz.motion.pathing.PolynomialInterpolator;
 import org.greenblitz.robot.commands.*;
 import org.greenblitz.robot.commands.shifter.SwitchShift;
 import org.greenblitz.robot.commands.vision.DriveToVisionTarget;
+import org.greenblitz.robot.commands.vision.DriveToVisionTargetMotion;
 import org.greenblitz.utils.SmartJoystick;
 
 import java.io.File;
@@ -47,7 +48,12 @@ public class OI {
         mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
-        mainJS.B.whileHeld(new DriveToVisionTarget());
+        mainJS.B.whenPressed(new APPCTestingCommand(
+                new AdaptivePurePursuitController(
+                        new Path<>(
+                                getPath("Double Hatch Cargoship2.pf1.csv")),
+                        0.5, RobotStats.Ragnarok.WHEELBASE,
+                        0.1, true, 0.3, 0.5, 0.6), new Position(2.68, 6.614)));
         mainJS.Y.whenPressed(new MotionAndVision());
         mainJS.A.whenPressed(new APPCTestingCommand(
                 new AdaptivePurePursuitController(

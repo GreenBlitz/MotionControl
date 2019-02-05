@@ -29,6 +29,10 @@ public class APPCTestingCommand extends Command {
         RemoteCSVTarget.initTarget("m_path", "x", "y");
     }
 
+    public APPCTestingCommand(AbstractPositionPursuitController<Position> controller){
+        this(controller, Localizer.getInstance().getLocation());
+    }
+
     @Override
     protected void initialize() {
         m_chassis.setCoast();

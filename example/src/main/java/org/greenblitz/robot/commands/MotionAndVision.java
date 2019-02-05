@@ -11,6 +11,7 @@ import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.vision.DriveToVisionTarget;
+import org.greenblitz.robot.commands.vision.DriveToVisionTargetMotion;
 
 import java.io.File;
 import java.io.FileReader;
@@ -24,9 +25,15 @@ public class MotionAndVision extends CommandGroup {
                         new Path<>(
                                 getPath("Test Path.pf1.csv")),
                         0.5, RobotStats.Ragnarok.WHEELBASE,
-                        0.2, false, 0.3, 0.7, 1)
+                        0.2, false, 0.5, 0.6, 1)
                 , new Position(3.073, 1.5)));
-        addSequential(new DriveToVisionTarget());
+        addSequential(new DriveToVisionTargetMotion());
+//        addSequential(new APPCTestingCommand(
+//                new AdaptivePurePursuitController(
+//                        new Path<>(
+//                                getPath("Double Hatch Cargoship2.pf1.csv")),
+//                        0.5, RobotStats.Ragnarok.WHEELBASE,
+//                        0.1, true, 0.3, 0.5, 0.6)));
     }
 
     private Position[] getPath(String filename) {

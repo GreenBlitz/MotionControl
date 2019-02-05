@@ -32,14 +32,15 @@ public class DriveToPanel extends Command {
                 new double[] {0, 0},
                 new double[] {OI.getInstance().getHatchAngle(), OI.getInstance().getHatchDistance()}
         );
-        Chassis.getInstance().arcadeDrive(pidVals[1], pidVals[0]);
+
+        Chassis.getInstance().arcadeDrive(pidVals[0], -pidVals[1]);
     }
 
     @Override
     protected boolean isFinished() {
         return controller.isFinished(new double[] {0, 0},
                 new double[] {OI.getInstance().getHatchAngle(), OI.getInstance().getHatchDistance()},
-                0.1);
+                new double[]{0.1, 3});
     }
 
     @Override
