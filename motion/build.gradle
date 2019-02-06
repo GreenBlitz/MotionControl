@@ -1,0 +1,29 @@
+plugins {
+    id "java"
+	id "edu.wpi.first.GradleRIO" version "2019.1.1"
+}
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile wpi.deps.wpilib()
+    compile wpi.deps.vendor.java()
+    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
+
+    testCompile group: 'org.apache.commons', name: 'commons-csv', version: '1.6'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
+    compile group: 'org.apache.commons', name: 'commons-csv', version: '1.6'
+}
+
+test {
+    useJUnitPlatform()
+}
