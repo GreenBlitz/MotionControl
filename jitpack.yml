@@ -3,7 +3,7 @@ jdk:
 
 
 before_install:
-   - chmod +X prepare.sh
+   - chmod +x prepare.sh
    - ./prepare.sh
 
 install:
