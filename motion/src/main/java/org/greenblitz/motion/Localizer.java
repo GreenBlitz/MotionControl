@@ -130,6 +130,8 @@ public class Localizer {
     double sleepTime;
     public void setSleep(long milis, double leftSpeed, double rightSpeed){
         synchronized (SLEEP_LOCK) {
+            if (!awake) return;
+
             awake = false;
             wakeTime = System.currentTimeMillis() + milis;
         }
@@ -138,11 +140,11 @@ public class Localizer {
         sleepSpeedR = rightSpeed;
     }
 
-    public void wakeUp(){
-        synchronized (SLEEP_LOCK) {
-            wakeTime = System.currentTimeMillis();
-        }
-    }
+//    public void wakeUp(){
+//        synchronized (SLEEP_LOCK) {
+//            wakeTime = System.currentTimeMillis();
+//        }
+//    }
 
     public void update(double currentLeftDistance, double currentRightDistance) {
         synchronized (SLEEP_LOCK) {
@@ -176,8 +178,8 @@ public class Localizer {
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle(angle0 + ((currentRightDistance - zeroDistanceRight
-                    - currentLeftDistance + zeroDistanceLeft) / m_wheelDistance));
+            m_location.setAngle(angle0 + (((currentRightDistance - zeroDistanceRight)
+                    - (currentLeftDistance - zeroDistanceLeft)) / m_wheelDistance));
         }
 
         m_logger.report(m_location.getX(), m_location.getY());
