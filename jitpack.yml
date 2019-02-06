@@ -1,9 +1,9 @@
 jdk:
-
         - openjdk11
 
 
 before_install:
+   - chmod +X prepare.sh
    - ./prepare.sh
 
 install:
