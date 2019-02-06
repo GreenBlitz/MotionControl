@@ -1,0 +1,11 @@
+jdk:
+
+        - openjdk11
+
+
+before_install:
+   - ./prepare.sh
+
+install:
+   - echo "Running a custom install command"
+   - gradle clean install
