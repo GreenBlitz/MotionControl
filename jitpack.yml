@@ -2,4 +2,4 @@ jdk:
         - openjdk11
 
 install:
-        - gradle :motion:install 
+        - ./gradlew :motion:install 
