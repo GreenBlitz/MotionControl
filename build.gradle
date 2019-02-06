@@ -5,6 +5,8 @@ plugins {
 
 group = 'com.github.GreenBlitz'
 
+subprojects {
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
@@ -32,7 +34,9 @@ install {
         }
       }
     }
-  }
+ }
+}
+
 }
 
 wrapper {
