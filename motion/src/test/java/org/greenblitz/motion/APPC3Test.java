@@ -12,7 +12,7 @@ public class APPC3Test {
 
     @Test
     void basicLinear(){
-        var appc = new AdaptivePolynomialPursuitController(new Path(
+        var appc = new AdaptivePolynomialPursuitController(new Path<Position>(
                 new Position(0, 0),
                 new Position(0, 1)
         ), 0.5, 0.69,
