@@ -78,12 +78,14 @@ public class Localizer {
      * You want to call this when reseting encoders for example
      */
     public void reset(double currentLeftDistance, double currentRightDistance, Position newPos) {
-        prevDistanceLeft = currentLeftDistance;
-        prevDistanceRight = currentRightDistance;
-        zeroDistanceLeft = currentLeftDistance;
-        zeroDistanceRight = currentRightDistance;
-        angle0 = newPos.getAngle();
-        m_location = newPos.clone();
+        synchronized (LOCK) {
+            prevDistanceLeft = currentLeftDistance;
+            prevDistanceRight = currentRightDistance;
+            zeroDistanceLeft = currentLeftDistance;
+            zeroDistanceRight = currentRightDistance;
+            angle0 = newPos.getAngle();
+            m_location = newPos.clone();
+        }
     }
 
     /**

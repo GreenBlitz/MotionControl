@@ -240,7 +240,7 @@ public class Point {
     }
 
     public Point weaverToLocalizerCoords(){
-        return new Point(-x, -y);
+        return new Point(-y, x);
     }
 
 

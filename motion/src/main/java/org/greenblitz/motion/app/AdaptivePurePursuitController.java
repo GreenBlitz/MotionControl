@@ -15,7 +15,7 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
     private final double maxSpeed;
 
 
-    public AdaptivePurePursuitController(Path path, double lookAhead, double wheelBase,
+    public AdaptivePurePursuitController(Path<Position> path, double lookAhead, double wheelBase,
                                          double tolerance, boolean isBackwards,
                                          double minSpeed, double maxSpeedDist, double maxSpeed) {
         super(path, lookAhead, wheelBase, tolerance);
@@ -27,8 +27,7 @@ public final class AdaptivePurePursuitController extends AbstractPositionPursuit
 
     @Override
     public double getCurvature(Position robotLoc, Position goalPoint) {
-        Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle()
-        + (isBackwards() ? Math.PI : 0)); // This line is here because if the robot
+        Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle()); // This line is here because if the robot
                                             // goes backwards he is "facing" the opposite direction
         return 2 * diff.getX() / Point.normSquared(diff);
     }

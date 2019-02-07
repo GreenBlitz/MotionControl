@@ -55,10 +55,12 @@ public class Path<T extends Point> implements Iterable<T> {
         return m_path.size();
     }
 
-    public void sendToCSV(String fileName) {
-        RemoteCSVTarget printer = RemoteCSVTarget.initTarget(fileName);
+    public void sendToCSV(String fileName) throws InterruptedException {
+        RemoteCSVTarget printer = RemoteCSVTarget.initTarget(fileName, "x", "y");
+        Thread.sleep(500);
         for (T p : m_path) {
             printer.report(p.getX(), p.getY());
+            Thread.sleep(50);
         }
     }
 
