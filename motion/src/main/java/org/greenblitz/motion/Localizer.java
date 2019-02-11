@@ -147,6 +147,11 @@ public class Localizer {
 //    }
 
     public void update(double currentLeftDistance, double currentRightDistance) {
+        update(currentLeftDistance, currentRightDistance, angle0 + (((currentRightDistance - zeroDistanceRight)
+                - (currentLeftDistance - zeroDistanceLeft)) / m_wheelDistance));
+    }
+
+    public void update(double currentLeftDistance, double currentRightDistance, double angle) {
         synchronized (SLEEP_LOCK) {
             double dt = (System.currentTimeMillis() - wakeTime) / 1000.0;
             if (dt < 0) return;
@@ -164,6 +169,7 @@ public class Localizer {
                 );
                 synchronized (LOCK) {
                     m_location.translate(keepUp);
+                    // TODO make work with given angle
                     m_location.setAngle(angle0 + (sleepSpeedR - sleepSpeedL) * dt / m_wheelDistance);
                 }
                 angle0 = m_location.getAngle();
@@ -178,8 +184,7 @@ public class Localizer {
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle(angle0 + (((currentRightDistance - zeroDistanceRight)
-                    - (currentLeftDistance - zeroDistanceLeft)) / m_wheelDistance));
+            m_location.setAngle(angle);
         }
 
         m_logger.report(m_location.getX(), m_location.getY());
