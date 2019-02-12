@@ -8,6 +8,7 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.robot.subsystems.Shifter;
 
 
 import java.util.Timer;
@@ -81,6 +82,7 @@ public class Robot extends TimedRobot {
 
     public void updateSubsystems() {
         Chassis.getInstance().update();
+        Shifter.getInstance().update();
     }
 
     public static void main(String[] args) {
