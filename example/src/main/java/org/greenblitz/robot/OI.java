@@ -89,7 +89,7 @@ public class OI {
     public static Position[] getPath(String filename) {
         CSVParser read;
         try {
-            read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/output/" + filename)));
+            read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/paths/" + filename)));
             ArrayList<Position> path = new ArrayList<>();
             List<CSVRecord> records = read.getRecords();
             for (int i = 1; i < records.size() ; i++) {
