@@ -1,10 +1,8 @@
 package org.greenblitz.motion;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.base.Vector2D;
 
 /**
  * runs in a seperate thread calculating the org.greenblitz.example.robot position
@@ -93,7 +91,7 @@ public class Localizer {
      * @param currLeft
      * @param currRight
      */
-    public void resetEncoderes(double currLeft, double currRight){
+    public void resetEncoders(double currLeft, double currRight){
         reset(currLeft, currRight, getLocation());
     }
 
@@ -132,6 +130,8 @@ public class Localizer {
     double sleepTime;
     public void setSleep(long milis, double leftSpeed, double rightSpeed){
         synchronized (SLEEP_LOCK) {
+            if (!awake) return;
+
             awake = false;
             wakeTime = System.currentTimeMillis() + milis;
         }
@@ -140,6 +140,10 @@ public class Localizer {
         sleepSpeedR = rightSpeed;
     }
 
+    /**
+     * Don't use, this can fuck up the location
+     */
+    @Deprecated
     public void wakeUp(){
         synchronized (SLEEP_LOCK) {
             wakeTime = System.currentTimeMillis();
@@ -147,6 +151,20 @@ public class Localizer {
     }
 
     public void update(double currentLeftDistance, double currentRightDistance) {
+        double ang = angle0 + (((currentRightDistance - zeroDistanceRight)
+                - (currentLeftDistance - zeroDistanceLeft)) / m_wheelDistance);
+        synchronized (SLEEP_LOCK) {
+            double dt = (System.currentTimeMillis() - wakeTime) / 1000.0;
+            if (dt < 0) return;
+            else if (!awake) {
+                dt += sleepTime;
+                ang = (angle0 + (sleepSpeedR - sleepSpeedL) * dt / m_wheelDistance);
+            }
+        }
+        update(currentLeftDistance, currentRightDistance, ang);
+    }
+
+    public void update(double currentLeftDistance, double currentRightDistance, double angle) {
         synchronized (SLEEP_LOCK) {
             double dt = (System.currentTimeMillis() - wakeTime) / 1000.0;
             if (dt < 0) return;
@@ -154,7 +172,7 @@ public class Localizer {
                 dt += sleepTime;
                 sleepTime = 0;
                 awake = true;
-                resetEncoderes(currentLeftDistance, currentRightDistance);
+                resetEncoders(currentLeftDistance, currentRightDistance);
 
                 Point keepUp = calculateMovement(
                         sleepSpeedR*dt,
@@ -164,7 +182,7 @@ public class Localizer {
                 );
                 synchronized (LOCK) {
                     m_location.translate(keepUp);
-                    m_location.setAngle(angle0 + (sleepSpeedR - sleepSpeedL) * dt / m_wheelDistance);
+                    m_location.setAngle(angle);
                 }
                 angle0 = m_location.getAngle();
 
@@ -178,8 +196,7 @@ public class Localizer {
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle(angle0 + ((currentRightDistance - zeroDistanceRight
-                    - currentLeftDistance + zeroDistanceLeft) / m_wheelDistance));
+            m_location.setAngle(angle);
         }
 
         m_logger.report(m_location.getX(), m_location.getY());

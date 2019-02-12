@@ -1,9 +1,9 @@
 package org.greenblitz.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.utils.Navx;
 import org.greenblitz.utils.PeriodicRunner;
 import org.greenblitz.utils.encoder.IEncoder;
 
@@ -13,6 +13,8 @@ public class LocalizerRunner extends PeriodicRunner {
 
     private IEncoder m_leftEncoder;
     private IEncoder m_rightEncoder;
+
+    private boolean useGyro;
 
     private boolean m_resetOnDisable = false;
 
@@ -24,7 +26,11 @@ public class LocalizerRunner extends PeriodicRunner {
         leftEncoder.reset();
         m_rightEncoder = rightEncoder;
         rightEncoder.reset();
+        enableGyro();
     }
+
+    public void enableGyro() {useGyro = true;}
+    public void disableGyro() {useGyro = false;}
 
     public LocalizerRunner(double wheelBase, IEncoder leftEncoder, IEncoder rightEncoder) {
         this(20, wheelBase, leftEncoder, rightEncoder);
@@ -53,7 +59,11 @@ public class LocalizerRunner extends PeriodicRunner {
 
     @Override
     protected void whenActive() {
-        m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+        if (useGyro) {
+            m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), Navx.getInstance().getAngle());
+        } else {
+            m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+        }
     }
 
     @Override
