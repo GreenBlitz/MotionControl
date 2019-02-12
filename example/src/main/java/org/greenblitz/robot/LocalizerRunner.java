@@ -1,7 +1,6 @@
 package org.greenblitz.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.utils.Navx;
@@ -27,10 +26,10 @@ public class LocalizerRunner extends PeriodicRunner {
         leftEncoder.reset();
         m_rightEncoder = rightEncoder;
         rightEncoder.reset();
-        setGyro();
+        enableGyro();
     }
 
-    public void setGyro() {useGyro = true;}
+    public void enableGyro() {useGyro = true;}
     public void disableGyro() {useGyro = false;}
 
     public LocalizerRunner(double wheelBase, IEncoder leftEncoder, IEncoder rightEncoder) {
