@@ -8,6 +8,7 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.utils.Navx;
 
 
 import java.util.Timer;
@@ -41,6 +42,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         RemoteCSVTarget.initTarget("location", "x", "y");
         Scheduler.getInstance().removeAll();
+        Navx.getInstance().get_navx().reset();
         prevTime = System.currentTimeMillis();
     }
 
@@ -49,6 +51,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        SmartDashboard.putNumber("NAVX ang", Math.toDegrees(Navx.getInstance().getAngle()));
         SmartDashboard.putNumber("left ticks", Chassis.getInstance().getLeftTicks());
         SmartDashboard.putNumber("right ticks", Chassis.getInstance().getRightTicks());
         SmartDashboard.putNumber("left distance", Chassis.getInstance().getLeftDistance());
