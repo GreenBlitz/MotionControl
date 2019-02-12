@@ -80,7 +80,7 @@ public class Shifter extends Subsystem {
             Chassis.getInstance().getLeftEncoder().setTicksPerMeter(state == ShifterState.POWER ? RobotStats.Ragnarok.EncoderTicksPerMeter.LEFT_POWER : RobotStats.Ragnarok.EncoderTicksPerMeter.LEFT_SPEED);
             Chassis.getInstance().getRightEncoder().setTicksPerMeter(state == ShifterState.POWER ? RobotStats.Ragnarok.EncoderTicksPerMeter.RIGHT_POWER : RobotStats.Ragnarok.EncoderTicksPerMeter.RIGHT_SPEED);
 
-//            Localizer.getInstance().resetEncoderes(
+//            Localizer.getInstance().resetEncoders(
 //                    Chassis.getInstance().getLeftDistance(),
 //                    Chassis.getInstance().getRightDistance()
 //            );
