@@ -51,25 +51,16 @@ public class OI {
         mainJS = new SmartJoystick(org.greenblitz.robot.RobotMap.JoystickID.MAIN);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
+
         mainJS.X.whenPressed(new AutoChangeShift());
         mainJS.A.whenPressed(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Vis Rocket1.pf1.csv")),
                 0.3, RobotStats.Ragnarok.WHEELBASE,
                 0.1, false, 0.5, 0.4, 0.8)));
-        mainJS.B.whenPressed(new SetLocalizerLocation(-3.073, 1.5, 0.0));
+        mainJS.B.whenPressed(new DriveToVisionTarget());
+        mainJS.Y.whenPressed(new SetLocalizerLocation(-3.073, 1.5, 0.0));
         mainJS.START.whenPressed(new BrakeChassis());
-        mainJS.BACK.whenPressed(new Command() {
-
-            @Override
-            protected void initialize() {
-                Chassis.getInstance().setCoast();
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return true;
-            }
-        });
+        mainJS.BACK.whenPressed(new SetCoast());
 
         mainJS.L1.whenPressed(new SwitchShift());
         visionTable = NetworkTableInstance.getDefault().getTable("vision");

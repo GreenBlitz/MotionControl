@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
         LEDs = new Relay(0, Relay.Direction.kForward);
         LEDs.setSafetyEnabled(false);
         OI.getInstance().getVisionTable().getEntry("LEDs").setBoolean(true);
+        Navx.getInstance().get_navx().reset();
     }
 
     @Override

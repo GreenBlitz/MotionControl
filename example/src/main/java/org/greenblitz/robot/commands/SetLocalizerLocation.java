@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.utils.Navx;
 
 public class SetLocalizerLocation extends Command {
 
@@ -33,6 +34,7 @@ public class SetLocalizerLocation extends Command {
             m_startA = Localizer.getInstance().getLocation().getAngle();
         Localizer.getInstance().reset(Chassis.getInstance().getLeftDistance(), Chassis.getInstance().getRightDistance(),
                                       new Position(m_startX, m_startY, m_startA));
+        Navx.getInstance().get_navx().reset();
     }
 
     @Override

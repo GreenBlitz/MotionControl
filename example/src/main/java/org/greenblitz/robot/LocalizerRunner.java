@@ -60,7 +60,7 @@ public class LocalizerRunner extends PeriodicRunner {
     @Override
     protected void whenActive() {
         if (useGyro) {
-            m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), Navx.getInstance().getAngle());
+            m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), -Navx.getInstance().getAngle());
         } else {
             m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
         }
