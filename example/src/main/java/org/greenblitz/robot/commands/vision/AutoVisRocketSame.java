@@ -17,7 +17,7 @@ public class AutoVisRocketSame extends CommandGroup {
         addSequential(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Vis Rocket1.pf1.csv")),
                 0.8, RobotStats.Ragnarok.WHEELBASE,
-                0.2, false, 0.5, 0.4, 1)));
+                0.15, false, 0.6, 0.2, 1)));
         addSequential(new DriveToVisionTarget());
         addSequential(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Pure Rocket2.pf1.csv")),
@@ -26,7 +26,7 @@ public class AutoVisRocketSame extends CommandGroup {
         addSequential(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Vis Rocket3.pf1.csv")),
                 0.8, RobotStats.Ragnarok.WHEELBASE,
-                0.2, false, 0.5, 0.4, 1)));
+                0.15, false, 0.6, 0.2, 1)));
         addSequential(new DriveToVisionTarget());
         addSequential(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Pure Rocket Same-Side4.pf1.csv")),
@@ -35,7 +35,7 @@ public class AutoVisRocketSame extends CommandGroup {
         addSequential(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Vis Rocket Same-Side5.pf1.csv")),
                 0.5, RobotStats.Ragnarok.WHEELBASE,
-                0.2, false, 0.5, 0.4, 1)));
+                0.15, false, 0.5, 0.2, 1)));
         addSequential(new DriveToVisionTarget());
     }
 }

@@ -204,6 +204,7 @@ public class Point {
     }
 
     public static Point bezierSample(double locInCurve, Point... corners) {
+        if(locInCurve == 0) return corners[0];
         int degree = corners.length - 1;
         double factor = Math.pow(locInCurve, degree);
         double factorFactor = 1 / locInCurve - 1;
@@ -288,7 +289,7 @@ public class Point {
             case WEAVER:
                 return weaverToLocalizerCoords().changeCoords(CoordinateSystems.LOCALIZER, dest);
         }
-        throw new IllegalArgumentException("What");
+        throw new IllegalArgumentException("Roses are red, Violets are blue, I don't know this enum, what should I do???");
     }
 
     @Deprecated
