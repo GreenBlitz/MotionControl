@@ -34,7 +34,7 @@ public class SetLocalizerLocation extends Command {
             m_startA = Localizer.getInstance().getLocation().getAngle();
         Localizer.getInstance().reset(Chassis.getInstance().getLeftDistance(), Chassis.getInstance().getRightDistance(),
                                       new Position(m_startX, m_startY, m_startA));
-        Navx.getInstance().get_navx().reset();
+        Navx.getInstance().reset();
     }
 
     @Override

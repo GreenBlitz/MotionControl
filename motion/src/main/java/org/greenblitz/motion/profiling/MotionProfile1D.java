@@ -9,21 +9,21 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MotionProfile {
+public class MotionProfile1D {
 
     protected List<Segment> segments;
 
-    public MotionProfile(List<Segment> segs) {
+    public MotionProfile1D(List<Segment> segs) {
         segments = segs;
     }
 
-    public MotionProfile() {
+    public MotionProfile1D() {
         this(new ArrayList<>());
     }
 
     @Override
     public String toString() {
-        return "MotionProfile{" +
+        return "MotionProfile1D{" +
                 "segments=" + segments +
                 '}';
     }
@@ -148,7 +148,7 @@ public class MotionProfile {
      * @param startLocation
      * @return
      */
-    public static Segment createSegment(double tStart, double tEnd, double accel, double startVelocity, double startLocation) {
+    public Segment createSegment(double tStart, double tEnd, double accel, double startVelocity, double startLocation) {
         return new Segment(tStart, tEnd, accel, startVelocity, startLocation);
     }
 
@@ -231,7 +231,7 @@ public class MotionProfile {
 
         @Override
         public String toString() {
-            return "Segment{" +
+            return "BezierSegment{" +
                     "tStart=" + tStart +
                     ", tEnd=" + tEnd +
                     ", accel=" + accel +
