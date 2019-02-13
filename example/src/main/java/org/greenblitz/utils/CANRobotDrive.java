@@ -116,6 +116,17 @@ public class CANRobotDrive {
 	}
 
 	public void setLeftRightMotorOutputs(double leftOutput, double rightOutput) {
+
+	    var frontLeft = limit(leftOutput) * m_outputScale * m_frontLeftInverted;
+	    var rearLeft = limit(leftOutput) * m_outputScale * m_rearLeftInverted;
+	    var frontRight = limit(rightOutput) * m_outputScale * m_frontRightInverted;
+	    var rearRight = limit(rightOutput) * m_outputScale * m_rearRightInverted;
+
+        SmartDashboard.putNumber("front left power", frontLeft);
+        SmartDashboard.putNumber("rear left power", rearLeft);
+        SmartDashboard.putNumber("front right power", frontRight);
+        SmartDashboard.putNumber("rear right power", rearRight);
+
 		m_frontLeft.set(ControlMode.PercentOutput, limit(leftOutput) * m_outputScale * m_frontLeftInverted);
 		m_rearLeft.set(ControlMode.PercentOutput, limit(leftOutput) * m_outputScale * m_rearLeftInverted);
 		m_frontRight.set(ControlMode.PercentOutput, limit(rightOutput) * m_outputScale * m_frontRightInverted);

@@ -1,52 +1,58 @@
 package org.greenblitz.robot.commands;
 
-import org.greenblitz.robot.RobotStats;
-import org.greenblitz.robot.subsystems.Chassis;
-import org.greenblitz.motion.app.AdaptivePurePursuitController;
-import org.greenblitz.motion.app.Path;
-import org.greenblitz.motion.base.Point;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.motion.Localizer;
+import org.greenblitz.motion.app.AbstractPositionPursuitController;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.motion.pathing.Path;
+import org.greenblitz.robot.subsystems.Chassis;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class APPCTestingCommand extends PeriodicCommand {
+public class APPCTestingCommand extends Command {
 
-    private Chassis m_chasis;
-    private boolean m_finished;
+    private Chassis m_chassis;
     private Path m_path;
-    private AdaptivePurePursuitController m_controller;
+    private AbstractPositionPursuitController<Position> m_controller;
 
-    public APPCTestingCommand(long period, double lookahead, double wheelbase, List<Position> points) {
-        super(period);
-        m_chasis = Chassis.getInstance();
-        requires(m_chasis);
-        m_path = new Path(points);
-        m_controller = new AdaptivePurePursuitController(m_path, lookahead, wheelbase, false);
-    }
-
-    public APPCTestingCommand(double lookahead, double wheelbase, List<Position> points){
-        this(50, lookahead, wheelbase, points);
-    }
-
-    public APPCTestingCommand(double lookahead, double wheelbase, Position... points){
-        this(50, lookahead, wheelbase, (ArrayList<Position>) Arrays.asList(points));
+    public APPCTestingCommand(AbstractPositionPursuitController<Position> controller) {
+        requires(Chassis.getInstance());
+        m_controller = controller;
+        m_path = controller.getM_path();
+        System.out.println(m_path);
+        //m_path.sendToCSV("the_path");
+        m_chassis = Chassis.getInstance();
+        RemoteCSVTarget.initTarget("m_path", "x", "y");
     }
 
     @Override
-    protected void periodic() {
-        double[] moveValues = m_controller.iteration(m_chasis.getLocation());
-        if (moveValues == null){
-            m_chasis.tankDrive(0,0);
-            m_finished = true;
-            return;
-        }
-        m_chasis.tankDrive(moveValues[0], moveValues[1]);
+    protected void initialize() {
+        m_chassis.setCoast();
+        //m_path.sendToCSV("m_path");
+    }
+
+    @Override
+    protected void execute() {
+        double[] moveValues = m_controller.iteration(m_chassis.getLocation());
+//        System.out.println("Move vals - " + Arrays.toString(moveValues));
+        m_chassis.tankDrive(moveValues[0], moveValues[1]);
+    }
+
+    @Override
+    protected void end(){
+        SmartDashboard.putNumber("APPC final x", m_chassis.getLocation().getX());
+        SmartDashboard.putNumber("APPC final y", m_chassis.getLocation().getY());
+        System.out.println("Finished APPC");
+    }
+
+    protected void savePath(String fileName){
+        m_path.saveAsCSV(fileName);
     }
 
     @Override
     protected boolean isFinished() {
-        return m_finished;
+        return m_controller.isFinished(m_chassis.getLocation());
     }
 }

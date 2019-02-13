@@ -7,14 +7,50 @@ package org.greenblitz.motion.base;
  */
 public class Point {
 
+    public enum CoordinateSystems{
+        /**
+         * Regular mathematics coordinate system.
+         * positive x is right
+         * positive y is forwards
+         * angle 0 is facing positive x
+         * angle rotation is counter clockwise.
+         */
+        MATH(0),
+        /**
+         * Locations used by localizer and follower commands such as APPC.
+         * positive x is left.
+         * positive y is forwards.
+         * angle 0 is facing positive y.
+         * angle rotation is counter clockwise.
+         */
+        LOCALIZER(1),
+        /**
+         * The coordinates of WPILib's weaver. Similar to picture/matrix coordinates.
+         * positive x is down.
+         * positive y is right.
+         * angle 0 is facing positive y.
+         * angle rotation is counter clockwise.
+         */
+        WEAVER(2);
+
+        int index;
+        CoordinateSystems(int ind){
+            index = ind;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
+
+    public static final Point ORIGIN = new Point(0, 0);
+
     /**
      * the x coordinate: right to left
-     * positive direction left
      */
     protected double x;
     /**
      * the y coordinate: forwards & backwards
-     * positive direction forwards
      */
     protected double y;
 
@@ -68,6 +104,17 @@ public class Point {
         return this;
     }
 
+    public static Point add(Point first, Point other){
+        return first.clone().translate(other);
+    }
+
+    /**
+     *
+     * @return The negative of this point
+     */
+    public Point negate(){
+        return new Point(-getX(), -getY());
+    }
 
     /**
      * Rotate the point COUNTER-CLOCKWISE around (0, 0)
@@ -109,7 +156,7 @@ public class Point {
     }
 
     public static Point subtract(Point subtractee, Point subtractor) {
-        return new Point(subtractee.x - subtractor.x, subtractee.y - subtractor.y);
+        return Point.add(subtractee, subtractor.clone().negate());
     }
 
     public static double dotProduct(Point a, Point b) {
@@ -140,29 +187,29 @@ public class Point {
         return isFuzzyEqual(fir.getX(), sec.getX(), epsilon) && isFuzzyEqual(fir.getY(), sec.getY(), epsilon);
     }
 
-    public static Point weightedAvg(Point a, Point b, double bWeight) {
-        return new Point((1 - bWeight) * a.x + bWeight * b.x, (1 - bWeight) * a.y + bWeight * b.y);
+    public Point weightedAvg(Point b, double bWeight) {
+        return new Point((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y);
     }
 
-    public static Point avg(Point a, Point b) {
-        return weightedAvg(a, b, 0.5);
+    public Point avg(Point b) {
+        return weightedAvg(b, 0.5);
     }
 
     /**
-     * calculates a point on a Bazier curve.
+     * calculates a point on a Bezier curve.
      * @param locInCurve the location of the point along the curve. 0 iff start, 1 iff end
      * @param corners the corners of the curve
      * @return the desired point
      */
-    public static Point bazierSample(double locInCurve, Point... corners){
-        return bazierSample(corners, corners.length, locInCurve);
+    public static Point bezierSample(double locInCurve, Point... corners){
+        return bezierSample(corners, corners.length, locInCurve);
     }
 
-    private static Point bazierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
+    private static Point bezierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
         if (cornersUsedLength == 1) return corners[0];
         for (int ind = 0; ind < cornersUsedLength-1; ind++)
-            corners[ind] = weightedAvg(corners[ind], corners[ind + 1], locInCurve);
-        return bazierSample(corners, cornersUsedLength - 1, locInCurve);
+            corners[ind] = corners[ind].weightedAvg(corners[ind + 1], locInCurve);
+        return bezierSample(corners, cornersUsedLength - 1, locInCurve);
     }
 
     @Override
@@ -182,6 +229,51 @@ public class Point {
 
         return (Point.isFuzzyEqual(this.getX(), point.getX()))
                 && isFuzzyEqual(this.getY(), point.getY());
+    }
+
+    public Point localizerToMathCoords(){
+        return new Point(-x, y);
+    }
+
+    public Point mathToWeaverCoords(){
+        return new Point(-y, x);
+    }
+
+    public Point weaverToLocalizerCoords(){
+        return new Point(-y, x);
+    }
+
+
+    public Point changeCoords(CoordinateSystems src, CoordinateSystems dest){
+        if (src == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
+            return localizerToMathCoords();
+        } else if (src == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
+            return mathToWeaverCoords();
+        } else if (src == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
+            return weaverToLocalizerCoords();
+        }
+        switch (src){
+            case MATH:
+                return mathToWeaverCoords().changeCoords(CoordinateSystems.WEAVER, dest);
+            case LOCALIZER:
+                return localizerToMathCoords().changeCoords(CoordinateSystems.MATH, dest);
+            case WEAVER:
+                return weaverToLocalizerCoords().changeCoords(CoordinateSystems.LOCALIZER, dest);
+        }
+        throw new IllegalArgumentException("What");
+    }
+
+    @Deprecated
+    public Point mathToFrcCoords(){
+        return localizerToMathCoords();
+    }
+
+    /**
+     *
+     * @return first element is the length, second is the angle
+     */
+    public double[] toPolarCoords(){
+        return new double[] {dist(Point.ORIGIN, this), Math.atan2(getY(), getX())};
     }
 
     @Override

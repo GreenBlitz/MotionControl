@@ -1,8 +1,9 @@
 package org.greenblitz.motion;
 
+import org.junit.jupiter.api.Test;
+
 public class APPCTest {
 
-    static final double EPSILON = 1E-6;
 
     /*@Test
     void driveValuesTest1(){

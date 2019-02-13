@@ -140,6 +140,7 @@ public class MotionProfile {
     }
 
     /**
+     *
      * @param tStart
      * @param tEnd
      * @param accel

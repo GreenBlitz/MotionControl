@@ -23,6 +23,11 @@ public abstract class PeriodicCommand extends Command {
     }
 
     @Override
+    protected void interrupted(){
+        end();
+    }
+
+    @Override
     protected void end() {
         m_periodicRunner.stop();
     }

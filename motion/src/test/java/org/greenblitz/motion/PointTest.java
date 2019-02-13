@@ -58,27 +58,31 @@ public class PointTest {
     }
 
     @Test
-    void bazierTest(){
+    void bezierTest(){
         double fuzz = 1E-8;
         Point first = new Point(3,5);
-        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, first), first, fuzz));
+        assertTrue(Point.fuzzyEquals(Point.bezierSample(0.3, first), first, fuzz));
         Point second = new Point(7,3);
-        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, first, second), new Point(3 + 0.3*(7-3), 5 + 0.3*(3-5)), fuzz));
+        assertTrue(Point.fuzzyEquals(Point.bezierSample(0.3, first, second), new Point(3 + 0.3*(7-3), 5 + 0.3*(3-5)), fuzz));
         Point third = new Point(6,7);
-        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, second, third), new Point(7 + 0.3*(6-7), 3 + 0.3*(7-3)), fuzz));
+        assertTrue(Point.fuzzyEquals(Point.bezierSample(0.3, second, third), new Point(7 + 0.3*(6-7), 3 + 0.3*(7-3)), fuzz));
         Point fs = new Point(first.getX() + 0.3*(second.getX()-first.getX()), first.getY() + 0.3*(second.getY()-first.getY()));
         Point st = new Point(second.getX() + 0.3*(third.getX()-second.getX()), second.getY() + 0.3*(third.getY()-second.getY()));
         Point res = new Point(fs.getX() + 0.3*(st.getX()-fs.getX()), fs.getY() + 0.3*(st.getY()-fs.getY()));
-        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, Point.bazierSample(0.3, first, second), Point.bazierSample(0.3, second, third)), res, fuzz));
-        assertTrue(Point.fuzzyEquals(Point.bazierSample(0.3, first, second, third), res, fuzz));
+        assertTrue(Point.fuzzyEquals(Point.bezierSample(0.3, Point.bezierSample(0.3, first, second), Point.bezierSample(0.3, second, third)), res, fuzz));
+        assertTrue(Point.fuzzyEquals(Point.bezierSample(0.3, first, second, third), res, fuzz));
         Point forth = new Point(0, 10);
 
         try {
+            first = new Point(0,0);
+            second = new Point(0,1);
+            third = new Point(-1, 1);
+            forth = new Point(0, 1);
             File f = new File("filename.csv");
             CSVPrinter p = CSVFormat.EXCEL.withHeader("x", "y").print(f, Charset.defaultCharset());
             Point print;
             for(double i = 0; i<=1+1E-5; i+=0.02){
-                print = Point.bazierSample(i, first, second, third, forth);
+                print = Point.bezierSample(i, first, second, third, forth);
                 p.printRecord(print.getX(), print.getY());
                 System.out.println(print);
             }

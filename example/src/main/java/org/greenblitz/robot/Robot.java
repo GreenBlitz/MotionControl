@@ -1,33 +1,50 @@
 package org.greenblitz.robot;
 
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.robot.subsystems.ElevatorPrototype;
+import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.base.Position;
+import org.greenblitz.robot.commands.APPCTestingCommand;
+import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.robot.subsystems.Shifter;
+import org.greenblitz.utils.Navx;
+
 
 import java.util.Timer;
 
 public class Robot extends TimedRobot {
 
+    private AnalogInput colorSensor;
+    private Relay LEDs;
+
     @Override
     public void robotInit() {
-        ElevatorPrototype.init();
+        Chassis.init();
+        Chassis.getInstance().setCoast();
         OI.init();
+      //  colorSensor = new AnalogInput(0);
+        LEDs = new Relay(0, Relay.Direction.kForward);
+        LEDs.setSafetyEnabled(false);
+        OI.getInstance().getVisionTable().getEntry("LEDs").setBoolean(true);
+        Navx.getInstance().get_navx().reset();
     }
 
     @Override
     public void robotPeriodic() {
         updateSubsystems();
+//        LEDs.set(OI.getInstance().getVisionTable().getEntry("LEDs").getValue().getBoolean() ?
+//                 Relay.Value.kOn : Relay.Value.kOff);
+        LEDs.set(Relay.Value.kOn);
     }
 
 
-    Timer t = new Timer();
-
     @Override
     public void teleopInit() {
+        RemoteCSVTarget.initTarget("location", "x", "y");
         Scheduler.getInstance().removeAll();
-        ElevatorPrototype.getInstance().resetEncoder();
+        Navx.getInstance().get_navx().reset();
         prevTime = System.currentTimeMillis();
     }
 
@@ -36,16 +53,30 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        SmartDashboard.putNumber("Ticks", ElevatorPrototype.getInstance().getDistance());
-        if (ElevatorPrototype.getInstance().getSpeed() >
-                SmartDashboard.getNumber("Vel", 0))
-            SmartDashboard.putNumber("Vel", ElevatorPrototype.getInstance().getSpeed());
-        double acc = ElevatorPrototype.getInstance().getSpeed() /
-                ((System.currentTimeMillis() - prevTime) / 1000.0);
-        if (acc > SmartDashboard.getNumber("Acc", 0))
-            SmartDashboard.putNumber("Acc", acc);
-        prevTime = System.currentTimeMillis();
+        SmartDashboard.putNumber("NAVX ang", Math.toDegrees(Navx.getInstance().getAngle()));
+        SmartDashboard.putNumber("left ticks", Chassis.getInstance().getLeftTicks());
+        SmartDashboard.putNumber("right ticks", Chassis.getInstance().getRightTicks());
+        SmartDashboard.putNumber("left distance", Chassis.getInstance().getLeftDistance());
+        SmartDashboard.putNumber("right distance", Chassis.getInstance().getRightDistance());
+       // SmartDashboard.putNumber("Color Sensor", colorSensor.getValue());
+    }
 
+    Timer t = new Timer();
+    @Override
+    public void autonomousInit() {
+        Scheduler.getInstance().removeAll();
+    }
+
+    @Override
+    public void autonomousPeriodic(){
+        Scheduler.getInstance().run();
+    }
+
+    @Override
+    public void disabledInit(){
+        Scheduler.getInstance().removeAll();
+        System.out.println(Chassis.getInstance().getLocation());
+        Chassis.getInstance().resetSensors();
     }
 
     @Override
@@ -54,7 +85,8 @@ public class Robot extends TimedRobot {
     }
 
     public void updateSubsystems() {
-        ElevatorPrototype.getInstance().update();
+        Chassis.getInstance().update();
+        Shifter.getInstance().update();
     }
 
     public static void main(String[] args) {

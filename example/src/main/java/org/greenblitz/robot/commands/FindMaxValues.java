@@ -3,8 +3,8 @@ package org.greenblitz.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.robot.OI;
-import org.greenblitz.utils.SmartJoystick;
 import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.utils.SmartJoystick;
 
 public class FindMaxValues extends Command {
 

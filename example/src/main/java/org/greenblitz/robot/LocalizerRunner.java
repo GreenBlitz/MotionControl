@@ -1,31 +1,38 @@
 package org.greenblitz.robot;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import org.greenblitz.utils.PeriodicRunner;
-import org.greenblitz.utils.SmartEncoder;
-import org.greenblitz.motion.app.Localizer;
+import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.utils.Navx;
+import org.greenblitz.utils.PeriodicRunner;
+import org.greenblitz.utils.encoder.IEncoder;
 
 public class LocalizerRunner extends PeriodicRunner {
 
     private Localizer m_localizer;
 
-    private SmartEncoder m_leftEncoder;
-    private SmartEncoder m_rightEncoder;
+    private IEncoder m_leftEncoder;
+    private IEncoder m_rightEncoder;
+
+    private boolean useGyro;
 
     private boolean m_resetOnDisable = false;
 
-    public LocalizerRunner(long period, double wheelBase, SmartEncoder leftEncoder, SmartEncoder rightEncoder) {
+    public LocalizerRunner(long period, double wheelBase, IEncoder leftEncoder, IEncoder rightEncoder) {
         super(period);
-        m_localizer = new Localizer(wheelBase);
+        m_localizer = Localizer.getInstance();
+        m_localizer.configure(wheelBase, 0, 0);
         m_leftEncoder = leftEncoder;
+        leftEncoder.reset();
         m_rightEncoder = rightEncoder;
+        rightEncoder.reset();
+        enableGyro();
     }
 
-    public LocalizerRunner(double wheelBase, SmartEncoder leftEncoder, SmartEncoder rightEncoder) {
+    public void enableGyro() {useGyro = true;}
+    public void disableGyro() {useGyro = false;}
+
+    public LocalizerRunner(double wheelBase, IEncoder leftEncoder, IEncoder rightEncoder) {
         this(20, wheelBase, leftEncoder, rightEncoder);
     }
 
@@ -52,7 +59,11 @@ public class LocalizerRunner extends PeriodicRunner {
 
     @Override
     protected void whenActive() {
-        m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+        if (useGyro) {
+            m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), -Navx.getInstance().getAngle());
+        } else {
+            m_localizer.update(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+        }
     }
 
     @Override
@@ -66,5 +77,9 @@ public class LocalizerRunner extends PeriodicRunner {
 
     public void reset() {
         m_localizer.reset(m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    }
+
+    public void forceSetLocation(Position location, double currentLeftDistance, double currentRightDistance) {
+        m_localizer.forceSetLocation(location, currentLeftDistance, currentRightDistance);
     }
 }

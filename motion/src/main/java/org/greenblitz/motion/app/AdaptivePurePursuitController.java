@@ -2,85 +2,63 @@ package org.greenblitz.motion.app;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
+import org.greenblitz.motion.pathing.Path;
 
 /**
  * @author Udi ~ MudiAtalon
  */
-public class AdaptivePurePursuitController {
-    private Path m_path;
+public final class AdaptivePurePursuitController extends AbstractPositionPursuitController<Position> {
 
-    public final double m_lookAhead;
-    private final double m_wheelBase;
+    private final int isBackwards;
+    private final double minSpeed;
+    private final double maxSpeedDist;
+    private final double maxSpeed;
 
-    public final boolean isBackwards;
 
-    public AdaptivePurePursuitController(Path path, double lookAhead, double wheelBase, boolean isBackwards) {
-        m_path = path;
-        m_lookAhead = lookAhead;
-        m_wheelBase = wheelBase;
-        this.isBackwards = isBackwards;
+    public AdaptivePurePursuitController(Path<Position> path, double lookAhead, double wheelBase,
+                                         double tolerance, boolean isBackwards,
+                                         double minSpeed, double maxSpeedDist, double maxSpeed) {
+        super(path, lookAhead, wheelBase, tolerance);
+        this.isBackwards = isBackwards ? -1 : 1;
+        this.minSpeed = minSpeed;
+        this.maxSpeedDist = maxSpeedDist;
+        this.maxSpeed = maxSpeed;
     }
 
-    public double[] rawArcDriveValuesTo(Position robotLoc, Point target, double speed) {
-        speed *= isBackwards ? -1 : 1;
-
-        Point diff = Point.subtract(target, robotLoc).rotate(-robotLoc.getAngle());
-        double curvature = 2 * diff.getX() / Point.normSquared(diff);
-        if (curvature == 0)
-            return new double[]{speed, speed};
-        double radius = 1 / curvature;
-        double rightRadius = radius + m_wheelBase / 2;
-        double leftRadius = radius - m_wheelBase / 2;
-        if (curvature > 0)
-            return new double[]{speed * leftRadius / rightRadius, speed};
-        else
-            return new double[]{speed, speed * rightRadius / leftRadius};
+    @Override
+    public double getCurvature(Position robotLoc, Position goalPoint) {
+        Point diff = Point.subtract(goalPoint, robotLoc).rotate(-robotLoc.getAngle()); // This line is here because if the robot
+                                            // goes backwards he is "facing" the opposite direction
+        return 2 * diff.getX() / Point.normSquared(diff);
     }
 
-    /**
-     * arcDrive. calculates the values the motors should get to get to the target point in an arc
-     *
-     * @param robotLoc     the robot location + angle
-     * @param target       the target point
-     * @param maxSpeedDist the minimum distance at witch you still drive at maximum speed
-     * @param minSpeed     minimum speed
-     * @param tolerance    the distance to the final point at witch the algorithm stops
-     * @return [left motor value, right motor value] iff still driving
-     * null O.W.
-     */
-    public double[] arcDriveValuesTo(Position robotLoc, Point target, double maxSpeedDist, double minSpeed, double tolerance) {
-        if (Point.distSqared(target, robotLoc) <= tolerance * tolerance) {
-            return null;
-        }
+    public boolean isBackwards(){
+        return isBackwards == -1;
+    }
 
-        double speed = target != m_path.getLast() ?
-                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
-        if (speed < minSpeed)
-            speed = minSpeed;
+    @Override
+    public double getSpeed(Position robotLoc, Position target) {
+        return isBackwards * Math.max(
 
-        double[] ret = rawArcDriveValuesTo(robotLoc, target, speed);
+                (1/maxSpeedDist) * maxSpeed * Math.min(
+                        maxSpeedDist,
+                        Point.dist(robotLoc, m_path.getLast()) / 2
+                ),
+
+                minSpeed
+        );
+    }
+
+    @Override
+    public double getLookahead(Position robotLoc) {
+        double ret = m_lookahead * Math.max(
+                (1/maxSpeedDist)*Math.min(
+                        maxSpeedDist,
+                        Point.dist(robotLoc, m_path.getLast()) / 2
+                ),
+                minSpeed/maxSpeed
+        );
         return ret;
     }
 
-    public double[] bazierDriveValuesTo(double locInBazierCurve, Position robotLoc, Position target, double maxSpeedDist, double minSpeed, double tolerance) {
-        if (Point.distSqared(target, robotLoc) <= tolerance * tolerance) {
-            return null;
-        }
-        Point afterRobot = robotLoc.clone().translate(Point.cis(isBackwards ? -1 : 1, robotLoc.getAngle()));
-        Point beforeTarget = target.clone().translate(Point.cis(isBackwards ? 1 : -1, target.getAngle()));
-        Point arcTarget = Point.bazierSample(locInBazierCurve, robotLoc, afterRobot, beforeTarget, target);
-
-        double speed = target != m_path.getLast() ?
-                1 : Math.sqrt(Point.distSqared(robotLoc, target)) / maxSpeedDist;
-        if (speed < minSpeed)
-            speed = minSpeed;
-
-        double[] ret = rawArcDriveValuesTo(robotLoc, arcTarget, speed);
-        return ret;
-    }
-
-    public double[] iteration(Position robotLoc) {
-        Position target = m_path.getGoalPoint(robotLoc, m_lookAhead);
-        return bazierDriveValuesTo(0.1, robotLoc, target, m_lookAhead, 0.3, 0.2);
-    }
-}
+  }

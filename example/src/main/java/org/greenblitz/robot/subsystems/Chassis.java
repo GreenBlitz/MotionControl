@@ -1,43 +1,42 @@
 package org.greenblitz.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.debug.RemoteGuydeBugger;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.LocalizerRunner;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotStats;
 import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
 import org.greenblitz.utils.CANRobotDrive;
-import org.greenblitz.utils.SmartEncoder;
-import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.pathfinder.PathFollower;
-import org.greenblitz.robot.commands.ArcadeDriveByJoystick;
+import org.greenblitz.utils.encoder.IEncoder;
+import org.greenblitz.utils.encoder.RoborioEncoder;
 
 public class Chassis extends Subsystem {
-    private NetworkTableEntry updateEntry = NetworkTableInstance.getDefault().getTable("motion").getEntry("isUpdated");
-    private NetworkTableEntry xEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("x");
-    private NetworkTableEntry yEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("y");
-    private NetworkTableEntry headingEntry = NetworkTableInstance.getDefault().getTable("motion").getSubTable("localizer").getEntry("heading");
-
-    private static final double POWER_LIMIT = 1.0;
+    private static final double POWER_LIMIT = 1.0; // 1.0;
 
     private static Chassis instance;
 
-    private static final double TICKS_PER_METER_LEFT = RobotStats.Picasso.EncoderMetreScale.LEFT_POWER;
-    private static final double TICKS_PER_METER_RIGHT = RobotStats.Picasso.EncoderMetreScale.RIGHT_POWER;
+    private static final double TICKS_PER_METER_LEFT = RobotStats.Ragnarok.EncoderTicksPerMeter.LEFT_POWER;
+    private static final double TICKS_PER_METER_RIGHT = RobotStats.Ragnarok.EncoderTicksPerMeter.RIGHT_POWER;
+
+    private AnalogInput m_colorSensor;
 
     private LocalizerRunner m_localizer;
 
-    private SmartEncoder m_leftEncoder, m_rightEncoder;
+    private RemoteCSVTarget m_motorPowers;
 
-    public SmartEncoder getLeftEncoder() {
+    private IEncoder m_leftEncoder, m_rightEncoder;
+
+    public IEncoder getLeftEncoder() {
         return m_leftEncoder;
     }
 
-    public SmartEncoder getRightEncoder() {
+    public IEncoder getRightEncoder() {
         return m_rightEncoder;
     }
 
@@ -56,19 +55,23 @@ public class Chassis extends Subsystem {
 
     private Chassis() {
         m_robotDrive = new CANRobotDrive(RobotMap.ChassisPort.FRONT_LEFT, RobotMap.ChassisPort.REAR_LEFT,
-                                         RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
+                RobotMap.ChassisPort.FRONT_RIGHT, RobotMap.ChassisPort.REAR_RIGHT);
 
         m_robotDrive.invert(CANRobotDrive.TalonID.FRONT_RIGHT);
         m_robotDrive.invert(CANRobotDrive.TalonID.REAR_RIGHT);
 
-        m_leftEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT), TICKS_PER_METER_LEFT);
-        m_rightEncoder = new SmartEncoder(m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT), TICKS_PER_METER_RIGHT);
-        m_rightEncoder.invert();
+        m_leftEncoder = new RoborioEncoder(RobotMap.ChassisPort.LEFT_ENCODER_PORT_A, RobotMap.ChassisPort.LEFT_ENCODER_PORT_B, TICKS_PER_METER_LEFT);
+        m_rightEncoder = new RoborioEncoder(RobotMap.ChassisPort.RIGHT_ENCODER_PORT_A, RobotMap.ChassisPort.RIGHT_ENCODER_PORT_B, TICKS_PER_METER_RIGHT);
         m_leftEncoder.reset();
         m_rightEncoder.reset();
 
+        m_rightEncoder.setInverted(true);
+
+        m_colorSensor = new AnalogInput(0);
+
         m_localizer = new LocalizerRunner(getWheelbaseWidth(), getLeftEncoder(), getRightEncoder());
         m_localizer.start();
+        setCoast();
     }
 
     public void initDefaultCommand() {
@@ -80,20 +83,33 @@ public class Chassis extends Subsystem {
         SmartDashboard.putNumber("Chassis Distance", getDistance());
         SmartDashboard.putNumber("Chassis left ticks", getLeftTicks());
         SmartDashboard.putNumber("Chassis right ticks", getRightTicks());
+        SmartDashboard.putNumber("Chassis tick rate", getSpeed());
         Position pos = m_localizer.getLocation();
         SmartDashboard.putNumber("robot x", pos.getX());
         SmartDashboard.putNumber("robot y", pos.getY());
         SmartDashboard.putNumber("robot angle", Math.toDegrees(pos.getAngle()));
-        xEntry.setNumber(pos.getX());
-        yEntry.setNumber(pos.getY());
-        headingEntry.setNumber(pos.getAngle());
-        updateEntry.setBoolean(true);
+        RemoteGuydeBugger.report(pos.getX(), pos.getY(), pos.getAngle());
+        SmartDashboard.putNumber("Hatch::Distance", OI.getInstance().getHatchDistance());
+        SmartDashboard.putNumber("Hatch::Angle", OI.getInstance().getHatchAngle());
+        SmartDashboard.putString("Chassis::Shift", Shifter.getInstance().getCurrentShift().name());
+        SmartDashboard.putNumber("ColorSensor::Value", normalizeColorInput(m_colorSensor.getValue()));
     }
 
     public void arcadeDrive(double moveValue, double rotateValue) {
         if (Math.abs(moveValue) > POWER_LIMIT)
             moveValue = Math.signum(moveValue) * POWER_LIMIT;
         m_robotDrive.arcadeDrive(-moveValue, rotateValue);
+    }
+
+    public double normalizeColorInput(double input) {
+        input =  (input-1690)/1150;
+        if (input < 0) input =0;
+        else if (input > 1) input = 1;
+        return input;
+    }
+
+    public double getColorSensorValue() {
+        return normalizeColorInput(m_colorSensor.getValue());
     }
 
     public void tankDrive(double leftValue, double rightValue) {
@@ -104,9 +120,7 @@ public class Chassis extends Subsystem {
         tankDrive(0, 0);
     }
 
-    public void setBrake(){
-        if(!isCoast)
-            return;
+    public void setBrake() {
         isCoast = false;
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Brake);
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_RIGHT).setNeutralMode(NeutralMode.Brake);
@@ -114,14 +128,16 @@ public class Chassis extends Subsystem {
         m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT).setNeutralMode(NeutralMode.Brake);
     }
 
-    public void setCoast(){
-        if(isCoast)
-            return;
+    public void setCoast() {
         isCoast = true;
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_LEFT).setNeutralMode(NeutralMode.Coast);
         m_robotDrive.getTalon(CANRobotDrive.TalonID.FRONT_RIGHT).setNeutralMode(NeutralMode.Coast);
         m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_RIGHT).setNeutralMode(NeutralMode.Coast);
         m_robotDrive.getTalon(CANRobotDrive.TalonID.REAR_LEFT).setNeutralMode(NeutralMode.Coast);
+    }
+
+    public void setOutputScale(double factor){
+        m_robotDrive.setOutputScale(factor);
     }
 
     public double getDistance() {
@@ -130,6 +146,10 @@ public class Chassis extends Subsystem {
 
     public double getSpeed() {
         return (m_leftEncoder.getSpeed() + m_rightEncoder.getSpeed()) / 2;
+    }
+
+    public double getAbsoluteSpeed() {
+        return (Math.abs(m_leftEncoder.getSpeed()) + Math.abs(m_rightEncoder.getSpeed())) / 2;
     }
 
     public double getLeftDistance() {
@@ -141,11 +161,11 @@ public class Chassis extends Subsystem {
     }
 
     public int getLeftTicks() {
-        return m_leftEncoder.getTicks();
+        return m_leftEncoder.getRawTicks();
     }
 
     public int getRightTicks() {
-        return m_rightEncoder.getTicks();
+        return m_rightEncoder.getRawTicks();
     }
 
     public double getLeftSpeed() {
@@ -178,18 +198,22 @@ public class Chassis extends Subsystem {
         do {
             resetLeftEncoder();
             resetRightEncoder();
-        } while(m_leftEncoder.getTicks() != 0 || m_rightEncoder.getTicks() != 0);
+        } while (m_leftEncoder.getRawTicks() != 0 || m_rightEncoder.getRawTicks() != 0);
     }
 
     public double getWheelRadius() {
-        return RobotStats.Picasso.Chassis.WHEEL_RADIUS;
+        return RobotStats.Ragnarok.WHEEL_RADIUS;
     }
 
     public double getWheelbaseWidth() {
-        return RobotStats.Picasso.Chassis.VERTICAL_DISTANCE;
+        return RobotStats.Ragnarok.WHEELBASE;
     }
 
     public Position getLocation() {
         return m_localizer.getLocation();
+    }
+
+    public void setLocation(Position location) {
+        m_localizer.forceSetLocation(location, getLeftDistance(), getRightDistance());
     }
 }

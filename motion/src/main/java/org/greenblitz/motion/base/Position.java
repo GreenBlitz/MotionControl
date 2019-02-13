@@ -13,8 +13,8 @@ public class Position extends Point {
      * The angle of this position.
      * This representation is like in math:
      * 1. In radians
-     * 2. Between 0 and 2*PI
-     * 3. 0 radians = facing positive y
+     * 2. Between -PI and PI
+     * 3. 0 radians = facing positive y (in FRC coords)
      * 4. Goes counter clockwise
      */
     protected double angle;
@@ -54,6 +54,13 @@ public class Position extends Point {
         this(point, 0);
     }
 
+
+    public Position weightedAvg(Position b, double bWeight) {
+        return new Position((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y,
+                (1 - bWeight)*angle + bWeight*b.getAngle());
+    }
+
+    @Deprecated
     public static Waypoint toWaypoint(Position p){
         return new Waypoint(p.getX(), p.getY(), p.getAngle());
     }
@@ -103,6 +110,15 @@ public class Position extends Point {
     }
 
     /**
+     * Calls changeAngleBy and afterwards rotate.
+     * @param angle
+     * @return
+     */
+    public Position rotateWithAngle(double angle){
+        return (Position) changeAngleBy(angle).rotate(angle);
+    }
+
+    /**
      * Returns a new location with the same values
      */
     @Override
@@ -116,19 +132,31 @@ public class Position extends Point {
 
     /**
      * Will automatically normalize the angle
-     *הארה
+     *
      * @param angle
      */
     public void setAngle(double angle) {
         this.angle = normalizeAngle(angle);
     }
 
-    public static Position weightedAvg(Position a, Position b, double bWeight){
-        return new Position(
-                (1-bWeight)*a.x + bWeight*b.x,
-                (1-bWeight)*a.y + bWeight*b.y,
-                (1-bWeight)*a.angle + bWeight*b.angle
-        );
+    @Override
+    public Position localizerToMathCoords(){
+        return new Position(-x,y,angle+Math.PI/2);
+    }
+
+    @Override
+    public Position weaverToLocalizerCoords() {
+        return new Position(-x, -y, angle - Math.PI/2);
+    }
+
+    @Override
+    public Point mathToWeaverCoords() {
+        return new Position(-y, x, angle);
+    }
+
+    @Override
+    public Position mathToFrcCoords(){
+        return new Position(-x,y,angle-Math.PI/2);
     }
 
     @Override
@@ -136,7 +164,7 @@ public class Position extends Point {
         return "Position{" +
                 "x=" + x +
                 ", y=" + y +
-                ", angle=" + angle +
+                ", angle=" + angle*180/Math.PI +
                 '}';
     }
 }
