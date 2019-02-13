@@ -23,8 +23,8 @@ public class Profiler1D {
      * @return the motion brofile
      * @throws ProfilingException Profiling isn't always possible. When so this exception is thrown.
      */
-    public static MotionProfile generateProfile(List<ActuatorLocation> waypoints,
-                                                double maxV, double maxAcc, double minAcc)
+    public static MotionProfile1D generateProfile(List<ActuatorLocation> waypoints,
+                                                  double maxV, double maxAcc, double minAcc)
     throws ProfilingException {
 
         if (Math.signum(minAcc) == Math.signum(maxAcc))
@@ -36,7 +36,7 @@ public class Profiler1D {
 
         double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0, underRoot,
                 intersectionOne, intersectionTwo, areaLost, timeToAdd, midSecStart, midSecEnd, lastSecEnd;
-        List<MotionProfile.Segment> segments = new ArrayList<>();
+        List<MotionProfile1D.Segment> segments = new ArrayList<>();
         for (int i = 0; i < waypoints.size() - 1; i++) {
             ActuatorLocation curr = waypoints.get(i);
             ActuatorLocation next = waypoints.get(i + 1);
@@ -109,14 +109,14 @@ public class Profiler1D {
             t0 = i == 0 ? 0 : segments.get(segments.size() - 1).tEnd;
 
             if (midSecStart == midSecEnd) {
-                MotionProfile.Segment first = new MotionProfile.Segment(
+                MotionProfile1D.Segment first = new MotionProfile1D.Segment(
                         t0,
                         t0 + t1,
                         a1,
                         curr.v,
                         curr.x
                 );
-                MotionProfile.Segment last = new MotionProfile.Segment(
+                MotionProfile1D.Segment last = new MotionProfile1D.Segment(
                         t0 + t1,
                         t0 + t1 + t2,
                         a2,
@@ -126,21 +126,21 @@ public class Profiler1D {
                 segments.add(first);
                 segments.add(last);
             } else {
-                MotionProfile.Segment first = new MotionProfile.Segment(
+                MotionProfile1D.Segment first = new MotionProfile1D.Segment(
                         t0,
                         t0 + midSecStart,
                         a1,
                         curr.v,
                         curr.x
                 );
-                MotionProfile.Segment middle = new MotionProfile.Segment(
+                MotionProfile1D.Segment middle = new MotionProfile1D.Segment(
                         t0 + midSecStart,
                         t0 + midSecEnd,
                         0,
                         curr.v + midSecStart*a1,
                         curr.x + curr.v*midSecStart + 0.5*a1*midSecStart*midSecStart
                 );
-                MotionProfile.Segment last = new MotionProfile.Segment(
+                MotionProfile1D.Segment last = new MotionProfile1D.Segment(
                         t0 + midSecEnd,
                         t0 + lastSecEnd,
                         a2,
@@ -153,7 +153,7 @@ public class Profiler1D {
                 segments.add(last);
             }
         }
-        MotionProfile ret = new MotionProfile(segments);
+        MotionProfile1D ret = new MotionProfile1D(segments);
         ret.removeBugSegments();
         return ret;
     }

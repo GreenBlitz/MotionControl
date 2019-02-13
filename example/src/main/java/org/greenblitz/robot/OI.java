@@ -52,11 +52,11 @@ public class OI {
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
 
-        mainJS.X.whenPressed(new AutoChangeShift());
+        mainJS.X.whenPressed(new AutoVisRocketSame());
         mainJS.A.whenPressed(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Vis Rocket1.pf1.csv")),
-                0.3, RobotStats.Ragnarok.WHEELBASE,
-                0.1, false, 0.5, 0.4, 0.8)));
+                0.8, RobotStats.Ragnarok.WHEELBASE,
+                0.2, false, 0.5, 0.4, 1)));
         mainJS.B.whenPressed(new DriveToVisionTarget());
         mainJS.Y.whenPressed(new SetLocalizerLocation(-3.073, 1.5, 0.0));
         mainJS.START.whenPressed(new BrakeChassis());
@@ -89,7 +89,7 @@ public class OI {
     public static Position[] getPath(String filename) {
         CSVParser read;
         try {
-            read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/paths/" + filename)));
+            read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/output/" + filename)));
             ArrayList<Position> path = new ArrayList<>();
             List<CSVRecord> records = read.getRecords();
             for (int i = 1; i < records.size() ; i++) {

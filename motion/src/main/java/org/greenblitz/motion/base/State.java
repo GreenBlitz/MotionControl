@@ -1,143 +1,34 @@
 package org.greenblitz.motion.base;
 
-import java.util.Objects;
-
 public class State extends Position {
 
-    protected Vector2D velocity, acceleration;
+    public final double speed;
+    public final Vector2D velocity;
 
-    public State(double x, double y, double angle, Vector2D velocity, Vector2D acceleration) {
+    public State(double x, double y, double angle, double speed) {
         super(x, y, angle);
-        this.velocity = velocity;
-        this.acceleration = acceleration;
+
+        this.speed = speed;
+        velocity = new Vector2D(speed * Math.sin(angle), speed * Math.cos(angle));
     }
 
-    public State(double x, double y, Vector2D velocity, Vector2D acceleration) {
-        super(x, y);
-        this.velocity = velocity;
-        this.acceleration = acceleration;
+    public State(Point p, double angle, double speed) {
+        this(p.x, p.y, angle, speed);
     }
 
-    public State(Point point, double angle, Vector2D velocity, Vector2D acceleration) {
-        super(point, angle);
-        this.velocity = velocity;
-        this.acceleration = acceleration;
-    }
-
-    public State(Point point, Vector2D velocity, Vector2D acceleration) {
-        super(point);
-        this.velocity = velocity;
-        this.acceleration = acceleration;
-    }
-
-    public State(double x, double y, double angle, Vector2D velocity) {
-        super(x, y, angle);
-        this.velocity = velocity;
+    public State(Position p, double speed) {
+        this(p.x, p.y, p.angle, speed);
     }
 
     public State(double x, double y, Vector2D velocity) {
-        super(x, y);
+        super(x, y, Math.atan2(velocity.y, velocity.x));
+
+        this.speed = Point.norm(velocity);
         this.velocity = velocity;
     }
 
-    public State(Point point, double angle, Vector2D velocity) {
-        super(point, angle);
-        this.velocity = velocity;
+    public State(Point p, Vector2D velocity) {
+        this(p.x, p.y, velocity);
     }
 
-    public State(Point point, Vector2D velocity) {
-        super(point);
-        this.velocity = velocity;
-    }
-
-    public State(double x, double y, double angle) {
-        super(x, y, angle);
-    }
-
-    public State(double x, double y) {
-        super(x, y);
-    }
-
-    public State(Point point, double angle) {
-        super(point, angle);
-    }
-
-    public State(Point point) {
-        super(point);
-    }
-
-    /**
-     * Calls rotateWithAngle and also rotates the velocity and acceleration vectors.
-     * @param ang
-     * @return
-     */
-    public State rotateEverything(double ang){
-        velocity.rotate(ang);
-        acceleration.rotate(ang);
-        return (State) rotateWithAngle(ang);
-    }
-
-    public Vector2D getVelocity() {
-        return velocity;
-    }
-
-    public void setVelocity(Vector2D velocity) {
-        this.velocity = velocity;
-    }
-
-    public Vector2D getAcceleration() {
-        return acceleration;
-    }
-
-    public void setAcceleration(Vector2D acceleration) {
-        this.acceleration = acceleration;
-    }
-
-    /**
-     * Returns a new State with the same values
-     */
-    @Override
-    public State clone() {
-        return new State(x, y, angle, velocity.clone(), acceleration.clone());
-    }
-
-    @Override
-    public State localizerToMathCoords(){
-        return new State(-x,y,angle+Math.PI/2,
-                new Vector2D(-velocity.x, velocity.y),
-                new Vector2D(-acceleration.x, acceleration.y));
-    }
-
-    @Override
-    public State mathToFrcCoords(){
-        return new State(-x,y,angle-Math.PI/2,
-                new Vector2D(-velocity.x, velocity.y),
-                new Vector2D(-acceleration.x, acceleration.y));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        State state = (State) o;
-        return velocity.equals(state.velocity) &&
-                acceleration.equals(state.acceleration);
-    }
-
-    @Override
-    public String toString() {
-        return "State{" +
-                "velocity=" + velocity +
-                ", acceleration=" + acceleration +
-                ", angle=" + angle +
-                ", x=" + x +
-                ", y=" + y +
-                '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), velocity, acceleration);
-    }
 }
