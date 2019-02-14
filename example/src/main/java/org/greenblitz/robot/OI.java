@@ -3,30 +3,23 @@ package org.greenblitz.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.app.AdaptivePolynomialPursuitController;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.pathing.BasicAngleInterpolator;
 import org.greenblitz.motion.pathing.Path;
-import org.greenblitz.motion.pathing.PolynomialInterpolator;
-import org.greenblitz.robot.commands.*;
-import org.greenblitz.robot.commands.shifter.AutoChangeShift;
+import org.greenblitz.robot.commands.motion.APPC.APPCTestingCommand;
+import org.greenblitz.robot.commands.motion.APPC.SetLocalizerLocation;
+import org.greenblitz.robot.commands.control.BrakeChassis;
+import org.greenblitz.robot.commands.control.SetCoast;
 import org.greenblitz.robot.commands.shifter.SwitchShift;
 import org.greenblitz.robot.commands.vision.*;
-import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.SmartJoystick;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,11 +45,11 @@ public class OI {
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.LEFT_Y, true);
         mainJS.setAxisInverted(SmartJoystick.JoystickAxis.RIGHT_Y, true);
 
-        mainJS.X.whenPressed(new AutoChangeShift());
+        mainJS.X.whenPressed(new AutoVisRocketSame());
         mainJS.A.whenPressed(new APPCTestingCommand(new AdaptivePurePursuitController(
                 new Path<>(OI.getPath("Vis Rocket1.pf1.csv")),
-                0.3, RobotStats.Ragnarok.WHEELBASE,
-                0.1, false, 0.5, 0.4, 0.8)));
+                0.8, RobotStats.Ragnarok.WHEELBASE,
+                0.2, false, 0.5, 0.4, 1)));
         mainJS.B.whenPressed(new DriveToVisionTarget());
         mainJS.Y.whenPressed(new SetLocalizerLocation(-3.073, 1.5, 0.0));
         mainJS.START.whenPressed(new BrakeChassis());
@@ -89,7 +82,7 @@ public class OI {
     public static Position[] getPath(String filename) {
         CSVParser read;
         try {
-            read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/paths/" + filename)));
+            read = CSVFormat.DEFAULT.parse(new FileReader(new File("/home/lvuser/deploy/output/" + filename)));
             ArrayList<Position> path = new ArrayList<>();
             List<CSVRecord> records = read.getRecords();
             for (int i = 1; i < records.size() ; i++) {

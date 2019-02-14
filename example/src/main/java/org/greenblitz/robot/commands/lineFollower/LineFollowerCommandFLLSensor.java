@@ -1,6 +1,7 @@
-package org.greenblitz.robot.commands;
+package org.greenblitz.robot.commands.lineFollower;
 
 import org.greenblitz.motion.linefollower.LineFollower;
+import org.greenblitz.robot.commands.PeriodicCommand;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.ColorSensor;
 

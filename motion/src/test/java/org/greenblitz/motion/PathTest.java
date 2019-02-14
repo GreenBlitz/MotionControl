@@ -1,3 +1,5 @@
+package org.greenblitz.motion;
+
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.BasicAngleInterpolator;
@@ -27,7 +29,7 @@ public class PathTest {
         list.add(new Position(0, 5));
         list.add(new Position(5, 5));
         list.add(new Position(5, 10));
-        Path path = new Path(list);
+        Path path = new Path<Position>(list);
         Point intersection = path.getGoalPoint(new Point(7.5,7.5), 2.5 * Math.sqrt(5) / 2);
         assertEquals(intersection.getX(), 5, EPSILON);
         assertEquals(intersection.getY(), 8.75, EPSILON);*/
@@ -35,7 +37,7 @@ public class PathTest {
 
     @Test
     void linearInterpolationTest1() {
-        Path test = new Path(new Position(0, 0),
+        Path test = new Path<Position>(new Position(0, 0),
                 new Position(0, 1));
         test = PolynomialInterpolator.interpolatePoints(test, 10);
         for (int i = 0; i <= 10; i++) {
@@ -45,7 +47,7 @@ public class PathTest {
 
     @Test
     void linearInterpolationTest2() {
-        Path test = new Path(new Position(0, 0, Math.PI / 4),
+        Path test = new Path<Position>(new Position(0, 0, Math.PI / 4),
                 new Position(1, 1, Math.PI / 4));
         test = PolynomialInterpolator.interpolatePoints(test, 15);
         for (int i = 0; i <= 15; i++) {
@@ -55,7 +57,7 @@ public class PathTest {
 
     @Test
     void linearInterpolationTest3() {
-        Path test = new Path(new Position(1, 1, Math.PI / 4),
+        Path test = new Path<Position>(new Position(1, 1, Math.PI / 4),
                 new Position(0, 0, Math.PI / 4));
         test = PolynomialInterpolator.interpolatePoints(test, 15);
         for (int i = 15; i >= 0; i--) {
@@ -65,7 +67,7 @@ public class PathTest {
 
     @Test
     void simpleSquaredTest() {
-        Path test = new Path(new Position(1, 1, Math.atan(1.0 / 2)),
+        Path test = new Path<Position>(new Position(1, 1, Math.atan(1.0 / 2)),
                 new Position(3, 9, Math.atan(1.0 / 6)));
         test = PolynomialInterpolator.interpolatePoints(test, 15);
         for (int i = 0; i <= 15; i++) {
@@ -75,7 +77,7 @@ public class PathTest {
 
     @Test
     void csvPath() {
-        Path test = new Path(
+        Path test = new Path<Position>(
                 new Position(0, 0),
                 new Position(1, 0),
                 new Position(1, 1),
@@ -95,7 +97,7 @@ public class PathTest {
             double b = Math.random() * 20 - 10;
             double c = Math.random() * 20 - 10;
             double d = Math.random() * 20 - 10;
-            Path test = new Path(new Position(1, a + b + c + d, Math.atan(1.0 / (3 * a + 2 * b + c))),
+            Path<Position> test = new Path<>(new Position(1, a + b + c + d, Math.atan(1.0 / (3 * a + 2 * b + c))),
                     new Position(10, a * Math.pow(100, 3) + b * 100 * 100 + c * 100 + d, Math.atan(1.0 / (3 * 100 * 100 * a + 2 * 100 * b + c))));
             test = PolynomialInterpolator.interpolatePoints(test, 10);
             for (int i = 0; i <= 10; i++) {

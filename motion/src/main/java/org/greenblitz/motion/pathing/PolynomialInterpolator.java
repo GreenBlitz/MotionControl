@@ -8,8 +8,6 @@ import java.util.List;
 
 public class PolynomialInterpolator {
 
-    private static final double HALF_PI = Math.PI / 2;
-
     /**
      * Given a set op points (the current m_path) it will add point between given points to complete a m_path.
      * This is done using cubic splines (and thus the angle of the point matters).

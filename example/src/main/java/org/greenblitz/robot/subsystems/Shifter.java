@@ -3,11 +3,9 @@ package org.greenblitz.robot.subsystems;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.base.Position;
+import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotStats;
-import org.greenblitz.robot.commands.shifter.AutoChangeShift;
 
 public class Shifter extends Subsystem {
 
@@ -68,7 +66,7 @@ public class Shifter extends Subsystem {
     /**
      * This function sets the state of the piston based on the value received.
      *
-     * @param state A value based off of the ShifterState enum. This value is then set as the state the piston is in.
+     * @param state A value based off of the ShifterState enum. This value is then drive as the state the piston is in.
      */
     public void setShift(ShifterState state) {
         if (state != m_currentShift) {
