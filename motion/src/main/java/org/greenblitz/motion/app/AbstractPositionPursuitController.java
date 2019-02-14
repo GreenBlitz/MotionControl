@@ -83,7 +83,6 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
      * @return the last intersection on the m_path with the look ahead circle iff such intersection exists
      * the closest point on the m_path O.W.
      */
-    @SuppressWarnings("unchecked")
     protected T getGoalPoint(T robotLoc, double lookAhead) {
         if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead * lookAhead) {
             return m_path.get(m_path.size() - 1);
@@ -134,19 +133,19 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
             return new double[]{speed, speed * rightRadius / leftRadius};
     }
 
-    public Path<T> getM_path() {
+    public Path<T> getPath() {
         return m_path;
     }
 
-    public double getM_wheelBase() {
+    public double getWheelBase() {
         return m_wheelBase;
     }
 
-    public double getM_tolerance() {
+    public double getTolerance() {
         return m_tolerance;
     }
 
-    public double getM_lookahead() {
+    public double getLookahead() {
         return m_lookahead;
     }
 }
