@@ -1,15 +1,12 @@
-package org.greenblitz.robot.commands;
+package org.greenblitz.robot.commands.motion;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
-import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.app.AbstractPositionPursuitController;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.subsystems.Chassis;
-
-import java.util.Arrays;
 
 public class APPCTestingCommand extends Command {
 
@@ -42,9 +39,9 @@ public class APPCTestingCommand extends Command {
 
     @Override
     protected void end(){
-        SmartDashboard.putNumber("APPC final x", m_chassis.getLocation().getX());
-        SmartDashboard.putNumber("APPC final y", m_chassis.getLocation().getY());
-        System.out.println("Finished APPC");
+        SmartDashboard.putNumber("motion final x", m_chassis.getLocation().getX());
+        SmartDashboard.putNumber("motion final y", m_chassis.getLocation().getY());
+        System.out.println("Finished motion");
     }
 
     protected void savePath(String fileName){

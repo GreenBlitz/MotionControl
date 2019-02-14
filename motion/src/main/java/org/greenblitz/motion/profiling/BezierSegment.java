@@ -44,6 +44,13 @@ public class BezierSegment {
         this(start, end, tStart, tStart + 1);
     }
 
+
+    public Point getLocation(double t) {
+        if (isTimeOutOfSegment(t))
+            throw timeException;
+        return Point.bezierSample((t - tStart) / tSize, p0, p1, p2, p3);
+    }
+
     public Point getVelocity(double t) {
         if (isTimeOutOfSegment(t)/*yes*/)
             throw timeException;
@@ -86,12 +93,6 @@ public class BezierSegment {
         return t < tStart || t > tEnd;
     }
 
-
-    public Point getLocation(double t) {
-        if (isTimeOutOfSegment(t))
-            throw timeException;
-        return Point.bezierSample((t - tStart) / tSize, p0, p1, p2, p3);
-    }
 
     public double getTStart() {
         return tStart;

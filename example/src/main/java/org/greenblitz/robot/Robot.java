@@ -4,15 +4,11 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
-import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.Position;
-import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.robot.subsystems.Shifter;
 import org.greenblitz.utils.Navx;
 
 
-import java.util.NavigableMap;
 import java.util.Timer;
 
 public class Robot extends TimedRobot {

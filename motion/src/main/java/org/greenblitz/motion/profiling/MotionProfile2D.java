@@ -17,7 +17,7 @@ public class MotionProfile2D {
         this.segments = new ArrayList<>();
         for (int index = 0; index<positions.size()-1; index++) {
             BezierSegment current = new BezierSegment(positions.get(index), positions.get(index + 1),
-                    index, index+1);
+                    index);
             this.segments.add(current);
         }
     }
@@ -30,6 +30,22 @@ public class MotionProfile2D {
             }
         }
         throw new RuntimeException();
+    }
+
+    public Point getLocation(double t){
+        return getSegment(t).getLocation(t);
+    }
+
+    public Point getVelocity(double t){
+        return getSegment(t).getVelocity(t);
+    }
+
+    public double getAngularVelocity(double t){
+        return getSegment(t).getAngularVelocity(t);
+    }
+
+    public Point getAcceleration(double t){
+        return getSegment(t).getAcceleration(t);
     }
 
     @Override

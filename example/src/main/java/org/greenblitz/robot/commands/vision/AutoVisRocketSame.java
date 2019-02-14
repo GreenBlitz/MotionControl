@@ -5,9 +5,8 @@ import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotStats;
-import org.greenblitz.robot.commands.APPCTestingCommand;
-import org.greenblitz.robot.commands.SetCoast;
-import org.greenblitz.robot.commands.shifter.AutoChangeShift;
+import org.greenblitz.robot.commands.motion.APPCTestingCommand;
+import org.greenblitz.robot.commands.control.SetCoast;
 
 public class AutoVisRocketSame extends CommandGroup {
 

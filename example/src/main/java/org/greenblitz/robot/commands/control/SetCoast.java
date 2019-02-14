@@ -1,4 +1,4 @@
-package org.greenblitz.robot.commands;
+package org.greenblitz.robot.commands.control;
 
 import edu.wpi.first.wpilibj.command.Command;
 import org.greenblitz.robot.subsystems.Chassis;

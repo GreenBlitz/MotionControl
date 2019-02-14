@@ -3,30 +3,23 @@ package org.greenblitz.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.app.AdaptivePolynomialPursuitController;
 import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.pathing.BasicAngleInterpolator;
 import org.greenblitz.motion.pathing.Path;
-import org.greenblitz.motion.pathing.PolynomialInterpolator;
-import org.greenblitz.robot.commands.*;
-import org.greenblitz.robot.commands.shifter.AutoChangeShift;
+import org.greenblitz.robot.commands.motion.APPCTestingCommand;
+import org.greenblitz.robot.commands.motion.SetLocalizerLocation;
+import org.greenblitz.robot.commands.control.BrakeChassis;
+import org.greenblitz.robot.commands.control.SetCoast;
 import org.greenblitz.robot.commands.shifter.SwitchShift;
 import org.greenblitz.robot.commands.vision.*;
-import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.SmartJoystick;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 

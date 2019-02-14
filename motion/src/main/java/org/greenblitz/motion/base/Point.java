@@ -17,7 +17,7 @@ public class Point {
          */
         MATH(0),
         /**
-         * Locations used by localizer and follower commands such as APPC.
+         * Locations used by localizer and follower commands such as motion.
          * positive x is left.
          * positive y is forwards.
          * angle 0 is facing positive y.

@@ -5,8 +5,8 @@ import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotStats;
-import org.greenblitz.robot.commands.APPCTestingCommand;
-import org.greenblitz.robot.commands.SetLocalizerLocation;
+import org.greenblitz.robot.commands.motion.APPCTestingCommand;
+import org.greenblitz.robot.commands.motion.SetLocalizerLocation;
 
 public class AutoPart3 extends CommandGroup {
     public AutoPart3() {
