@@ -1,4 +1,4 @@
-package org.greenblitz.motion.profiling.exception;
+package org.greenblitz.motion.profiling.exceptions;
 
 public class NotEnoughAcceleratingSpace extends ProfilingException {
     public NotEnoughAcceleratingSpace() {

@@ -18,7 +18,7 @@ deploy {
     targets {
         roboRIO("roborio") {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json.json
-            // or from command line. If not found an exception will be thrown.
+            // or from command line. If not found an exceptions will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
             team = frc.getTeamOrDefault(4590)

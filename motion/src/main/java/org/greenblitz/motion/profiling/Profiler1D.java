@@ -1,7 +1,7 @@
 package org.greenblitz.motion.profiling;
 
-import org.greenblitz.motion.profiling.exception.NotEnoughAcceleratingSpace;
-import org.greenblitz.motion.profiling.exception.ProfilingException;
+import org.greenblitz.motion.profiling.exceptions.NotEnoughAcceleratingSpace;
+import org.greenblitz.motion.profiling.exceptions.ProfilingException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Profiler1D {
      * @param maxAcc maximum acceleration, used to accelerate
      * @param minAcc minimum acceleration, used to decelerate
      * @return the motion brofile
-     * @throws ProfilingException Profiling isn't always possible. When so this exception is thrown.
+     * @throws ProfilingException Profiling isn't always possible. When so this exceptions is thrown.
      */
     public static MotionProfile1D generateProfile(List<ActuatorLocation> waypoints,
                                                   double maxV, double maxAcc, double minAcc)
