@@ -1,10 +1,10 @@
 package org.greenblitz.motion.app;
 
-import org.greenblitz.motion.base.PState;
+import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.pathing.Path;
 
 @Deprecated
-public class AdaptivePStatePursuitController extends AbstractPositionPursuitController<PState> {
+public class AdaptivePStatePursuitController extends AbstractPositionPursuitController<State> {
 
     /**
      * @param m_path
@@ -12,12 +12,12 @@ public class AdaptivePStatePursuitController extends AbstractPositionPursuitCont
      * @param m_wheelBase
      * @param m_tolerance
      */
-    public AdaptivePStatePursuitController(Path<PState> m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
+    public AdaptivePStatePursuitController(Path<State> m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
         super(m_path, m_lookahead, m_wheelBase, m_tolerance);
     }
 
     @Override
-    protected double getSpeed(PState robotLoc, PState goalPoint) {
+    protected double getSpeed(State robotLoc, State goalPoint) {
         return super.getSpeed(robotLoc, goalPoint);
     }
 
@@ -26,7 +26,7 @@ public class AdaptivePStatePursuitController extends AbstractPositionPursuitCont
     }
 
     @Override
-    protected double getCurvature(PState robotLoc, PState goalPoint) {
+    protected double getCurvature(State robotLoc, State goalPoint) {
         return 0;
     }
 }
