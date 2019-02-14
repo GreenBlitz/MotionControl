@@ -8,7 +8,10 @@ import org.greenblitz.motion.pathing.Path;
  * @author Udi ~ MudiAtalon
  * @author Alexey ~ Savioor
  *
+ * It has a knowm bug (cycle too slow), so this is not good for actual uses, maybe fix later
+ *
  */
+@Deprecated
 public class AdaptivePolynomialPursuitController extends AbstractPositionPursuitController<Position> {
 
     protected final boolean isBackwards;
