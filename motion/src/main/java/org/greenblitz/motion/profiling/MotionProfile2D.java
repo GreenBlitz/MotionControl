@@ -2,20 +2,21 @@ package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.base.Vector2D;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MotionProfile2D {
 
-    private final ArrayList<BezierSegment> segments;
+    private final List<BezierSegment> segments;
 
     private int lastSegment;
+
     // TODO: 2/13/2019 test the thing
-    public MotionProfile2D (ArrayList<State> positions) {
+    public MotionProfile2D(List<State> positions) {
         this.lastSegment = 0;
         this.segments = new ArrayList<>();
-        for (int index = 0; index<positions.size()-1; index++) {
+        for (int index = 0; index < positions.size() - 1; index++) {
             BezierSegment current = new BezierSegment(positions.get(index), positions.get(index + 1),
                     index);
             this.segments.add(current);
@@ -32,20 +33,32 @@ public class MotionProfile2D {
         throw new RuntimeException();
     }
 
-    public Point getLocation(double t){
+    public double getTStart(){
+        return segments.get(0).getTStart();
+    }
+
+    public double getTEnd(){
+        return segments.get(segments.size()-1).getTEnd();
+    }
+
+    public Point getLocation(double t) {
         return getSegment(t).getLocation(t);
     }
 
-    public Point getVelocity(double t){
+    public Point getVelocity(double t) {
         return getSegment(t).getVelocity(t);
     }
 
-    public double getAngularVelocity(double t){
+    public double getAngularVelocity(double t) {
         return getSegment(t).getAngularVelocity(t);
     }
 
-    public Point getAcceleration(double t){
+    public Point getAcceleration(double t) {
         return getSegment(t).getAcceleration(t);
+    }
+
+    public boolean isOutOfProfile(double t) {
+        return t < getTStart() || t > getTEnd();
     }
 
     @Override

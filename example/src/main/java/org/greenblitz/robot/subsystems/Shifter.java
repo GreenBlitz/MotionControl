@@ -66,7 +66,7 @@ public class Shifter extends Subsystem {
     /**
      * This function sets the state of the piston based on the value received.
      *
-     * @param state A value based off of the ShifterState enum. This value is then set as the state the piston is in.
+     * @param state A value based off of the ShifterState enum. This value is then drive as the state the piston is in.
      */
     public void setShift(ShifterState state) {
         if (state != m_currentShift) {
