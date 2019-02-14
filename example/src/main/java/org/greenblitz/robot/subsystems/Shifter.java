@@ -3,11 +3,9 @@ package org.greenblitz.robot.subsystems;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.base.Position;
+import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.robot.RobotMap;
 import org.greenblitz.robot.RobotStats;
-import org.greenblitz.robot.commands.shifter.AutoChangeShift;
 
 public class Shifter extends Subsystem {
 

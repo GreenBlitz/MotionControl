@@ -1,15 +1,6 @@
 package org.greenblitz.robot.commands.vision;
 
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.debug.RemoteCSVTarget;
-import org.greenblitz.motion.Localizer;
-import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pid.MultivariablePIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.robot.OI;

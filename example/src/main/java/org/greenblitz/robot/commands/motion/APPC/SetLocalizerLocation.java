@@ -1,7 +1,7 @@
-package org.greenblitz.robot.commands.motion;
+package org.greenblitz.robot.commands.motion.APPC;
 
 import edu.wpi.first.wpilibj.command.Command;
-import org.greenblitz.motion.Localizer;
+import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.Navx;
