@@ -10,12 +10,16 @@ public class MotionProfile2D {
 
     private final ArrayList<BezierSegment> segments;
 
-    private ArrayList<State> realProfile;
     private int lastSegment;
-
-    private MotionProfile2D(ArrayList<BezierSegment> segments) {
-        this.segments = segments;
-        lastSegment = 0;
+    // TODO: 2/13/2019 test the thing
+    public MotionProfile2D (ArrayList<State> positions) {
+        this.lastSegment = 0;
+        this.segments = new ArrayList<>();
+        for (int index = 0; index<positions.size()-1; index++) {
+            BezierSegment current = new BezierSegment(positions.get(index), positions.get(index + 1),
+                    index, index+1);
+            this.segments.add(current);
+        }
     }
 
     private BezierSegment getSegment(double t) {

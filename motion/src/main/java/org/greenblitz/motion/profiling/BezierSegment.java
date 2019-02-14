@@ -9,8 +9,8 @@ public class BezierSegment {
     private Point p01, p12, p23;
     private Point p012, p123;
     private double tStart, tEnd, tSize;
-    private static final IndexOutOfBoundsException timeException =
-            new IndexOutOfBoundsException("Time not in this segment");
+    private static final IllegalArgumentException timeException =
+            new IllegalArgumentException("Time not in this segment");
 
     public BezierSegment(Point p0, Point p1, Point p2, Point p3, double tStart, double tEnd) {
         this.tStart = tStart;
@@ -27,6 +27,23 @@ public class BezierSegment {
         p123 = Point.add(Point.subtract(p1, p2), Point.subtract(p3, p2)).scale(6);
     }
 
+    public BezierSegment(Point p1, Point p2, Point p3, Point p4, double tStart) {
+        this(p1, p2, p3, p4, tStart, tStart + 1);
+    }
+
+    public BezierSegment(State start, State end, double tStart, double tEnd) {
+        this(start,
+                Point.add(start, start.velocity.scale((tEnd - tStart) / 3)),
+                Point.subtract(end, end.velocity.scale((tEnd - tStart) / 3)),
+                end,
+                tStart,
+                tEnd);
+    }
+
+    public BezierSegment(State start, State end, double tStart) {
+        this(start, end, tStart, tStart + 1);
+    }
+
     public Point getVelocity(double t) {
         if (isTimeOutOfSegment(t)/*yes*/)
             throw timeException;
@@ -36,11 +53,13 @@ public class BezierSegment {
     }
 
     public Point getAcceleration(double t) {
-        t = (t-tStart)/tSize;
-        return Point.add(p012.scale((1-t)), p123.scale(t));
+        if (isTimeOutOfSegment(t)/*yes*/)
+            throw timeException;
+        t = (t - tStart) / tSize;
+        return Point.add(p012.scale((1 - t)), p123.scale(t));
     }
 
-    public double getCurvature (double t) {
+    public double getCurvature(double t) {
         Point derivative1 = getVelocity(t),
                 derivative2 = getAcceleration(t);
         double derivative1X = derivative1.getX(),
@@ -48,11 +67,11 @@ public class BezierSegment {
 
         double numerator = (derivative1X * derivative2.getY() - derivative1Y * derivative2.getX());
         double denominator = Math.pow(derivative1X, 2) + Math.pow(derivative1Y, 2);
-        denominator =  Math.pow(denominator, 1.5);
+        denominator = Math.pow(denominator, 1.5);
         return numerator / denominator;
     }
 
-    public double getAngularVelocity (double t) {
+    public double getAngularVelocity(double t) {
         Point derivative1 = getVelocity(t),
                 derivative2 = getAcceleration(t);
         double derivative1X = derivative1.getX(),
@@ -61,21 +80,6 @@ public class BezierSegment {
         double numerator = (derivative1X * derivative2.getY() - derivative1Y * derivative2.getX());
         double denominator = Math.pow(derivative1X, 2) + Math.pow(derivative1Y, 2);
         return numerator / denominator;
-    }
-
-    public BezierSegment(Point p1, Point p2, Point p3, Point p4, double tStart) {
-        this(p1, p2, p3, p4, tStart, tStart+1);
-    }
-    public BezierSegment(State start, State end, double tStart, double tEnd) {
-        this(start,
-                Point.add(start, start.velocity.scale((tEnd-tStart) / 3)),
-                Point.subtract(end, end.velocity.scale((tEnd-tStart) / 3)),
-                end,
-                tStart,
-                tEnd);
-    }
-    public BezierSegment(State start, State end, double tStart) {
-        this(start, end, tStart, tStart+1);
     }
 
     public boolean isTimeOutOfSegment(double t) {
