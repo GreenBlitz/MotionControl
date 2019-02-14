@@ -4,7 +4,9 @@ bin/
 build/
 out/
 
-*.jar
+# non deploy csv files
+*.csv
+!*/deploy/
 
 # eclipse/intellij config files
 .idea/
