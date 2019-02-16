@@ -24,8 +24,7 @@ public class Profiler1D {
      * @throws ProfilingException Profiling isn't always possible. When so this exceptions is thrown.
      */
     public static MotionProfile1D generateProfile(List<ActuatorLocation> waypoints,
-                                                  double maxV, double maxAcc, double minAcc)
-    throws ProfilingException {
+                                                  double maxV, double maxAcc, double minAcc) {
 
         if (Math.signum(minAcc) == Math.signum(maxAcc))
             throw new ProfilingException("Sign of max speedup and max slowdown can't be the same.");

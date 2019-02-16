@@ -1,71 +1,74 @@
 package org.greenblitz.motion.profiling;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
+import org.greenblitz.motion.base.TwoTuple;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MotionProfile2D {
 
-    private final List<BezierSegment> segments;
+    private MotionProfile1D firstProfile, secondProfile;
 
-    private int lastSegment;
-
-    // TODO: 2/13/2019 test the thing
-    public MotionProfile2D(List<State> positions) {
-        this.lastSegment = 0;
-        this.segments = new ArrayList<>();
-        for (int index = 0; index < positions.size() - 1; index++) {
-            BezierSegment current = new BezierSegment(positions.get(index), positions.get(index + 1),
-                    index);
-            this.segments.add(current);
-        }
+    public MotionProfile2D(MotionProfile1D firstProfile, MotionProfile1D secondProfile) {
+        if (!Point.isFuzzyEqual(firstProfile.getTEnd(), secondProfile.getTEnd(), 1E-3))
+            throw new IllegalArgumentException("T end of first end second profile un-equal");
+        this.firstProfile = firstProfile;
+        this.secondProfile = secondProfile;
     }
 
-    private BezierSegment getSegment(double t) {
-        for (int ind = 0; ind < segments.size(); ind++) {
-            if (!segments.get((ind + lastSegment) % segments.size()).isTimeOutOfSegment(t)) {
-                lastSegment = (lastSegment + ind) % segments.size();
-                return segments.get(lastSegment);
-            }
-        }
-        throw new RuntimeException();
+    /**
+     * @return The time in which the profile finishes
+     */
+    public double getTEnd() {
+        return firstProfile.getTEnd();
     }
 
-    public double getTStart(){
-        return segments.get(0).getTStart();
+    /**
+     * @param t point in time (in seconds)
+     * @return whether or not the profile is finished by that time
+     */
+    public boolean isOver(double t) {
+        return t >= getTEnd();
     }
 
-    public double getTEnd(){
-        return segments.get(segments.size()-1).getTEnd();
+    /**
+     * @param t point in time (in seconds)
+     * @return the acceleration at that time
+     */
+    public TwoTuple<Double, Double> getAcceleration(double t) {
+        return new TwoTuple<>(firstProfile.getAcceleration(t), secondProfile.getAcceleration(t));
     }
 
-    public Point getLocation(double t) {
-        return getSegment(t).getLocation(t);
+    /**
+     * @param t point in time (in seconds)
+     * @return the velocity at that time
+     */
+    public TwoTuple<Double, Double> getVelocity(double t) {
+        return new TwoTuple<>(firstProfile.getVelocity(t), secondProfile.getVelocity(t));
     }
 
-    public Point getVelocity(double t) {
-        return getSegment(t).getVelocity(t);
+    /**
+     * @param t point in time (in seconds)
+     * @return the location at that time
+     */
+    public TwoTuple<Double, Double> getLocation(double t) {
+        return new TwoTuple<>(firstProfile.getLocation(t), secondProfile.getLocation(t));
     }
 
-    public double getAngularVelocity(double t) {
-        return getSegment(t).getAngularVelocity(t);
+    /**
+     * Removes all segments with time length less then a milisecond.
+     */
+    public void removeBugSegments() {
+        firstProfile.removeBugSegments();
+        secondProfile.removeBugSegments();
     }
 
-    public Point getAcceleration(double t) {
-        return getSegment(t).getAcceleration(t);
-    }
-
-    public boolean isOutOfProfile(double t) {
-        return t < getTStart() || t > getTEnd();
-    }
-
-    @Override
-    public String toString() {
-        return "MotionProfile2D{" +
-                "segments=" + segments +
-                '}';
-    }
 
 }

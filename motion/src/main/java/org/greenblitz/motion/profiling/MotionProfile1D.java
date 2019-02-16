@@ -2,6 +2,8 @@ package org.greenblitz.motion.profiling;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.profiling.exceptions.ProfilingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +31,66 @@ public class MotionProfile1D {
     }
 
     public List<Segment> getSegments() {
-        return segments;
+        List<Segment> toRet = new ArrayList<>();
+        for (Segment seg : segments){
+            toRet.add(seg.clone());
+        }
+        return toRet;
     }
+
+    public void add(MotionProfile1D second, double maxV, double maxA, double minA){
+        MotionProfile1D first = this;
+        if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0)))
+        {
+            List<ActuatorLocation> startAndEnd = new ArrayList<>();
+            startAndEnd.add(new ActuatorLocation(first.getLocation(first.getTEnd()), first.getVelocity(first.getTEnd())));
+            startAndEnd.add(new ActuatorLocation(second.getLocation(0), second.getVelocity(0)));
+            MotionProfile1D inBetweenProfile = Profiler1D.generateProfile(startAndEnd, maxV, maxA, minA);
+            safeAdd(inBetweenProfile);
+        }
+        safeAdd(second);
+    }
+
+    public void safeAdd(MotionProfile1D second){
+        MotionProfile1D first = this;
+        if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0)))
+        {
+            throw new ProfilingException("Locations not equal");
+        }
+        if (!Point.isFuzzyEqual(first.getVelocity(first.getTEnd()), second.getVelocity(0)))
+        {
+            throw new ProfilingException("Velocities not equal");
+        }
+
+        List<Segment> secondSegs = second.getSegments();
+
+        for (Segment s : secondSegs) {
+            s.setTStart(s.getTStart() + getTEnd());
+            s.setTEnd(s.getTEnd() + getTEnd());
+        }
+
+        segments.addAll(secondSegs);
+    }
+
+    private int previous = 0;
+    /**
+     * The idea of this function is that you will never go back in time, therefore
+     * after you used some time segment, you won't use all segments before it.
+     * In addition because the controller tuns decently fast, you are most likely to find
+     * the desired segment right after the previous you used.
+     * @param t point in time (in seconds)
+     * @return The segment matching that point of time
+     */
+    public Segment quickGetSegment(double t){
+        for (int i = 0; i < segments.size(); i++){
+            if (segments.get((previous + i) % segments.size()).isTimePartOfSegment(t)) {
+                previous = (i + previous) % segments.size();
+                return segments.get(previous);
+            }
+        }
+        throw new IndexOutOfBoundsException("No segment with time " + t);
+    }
+
 
     /**
      * @param t point in time (in seconds)
@@ -77,7 +137,7 @@ public class MotionProfile1D {
      * @return the acceleration at that time
      */
     public double getAcceleration(double t) {
-        return getSegment(t).getAcceleration(t);
+        return quickGetSegment(t).getAcceleration(t);
     }
 
     /**
@@ -85,7 +145,7 @@ public class MotionProfile1D {
      * @return the velocity at that time
      */
     public double getVelocity(double t) {
-        return getSegment(t).getVelocity(t);
+        return quickGetSegment(t).getVelocity(t);
     }
 
     /**
@@ -93,7 +153,7 @@ public class MotionProfile1D {
      * @return the location at that time
      */
     public double getLocation(double t) {
-        return getSegment(t).getLocation(t);
+        return quickGetSegment(t).getLocation(t);
     }
 
     /**
@@ -164,6 +224,10 @@ public class MotionProfile1D {
             this.accel = accel;
             this.startVelocity = startVelocity;
             this.startLocation = startLocation;
+        }
+
+        public Segment clone(){
+            return new Segment(getTStart(), getTEnd(), getAccel(), getStartVelocity(), getStartLocation());
         }
 
         public boolean isTimePartOfSegment(double t) {

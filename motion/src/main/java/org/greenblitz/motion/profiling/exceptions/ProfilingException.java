@@ -1,6 +1,6 @@
 package org.greenblitz.motion.profiling.exceptions;
 
-public class ProfilingException extends Exception {
+public class ProfilingException extends RuntimeException {
 
     public ProfilingException() {
         super();
