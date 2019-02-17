@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BezierSegmentTest {
 
-    // TODO this3
+    // TODO this
 
     @Test
     void getVelocity() {
