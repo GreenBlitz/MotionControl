@@ -149,6 +149,12 @@ public class State extends Position {
         this.angle = Math.atan2(velocity.y, velocity.x);
     }
 
+    @Override
+    public void setAngle(double angle){
+        velocity = new Vector2D(linearVelocity*Math.sin(angle), linearVelocity*Math.cos(angle));
+        this.angle = angle;
+    }
+
     public double getLinearAccel() {
         return linearAccel;
     }
