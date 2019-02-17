@@ -43,6 +43,16 @@ public class BezierCurve implements ICurve {
     }
 
     @Override
+    public double getLength(double u) {
+        return 0;
+    }
+
+    @Override
+    public double getAngle(double u) {
+        return 0;
+    }
+
+    @Override
     public double getCurvature(double u) {
         return segment.getCurvature(convertU(u));
     }
