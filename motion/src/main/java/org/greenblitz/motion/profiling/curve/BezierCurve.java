@@ -44,9 +44,10 @@ public class BezierCurve implements ICurve {
 
     @Override
     public double getLength(double u) {
+        double dt = 0.0001;
         double ret = 0;
-        for (double i = 0; i <= u; i += 0.01)
-            ret+=segment.getVelocity(i).norm();
+        for (double i = 0; i <= u; i += dt)
+            ret+=segment.getVelocity(i).norm()*dt;
         return ret;
     }
 
