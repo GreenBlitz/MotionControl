@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.ICurve;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 
 import java.util.ArrayList;
@@ -37,9 +38,23 @@ public class ChassisProfiler2D {
         MotionProfile1D linearProfile = new MotionProfile1D();
         MotionProfile1D angularProfile = new MotionProfile1D();
         double currentMaxLinearVelocity, currentMaxAngularVelocity, curvature;
+        ArrayList<ActuatorLocation> path = new ArrayList<>();
+        path.add(new ActuatorLocation(0 ,0));
+        path.add(new ActuatorLocation(0, 0));
         for (ICurve subCur : subCurves){
             curvature = subCur.getCurvature(0);
-            currentMaxLinearVelocity = 1.0 / (1.0/maxLinearVel + curvature/maxAngularVel);
+            currentMaxLinearVelocity = 1.0 / (1.0/maxLinearVel + Math.abs(curvature)/maxAngularVel);
+            currentMaxAngularVelocity = currentMaxLinearVelocity * curvature;
+
+            //path.get(0).setX(subCur.);
+            linearProfile.safeAdd(Profiler1D.generateProfile(
+                    null,
+                    currentMaxLinearVelocity, maxLinearAcc, -maxLinearAcc
+            ));
+            linearProfile.safeAdd(Profiler1D.generateProfile(
+                    null,
+                    currentMaxAngularVelocity, maxAngularAcc, -maxAngularAcc
+            ));
         }
 
         return new MotionProfile2D(linearProfile, angularProfile);

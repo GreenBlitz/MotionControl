@@ -7,7 +7,6 @@ import org.greenblitz.motion.profiling.exceptions.ProfilingException;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
