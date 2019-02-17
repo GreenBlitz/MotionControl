@@ -26,12 +26,9 @@ public class Localizer {
     private final Object LOCK = new Object();
     private final Object SLEEP_LOCK = new Object();
 
-    private final RemoteCSVTarget m_logger;
     private final long timeOffset;
 
     private Localizer() {
-        RemoteCSVTarget.initTarget("location", "x", "y");
-        m_logger = RemoteCSVTarget.getTarget("location");
         timeOffset = System.currentTimeMillis();
         angle0 = 0;
         awake = false;
@@ -198,8 +195,6 @@ public class Localizer {
             m_location.translate(dXdY);
             m_location.setAngle(angle + angle0);
         }
-
-        m_logger.report(m_location.getX(), m_location.getY());
 
         prevDistanceLeft = currentLeftDistance;
         prevDistanceRight = currentRightDistance;

@@ -151,7 +151,7 @@ public class Position extends Point {
 
     @Override
     public Point mathToWeaverCoords() {
-        return new Position(-y, x, angle);
+        return new Position(x, -y, angle);
     }
 
     @Override

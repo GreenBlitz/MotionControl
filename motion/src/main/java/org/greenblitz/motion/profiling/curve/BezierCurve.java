@@ -7,6 +7,7 @@ public class BezierCurve implements ICurve {
 
     BezierSegment segment;
     double uStart, uSize;
+    double curvature = Double.NaN;
 
     private BezierCurve(BezierSegment segment, double uStart, double uEnd) {
         this.segment = segment;
@@ -18,7 +19,7 @@ public class BezierCurve implements ICurve {
         this(new BezierSegment(start, end, 0, 1), uStart, uEnd);
     }
 
-    public BezierCurve(State start, State end){
+    public BezierCurve(State start, State end) {
         this(start, end, 0, 1);
     }
 
@@ -44,11 +45,11 @@ public class BezierCurve implements ICurve {
 
     @Override
     public double getLength(double u) {
-        double dt = 0.0001;
-        double ret = 0;
-        for (double i = 0; i <= u; i += dt)
-            ret+=segment.getVelocity(i).norm()*dt;
-        return ret;
+        double length = Point.subtract(getLocation(1), getLocation(0)).norm();
+        double curvature = getCurvature(0.5);
+        if (Point.isFuzzyEqual(curvature, 0, 1E-3))
+            return length;
+        return 2 / curvature * Math.asin(length * curvature / 2);
     }
 
     @Override
@@ -59,7 +60,9 @@ public class BezierCurve implements ICurve {
 
     @Override
     public double getCurvature(double u) {
-        return segment.getCurvature(convertU(u));
+        if(curvature!= curvature/*is NaN*/)
+            curvature = segment.getCurvature(convertU(u));
+        return curvature;
     }
 
     @Override
