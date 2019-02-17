@@ -1,12 +1,18 @@
 package org.greenblitz.motion.base;
 
+/**
+ * Represents a curve. values given to it's function must be between 0 and 1.
+ */
 public interface ICurve {
 
-    double getX(double t);
-    double getY(double t);
+    double getX(double u);
+    double getY(double u);
 
-    double getCurvature(double t);
+    double getLinearVelocity(double u);
+    double getAngularVelocity(double u);
 
-    ICurve getSubCurve(double tStart, double tEnd);
+    double getCurvature(double u);
+
+    ICurve getSubCurve(double uStart, double uEnd);
 
 }

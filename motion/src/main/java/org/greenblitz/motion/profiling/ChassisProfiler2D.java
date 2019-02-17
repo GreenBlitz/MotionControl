@@ -8,7 +8,8 @@ import java.util.List;
 
 public class ChassisProfiler2D {
 
-    public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump) {
+    public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
+                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
 
         ICurve curve = null; // TODO generate the curve somehow
 
@@ -33,6 +34,15 @@ public class ChassisProfiler2D {
             }
         }
 
+        MotionProfile1D linearProfile = new MotionProfile1D();
+        MotionProfile1D angularProfile = new MotionProfile1D();
+        double currentMaxLinearVelocity, currentMaxAngularVelocity, curvature;
+        for (ICurve subCur : subCurves){
+            curvature = subCur.getCurvature(0);
+            currentMaxLinearVelocity = 1.0 / (1.0/maxLinearVel + curvature/maxAngularVel);
+        }
+
+        return new MotionProfile2D(linearProfile, angularProfile);
     }
 
 }

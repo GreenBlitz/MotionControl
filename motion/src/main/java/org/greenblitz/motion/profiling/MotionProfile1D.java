@@ -7,8 +7,10 @@ import org.greenblitz.motion.profiling.exceptions.ProfilingException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MotionProfile1D {
@@ -17,6 +19,10 @@ public class MotionProfile1D {
 
     public MotionProfile1D(List<Segment> segs) {
         segments = segs;
+    }
+
+    public MotionProfile1D(Segment... segs){
+        segments = Arrays.asList(segs);
     }
 
     public MotionProfile1D() {
@@ -121,6 +127,8 @@ public class MotionProfile1D {
      * @return The time in which the profile finishes
      */
     public double getTEnd() {
+        if (segments.isEmpty())
+            return 0;
         return segments.get(segments.size() - 1).tEnd;
     }
 
