@@ -152,7 +152,7 @@ public class State extends Position {
     @Override
     public void setAngle(double angle){
         velocity = new Vector2D(linearVelocity*Math.sin(angle), linearVelocity*Math.cos(angle));
-        this.angle = angle;
+        super.setAngle(angle);
     }
 
     public double getLinearAccel() {
