@@ -12,6 +12,9 @@ public interface ICurve {
     double getLinearVelocity(double u);
     double getAngularVelocity(double u);
 
+    double getLength(double u);
+    double getAngle(double u);
+
     double getCurvature(double u);
 
     ICurve getSubCurve(double uStart, double uEnd);

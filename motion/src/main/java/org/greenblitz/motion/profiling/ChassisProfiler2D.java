@@ -45,13 +45,21 @@ public class ChassisProfiler2D {
             currentMaxLinearVelocity = 1.0 / (1.0/maxLinearVel + Math.abs(curvature)/maxAngularVel);
             currentMaxAngularVelocity = currentMaxLinearVelocity * curvature;
 
-            //path.get(0).setX(subCur.);
+            path.get(0).setX(subCur.getLength(0));
+            path.get(0).setV(subCur.getLinearVelocity(0));
+            path.get(1).setX(subCur.getLength(1));
+            path.get(1).setV(subCur.getLinearVelocity(1));
             linearProfile.safeAdd(Profiler1D.generateProfile(
-                    null,
+                    path,
                     currentMaxLinearVelocity, maxLinearAcc, -maxLinearAcc
             ));
-            linearProfile.safeAdd(Profiler1D.generateProfile(
-                    null,
+
+            path.get(0).setX(subCur.getAngle(0));
+            path.get(0).setV(subCur.getAngularVelocity(0));
+            path.get(1).setX(subCur.getAngle(1));
+            path.get(1).setV(subCur.getAngularVelocity(1));
+            angularProfile.safeAdd(Profiler1D.generateProfile(
+                    path,
                     currentMaxAngularVelocity, maxAngularAcc, -maxAngularAcc
             ));
         }
