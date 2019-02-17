@@ -1,6 +1,6 @@
 package org.greenblitz.motion.profiling;
 
-import org.greenblitz.motion.base.ICurve;
+import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.base.State;
 
 import java.util.ArrayList;

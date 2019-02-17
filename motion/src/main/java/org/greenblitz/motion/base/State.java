@@ -6,57 +6,50 @@ public class State extends Position {
 
     protected double linearVelocity /* meter/sec */, angularVelocity /* radians/sec */;
     protected double linearAccel /* meter/sec^2 */, angularAccel /* radians/sec^2 */;
+    protected Vector2D velocity;
 
     public State(double x, double y, double angle, double linearVelocity, double angularVelocity) {
         super(x, y, angle);
         this.linearVelocity = linearVelocity;
         this.angularVelocity = angularVelocity;
+        velocity = new Vector2D(linearVelocity*Math.sin(angle), linearVelocity*Math.cos(angle));
     }
 
     public State(double x, double y, double linearVelocity, double angularVelocity) {
         super(x, y);
         this.linearVelocity = linearVelocity;
         this.angularVelocity = angularVelocity;
+        velocity = new Vector2D(0, linearVelocity);
     }
 
     public State(Point point, double angle, double linearVelocity, double angularVelocity) {
-        super(point, angle);
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
+        this(point.x, point.y, angle, linearVelocity, angularVelocity);
     }
 
     public State(Point point, double linearVelocity, double angularVelocity) {
-        super(point);
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
+        this(point.x, point.y, linearVelocity, angularVelocity);
     }
 
     public State(double x, double y, double angle, double linearVelocity, double angularVelocity, double linearAccel, double angularAccel) {
-        super(x, y, angle);
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
+        this(x, y, angle, linearVelocity, angularVelocity);
         this.linearAccel = linearAccel;
         this.angularAccel = angularAccel;
     }
 
     public State(double x, double y, double linearVelocity, double angularVelocity, double linearAccel, double angularAccel) {
-        super(x, y);
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
+        this(x, y, linearAccel, angularVelocity);
         this.linearAccel = linearAccel;
         this.angularAccel = angularAccel;
     }
 
     public State(Point point, double angle, double linearVelocity, double angularVelocity, double linearAccel, double angularAccel) {
-        super(point, angle);
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
+        this(point, angle, linearVelocity, angularVelocity);
         this.linearAccel = linearAccel;
         this.angularAccel = angularAccel;
     }
 
     public State(Point point, double linearVelocity, double angularVelocity, double linearAccel, double angularAccel) {
-        super(point);
+        this(point, linearAccel, angularVelocity);
         this.linearVelocity = linearVelocity;
         this.angularVelocity = angularVelocity;
         this.linearAccel = linearAccel;
@@ -138,6 +131,7 @@ public class State extends Position {
     }
 
     public void setLinearVelocity(double linearVelocity) {
+        this.velocity = this.velocity.scale(linearVelocity/this.linearVelocity);
         this.linearVelocity = linearVelocity;
     }
 
@@ -145,8 +139,14 @@ public class State extends Position {
         return angularVelocity;
     }
 
-    public void setAngularVelocity(double angularVelocity) {
-        this.angularVelocity = angularVelocity;
+    public void setAngularVelocity(double angularVelocity) { this.angularVelocity = angularVelocity; }
+
+    public Vector2D getVelocity(){return velocity.clone();}
+
+    public void setVelocity(Vector2D velocity){
+        this.velocity = velocity.clone();
+        this.linearVelocity = velocity.norm();
+        this.angle = Math.atan2(velocity.y, velocity.x);
     }
 
     public double getLinearAccel() {

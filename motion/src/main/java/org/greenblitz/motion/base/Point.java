@@ -175,6 +175,8 @@ public class Point {
         return Math.hypot(point.x, point.y);
     }
 
+    public double norm(){return norm(this);}
+
     public static double distSqared(Point a, Point b) {
         return normSquared(subtract(a, b));
     }
