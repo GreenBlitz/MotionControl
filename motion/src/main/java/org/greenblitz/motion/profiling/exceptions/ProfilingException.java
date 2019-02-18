@@ -1,5 +1,8 @@
 package org.greenblitz.motion.profiling.exceptions;
 
+/**
+ * An error which is thrown when profiling fails for whatever reason
+ */
 public class ProfilingException extends RuntimeException {
 
     public ProfilingException() {

@@ -14,19 +14,34 @@ import java.util.List;
 
 public class MotionProfile1D {
 
+    /**
+     * The segments that make up this profile
+     */
     protected List<Segment> segments;
 
+    //<editor-fold desc="Constructors">
+
+    /**
+     * @param segs
+     */
     public MotionProfile1D(List<Segment> segs) {
         segments = segs;
     }
 
-    public MotionProfile1D(Segment... segs){
+    /**
+     * @param segs
+     */
+    public MotionProfile1D(Segment... segs) {
         segments = Arrays.asList(segs);
     }
 
+    /**
+     *
+     */
     public MotionProfile1D() {
         this(new ArrayList<>());
     }
+    //</editor-fold>
 
     @Override
     public String toString() {
@@ -35,18 +50,29 @@ public class MotionProfile1D {
                 '}';
     }
 
+    /**
+     * @return An ArrayList of copies of the segments. Changing this ArrayList or the Segments within in won't
+     * affect the original Profile
+     */
     public List<Segment> getSegments() {
         List<Segment> toRet = new ArrayList<>();
-        for (Segment seg : segments){
+        for (Segment seg : segments) {
             toRet.add(seg.clone());
         }
         return toRet;
     }
 
-    public void add(MotionProfile1D second, double maxV, double maxA, double minA){
+    /**
+     * Adds the given profile to this one, and if needed generates a in-between profile to bridge a potential gap.
+     *
+     * @param second
+     * @param maxV
+     * @param maxA
+     * @param minA
+     */
+    public void add(MotionProfile1D second, double maxV, double maxA, double minA) {
         MotionProfile1D first = this;
-        if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0)))
-        {
+        if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0))) {
             List<ActuatorLocation> startAndEnd = new ArrayList<>();
             startAndEnd.add(new ActuatorLocation(first.getLocation(first.getTEnd()), first.getVelocity(first.getTEnd())));
             startAndEnd.add(new ActuatorLocation(second.getLocation(0), second.getVelocity(0)));
@@ -56,14 +82,17 @@ public class MotionProfile1D {
         safeAdd(second);
     }
 
-    public void safeAdd(MotionProfile1D second){
+    /**
+     * Adds to profiles together, assuming the second starts where the first ends.
+     *
+     * @param second
+     */
+    public void safeAdd(MotionProfile1D second) {
         MotionProfile1D first = this;
-        if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0)))
-        {
+        if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0))) {
             throw new ProfilingException("Locations not equal");
         }
-        if (!Point.isFuzzyEqual(first.getVelocity(first.getTEnd()), second.getVelocity(0)))
-        {
+        if (!Point.isFuzzyEqual(first.getVelocity(first.getTEnd()), second.getVelocity(0))) {
             throw new ProfilingException("Velocities not equal");
         }
 
@@ -78,16 +107,18 @@ public class MotionProfile1D {
     }
 
     private int previous = 0;
+
     /**
      * The idea of this function is that you will never go back in time, therefore
      * after you used some time segment, you won't use all segments before it.
      * In addition because the controller tuns decently fast, you are most likely to find
      * the desired segment right after the previous you used.
+     *
      * @param t point in time (in seconds)
      * @return The segment matching that point of time
      */
-    public Segment quickGetSegment(double t){
-        for (int i = 0; i < segments.size(); i++){
+    public Segment quickGetSegment(double t) {
+        for (int i = 0; i < segments.size(); i++) {
             if (segments.get((previous + i) % segments.size()).isTimePartOfSegment(t)) {
                 previous = (i + previous) % segments.size();
                 return segments.get(previous);
@@ -98,6 +129,8 @@ public class MotionProfile1D {
 
 
     /**
+     * Uses binary searching
+     *
      * @param t point in time (in seconds)
      * @return The segment matching that point of time
      */
@@ -175,6 +208,13 @@ public class MotionProfile1D {
         segments = goodSegments;
     }
 
+    /**
+     * creates a CSV file holding the current path.
+     *
+     * @param name name of the file
+     * @param dt   time in between points
+     * @return True for success and False for failure
+     */
     public boolean generateCSV(String name, double dt) {
         CSVPrinter printer;
 
@@ -185,15 +225,15 @@ public class MotionProfile1D {
                     "Velocity",
                     "Acceleration"
             ).print(new File(name), Charset.defaultCharset());
-        } catch (IOException e){
+        } catch (IOException e) {
             return false;
         }
 
         double t = 0;
-        while (!isOver(t)){
+        while (!isOver(t)) {
             try {
                 printer.printRecord(t, getLocation(t), getVelocity(t), getAcceleration(t));
-            } catch (IOException e){
+            } catch (IOException e) {
                 return false;
             }
             t += dt;
@@ -202,29 +242,33 @@ public class MotionProfile1D {
         return true;
     }
 
-    public boolean generateCSV(String name, int samplesPerSecond){
-        return generateCSV(name, 1.0/samplesPerSecond);
+    /**
+     * @param name
+     * @param samplesPerSecond
+     * @return
+     * @see MotionProfile1D#generateCSV(String, double)
+     */
+    public boolean generateCSV(String name, int samplesPerSecond) {
+        return generateCSV(name, 1.0 / samplesPerSecond);
     }
+
 
     /**
-     *
-     * @param tStart
-     * @param tEnd
-     * @param accel
-     * @param startVelocity
-     * @param startLocation
-     * @return
+     * Represents a part of a motion profile, in which the acceleration is a constant
      */
-    public Segment createSegment(double tStart, double tEnd, double accel, double startVelocity, double startLocation) {
-        return new Segment(tStart, tEnd, accel, startVelocity, startLocation);
-    }
-
     public static class Segment {
 
         protected double tStart, tEnd, accel, startVelocity, startLocation;
         private final IndexOutOfBoundsException timeException =
                 new IndexOutOfBoundsException("Time not in this segment");
 
+        /**
+         * @param tStart
+         * @param tEnd
+         * @param accel
+         * @param startVelocity
+         * @param startLocation
+         */
         public Segment(double tStart, double tEnd, double accel, double startVelocity, double startLocation) {
             this.tStart = tStart;
             this.tEnd = tEnd;
@@ -233,7 +277,7 @@ public class MotionProfile1D {
             this.startLocation = startLocation;
         }
 
-        public Segment clone(){
+        public Segment clone() {
             return new Segment(getTStart(), getTEnd(), getAccel(), getStartVelocity(), getStartLocation());
         }
 

@@ -1,7 +1,6 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.TwoTuple;
 import org.greenblitz.motion.base.Vector2D;
 
 public class MotionProfile2D {
@@ -56,6 +55,7 @@ public class MotionProfile2D {
 
     /**
      * Removes all segments with time length less then a milisecond.
+     * @see MotionProfile1D#removeBugSegments()
      */
     public void removeBugSegments() {
         firstProfile.removeBugSegments();

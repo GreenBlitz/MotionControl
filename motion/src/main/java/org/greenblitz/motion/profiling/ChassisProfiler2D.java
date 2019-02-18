@@ -1,8 +1,8 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
-import org.greenblitz.motion.base.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,10 +73,10 @@ public class ChassisProfiler2D {
                         currentMaxLinearVelocity, maxLinearAcc, -maxLinearAcc
                 ));
                 rotSegs = tempProfile.getSegments();
-                for (MotionProfile1D.Segment seg : rotSegs){
-                    seg.setAccel(seg.getAccel()*curvature);
+                for (MotionProfile1D.Segment seg : rotSegs) {
+                    seg.setAccel(seg.getAccel() * curvature);
                 }
-            angularProfile.safeAdd(new MotionProfile1D(rotSegs));
+                angularProfile.safeAdd(new MotionProfile1D(rotSegs));
             }
         }
 

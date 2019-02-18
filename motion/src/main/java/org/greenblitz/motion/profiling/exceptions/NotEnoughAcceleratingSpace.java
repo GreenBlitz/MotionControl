@@ -1,5 +1,9 @@
 package org.greenblitz.motion.profiling.exceptions;
 
+/**
+ * A Profiling error thrown when the distance to cover between to points is so short, the actuator completes
+ * it before reaching the desired speed.
+ */
 public class NotEnoughAcceleratingSpace extends ProfilingException {
     public NotEnoughAcceleratingSpace() {
     }
