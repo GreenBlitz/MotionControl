@@ -25,25 +25,27 @@ public class Profiling2DDrive extends Command {
 
     private static final double MAX_VEL = 0.3; //3.2;
     private static final double MAX_ACCEL = 789; //42.6951911765/2;
+    private static final double MAX_ANG_VEL = 0;
+    private static final double MAX_ANG_ACCEL = 0;
     private static final double ONE_THOUSANDTH = 0.001;
 
     private static final double kV = 0, //1.089 * (1 / MAX_VEL),
             kA = 0, //0.7*(1/MAX_ACCEL * 0.5),
             kVA = 0,
-            kAA = 0,
-            kP = 0;
+            kAA = 0;
+//            kP = 0;
 
     private PIDController locationController;
 
     private final Chassis m_chasis;
 
-    public Profiling2DDrive(Subsystem requires, State... locs) {
-        this(requires, Arrays.asList(locs));
+    public Profiling2DDrive(State... locs) {
+        this(Arrays.asList(locs));
     }
 
-    public Profiling2DDrive(Subsystem requires, List<State> locs) {
-        super(requires);
-        locationController = new PIDController(new PIDObject(kP));
+    public Profiling2DDrive(List<State> locs) {
+        super(Chassis.getInstance());
+//        locationController = new PIDController(new PIDObject(kP));
         profile = Profiler2D.generateProfile(locs, 0.01, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
         m_chasis = Chassis.getInstance();
     }
@@ -65,11 +67,11 @@ public class Profiling2DDrive extends Command {
     protected void execute() {
         t = (System.currentTimeMillis() - startTime) * ONE_THOUSANDTH;
 
-        Vector2D loc = profile.getLocation(t);
+//        Vector2D loc = profile.getLocation(t);
         Vector2D vel = profile.getVelocity(t);
         Vector2D acc = profile.getAcceleration(t);
 
-        isFinished = profile.isOutOfProfile(t);
+        isFinished = profile.isOver(t);
         if (isFinished) {
 //            System.out.println("------------------");
 //            System.out.printf(
@@ -83,14 +85,16 @@ public class Profiling2DDrive extends Command {
         }
 
         System.out.println(t);
-        double vPower = kV * Point.norm(vel);
-        double aPower = kA * Point.norm(acc);
-        double angPower = kVA * angVel;
+        double vPower = kV * vel.getX();
+        double aPower = kA * acc.getX();
+        double angVPower = kVA * vel.getY();
+        double angAPower = kAA * acc.getY();
 
-        //power = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t), prototype.getDistance());
-        double power = vPower + aPower;
+        //linearPower = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t), prototype.getDistance());
+        double linearPower = vPower + aPower;
+        double angularPower = angVPower + angAPower;
 
-        drive(power, angPower);
+        drive(linearPower, angularPower);
 
 //        if (t >= limitor) {
 //            System.out.println("------------------");
