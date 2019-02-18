@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.State;
+import org.greenblitz.motion.base.Vector2D;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,5 +40,12 @@ public class StateTest {
 
     @Test
     void setVelocityTest(){
+        State s = new State(0, 0, 0, 0, 0);
+        s.setVelocity(5, 0);
+        assertEquals(s.getLinearVelocity(), 5, EPSILON);
+        assertEquals(s.getAngle(), Math.PI/2, EPSILON);
+        s.setVelocity(-2, 2*Math.sqrt(3));
+        assertEquals(s.getLinearVelocity(), 4, EPSILON);
+        assertEquals(s.getAngle(), -Math.PI/6, EPSILON);
     }
 }

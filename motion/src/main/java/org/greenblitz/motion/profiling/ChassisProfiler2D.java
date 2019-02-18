@@ -49,7 +49,7 @@ public class ChassisProfiler2D {
                 }
             }
 
-            double currentMaxLinearVelocity, currentMaxAngularVelocity, curvature;
+            double currentMaxLinearVelocity, curvature;
             path.clear();
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
