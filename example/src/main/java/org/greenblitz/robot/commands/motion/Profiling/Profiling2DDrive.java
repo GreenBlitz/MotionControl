@@ -1,14 +1,12 @@
 package org.greenblitz.robot.commands.motion.Profiling;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.PIDController;
-import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
-import org.greenblitz.motion.profiling.Profiler2D;
+import org.greenblitz.motion.profiling.ChassisProfiler2D;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Arrays;
@@ -46,7 +44,7 @@ public class Profiling2DDrive extends Command {
     public Profiling2DDrive(List<State> locs) {
         super(Chassis.getInstance());
 //        locationController = new PIDController(new PIDObject(kP));
-        profile = Profiler2D.generateProfile(locs, 0.01, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
+        profile = ChassisProfiler2D.generateProfile(locs, 0.01, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
         m_chasis = Chassis.getInstance();
     }
 

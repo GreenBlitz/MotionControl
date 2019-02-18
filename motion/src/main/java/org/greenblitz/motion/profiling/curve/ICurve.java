@@ -7,21 +7,55 @@ import org.greenblitz.motion.base.Point;
  */
 public interface ICurve {
 
-    Point getLocation(double u);
-
-    double getLinearVelocity(double uGay);
-    double getAngularVelocity(double noU);
-
     /**
-     * @pre the curve approximates an arcb
-     * @param u
+     * Gives the location of the curve in space
+     * @param u in the range [0, 1] representing the location on the curve.
      * @return
      */
+    Point getLocation(double u);
+
+    /**
+     *
+     * @param u in the range [0, 1] representing the location on the curve.
+     * @return The velocity element tangent to the given location on the curve.
+     */
+    double getLinearVelocity(double u);
+
+    /**
+     *
+     * @param u in the range [0, 1] representing the location on the curve.
+     * @return the rotational velocity of the curve at this location.
+     */
+    double getAngularVelocity(double u);
+
+    /**
+     *
+     * @param u in the range [0, 1] representing the location on the curve.
+     * @return the length of the arc up to the given point
+     */
     double getLength(double u);
+
+    /**
+     *
+     * @param u in the range [0, 1] representing the location on the curve.
+     * @return the angle of the tangent line to the given point on the curve
+     */
     double getAngle(double u);
 
+    /**
+     *
+     * @param u in the range [0, 1] representing the location on the curve.
+     * @return The curvature of the curve at that point
+     */
     double getCurvature(double u);
 
+    /**
+     *
+     * @param uStart in the range [0, 1) representing the start location on the curve.
+     * @param uEnd in the range (0, 1] representing the end location on the curve. uEnd > uStart.
+     * @return A new curve object, where the values at u=0 are the same as u=uStart in this curve and at u=1 the
+     * same as u=uEnd on this curve.
+     */
     ICurve getSubCurve(double uStart, double uEnd);
 
 }
