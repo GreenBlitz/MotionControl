@@ -28,7 +28,8 @@ public class ChassisProfiler2D {
 
             curve = new BezierCurve(first, second, 0, 1);
 
-            subCurves.clear(); // All subcurves with kinda equal curvature
+            subCurves.clear(); // All subcurves with
+            // kinda equal curvature
             double t0 = 0;
             double curveStart, prevt0;
             while (t0 < 1.0) {

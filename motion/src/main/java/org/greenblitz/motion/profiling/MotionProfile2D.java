@@ -1,16 +1,7 @@
 package org.greenblitz.motion.profiling;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.TwoTuple;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MotionProfile2D {
 
