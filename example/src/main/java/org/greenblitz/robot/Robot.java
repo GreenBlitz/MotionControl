@@ -41,6 +41,8 @@ public class Robot extends TimedRobot {
         Scheduler.getInstance().removeAll();
         Navx.getInstance().reset();
         prevTime = System.currentTimeMillis();
+
+
     }
 
     long prevTime;
