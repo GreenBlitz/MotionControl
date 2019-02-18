@@ -50,8 +50,7 @@ public class Profiler1D {
         if (waypoints.size() > 0 && Math.abs(waypoints.get(0).getV()) > Math.abs(maxV))
             throw new ProfilingException("Can't accelerate past +-" + maxV + "m/s. " + waypoints.get(0).getV() + "m/s was given on point 0");
 
-        double v1, v2, S, a1, a2, t1, t2, root, sum, denominator, t0, underRoot,
-                intersectionOne, intersectionTwo, areaLost, timeToAdd, midSecStart, midSecEnd, lastSecEnd;
+        double v1, v2, S, a1, a2, t1, t2, t0;
         List<MotionProfile1D.Segment> segments = new ArrayList<>();
         for (int i = 0; i < waypoints.size() - 1; i++) {
 
