@@ -1,5 +1,6 @@
 package org.greenblitz.motion.profiling;
 
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import org.greenblitz.motion.profiling.exceptions.NotEnoughAcceleratingSpace;
 import org.greenblitz.motion.profiling.exceptions.ProfilingException;
 
@@ -24,7 +25,23 @@ public class Profiler1D {
      * @throws ProfilingException Profiling isn't always possible. When so this exceptions is thrown.
      */
     public static MotionProfile1D generateProfile(List<ActuatorLocation> waypoints,
-                                                  double maxV, double maxAcc, double minAcc) {
+                                                  double maxV, double maxAcc, double minAcc){
+        return Profiler1D.generateProfile(waypoints, maxV, maxAcc, minAcc, 0);
+    }
+
+    /**
+     * generates the quickest motion brofile going through all the waypoints at the specified velocities.
+     *
+     * @param waypoints
+     * @param maxV maximum velocity
+     * @param maxAcc maximum acceleration, used to accelerate
+     * @param minAcc minimum acceleration, used to decelerate
+     * @param tStart the time this profile starts at
+     * @return the motion brofile
+     * @throws ProfilingException Profiling isn't always possible. When so this exceptions is thrown.
+     */
+    public static MotionProfile1D generateProfile(List<ActuatorLocation> waypoints,
+                                                  double maxV, double maxAcc, double minAcc, double tStart) {
 
         if (Math.signum(minAcc) == Math.signum(maxAcc))
             throw new ProfilingException("Sign of max speedup and max slowdown can't be the same.");
@@ -105,7 +122,7 @@ public class Profiler1D {
                 throw new ProfilingException("Some error occurred between point " + i + " and point " + (i + 1) + " when cutting triangle.");
             }
 
-            t0 = i == 0 ? 0 : segments.get(segments.size() - 1).tEnd;
+            t0 = i == 0 ? tStart : segments.get(segments.size() - 1).tEnd;
 
             if (midSecStart == midSecEnd) {
                 MotionProfile1D.Segment first = new MotionProfile1D.Segment(
