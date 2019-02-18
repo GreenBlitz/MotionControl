@@ -7,7 +7,7 @@ import org.greenblitz.motion.base.State;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChassisProfiler2D {
+public class Profiler2D {
 
     public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
