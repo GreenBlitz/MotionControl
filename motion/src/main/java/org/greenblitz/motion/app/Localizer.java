@@ -205,7 +205,8 @@ public class Localizer {
      * @param location current orientation
      * @param currentLeftDistance current distance as measured in left encoder
      * @param currentRightDistance current distance as measured in right encoder
-     * @deprecated Use with caution.
+     * @deprecated Use reset instead
+     * @see Localizer#reset(double, double, Position)
      */
     @Deprecated
     public void forceSetLocation(Position location, double currentLeftDistance, double currentRightDistance) {

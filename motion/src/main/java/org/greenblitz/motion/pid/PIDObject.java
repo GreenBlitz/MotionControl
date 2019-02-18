@@ -47,10 +47,10 @@ public class PIDObject {
 
     /**
      *
-     * @param goal
-     * @param current
-     * @param dt
-     * @return
+     * @param goal The desired location
+     * @param current The current sensor reading
+     * @param dt Time passed since last call
+     * @return The PID calculation
      */
     public double calculatePID(double goal, double current, double dt){
         // Set e
