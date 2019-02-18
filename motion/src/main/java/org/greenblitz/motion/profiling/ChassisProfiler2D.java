@@ -14,17 +14,21 @@ public class ChassisProfiler2D {
 
         MotionProfile1D linearProfile = new MotionProfile1D();
         MotionProfile1D angularProfile = new MotionProfile1D();
-        MotionProfile1D tempProfile = new MotionProfile1D();
+        MotionProfile1D tempProfile;
         State first, second;
+        ICurve curve;
+        List<ICurve> subCurves = new ArrayList<>();
+        ArrayList<ActuatorLocation> path = new ArrayList<>();
+        List<MotionProfile1D.Segment> rotSegs;
 
         for (int i = 0; i < locs.size() - 1; i++) {
 
             first = locs.get(i);
             second = locs.get(i + 1);
 
-            ICurve curve = new BezierCurve(first, second, 0, 1);
+            curve = new BezierCurve(first, second, 0, 1);
 
-            List<ICurve> subCurves = new ArrayList<>(); // All subcurves with kinda equal curvature
+            subCurves.clear(); // All subcurves with kinda equal curvature
             double t0 = 0;
             double curveStart, prevt0;
             while (t0 < 1.0) {
@@ -46,13 +50,12 @@ public class ChassisProfiler2D {
             }
 
             double currentMaxLinearVelocity, currentMaxAngularVelocity, curvature;
-            ArrayList<ActuatorLocation> path = new ArrayList<>();
+            path.clear();
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
             for (ICurve subCur : subCurves) {
                 curvature = subCur.getCurvature(0);
                 currentMaxLinearVelocity = 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
-                currentMaxAngularVelocity = currentMaxLinearVelocity * curvature;
 
                 path.get(0).setX(subCur.getLength(0));
                 path.get(0).setV(subCur.getLinearVelocity(0));
@@ -68,7 +71,7 @@ public class ChassisProfiler2D {
                         path,
                         currentMaxLinearVelocity, maxLinearAcc, -maxLinearAcc
                 ));
-                List<MotionProfile1D.Segment> rotSegs = tempProfile.getSegments();
+                rotSegs = tempProfile.getSegments();
                 for (MotionProfile1D.Segment seg : rotSegs){
                     seg.setAccel(seg.getAccel()*curvature);
                 }
