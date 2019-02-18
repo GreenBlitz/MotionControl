@@ -4,16 +4,18 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
+import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
+import org.greenblitz.motion.profiling.Profiler2D;
 import org.greenblitz.robot.subsystems.Chassis;
 
 import java.util.Arrays;
 import java.util.List;
 
 
-public class Profiling2DTest extends Command {
+public class Profiling2DDrive extends Command {
 
     private long startTime;
     private MotionProfile2D profile;
@@ -23,25 +25,28 @@ public class Profiling2DTest extends Command {
 
     private static final double MAX_VEL = 0.3; //3.2;
     private static final double MAX_ACCEL = 789; //42.6951911765/2;
+    private static final double MAX_ANG_VEL = 0;
+    private static final double MAX_ANG_ACCEL = 0;
     private static final double ONE_THOUSANDTH = 0.001;
 
     private static final double kV = 0, //1.089 * (1 / MAX_VEL),
             kA = 0, //0.7*(1/MAX_ACCEL * 0.5),
-            kAng = 0,
-            kP = 0;
+            kVA = 0,
+            kAA = 0;
+//            kP = 0;
 
     private PIDController locationController;
 
     private final Chassis m_chasis;
 
-    public Profiling2DTest(Subsystem requires, State... locs) {
-        this(requires, Arrays.asList(locs));
+    public Profiling2DDrive(State... locs) {
+        this(Arrays.asList(locs));
     }
 
-    public Profiling2DTest(Subsystem requires, List<State> locs) {
-        super(requires);
-        locationController = new PIDController(new PIDObject(kP));
-        profile = new MotionProfile2D(locs);
+    public Profiling2DDrive(List<State> locs) {
+        super(Chassis.getInstance());
+//        locationController = new PIDController(new PIDObject(kP));
+        profile = Profiler2D.generateProfile(locs, 0.01, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
         m_chasis = Chassis.getInstance();
     }
 
@@ -62,12 +67,11 @@ public class Profiling2DTest extends Command {
     protected void execute() {
         t = (System.currentTimeMillis() - startTime) * ONE_THOUSANDTH;
 
-        Point loc = profile.getLocation(t);
-        Point vel = profile.getVelocity(t);
-        Point acc = profile.getAcceleration(t);
-        double angVel = profile.getAngularVelocity(t);
+//        Vector2D loc = profile.getLocation(t);
+        Vector2D vel = profile.getVelocity(t);
+        Vector2D acc = profile.getAcceleration(t);
 
-        isFinished = profile.isOutOfProfile(t);
+        isFinished = profile.isOver(t);
         if (isFinished) {
 //            System.out.println("------------------");
 //            System.out.printf(
@@ -81,14 +85,16 @@ public class Profiling2DTest extends Command {
         }
 
         System.out.println(t);
-        double vPower = kV * Point.norm(vel);
-        double aPower = kA * Point.norm(acc);
-        double angPower = kAng * angVel;
+        double vPower = kV * vel.getX();
+        double aPower = kA * acc.getX();
+        double angVPower = kVA * vel.getY();
+        double angAPower = kAA * acc.getY();
 
-        //power = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t), prototype.getDistance());
-        double power = vPower + aPower;
+        //linearPower = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t), prototype.getDistance());
+        double linearPower = vPower + aPower;
+        double angularPower = angVPower + angAPower;
 
-        drive(power, angPower);
+        drive(linearPower, angularPower);
 
 //        if (t >= limitor) {
 //            System.out.println("------------------");

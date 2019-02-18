@@ -2,7 +2,7 @@ package org.greenblitz.motion.base;
 
 import java.util.Objects;
 
-public class State extends Position {
+public class /*united*/State extends Position {
 
     protected double linearVelocity /* meter/sec */, angularVelocity /* radians/sec */;
     protected double linearAccel /* meter/sec^2 */, angularAccel /* radians/sec^2 */;
@@ -43,17 +43,11 @@ public class State extends Position {
     }
 
     public State(Point point, double angle, double linearVelocity, double angularVelocity, double linearAccel, double angularAccel) {
-        this(point, angle, linearVelocity, angularVelocity);
-        this.linearAccel = linearAccel;
-        this.angularAccel = angularAccel;
+        this(point.x, point.y, angle, linearVelocity, angularVelocity, linearAccel, angularAccel);
     }
 
     public State(Point point, double linearVelocity, double angularVelocity, double linearAccel, double angularAccel) {
-        this(point, linearAccel, angularVelocity);
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
-        this.linearAccel = linearAccel;
-        this.angularAccel = angularAccel;
+        this(point.x, point.y, linearVelocity, angularVelocity, linearAccel, angularAccel);
     }
 
     public State(double x, double y, double angle) {
@@ -143,10 +137,10 @@ public class State extends Position {
 
     public Vector2D getVelocity(){return velocity.clone();}
 
-    public void setVelocity(Vector2D velocity){
-        this.velocity = velocity.clone();
+    public void setVelocity(double x, double y){
+        this.velocity = new Vector2D(x, y);
         this.linearVelocity = velocity.norm();
-        this.angle = Math.atan2(velocity.y, velocity.x);
+        this.angle = Math.atan2(x, y);
     }
 
     @Override

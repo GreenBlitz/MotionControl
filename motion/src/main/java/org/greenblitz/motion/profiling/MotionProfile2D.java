@@ -2,6 +2,7 @@ package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.TwoTuple;
+import org.greenblitz.motion.base.Vector2D;
 
 public class MotionProfile2D {
 
@@ -31,26 +32,26 @@ public class MotionProfile2D {
 
     /**
      * @param t point in time (in seconds)
-     * @return the acceleration at that time
+     * @return the acceleration vector (first acc, second acc) at that time
      */
-    public TwoTuple<Double, Double> getAcceleration(double t) {
-        return new TwoTuple<>(firstProfile.getAcceleration(t), secondProfile.getAcceleration(t));
+    public Vector2D getAcceleration(double t) {
+        return new Vector2D(firstProfile.getAcceleration(t), secondProfile.getAcceleration(t));
     }
 
     /**
      * @param t point in time (in seconds)
-     * @return the velocity at that time
+     * @return the velocity vector (first vel, second vel) at that time
      */
-    public TwoTuple<Double, Double> getVelocity(double t) {
-        return new TwoTuple<>(firstProfile.getVelocity(t), secondProfile.getVelocity(t));
+    public Vector2D getVelocity(double t) {
+        return new Vector2D(firstProfile.getVelocity(t), secondProfile.getVelocity(t));
     }
 
     /**
      * @param t point in time (in seconds)
-     * @return the location at that time
+     * @return the location vector (first loc, second loc) at that time
      */
-    public TwoTuple<Double, Double> getLocation(double t) {
-        return new TwoTuple<>(firstProfile.getLocation(t), secondProfile.getLocation(t));
+    public Vector2D getLocation(double t) {
+        return new Vector2D(firstProfile.getLocation(t), secondProfile.getLocation(t));
     }
 
     /**

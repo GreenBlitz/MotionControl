@@ -9,9 +9,14 @@ public interface ICurve {
 
     Point getLocation(double u);
 
-    double getLinearVelocity(double u);
-    double getAngularVelocity(double u);
+    double getLinearVelocity(double uGay);
+    double getAngularVelocity(double noU);
 
+    /**
+     * @pre the curve approximates an arcb
+     * @param u
+     * @return
+     */
     double getLength(double u);
     double getAngle(double u);
 
