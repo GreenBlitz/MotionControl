@@ -4,10 +4,10 @@ public class RelativeTolerance implements ITolerance {
     private double m_percentTolerance;
 
     public RelativeTolerance(double percentTolerance) {
-        if (percentTolerance <= 0 || 1 < percentTolerance)
-            throw new IllegalArgumentException("tolerance has to be between 0 and 1");
+        if (percentTolerance <= 0)
+            throw new IllegalArgumentException("tolerance must be greater than 0");
 
-        this.m_percentTolerance = percentTolerance;
+        m_percentTolerance = percentTolerance;
     }
 
     @Override

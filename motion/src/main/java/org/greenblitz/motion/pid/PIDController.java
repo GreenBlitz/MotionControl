@@ -2,6 +2,8 @@ package org.greenblitz.motion.pid;
 
 import org.greenblitz.motion.tolerance.ITolerance;
 
+import javax.management.modelmbean.InvalidTargetObjectTypeException;
+
 public class PIDController {
 
     private PIDObject m_obj;
@@ -9,7 +11,10 @@ public class PIDController {
     private long m_previousTime;
     private double m_goal;
     private double m_previousError;
-    private double m_integral = 0;
+    private double m_integral;
+
+    private double m_minimumOutput;
+    private double m_maximumOutput;
 
     public PIDController(ITolerance tol, PIDObject object) {
         m_obj = object;
@@ -24,12 +29,25 @@ public class PIDController {
         this(tol, kP, kI, kD, 0);
     }
 
+    public void configureOutputLimits(double min, double max) {
+        m_minimumOutput = min;
+        m_maximumOutput = max;
+    }
+
     public void setGoal(double goal) {
         m_goal = goal;
     }
 
     public double getGoal() {
         return m_goal;
+    }
+
+    public double getLowerOutputLimit() {
+        return m_minimumOutput;
+    }
+
+    public double getUpperOutputLimit() {
+        return m_maximumOutput;
     }
 
     public double calculatePID(double current) {
@@ -44,7 +62,7 @@ public class PIDController {
         var d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
-        return p + i + d;
+        return clamp(p + i + d);
     }
 
     public PIDObject getPidObject() {
@@ -59,6 +77,14 @@ public class PIDController {
         return m_tolerance.onTarget(m_goal, getLastError());
     }
 
+    public void resetIntegralZone() {
+        m_integral = 0;
+    }
+
+    public void setTolerance(ITolerance tol) {
+        m_tolerance = tol;
+    }
+
     private double updateTime() {
         var current = System.currentTimeMillis();
         double ms = current - m_previousTime;
@@ -66,7 +92,7 @@ public class PIDController {
         return ms;
     }
 
-    private void resetIntegralZone() {
-        m_integral = 0;
+    private double clamp(double value) {
+        return Math.max(Math.min(value, m_minimumOutput), m_maximumOutput);
     }
 }
