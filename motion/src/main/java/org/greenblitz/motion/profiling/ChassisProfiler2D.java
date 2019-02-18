@@ -1,5 +1,6 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.motion.profiling.curve.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.base.State;
 
@@ -20,7 +21,7 @@ public class ChassisProfiler2D {
             first = locs.get(i);
             second = locs.get(i + 1);
 
-            ICurve curve = null; // TODO generate the curve somehow
+            ICurve curve = new BezierCurve(first, second, 0, 1);
 
             List<ICurve> subCurves = new ArrayList<>(); // All subcurves with kinda equal curvature
             double t0 = 0;
