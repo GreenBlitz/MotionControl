@@ -123,6 +123,19 @@ public class Profiler1D {
         return new TwoTuple<>(t1, t2);
     }
 
+    /**
+     *
+     * @param segments will append to this
+     * @param midSecStart as returned from flatterTriangleProfileToTrapezoid()
+     * @param midSecEnd as returned from flatterTriangleProfileToTrapezoid()
+     * @param lastSecEnd as returned from flatterTriangleProfileToTrapezoid()
+     * @param t0 The start time
+     * @param t1 first element from getTriangleProfileTimes()
+     * @param t2 second element form getTriangleProfileTimes()
+     * @param a1 maxA in first segment
+     * @param a2 maxA in second segment
+     * @param curr The first point in the current point pair
+     */
     public static void addSegmentByTimes(List<MotionProfile1D.Segment> segments, double midSecStart, double midSecEnd, double lastSecEnd,
                                          double t0, double t1, double t2, double a1, double a2, ActuatorLocation curr) {
         if (midSecStart == midSecEnd) {
