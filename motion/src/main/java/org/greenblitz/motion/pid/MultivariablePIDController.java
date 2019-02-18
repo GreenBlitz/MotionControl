@@ -11,7 +11,7 @@ public class MultivariablePIDController {
         m_tolerance = new ITolerance[count];
     }
 
-    public void config(int index, PIDObject obj, ITolerance tol){
+    public void config(int index, PIDObject obj, ITolerance tol) {
         m_controllers[index] = new PIDController(obj);
         m_tolerance[index] = tol;
     }
@@ -35,7 +35,7 @@ public class MultivariablePIDController {
 
     public boolean isFinished() {
         for (var i = 0; i < m_tolerance.length; i++) {
-            if (m_tolerance[i].onTarget(m_controllers[i].getGoal(), m_controllers[i].getLastError())) {
+            if (m_tolerance[i] != null && m_tolerance[i].onTarget(m_controllers[i].getGoal(), m_controllers[i].getLastError())) {
                 return true;
             }
         }
