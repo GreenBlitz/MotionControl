@@ -104,7 +104,7 @@ public class Profiler1D {
      * @param i index of points for debugging
      * @return A TwoTuple with the first element being the first segment time and the second the second segment time
      */
-    public static TwoTuple<Double, Double> getTriangleProfileTimes(double a1, double a2, double S, double v1, double v2, double i){
+    private static TwoTuple<Double, Double> getTriangleProfileTimes(double a1, double a2, double S, double v1, double v2, double i){
         double underRoot = (a2 - a1)*(2*a1*a2*S + a2*v1*v1 - a1*v2*v2);
         if (underRoot < 0)
             throw new ProfilingException("Path not calculable, root is negative between point "
@@ -136,7 +136,7 @@ public class Profiler1D {
      * @param a2 maxA in second segment
      * @param curr The first point in the current point pair
      */
-    public static void addSegmentByTimes(List<MotionProfile1D.Segment> segments, double midSecStart, double midSecEnd, double lastSecEnd,
+    private static void addSegmentByTimes(List<MotionProfile1D.Segment> segments, double midSecStart, double midSecEnd, double lastSecEnd,
                                          double t0, double t1, double t2, double a1, double a2, ActuatorLocation curr) {
         if (midSecStart == midSecEnd) {
             MotionProfile1D.Segment first = new MotionProfile1D.Segment(
@@ -195,7 +195,7 @@ public class Profiler1D {
      * @param a2 maxA in second segment
      * @return [end of first segment, end of second segment, end of last segment]
      */
-    public static double[] flatterTriangleProfileToTrapezoid(
+    private static double[] flatterTriangleProfileToTrapezoid(
             double t1, double t2, double maxV, double v1, double v2, double a1, double a2
     ){
         double midSecStart = t1;
