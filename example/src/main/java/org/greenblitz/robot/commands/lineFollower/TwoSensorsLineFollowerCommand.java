@@ -14,6 +14,7 @@ public class TwoSensorsLineFollowerCommand extends LineFollowerCommand {
         super(period, kp, ki, kd, speed, sensor, distance, true);
         this.leftSensor = leftSensor;
         m_leftController = new LineFollower(kp,ki,kd);
+        m_leftController.setGoal(50.0);
     }
 
     public TwoSensorsLineFollowerCommand(double kp, double ki, double kd, double speed,
@@ -25,17 +26,12 @@ public class TwoSensorsLineFollowerCommand extends LineFollowerCommand {
     @Override
     protected void periodic() {
         if(m_firstRun){
-            m_controller.setGoal(50.0,getPrecentage(sensor.read()));
-            m_leftController.setGoal(50.0,getPrecentage(leftSensor.read()));
             initDistance = Chassis.getInstance().getDistance();
             m_firstRun = false;
         }
-        m_chassis.arcadeDrive(speed, (m_controller.calculatePID(50.0, getPrecentage(sensor.read())) +
-                m_leftController.calculatePID(50.0,getPrecentage(leftSensor.read())))/2.0);
+        m_chassis.arcadeDrive(speed, (m_controller.calculatePID(getPercentage(sensor.read())) +
+                m_leftController.calculatePID(getPercentage(leftSensor.read())))/2.0);
 
-        synchronized (this){
-            m_finished = Chassis.getInstance().getDistance() > initDistance + distance;
-        }
     }
 
 }

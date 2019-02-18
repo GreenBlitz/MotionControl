@@ -2,12 +2,9 @@ package org.greenblitz.motion.pid;
 
 import org.greenblitz.motion.tolerance.ITolerance;
 
-import javax.management.modelmbean.InvalidTargetObjectTypeException;
-
 public class PIDController {
 
     private PIDObject m_obj;
-    private ITolerance m_tolerance;
     private long m_previousTime;
     private double m_goal;
     private double m_previousError;
@@ -16,17 +13,16 @@ public class PIDController {
     private double m_minimumOutput;
     private double m_maximumOutput;
 
-    public PIDController(ITolerance tol, PIDObject object) {
+    public PIDController(PIDObject object) {
         m_obj = object;
-        m_tolerance = tol;
     }
 
-    public PIDController(ITolerance tol, double kP, double kI, double kD, double kF) {
-        this(tol, new PIDObject(kP, kI, kD, kF));
+    public PIDController(double kP, double kI, double kD, double kF) {
+        this(new PIDObject(kP, kI, kD, kF));
     }
 
-    public PIDController(ITolerance tol, double kP, double kI, double kD) {
-        this(tol, kP, kI, kD, 0);
+    public PIDController(double kP, double kI, double kD) {
+        this(kP, kI, kD, 0);
     }
 
     public void configureOutputLimits(double min, double max) {
@@ -73,16 +69,8 @@ public class PIDController {
         return m_previousError;
     }
 
-    public boolean isFinished() {
-        return m_tolerance.onTarget(m_goal, getLastError());
-    }
-
     public void resetIntegralZone() {
         m_integral = 0;
-    }
-
-    public void setTolerance(ITolerance tol) {
-        m_tolerance = tol;
     }
 
     private double updateTime() {

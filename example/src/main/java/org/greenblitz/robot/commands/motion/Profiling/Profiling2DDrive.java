@@ -52,7 +52,7 @@ public class Profiling2DDrive extends Command {
     protected void initialize() {
         System.out.println(profile);
 
-        locationController.setGoal(0, 0);
+        locationController.setGoal(0);
         drive(0, 0);
 
         startTime = System.currentTimeMillis();
@@ -88,7 +88,7 @@ public class Profiling2DDrive extends Command {
         double angVPower = kVA * vel.getY();
         double angAPower = kAA * acc.getY();
 
-        //linearPower = vPower + aPower + ff + locationController.calculatePID(profile.getLocation(t), prototype.getDistance());
+        //linearPower = vPower + aPower + ff + locationController.calculate(profile.getLocation(t), prototype.getDistance());
         double linearPower = vPower + aPower;
         double angularPower = angVPower + angAPower;
 

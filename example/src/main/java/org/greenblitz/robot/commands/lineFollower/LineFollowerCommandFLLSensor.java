@@ -8,7 +8,6 @@ public class LineFollowerCommandFLLSensor extends PeriodicCommand {
 
     protected Chassis m_chassis;
     protected double speed;
-    protected boolean m_finished;
     protected boolean m_firstRun;
     protected LineFollower m_controller;
     protected double distance;
@@ -31,6 +30,7 @@ public class LineFollowerCommandFLLSensor extends PeriodicCommand {
         this.side = side ? 1 : -1;
         this.kp = kp;
         this.kd = kd;
+        m_controller.setGoal(0.45);
     }
 
     public LineFollowerCommandFLLSensor(double kp, double ki, double kd, double speed, double distance, boolean side) {
@@ -41,31 +41,24 @@ public class LineFollowerCommandFLLSensor extends PeriodicCommand {
     protected void periodic() {
         double value = Chassis.getInstance().getColorSensorValue();
         if (m_firstRun) {
-            m_controller.setGoal(0.45, value);
             initDistance = Chassis.getInstance().getDistance();
             m_firstRun = false;
         }
-        countMaxErrorRuns = (value < 0.17 || value > 0.73)? countMaxErrorRuns + 1: 0;
-        if (countMaxErrorRuns >  5) {
-            m_controller.getPidObject().setKp(1.5*kp);
+        countMaxErrorRuns = (value < 0.17 || value > 0.73) ? countMaxErrorRuns + 1 : 0;
+        if (countMaxErrorRuns > 5) {
+            m_controller.getPidObject().setKp(1.5 * kp);
             kdCounter = 5;
+        } else if (kdCounter > 0) {
+            m_controller.getPidObject().setKd(2 * kd);
+            kdCounter--;
         }
-        else if (kdCounter > 0) {
-            m_controller.getPidObject().setKd(2*kd);
-            kdCounter --;
-        }
-        m_chassis.arcadeDrive(-speed, -side * m_controller.calculatePID(0.45, Chassis.getInstance().getColorSensorValue()));
+        m_chassis.arcadeDrive(-speed, -side * m_controller.calculatePID(Chassis.getInstance().getColorSensorValue()));
         m_controller.getPidObject().setKp(kp);
         m_controller.getPidObject().setKd(kd);
-        synchronized (this) {
-            m_finished = Math.abs(Chassis.getInstance().getDistance() - initDistance) > distance;
-        }
     }
 
     @Override
     protected boolean isFinished() {
-        synchronized (this) {
-            return m_finished;
-        }
+        return Math.abs(Chassis.getInstance().getDistance() - initDistance) > distance;
     }
 }
