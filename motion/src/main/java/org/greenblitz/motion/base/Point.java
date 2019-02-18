@@ -51,14 +51,10 @@ public class Point {
      */
     protected double x;
     /**
-     * the y coordinate: forwards & backwards
+     * the y coordinate: forwards and backwards
      */
     protected double y;
 
-    /**
-     * @param x
-     * @param y
-     */
     public Point(double x, double y) {
         this.setX(x);
         this.setY(y);
@@ -68,37 +64,23 @@ public class Point {
         return new Point(len * Math.sin(ang), len * Math.cos(ang));
     }
 
-    /**
-     * Returns a new point in the same location
-     */
+
     public Point clone() {
         return new Point(x, y);
     }
 
-    /**
-     * @return A double array of the x and y values in that order
-     */
+
     public double[] get() {
         return new double[]{x, y};
     }
 
-    /**
-     * Set new coordinates to the point
-     *
-     * @param x
-     * @param y
-     */
+
     public void set(double x, double y) {
         setX(x);
         setY(y);
     }
 
-    /**
-     * Move the point by [x, y]
-     *
-     * @param x
-     * @param y
-     */
+
     public Point translate(double x, double y) {
         this.x += x;
         this.y += y;
@@ -109,9 +91,6 @@ public class Point {
         return first.clone().translate(other);
     }
 
-    /**
-     * @return The negative of this point
-     */
     public Point negate() {
         return new Point(-x, -y);
     }
@@ -120,11 +99,6 @@ public class Point {
         return new Point(scale*x, scale*y);
     }
 
-    /**
-     * Rotate the point COUNTER-CLOCKWISE around (0, 0)
-     *
-     * @param radians
-     */
     public Point rotate(double radians) {
         double cos = Math.cos(radians),
                 sin = Math.sin(radians);
@@ -134,11 +108,6 @@ public class Point {
         return this;
     }
 
-    /**
-     * Move by the x and y of the point
-     *
-     * @param p
-     */
     public Point translate(Point p) {
         return translate(p.getX(), p.getY());
     }

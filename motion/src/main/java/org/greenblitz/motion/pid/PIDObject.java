@@ -37,9 +37,7 @@ public class PIDObject {
         this(kp, 0);
     }
 
-    /**
-     * Calling this implies starting to use the controller
-     */
+
     public void init(double goal, double value0){
         resetIntegral();
         previousError = goal - value0;

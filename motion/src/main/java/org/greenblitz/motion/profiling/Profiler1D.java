@@ -18,7 +18,7 @@ public class Profiler1D {
     /**
      * generates the quickest motion brofile going through all the waypoints at the specified velocities.
      *
-     * @param waypoints
+     * @param waypoints given path
      * @param maxV maximum velocity
      * @param maxAcc maximum acceleration, used to accelerate
      * @param minAcc minimum acceleration, used to decelerate
@@ -33,7 +33,7 @@ public class Profiler1D {
     /**
      * generates the quickest motion brofile going through all the waypoints at the specified velocities.
      *
-     * @param waypoints
+     * @param waypoints given path
      * @param maxV maximum velocity
      * @param maxAcc maximum acceleration, used to accelerate
      * @param minAcc minimum acceleration, used to decelerate

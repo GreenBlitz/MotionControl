@@ -10,7 +10,7 @@ public interface ICurve {
     /**
      * Gives the location of the curve in space
      * @param u in the range [0, 1] representing the location on the curve.
-     * @return
+     * @return location of the curve at parameter u
      */
     Point getLocation(double u);
 
@@ -52,7 +52,7 @@ public interface ICurve {
     /**
      *
      * @param uStart in the range [0, 1) representing the start location on the curve.
-     * @param uEnd in the range (0, 1] representing the end location on the curve. uEnd > uStart.
+     * @param uEnd in the range (0, 1] representing the end location on the curve. uEnd bigger than uStart.
      * @return A new curve object, where the values at u=0 are the same as u=uStart in this curve and at u=1 the
      * same as u=uEnd on this curve.
      */

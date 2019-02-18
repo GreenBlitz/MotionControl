@@ -8,12 +8,6 @@ import java.util.List;
 
 public class PolynomialInterpolator {
 
-    /**
-     * Given a set op points (the current m_path) it will add point between given points to complete a m_path.
-     * This is done using cubic splines (and thus the angle of the point matters).
-     *
-     * @param samples The number of new point to add between each old pair
-     */
     public static Path<Position> interpolatePoints(Path<Position> original, int samples){
         List<Position> newPath = new ArrayList<>();
         List<Position> m_path = original.getPath();

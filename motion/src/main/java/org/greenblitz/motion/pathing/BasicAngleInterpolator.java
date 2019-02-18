@@ -7,10 +7,7 @@ import java.util.List;
 
 public class BasicAngleInterpolator {
 
-    /**
-     * Chooses reasonable angles for all points using the position of adjacent points.
-     * Doesn't affect the angle of the first and last point.
-     */
+
     public static Path<Position> interpolateAngles(Path<Position> original) {
         List<Position> m_path = original.getPath();
         for (int i = 1; i < m_path.size() - 1; i++) {
