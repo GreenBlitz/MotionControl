@@ -1,8 +1,18 @@
 package org.greenblitz.motion.profiling;
 
+/**
+ * Represents a position of an actuator, for example the position of an elevator (height and velocity.
+ */
 public class ActuatorLocation {
 
-    protected double x, v;
+    /**
+     * The 'location' of the actuator in 1D space
+     */
+    protected double x,
+    /**
+     * The 'velocity' of the actuator at this location. essentially it's the derivative of the location at x.
+     */
+    v;
 
     @Override
     public boolean equals(Object o) {
@@ -34,6 +44,10 @@ public class ActuatorLocation {
                 '}';
     }
 
+    /**
+     * @param x
+     * @param v
+     */
     public ActuatorLocation(double x, double v) {
         this.x = x;
         this.v = v;

@@ -26,7 +26,7 @@ public class DriveToVisionTarget extends Command implements PIDSource, PIDOutput
     protected void initialize() {
         m_onTarget = -1;
         m_controller.setAbsoluteTolerance(0.1);
-        m_controller.setSetpoint(0.75);
+        m_controller.setSetpoint(0.85);
         m_controller.setOutputRange(-0.8, 0.8);
         m_controller.enable();
     }
@@ -53,10 +53,16 @@ public class DriveToVisionTarget extends Command implements PIDSource, PIDOutput
 
     @Override
     public void pidWrite(double output) {
-        if (Math.abs(output) < MINIMUM_OUTPUT)
-            output = Math.signum(output) * MINIMUM_OUTPUT;
-        SmartDashboard.putNumber("PID Output", output);
-        Chassis.getInstance().arcadeDrive(-output, turnkP*(OI.getInstance().getHatchAngle()));
+        if (OI.getInstance().foundHatch()) {
+            if (Math.abs(output) < MINIMUM_OUTPUT)
+                output = Math.signum(output) * MINIMUM_OUTPUT;
+            SmartDashboard.putNumber("PID Output", output);
+            Chassis.getInstance().arcadeDrive(-output, turnkP * (OI.getInstance().getHatchAngle()));
+        }
+        else {
+            Chassis.getInstance().setBrake();
+            Chassis.getInstance().arcadeDrive(0, 0);
+        }
     }
 
     @Override

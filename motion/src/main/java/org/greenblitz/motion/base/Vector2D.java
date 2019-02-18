@@ -23,4 +23,9 @@ public class Vector2D extends Point {
     public Vector2D clone() {
         return new Vector2D(x, y);
     }
+
+    @Override
+    public Vector2D scale(double scale){
+        return new Vector2D(scale*x, scale*y);
+    }
 }

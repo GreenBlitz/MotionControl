@@ -9,14 +9,31 @@ public class PIDController {
     protected PIDObject obj;
     protected long previousTime;
 
+    /**
+     *
+     * @param object
+     */
     public PIDController(PIDObject object){
         obj = object;
     }
 
+    /**
+     *
+     * @param kP
+     * @param kI
+     * @param kD
+     * @param kF
+     */
     public PIDController(double kP, double kI, double kD, double kF) {
         this(new PIDObject(kP, kI, kD, kF));
     }
 
+    /**
+     *
+     * @param kP
+     * @param kI
+     * @param kD
+     */
     public PIDController(double kP, double kI, double kD) {
         this(kP, kI, kD, 0);
     }

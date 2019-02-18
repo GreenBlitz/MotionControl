@@ -1,11 +1,7 @@
 package org.greenblitz.motion.app;
 
-import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pathing.Path;
-
-import java.util.List;
 
 @Deprecated
 public class AdaptivePStatePursuitController extends AbstractPositionPursuitController<State> {

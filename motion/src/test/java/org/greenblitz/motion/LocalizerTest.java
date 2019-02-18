@@ -1,5 +1,6 @@
 package org.greenblitz.motion;
 
+import org.greenblitz.motion.app.Localizer;
 import org.greenblitz.motion.base.Point;
 import org.junit.jupiter.api.Test;
 

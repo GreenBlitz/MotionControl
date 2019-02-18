@@ -4,10 +4,9 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.debug.RemoteCSVTarget;
-import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.Position;
-import org.greenblitz.robot.commands.APPCTestingCommand;
 import org.greenblitz.robot.subsystems.Chassis;
+import org.greenblitz.robot.subsystems.Shifter;
+import org.greenblitz.utils.Navx;
 
 
 import java.util.Timer;
@@ -23,17 +22,16 @@ public class Robot extends TimedRobot {
         Chassis.getInstance().setCoast();
         OI.init();
       //  colorSensor = new AnalogInput(0);
-        LEDs = new Relay(0, Relay.Direction.kForward);
-        LEDs.setSafetyEnabled(false);
-        OI.getInstance().getVisionTable().getEntry("LEDs").setBoolean(true);
     }
 
     @Override
     public void robotPeriodic() {
         updateSubsystems();
-//        LEDs.set(OI.getInstance().getVisionTable().getEntry("LEDs").getValue().getBoolean() ?
-//                 Relay.Value.kOn : Relay.Value.kOff);
-        LEDs.set(Relay.Value.kOn);
+        Navx.getInstance().updateAngle();
+        SmartDashboard.putNumber("NavX Yaw", Navx.getInstance().get_navx().getYaw());
+        SmartDashboard.putNumber("NavX Pitch", Navx.getInstance().get_navx().getPitch());
+        SmartDashboard.putNumber("NavX Roll", Navx.getInstance().get_navx().getRoll());
+
     }
 
 
@@ -41,7 +39,10 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         RemoteCSVTarget.initTarget("location", "x", "y");
         Scheduler.getInstance().removeAll();
+        Navx.getInstance().reset();
         prevTime = System.currentTimeMillis();
+
+
     }
 
     long prevTime;
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        SmartDashboard.putNumber("NAVX ang", Math.toDegrees(Navx.getInstance().getAngle()));
         SmartDashboard.putNumber("left ticks", Chassis.getInstance().getLeftTicks());
         SmartDashboard.putNumber("right ticks", Chassis.getInstance().getRightTicks());
         SmartDashboard.putNumber("left distance", Chassis.getInstance().getLeftDistance());
@@ -81,6 +83,7 @@ public class Robot extends TimedRobot {
 
     public void updateSubsystems() {
         Chassis.getInstance().update();
+        Shifter.getInstance().update();
     }
 
     public static void main(String[] args) {

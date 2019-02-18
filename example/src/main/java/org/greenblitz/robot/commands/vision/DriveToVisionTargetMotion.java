@@ -1,12 +1,6 @@
 package org.greenblitz.robot.commands.vision;
 
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.pid.MultivariablePIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.robot.OI;
@@ -14,7 +8,7 @@ import org.greenblitz.robot.subsystems.Chassis;
 
 public class DriveToVisionTargetMotion extends Command {
 
-    private static final PIDObject LinearPID = new PIDObject(-1.1),
+    private static final PIDObject LinearPID = new PIDObject(-0.9),
     AngularPID = new PIDObject(0.04);
     private MultivariablePIDController m_controller;
     private static final long TIME_ON_TARGET = 100;
@@ -43,7 +37,7 @@ public class DriveToVisionTargetMotion extends Command {
 
         if (m_controller.isFinished(new double[]{0.75, 0},
                 new double[]{OI.getInstance().getHatchDistance(), OI.getInstance().getHatchAngle()},
-                new double[]{0.1, 3}
+                new double[]{0.1, 5}
         ))
             if (m_onTarget == -1)
                 m_onTarget = System.currentTimeMillis();
@@ -62,6 +56,7 @@ public class DriveToVisionTargetMotion extends Command {
     @Override
     protected void end() {
         Chassis.getInstance().stop();
+        System.out.println("Finished Vision");
     }
 
 }

@@ -8,7 +8,10 @@ import org.greenblitz.motion.pathing.Path;
  * @author Udi ~ MudiAtalon
  * @author Alexey ~ Savioor
  *
+ * It has a knowm bug (cycle too slow), so this is not good for actual uses, maybe fix later
+ *
  */
+@Deprecated
 public class AdaptivePolynomialPursuitController extends AbstractPositionPursuitController<Position> {
 
     protected final boolean isBackwards;
@@ -70,7 +73,7 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
             if (ret == 0 || 1/ret > m_wheelBase){
                 return ret; // make sure we are not spinning in a circle
             }
-            // better to use regular APPC than to spin
+            // better to use regular motion than to spin
             return -2 * deltaVect.getX() / Point.normSquared(deltaVect);
         }
         // We got here if tan is too high
@@ -84,7 +87,7 @@ public class AdaptivePolynomialPursuitController extends AbstractPositionPursuit
         if (ret == 0 || 1/ret > m_wheelBase){
             return ret; // make sure we are not spinning in a circle
         }
-        // better to use regular APPC than to spin
+        // better to use regular motion than to spin
         deltaVect.rotate(-QUARTER_PI); // Rotate back to correct position
         return -2 * deltaVect.getX() / Point.normSquared(deltaVect);
     }

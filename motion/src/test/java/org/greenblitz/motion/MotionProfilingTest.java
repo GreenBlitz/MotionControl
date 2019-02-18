@@ -1,14 +1,11 @@
 package org.greenblitz.motion;
 
 import org.greenblitz.motion.profiling.ActuatorLocation;
-import org.greenblitz.motion.profiling.MotionProfile;
+import org.greenblitz.motion.profiling.MotionProfile1D;
 import org.greenblitz.motion.profiling.Profiler1D;
-import org.greenblitz.motion.profiling.exception.ProfilingException;
+import org.greenblitz.motion.profiling.exceptions.ProfilingException;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class MotionProfilingTest {
         List<ActuatorLocation> locs = new ArrayList<>();
         locs.add(new ActuatorLocation(0, 0));
         locs.add(new ActuatorLocation(1, 0));
-        MotionProfile prof;
+        MotionProfile1D prof;
         try {
              prof = Profiler1D.generateProfile(
                     locs,
