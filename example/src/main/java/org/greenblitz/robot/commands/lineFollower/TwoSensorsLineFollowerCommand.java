@@ -1,7 +1,6 @@
 package org.greenblitz.robot.commands.lineFollower;
 
 import org.greenblitz.motion.linefollower.LineFollower;
-import org.greenblitz.robot.commands.lineFollower.LineFollowerCommand;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.ColorSensor;
 
@@ -26,8 +25,8 @@ public class TwoSensorsLineFollowerCommand extends LineFollowerCommand {
     @Override
     protected void periodic() {
         if(m_firstRun){
-            m_controller.init(50.0,getPrecentage(sensor.read()));
-            m_leftController.init(50.0,getPrecentage(leftSensor.read()));
+            m_controller.setGoal(50.0,getPrecentage(sensor.read()));
+            m_leftController.setGoal(50.0,getPrecentage(leftSensor.read()));
             initDistance = Chassis.getInstance().getDistance();
             m_firstRun = false;
         }

@@ -40,7 +40,7 @@ public class LineFollowerCommand extends PeriodicCommand {
     @Override
     protected void periodic() {
         if (m_firstRun) {
-            m_controller.init(50.0, getPrecentage(sensor.read()));
+            m_controller.setGoal(50.0, getPrecentage(sensor.read()));
             initDistance = Chassis.getInstance().getDistance();
             m_firstRun = false;
         }

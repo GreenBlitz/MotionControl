@@ -2,27 +2,23 @@ package org.greenblitz.motion.pid;
 
 public class PIDObject {
 
-    protected double m_kp, m_kd, m_ki, m_kf;
+    private double m_kp, m_kd, m_ki, m_kf;
 
     @Override
     public String toString() {
         return "PIDObject{" +
-                "m_kp=" + m_kp +
-                ", m_kd=" + m_kd +
-                ", m_ki=" + m_ki +
-                ", m_kf=" + m_kf +
-                ", integral=" + integral +
+                "kp=" + m_kp +
+                ", kd=" + m_kd +
+                ", ki=" + m_ki +
+                ", kf=" + m_kf +
                 '}';
     }
 
-    protected double integral;
-    protected double previousError;
-
-    public PIDObject(double m_kp, double m_ki, double m_kd, double m_kf) {
-        this.m_kp = m_kp;
-        this.m_kd = m_kd;
-        this.m_ki = m_ki;
-        this.m_kf = m_kf;
+    public PIDObject(double kp, double ki, double kd, double kf) {
+        this.m_kp = kp;
+        this.m_kd = kd;
+        this.m_ki = ki;
+        this.m_kf = kf;
     }
 
     public PIDObject(double kp, double ki, double kd){
@@ -35,37 +31,6 @@ public class PIDObject {
 
     public PIDObject(double kp){
         this(kp, 0);
-    }
-
-
-    public void init(double goal, double value0){
-        resetIntegral();
-        previousError = goal - value0;
-    }
-
-    /**
-     *
-     * @param goal The desired location
-     * @param current The current sensor reading
-     * @param dt Time passed since last call
-     * @return The PID calculation
-     */
-    public double calculatePID(double goal, double current, double dt){
-        // Set e
-        double err = goal - current;
-
-        // Set de/dt
-        double errD = (err - previousError) / dt;
-        previousError = err;
-
-        // Set Int(e)dt
-        integral += err * dt;
-
-        return m_kp * err + m_ki * integral + m_kd * errD + m_kf * goal;
-    }
-
-    public void resetIntegral(){
-        integral = 0;
     }
 
     public double getKp() {

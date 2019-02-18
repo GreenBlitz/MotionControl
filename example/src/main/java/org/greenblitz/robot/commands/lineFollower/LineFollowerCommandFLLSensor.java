@@ -3,7 +3,6 @@ package org.greenblitz.robot.commands.lineFollower;
 import org.greenblitz.motion.linefollower.LineFollower;
 import org.greenblitz.robot.commands.PeriodicCommand;
 import org.greenblitz.robot.subsystems.Chassis;
-import org.greenblitz.utils.ColorSensor;
 
 public class LineFollowerCommandFLLSensor extends PeriodicCommand {
 
@@ -42,7 +41,7 @@ public class LineFollowerCommandFLLSensor extends PeriodicCommand {
     protected void periodic() {
         double value = Chassis.getInstance().getColorSensorValue();
         if (m_firstRun) {
-            m_controller.init(0.45, value);
+            m_controller.setGoal(0.45, value);
             initDistance = Chassis.getInstance().getDistance();
             m_firstRun = false;
         }

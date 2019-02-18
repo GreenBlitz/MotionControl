@@ -1,71 +1,32 @@
 package org.greenblitz.motion.pid;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.greenblitz.motion.tolerance.ITolerance;
 
 public class MultivariablePIDController {
+    private PIDController[] m_controllers;
 
-    protected List<PIDObject> pidObjects;
-    protected long previousTime;
-
-    public MultivariablePIDController(PIDObject... objs){
-        pidObjects = Arrays.asList(objs);
+    public MultivariablePIDController(int count) {
+        this.m_controllers = new PIDController[count];
     }
 
-    public MultivariablePIDController(List<PIDObject> objs){
-        pidObjects = objs;
+    public void config(int index, ITolerance tol, PIDObject obj){
+        m_controllers[index] = new PIDController(tol, obj);
     }
 
-    public static MultivariablePIDController generateSingle(double kp, double ki, double kd, double kf) {
-        List<PIDObject> controller = new ArrayList<>();
-        controller.add(new PIDObject(kp, ki, kd, kf));
-        return new MultivariablePIDController(controller);
+    public PIDController get(int index) {
+        return m_controllers[index];
     }
 
-    public static MultivariablePIDController generateSingle(double kp, double ki, double kd){
-        return generateSingle(kp, kd, ki, 0);
-    }
-
-    public static MultivariablePIDController generateSingle(double kp, double ki){
-        return generateSingle(kp, ki, 0);
-    }
-
-    public static MultivariablePIDController generateSingle(double kp){
-        return generateSingle(kp, 0);
-    }
-
-    public void init(double[] goals, double[] values){
-        for (int i = 0; i < pidObjects.size(); i++)
-            pidObjects.get(i).init(goals[i], values[i]);
-        previousTime = System.currentTimeMillis();
-    }
-
-
-    public double[] calculatePID(double[] goals, double[] current){
-
-        double secsPassed = (System.currentTimeMillis() - previousTime) / 1000.0;
-        previousTime = System.currentTimeMillis();
-
-        double[] pidVals = new double[pidObjects.size()];
-
-        for (int i = 0; i < pidObjects.size(); i++)
-            pidVals[i] = pidObjects.get(i).calculatePID(goals[i], current[i], secsPassed);
-
-        return pidVals;
-    }
-
-
-    public boolean isFinished(double[] goal, double[] current, double[] maxAllowedError){
-        for (int i = 0; i < goal.length; i++){
-            if (Math.abs(goal[i] - current[i]) > maxAllowedError[i])
-                return false;
+    public void setGoals(double... goals) {
+        for (var i = 0; i < m_controllers.length; i++) {
+            m_controllers[i].setGoal(goals[i]);
         }
-        return true;
     }
 
-    public PIDObject getPidObject(int index){
-        return pidObjects.get(index);
+    public double[] calcuate(double[] values) {
+        double[] ret = new double[m_controllers.length];
+        for (int i = 0; i < ret.length; i++)
+            ret[i] = m_controllers[i].calculatePID(values[i]);
+        return ret;
     }
-
 }

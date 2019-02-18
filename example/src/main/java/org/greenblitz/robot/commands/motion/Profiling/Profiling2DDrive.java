@@ -52,7 +52,7 @@ public class Profiling2DDrive extends Command {
     protected void initialize() {
         System.out.println(profile);
 
-        locationController.init(0, 0);
+        locationController.setGoal(0, 0);
         drive(0, 0);
 
         startTime = System.currentTimeMillis();
