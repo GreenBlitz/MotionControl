@@ -42,6 +42,11 @@ public class BezierSegment {
         this(start, end, uStart, uStart + 1);
     }
 
+    @Deprecated
+    public Point unsafeGetLocation(double t){
+        return Point.bezierSample((t - uStart) / uSize, p0, p1, p2, p3);
+    }
+
 
     public Point getLocation(double t) {
         if (isTimeOutOfSegment(t))
