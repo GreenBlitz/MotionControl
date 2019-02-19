@@ -3,6 +3,7 @@ package org.greenblitz.motion.profiling;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
+import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,34 +30,16 @@ public class ChassisProfiler2D {
             curve = new BezierCurve(first, second, 0, 1);
 
             subCurves.clear(); // All subcurves with
-            // kinda equal curvature
-            double t0 = 0;
-            double curveStart, prevt0;
-            while (t0 < 1.0) {
-                curveStart = curve.getCurvature(t0);
-                prevt0 = t0;
+            divideToEqualCurvatureSubcurves(subCurves, curve, jump, curvatureTolerance);
 
-                for (double j = t0 + jump; j <= 1; j += jump) {
-                    if (Math.abs(curve.getCurvature(j) - curveStart) > curvatureTolerance) {
-                        subCurves.add(curve.getSubCurve(t0, j));
-                        t0 = j;
-                        break;
-                    }
-                }
-
-                if (t0 == prevt0) {
-                    subCurves.add(curve.getSubCurve(t0, 1));
-                    break;
-                }
-            }
-
-            double currentMaxLinearVelocity, curvature;
+            double currentMaxLinearVelocity, currenctMaxLinearAccel, curvature;
             path.clear();
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
             for (ICurve subCur : subCurves) {
                 curvature = subCur.getCurvature(0);
                 currentMaxLinearVelocity = 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
+                currenctMaxLinearAccel = 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
 
                 path.get(0).setX(subCur.getLength(0));
                 path.get(0).setV(subCur.getLinearVelocity(0));
@@ -65,12 +48,12 @@ public class ChassisProfiler2D {
 
                 tempProfile = Profiler1D.generateProfile(
                         path,
-                        currentMaxLinearVelocity, maxLinearAcc, -maxLinearAcc
+                        currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel
                 );
 
                 linearProfile.safeAdd(Profiler1D.generateProfile(
                         path,
-                        currentMaxLinearVelocity, maxLinearAcc, -maxLinearAcc
+                        currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel
                 ));
                 rotSegs = tempProfile.getSegments();
                 for (MotionProfile1D.Segment seg : rotSegs) {
@@ -81,6 +64,40 @@ public class ChassisProfiler2D {
         }
 
         return new MotionProfile2D(linearProfile, angularProfile);
+    }
+
+    /**
+     * This function takes one curve, and stores it's subcurves in a list,
+     * such as each subcurve continues the previous one and each subcurve will have
+     * roughly equal curvature.
+     * @param returnList The list to which the subcurves will be added
+     * @param source The main curve to be divided
+     * @param jump Jump intervals, when sampling the curvature the function will sample
+     *             every 'jump' units.
+     * @param curvatureTolerance The maximum curvature difference within each subcurve.
+     * @return returnList
+     */
+    private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump, double curvatureTolerance){
+        double t0 = 0;
+        double curveStart, prevt0;
+        while (t0 < 1.0) {
+            curveStart = source.getCurvature(t0);
+            prevt0 = t0;
+
+            for (double j = t0 + jump; j <= 1; j += jump) {
+                if (Math.abs(source.getCurvature(j) - curveStart) > curvatureTolerance) {
+                    returnList.add(source.getSubCurve(t0, j));
+                    t0 = j;
+                    break;
+                }
+            }
+
+            if (t0 == prevt0) {
+                returnList.add(source.getSubCurve(t0, 1));
+                break;
+            }
+        }
+        return returnList;
     }
 
 }
