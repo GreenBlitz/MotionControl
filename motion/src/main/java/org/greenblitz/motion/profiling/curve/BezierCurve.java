@@ -2,13 +2,14 @@ package org.greenblitz.motion.profiling.curve;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.base.Vector2D;
 
 public class BezierCurve implements ICurve {
 
     BezierSegment segment;
     double uStart, uSize;
     double curvature = Double.NaN;
+
+    static final double DEFAULT_MIN_VELOCITY = 0.1;
 
     private BezierCurve(BezierSegment segment, double uStart, double uEnd) {
         this.segment = segment;
@@ -20,12 +21,20 @@ public class BezierCurve implements ICurve {
         this(new BezierSegment(start, end, 0, 1), uStart, uEnd);
     }
 
+    public BezierCurve(State start, State end, double minVelocity) {
+        this(Math.abs(start.getLinearVelocity()) >= minVelocity ? start :
+                new State(start.getX(), start.getY(), start.getAngle(), minVelocity, start.getAngularVelocity(), start.getLinearAccel(), start.getAngularAccel()),
+                Math.abs(end.getLinearVelocity()) >= minVelocity ? end :
+                        new State(end.getX(), end.getY(), end.getAngle(), minVelocity, end.getAngularVelocity(), end.getLinearAccel(), end.getAngularAccel()),
+                0, 1);
+    }
+
     public BezierCurve(State start, State end) {
-        this(start, end, 0, 1);
+        this(start, end, DEFAULT_MIN_VELOCITY);
     }
 
     private double convertU(double u) {
-        return (u*uSize) + uStart;
+        return (u * uSize) + uStart;
     }
 
 
@@ -34,7 +43,9 @@ public class BezierCurve implements ICurve {
         return segment.getLocation(convertU(u));
     }
 
-    public Point getVelocity(double u){return segment.getVelocity(convertU(u));}
+    public Point getVelocity(double u) {
+        return segment.getVelocity(convertU(u));
+    }
 
     @Override
     public double getLinearVelocity(double u) {
@@ -48,8 +59,8 @@ public class BezierCurve implements ICurve {
 
     @Override
     public double getLength(double u) {
-        double length = Point.subtract(getLocation(1), getLocation(0)).norm();
-        double curvature = getCurvature(0.5);
+        double length = Point.subtract(getLocation(u), getLocation(0)).norm();
+        double curvature = getCurvature();
         if (Point.isFuzzyEqual(curvature, 0, 1E-3))
             return length;
         return 2 / curvature * Math.asin(length * curvature / 2);
@@ -62,10 +73,15 @@ public class BezierCurve implements ICurve {
     }
 
     @Override
-    public double getCurvature(double u) {
-        if(Double.isNaN(curvature)/*is NaN*/)
-            curvature = segment.getCurvature(convertU(u));
+    public double getCurvature() {
+        if (Double.isNaN(curvature)/*is NaN*/)
+            curvature = segment.getCurvature(convertU(0.5));
         return curvature;
+    }
+
+    @Override
+    public double getCurvature(double u) {
+        return segment.getCurvature(u);
     }
 
     @Override
@@ -77,12 +93,12 @@ public class BezierCurve implements ICurve {
     }
 
     @Override
-    public String toString(){
-        return "BezierSegment{" +
+    public String toString() {
+        return "BezierCurve{" +
                 "start=" + new State(getLocation(0), getVelocity(0)) +
-                "start=" + new State(getLocation(1), getVelocity(1)) +
+                ", end=" + new State(getLocation(1), getVelocity(1)) +
                 ", uStart=" + uStart +
-                ", uEnd=" + uStart + uSize +
+                ", uEnd=" + (uStart + uSize) +
                 '}';
     }
 }
