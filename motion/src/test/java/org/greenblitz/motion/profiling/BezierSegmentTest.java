@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BezierSegmentTest {
 
     final double EPSILON = 1E-7;
+    final double BIG_EPSILON = 1E-2;
 
     @Test
     void getLocationTest(){
@@ -52,8 +53,7 @@ class BezierSegmentTest {
                 p2 = s.unsafeGetLocation(i+0.01);
             double angle = Point.subtract(p0,p1).toPolarCoords()[1] - Point.subtract(p2,p1).toPolarCoords()[1];
             double estCurvature = 2*Math.sin(angle)/Point.subtract(p2,p0).norm();
-            assertEquals(curvature, estCurvature, 0.01);
-            System.out.println("expected="+curvature+", estimated="+estCurvature);
+            assertEquals(curvature, estCurvature, BIG_EPSILON);
         }
     }
 
@@ -68,7 +68,7 @@ class BezierSegmentTest {
                     p2 = s.unsafeGetLocation(i+0.01);
             double angle = Point.subtract(p0,p1).toPolarCoords()[1] - Point.subtract(p2,p1).toPolarCoords()[1];
             double estCurvature = 2*Math.sin(angle)/Point.subtract(p2,p0).norm();
-            assertEquals(angVel, estCurvature*lVelocity, 0.01);
+            assertEquals(angVel, estCurvature*lVelocity, BIG_EPSILON);
         }
     }
 }
