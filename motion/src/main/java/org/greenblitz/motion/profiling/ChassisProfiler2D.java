@@ -43,7 +43,6 @@ public class ChassisProfiler2D {
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
             for (ICurve subCur : subCurves) {
-                System.out.println(subCur);
                 curvature = subCur.getCurvature();
                 currentMaxLinearVelocity = 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
                 currenctMaxLinearAccel = 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
@@ -53,21 +52,23 @@ public class ChassisProfiler2D {
                 path.get(1).setX(subCur.getLength(1));
                 path.get(1).setV(subCur.getLinearVelocity(1));
 
-                System.out.println(path);
-
                 tempProfile = Profiler1D.generateProfile(
                         path,
                         currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel, t0
                 );
                 t0 = tempProfile.getTEnd();
 
-                System.out.println(tempProfile);
-
                 linearProfile.unsafeAdd(tempProfile);
 
                 rotSegs = tempProfile.getSegments();
-                for (MotionProfile1D.Segment seg : rotSegs) {
-                    seg.setAccel(seg.getAccel() * curvature);
+                rotSegs.get(0).setAccel(rotSegs.get(0).getAccel()*curvature);
+                MotionProfile1D.Segment curr, prev;
+                for (int k = 1; k < rotSegs.size(); k++) {
+                    curr = rotSegs.get(k);
+                    prev = rotSegs.get(k - 1);
+                    curr.setAccel(curr.getAccel() * curvature);
+                    curr.setStartVelocity(prev.getVelocity(prev.getTEnd()));
+                    curr.setStartLocation(prev.getLocation(prev.getTEnd()));
                 }
                 angularProfile.unsafeAdd(new MotionProfile1D(rotSegs));
             }
