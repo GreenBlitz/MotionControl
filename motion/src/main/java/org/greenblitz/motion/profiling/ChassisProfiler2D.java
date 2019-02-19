@@ -35,7 +35,7 @@ public class ChassisProfiler2D {
 
             curve = new BezierCurve(first, second, 0, 1);
 
-            subCurves.clear(); // All subcurves with
+            subCurves.clear(); // All subcurves with kinda equal curvature
             divideToEqualCurvatureSubcurves(subCurves, curve, jump, curvatureTolerance);
 
             double currentMaxLinearVelocity, currenctMaxLinearAccel, curvature;
@@ -44,19 +44,24 @@ public class ChassisProfiler2D {
             path.add(new ActuatorLocation(0, 0));
             for (ICurve subCur : subCurves) {
                 curvature = subCur.getCurvature(0);
+                System.out.println(subCur);
                 currentMaxLinearVelocity = 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
                 currenctMaxLinearAccel = 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
 
-                path.get(0).setX(subCur.getLength(0));
+                path.get(0).setX(0);
                 path.get(0).setV(subCur.getLinearVelocity(0));
                 path.get(1).setX(subCur.getLength(1));
                 path.get(1).setV(subCur.getLinearVelocity(1));
+
+                System.out.println(path);
 
                 tempProfile = Profiler1D.generateProfile(
                         path,
                         currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel, t0
                 );
                 t0 = tempProfile.getTEnd();
+
+                System.out.println(tempProfile);
 
                 linearProfile.unsafeAdd(tempProfile);
 
