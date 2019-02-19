@@ -11,7 +11,7 @@ import java.util.List;
 public class ChassisProfiler2D {
 
     public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
-                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
 
         MotionProfile1D linearProfile = new MotionProfile1D();
         MotionProfile1D angularProfile = new MotionProfile1D();
@@ -22,6 +22,7 @@ public class ChassisProfiler2D {
         ArrayList<ActuatorLocation> path = new ArrayList<>();
         List<MotionProfile1D.Segment> rotSegs;
 
+        double t0 = tStart;
         for (int i = 0; i < locs.size() - 1; i++) {
 
             first = locs.get(i);
@@ -48,18 +49,17 @@ public class ChassisProfiler2D {
 
                 tempProfile = Profiler1D.generateProfile(
                         path,
-                        currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel
+                        currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel, t0
                 );
+                t0 = tempProfile.getTEnd();
 
-                linearProfile.safeAdd(Profiler1D.generateProfile(
-                        path,
-                        currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel
-                ));
+                linearProfile.unsafeAdd(tempProfile);
+
                 rotSegs = tempProfile.getSegments();
                 for (MotionProfile1D.Segment seg : rotSegs) {
                     seg.setAccel(seg.getAccel() * curvature);
                 }
-                angularProfile.safeAdd(new MotionProfile1D(rotSegs));
+                angularProfile.unsafeAdd(new MotionProfile1D(rotSegs));
             }
         }
 

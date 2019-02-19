@@ -70,7 +70,7 @@ public class MotionProfile1D {
      * @param maxA
      * @param minA
      */
-    public void add(MotionProfile1D second, double maxV, double maxA, double minA) {
+    public void autocompleteAdd(MotionProfile1D second, double maxV, double maxA, double minA) {
         MotionProfile1D first = this;
         if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0))) {
             List<ActuatorLocation> startAndEnd = new ArrayList<>();
@@ -104,6 +104,14 @@ public class MotionProfile1D {
         }
 
         segments.addAll(secondSegs);
+    }
+
+    /**
+     * Will append the segments from second directly to this profile. take care when using this function.
+     * @param second
+     */
+    public void unsafeAdd(MotionProfile1D second){
+        segments.addAll(second.getSegments());
     }
 
     private int previous = 0;
