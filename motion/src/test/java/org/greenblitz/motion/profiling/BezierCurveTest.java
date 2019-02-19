@@ -41,4 +41,9 @@ public class BezierCurveTest {
         ICurve curve = new BezierCurve(new State(0, 0, 0, 2.7*3, 0), new State(5, 5, Math.PI/2, 2.76*3, 0));
         assertEquals(curve.getCurvature(), -0.2, 0.01);
     }
+
+    @Test
+    void getAngleTest(){
+
+    }
 }

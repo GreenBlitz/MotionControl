@@ -3,7 +3,6 @@ package org.greenblitz.motion.profiling;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
-import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class ChassisProfiler2D {
         ICurve curve;
         List<ICurve> subCurves = new ArrayList<>();
         ArrayList<ActuatorLocation> path = new ArrayList<>();
-        List<MotionProfile1D.Segment> rotSegs;
+        List<MotionProfile1D.Segment> rotationSegs;
 
         double t0 = tStart;
         for (int i = 0; i < locs.size() - 1; i++) {
@@ -46,8 +45,8 @@ public class ChassisProfiler2D {
             double lenSoFar = 0;
             for (ICurve subCur : subCurves) {
                 curvature = subCur.getCurvature();
-                currentMaxLinearVelocity = 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
-                currenctMaxLinearAccel = 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
+                currentMaxLinearVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
+                currenctMaxLinearAccel = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
 
                 path.get(0).setX(lenSoFar);
                 path.get(0).setV(subCur.getLinearVelocity(0));
@@ -63,24 +62,32 @@ public class ChassisProfiler2D {
 
                 linearProfile.unsafeAdd(tempProfile);
 
-                rotSegs = tempProfile.getSegments();
-                MotionProfile1D.Segment seg0 = rotSegs.get(0);
+                rotationSegs = tempProfile.getSegments();
+                MotionProfile1D.Segment seg0 = rotationSegs.get(0);
                 seg0.setAccel(seg0.getAccel()*curvature);
                 seg0.setStartLocation(first.getAngle());
                 seg0.setStartVelocity(first.getAngularVelocity());
                 MotionProfile1D.Segment curr, prev;
-                for (int k = 1; k < rotSegs.size(); k++) {
-                    curr = rotSegs.get(k);
-                    prev = rotSegs.get(k - 1);
+                for (int k = 1; k < rotationSegs.size(); k++) {
+                    curr = rotationSegs.get(k);
+                    prev = rotationSegs.get(k - 1);
                     curr.setAccel(curr.getAccel() * curvature);
                     curr.setStartVelocity(prev.getVelocity(prev.getTEnd()));
                     curr.setStartLocation(prev.getLocation(prev.getTEnd()));
                 }
-                angularProfile.unsafeAdd(new MotionProfile1D(rotSegs));
+                angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
             }
         }
 
         return new MotionProfile2D(linearProfile, angularProfile);
+    }
+
+    private static double getMaxVelocity(double maxLinearVel, double maxAngularVel, double curvature){
+        return 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
+    }
+
+    private static double getMaxAcceleration(double maxLinearAcc, double maxAngularAcc, double curvature){
+        return 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
     }
 
     /**
@@ -117,4 +124,88 @@ public class ChassisProfiler2D {
         return returnList;
     }
 
+    private static List<VelocitySegment> getVelocityGragh(List<ICurve> track, double maxLinearVel,
+                                                          double maxAngularVel, double maxLinearAcc, double maxAngularAcc){
+        List<VelocitySegment> gragh1 = new ArrayList<>();
+        gragh1.add(new VelocitySegment(0, 0, 0, 0));
+        for(ICurve curve: track){
+            double start = gragh1.get(gragh1.size()-1).getDEnd();
+            double length = curve.getLength(1);
+            double vStart = getMaxVelocity(maxLinearVel, maxAngularVel, curve.getCurvature());
+            double slope = 0;
+            gragh1.add(new VelocitySegment(start,start+length, vStart, slope));
+        }
+        double end = gragh1.get(gragh1.size()-1).getDEnd();
+        gragh1.add(new VelocitySegment(end, end, 0, 0));
+
+        List<VelocitySegment> gragh2 = new ArrayList<>();
+        gragh2.add(gragh1.get(0));
+        for(int ind=1; ind<gragh1.size(); ind++){
+            if(gragh1.get(ind).getVStart() > gragh2.get(ind-1).getVStart()){
+                ICurve curve = track.get(ind);
+                double slope = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curve.getCurvature())/;
+                double start = gragh2.get(ind-1).getDEnd();
+                double length = curve.getLength(1);
+                double vStart = gragh1.get(gragh1.size()-1).getVEnd();
+
+            }
+        }
+    }
+
+    public static class VelocitySegment{
+        private double dStart, dEnd, vStart, vEnd, rootConst;
+
+        public VelocitySegment(double dStart, double dEnd, double vStart, double rootConst) {
+            this.dStart = dStart;
+            this.dEnd = dEnd;
+            this.vStart = vStart;
+            this.rootConst = rootConst;
+            this.vEnd = vStart + rootConst *(dEnd-dStart);
+        }
+
+        public double getDStart() {
+            return dStart;
+        }
+
+        public void setDStart(double dStart) {
+            this.dStart = dStart;
+            this.vStart = ;
+        }
+
+        public double getDEnd() {
+            return dEnd;
+        }
+
+        public void setDEnd(double dEnd) {
+            this.dEnd = dEnd;
+            this.vEnd = vStart + rootConst *(dEnd-dStart);
+        }
+
+        public double getVStart() {
+            return vStart;
+        }
+
+        public void setVStart(double vStart) {
+            this.vStart = vStart;
+            this.rootConst = (vEnd-vStart)/(dEnd-dStart);
+        }
+
+        public double getVEnd() {
+            return vEnd;
+        }
+
+        public void setVEnd(double vEnd) {
+            this.vEnd = vEnd;
+            this.rootConst = (vEnd-vStart)/(dEnd-dStart);
+        }
+
+        public double getRootConst() {
+            return rootConst;
+        }
+
+        public void setRootConst(double rootConst) {
+            this.rootConst = rootConst;
+            this.vEnd = vStart + rootConst *(dEnd-dStart);
+        }
+    }
 }
