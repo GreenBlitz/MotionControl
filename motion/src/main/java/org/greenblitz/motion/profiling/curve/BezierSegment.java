@@ -120,8 +120,6 @@ public class BezierSegment {
                 ", p1=" + p1 +
                 ", p2=" + p2 +
                 ", p3=" + p3 +
-                ", uStart=" + uStart +
-                ", uEnd=" + uEnd +
                 '}';
     }
 }

@@ -17,16 +17,20 @@ public class BezierCurve implements ICurve {
         this.uSize = uEnd - uStart;
     }
 
-    public BezierCurve(State start, State end, double uStart, double uEnd) {
+    private BezierCurve(State start, State end, double uStart, double uEnd) {
         this(new BezierSegment(start, end, 0, 1), uStart, uEnd);
     }
 
-    public BezierCurve(State start, State end, double minVelocity) {
+    public BezierCurve(State start, State end, double minVelocity, double uStart, double uEnd) {
         this(Math.abs(start.getLinearVelocity()) >= minVelocity ? start :
                 new State(start.getX(), start.getY(), start.getAngle(), minVelocity, start.getAngularVelocity(), start.getLinearAccel(), start.getAngularAccel()),
                 Math.abs(end.getLinearVelocity()) >= minVelocity ? end :
                         new State(end.getX(), end.getY(), end.getAngle(), minVelocity, end.getAngularVelocity(), end.getLinearAccel(), end.getAngularAccel()),
-                0, 1);
+                uStart, uEnd);
+    }
+
+    public BezierCurve(State start, State end, double minVelocity){
+        this(start, end, minVelocity, 0, 1);
     }
 
     public BezierCurve(State start, State end) {

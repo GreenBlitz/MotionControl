@@ -33,24 +33,27 @@ public class ChassisProfiler2D {
             first = locs.get(i);
             second = locs.get(i + 1);
 
-            curve = new BezierCurve(first, second, 0, 1);
+            curve = new BezierCurve(first, second);
 
             subCurves.clear(); // All subcurves with kinda equal curvature
             divideToEqualCurvatureSubcurves(subCurves, curve, jump, curvatureTolerance);
+            System.out.println(subCurves);
 
             double currentMaxLinearVelocity, currenctMaxLinearAccel, curvature;
             path.clear();
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
+            double lenSoFar = 0;
             for (ICurve subCur : subCurves) {
                 curvature = subCur.getCurvature();
                 currentMaxLinearVelocity = 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
                 currenctMaxLinearAccel = 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
 
-                path.get(0).setX(0);
+                path.get(0).setX(lenSoFar);
                 path.get(0).setV(subCur.getLinearVelocity(0));
-                path.get(1).setX(subCur.getLength(1));
+                path.get(1).setX(lenSoFar + subCur.getLength(1));
                 path.get(1).setV(subCur.getLinearVelocity(1));
+                lenSoFar = path.get(1).getX();
 
                 tempProfile = Profiler1D.generateProfile(
                         path,
@@ -61,7 +64,10 @@ public class ChassisProfiler2D {
                 linearProfile.unsafeAdd(tempProfile);
 
                 rotSegs = tempProfile.getSegments();
-                rotSegs.get(0).setAccel(rotSegs.get(0).getAccel()*curvature);
+                MotionProfile1D.Segment seg0 = rotSegs.get(0);
+                seg0.setAccel(seg0.getAccel()*curvature);
+                seg0.setStartLocation(first.getAngle());
+                seg0.setStartVelocity(first.getAngularVelocity());
                 MotionProfile1D.Segment curr, prev;
                 for (int k = 1; k < rotSegs.size(); k++) {
                     curr = rotSegs.get(k);
