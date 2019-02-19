@@ -89,7 +89,11 @@ public class PIDController {
     }
 
     public boolean isFinished() {
-        return m_tolerance != null && m_tolerance.onTarget(getGoal(), getLastError());
+        return hasTolerance() && m_tolerance.onTarget(getGoal(), getLastError());
+    }
+
+    public boolean hasTolerance() {
+        return m_tolerance != null;
     }
 
     private double updateTime() {
