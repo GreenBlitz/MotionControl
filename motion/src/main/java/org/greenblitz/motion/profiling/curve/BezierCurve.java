@@ -64,7 +64,6 @@ public class BezierCurve implements ICurve {
     @Override
     public double getCurvature(double u) {
         if(Double.isNaN(curvature)/*is NaN*/)
-            System.out.println(u);
             curvature = segment.getCurvature(convertU(u));
         return curvature;
     }
@@ -73,8 +72,8 @@ public class BezierCurve implements ICurve {
     public ICurve getSubCurve(double uStart, double uEnd) {
         return new BezierCurve(
                 segment,
-                (uStart / this.uSize) + this.uStart,
-                (uEnd / this.uSize) + this.uStart);
+                (uStart * this.uSize) + this.uStart,
+                (uEnd * this.uSize) + this.uStart);
     }
 
     @Override
