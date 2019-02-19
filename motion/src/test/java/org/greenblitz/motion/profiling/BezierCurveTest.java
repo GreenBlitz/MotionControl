@@ -13,11 +13,9 @@ public class BezierCurveTest {
 
     final double EPSILON = 1E-7;
 
-    final BezierCurve baseCurve = new BezierCurve(new State(0, 0, new Vector2D(1, 0)), new State(1, 1, new Vector2D(1, 0)));
-
     @Test
     void getSubCurveTest() {
-        ICurve curve = baseCurve;
+        ICurve curve = new BezierCurve(new State(0, 0, new Vector2D(1, 0)), new State(1, 1, new Vector2D(1, 0)));
         double i = 0.3;
         double i2 = 0.3;
         Point location = curve.getLocation(i);
@@ -40,6 +38,7 @@ public class BezierCurveTest {
 
     @Test
     void getLengthTest(){
-
+        ICurve curve = new BezierCurve(new State(0, 0, 0, 2.7*3, 0), new State(5, 5, Math.PI/2, 2.76*3, 0));
+        assertEquals(curve.getCurvature(), -0.2, 0.01);
     }
 }

@@ -9,6 +9,8 @@ public class BezierCurve implements ICurve {
     double uStart, uSize;
     double curvature = Double.NaN;
 
+    static final double DEFAULT_MIN_VELOCITY = 0.1;
+
     private BezierCurve(BezierSegment segment, double uStart, double uEnd) {
         this.segment = segment;
         this.uStart = uStart;
@@ -19,8 +21,16 @@ public class BezierCurve implements ICurve {
         this(new BezierSegment(start, end, 0, 1), uStart, uEnd);
     }
 
+    public BezierCurve(State start, State end, double minVelocity) {
+        this(Math.abs(start.getLinearVelocity()) >= minVelocity ? start :
+                new State(start.getX(), start.getY(), start.getAngle(), minVelocity, start.getAngularVelocity(), start.getLinearAccel(), start.getAngularAccel()),
+                Math.abs(end.getLinearVelocity()) >= minVelocity ? end :
+                        new State(end.getX(), end.getY(), end.getAngle(), minVelocity, end.getAngularVelocity(), end.getLinearAccel(), end.getAngularAccel()),
+                0, 1);
+    }
+
     public BezierCurve(State start, State end) {
-        this(start, end, 0, 1);
+        this(start, end, DEFAULT_MIN_VELOCITY);
     }
 
     private double convertU(double u) {
@@ -49,11 +59,11 @@ public class BezierCurve implements ICurve {
 
     @Override
     public double getLength(double u) {
-        double length = Point.subtract(getLocation(1), getLocation(0)).norm();
-        double curvature = getCurvature(0.5);
+        double length = Point.subtract(getLocation(u), getLocation(0)).norm();
+        double curvature = getCurvature();
         if (Point.isFuzzyEqual(curvature, 0, 1E-3))
             return length;
-        return u * 2 / curvature * Math.asin(length * curvature / 2);
+        return 2 / curvature * Math.asin(length * curvature / 2);
     }
 
     @Override
@@ -63,10 +73,15 @@ public class BezierCurve implements ICurve {
     }
 
     @Override
-    public double getCurvature(double u) {
+    public double getCurvature() {
         if (Double.isNaN(curvature)/*is NaN*/)
-            curvature = segment.getCurvature(convertU(u));
+            curvature = segment.getCurvature(convertU(0.5));
         return curvature;
+    }
+
+    @Override
+    public double getCurvature(double u) {
+        return segment.getCurvature(u);
     }
 
     @Override
@@ -81,9 +96,9 @@ public class BezierCurve implements ICurve {
     public String toString() {
         return "BezierCurve{" +
                 "start=" + new State(getLocation(0), getVelocity(0)) +
-                "start=" + new State(getLocation(1), getVelocity(1)) +
+                ", end=" + new State(getLocation(1), getVelocity(1)) +
                 ", uStart=" + uStart +
-                ", uEnd=" + uStart + uSize +
+                ", uEnd=" + (uStart + uSize) +
                 '}';
     }
 }

@@ -43,7 +43,7 @@ public class ChassisProfiler2D {
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
             for (ICurve subCur : subCurves) {
-                curvature = subCur.getCurvature(0);
+                curvature = subCur.getCurvature();
                 currentMaxLinearVelocity = 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
                 currenctMaxLinearAccel = 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
 
