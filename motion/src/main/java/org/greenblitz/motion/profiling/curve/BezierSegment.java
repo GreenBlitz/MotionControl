@@ -9,8 +9,6 @@ public class BezierSegment {
     private Point p01, p12, p23; // points for velocity calculation
     private Point p012, p123; // points for acceleration calculation
     private double uStart, uEnd, uSize;
-    private static final IllegalArgumentException timeException =
-            new IllegalArgumentException("Time not in this segment");
 
     public BezierSegment(Point p0, Point p1, Point p2, Point p3, double uStart, double uEnd) {
         this.uStart = uStart;
@@ -47,13 +45,13 @@ public class BezierSegment {
 
     public Point getLocation(double t) {
         if (isTimeOutOfSegment(t))
-            throw timeException;
+            throw new IllegalArgumentException("Time not in this segment");
         return Point.bezierSample((t - uStart) / uSize, p0, p1, p2, p3);
     }
 
     public Point getVelocity(double t) {
         if (isTimeOutOfSegment(t)/*yes*/)
-            throw timeException;
+            throw new IllegalArgumentException("Time not in this segment");
         t = (t - uStart) / uSize;
         double tt = 1 - t;
         return Point.add(Point.add(p01.scale(tt * tt), p12.scale(t * tt)), p23.scale(t * t));
@@ -61,7 +59,7 @@ public class BezierSegment {
 
     public Point getAcceleration(double t) {
         if (isTimeOutOfSegment(t)/*yes*/)
-            throw timeException;
+            throw new IllegalArgumentException("Time not in this segment");
         t = (t - uStart) / uSize;
         return Point.add(p012.scale((1 - t)), p123.scale(t));
     }

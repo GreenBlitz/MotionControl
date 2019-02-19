@@ -62,5 +62,11 @@ public class MotionProfile2D {
         secondProfile.removeBugSegments();
     }
 
-
+    @Override
+    public String toString() {
+        return "MotionProfile2D{" +
+                "firstProfile=" + firstProfile +
+                ", secondProfile=" + secondProfile +
+                '}';
+    }
 }

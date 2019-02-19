@@ -11,6 +11,11 @@ import java.util.List;
 public class ChassisProfiler2D {
 
     public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
+                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+        return generateProfile(locs, curvatureTolerance, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, 0);
+    }
+
+    public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
 
         MotionProfile1D linearProfile = new MotionProfile1D();
