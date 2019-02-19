@@ -4,16 +4,17 @@ import org.greenblitz.motion.tolerance.ITolerance;
 
 public class MultivariablePIDController {
     private PIDController[] m_controllers;
-    private ITolerance[] m_tolerance;
 
     public MultivariablePIDController(int count) {
         this.m_controllers = new PIDController[count];
-        m_tolerance = new ITolerance[count];
     }
 
-    public void config(int index, PIDObject obj, ITolerance tol) {
-        m_controllers[index] = new PIDController(obj);
-        m_tolerance[index] = tol;
+    public MultivariablePIDController(PIDController... pids) {
+        m_controllers = pids;
+    }
+
+    public void configure(int index, PIDObject obj, ITolerance tol) {
+        m_controllers[index] = new PIDController(obj, tol);
     }
 
     public PIDController get(int index) {
@@ -34,8 +35,8 @@ public class MultivariablePIDController {
     }
 
     public boolean isFinished() {
-        for (var i = 0; i < m_tolerance.length; i++) {
-            if (m_tolerance[i] != null && m_tolerance[i].onTarget(m_controllers[i].getGoal(), m_controllers[i].getLastError())) {
+        for (var i = 0; i < m_controllers.length; i++) {
+            if (m_controllers[i].isFinished()) {
                 return true;
             }
         }

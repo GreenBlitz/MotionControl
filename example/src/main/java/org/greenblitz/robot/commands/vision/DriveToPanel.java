@@ -2,7 +2,6 @@ package org.greenblitz.robot.commands.vision;
 
 import edu.wpi.first.wpilibj.command.Command;
 import org.greenblitz.motion.pid.MultivariablePIDController;
-import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.tolerance.AbsoluteTolerance;
 import org.greenblitz.robot.OI;
@@ -15,8 +14,8 @@ public class DriveToPanel extends Command {
     public DriveToPanel() {
         requires(Chassis.getInstance());
         controller = new MultivariablePIDController(2);
-        controller.config(0, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(0.1));
-        controller.config(1, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(3));
+        controller.configure(0, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(0.1));
+        controller.configure(1, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(3));
     }
 
     @Override

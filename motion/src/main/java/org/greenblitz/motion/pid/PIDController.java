@@ -13,8 +13,15 @@ public class PIDController {
     private double m_minimumOutput;
     private double m_maximumOutput;
 
-    public PIDController(PIDObject object) {
-        m_obj = object;
+    private ITolerance m_tolerance;
+
+    public PIDController(PIDObject obj, ITolerance tolerance) {
+        m_obj = obj;
+        m_tolerance = tolerance;
+    }
+
+    public PIDController(PIDObject obj) {
+        this(obj, null);
     }
 
     public PIDController(double kP, double kI, double kD, double kF) {
@@ -69,8 +76,20 @@ public class PIDController {
         return m_previousError;
     }
 
-    public void resetIntegralZone() {
-        m_integral = 0;
+    public void resetIntegralZone(double iZone) {
+        m_integral = iZone;
+    }
+
+    public ITolerance getTolerance() {
+        return m_tolerance;
+    }
+
+    public void setTolerance(ITolerance tol) {
+        m_tolerance = tol;
+    }
+
+    public boolean isFinished() {
+        return m_tolerance != null && m_tolerance.onTarget(getGoal(), getLastError());
     }
 
     private double updateTime() {
@@ -83,4 +102,5 @@ public class PIDController {
     private double clamp(double value) {
         return Math.max(Math.min(value, m_minimumOutput), m_maximumOutput);
     }
+
 }
