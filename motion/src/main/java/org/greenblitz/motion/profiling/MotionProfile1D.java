@@ -357,7 +357,7 @@ public class MotionProfile1D {
             return "BezierSegment{" +
                     "tStart=" + tStart +
                     ", tEnd=" + tEnd +
-                    ", accel=" + accel +
+                    ", slpoe=" + accel +
                     ", startVelocity=" + startVelocity +
                     ", startLocation=" + startLocation +
                     '}';
