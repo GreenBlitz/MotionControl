@@ -46,7 +46,7 @@ public class Localizer {
      * ^<br>
      * |<br>
      * |<br>
-     * <--- R
+     * R
      * <br> <br> Where 'R' is the org.greenblitz.example.robot, up is the y coord and left is the x coord
      *
      * @return

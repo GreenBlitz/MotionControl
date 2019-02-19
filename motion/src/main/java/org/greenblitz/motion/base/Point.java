@@ -51,7 +51,7 @@ public class Point {
      */
     protected double x;
     /**
-     * the y coordinate: forwards & backwards
+     * the y coordinate: forwards and backwards
      */
     protected double y;
 
