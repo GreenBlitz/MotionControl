@@ -8,6 +8,7 @@ public class /*united*/State extends Position {
     protected double linearAccel /* meter/sec^2 */, angularAccel /* radians/sec^2 */;
     protected Vector2D velocity;
 
+    //<editor-fold desc="usless constructors">
     public State(double x, double y, double angle, double linearVelocity, double angularVelocity) {
         super(x, y, angle);
         this.linearVelocity = linearVelocity;
@@ -65,6 +66,17 @@ public class /*united*/State extends Position {
     public State(Point point) {
         this(point, 0);
     }
+
+    public State(double x, double y, Vector2D velocity){
+        super(x, y, Math.atan2(x, y));
+        this.linearVelocity = velocity.norm();
+        this.velocity = velocity;
+    }
+
+    public State(Point loc, Point vel){
+        this(loc.x, loc.y, new Vector2D(vel));
+    }
+    //</editor-fold>
 
 
 

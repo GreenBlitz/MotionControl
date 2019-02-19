@@ -3,6 +3,8 @@ package org.greenblitz.motion.profiling;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Vector2D;
 
+import java.util.function.Function;
+
 public class MotionProfile2D {
 
     private MotionProfile1D firstProfile, secondProfile;

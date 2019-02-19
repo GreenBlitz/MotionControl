@@ -2,6 +2,7 @@ package org.greenblitz.motion.profiling.curve;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
+import org.greenblitz.motion.base.Vector2D;
 
 public class BezierCurve implements ICurve {
 
@@ -33,9 +34,11 @@ public class BezierCurve implements ICurve {
         return segment.getLocation(convertU(u));
     }
 
+    public Point getVelocity(double u){return segment.getVelocity(convertU(u));}
+
     @Override
     public double getLinearVelocity(double u) {
-        return segment.getVelocity(convertU(u)).norm();
+        return getVelocity(u).norm();
     }
 
     @Override
@@ -71,5 +74,15 @@ public class BezierCurve implements ICurve {
                 segment,
                 (uStart / this.uSize) + this.uStart,
                 (uEnd / this.uSize) + this.uStart);
+    }
+
+    @Override
+    public String toString(){
+        return "BezierSegment{" +
+                "start=" + new State(getLocation(0), getVelocity(0)) +
+                "start=" + new State(getLocation(1), getVelocity(1)) +
+                ", uStart=" + uStart +
+                ", uEnd=" + uStart + uSize +
+                '}';
     }
 }

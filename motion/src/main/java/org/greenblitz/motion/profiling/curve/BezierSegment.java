@@ -103,7 +103,7 @@ public class BezierSegment {
     }
 
     public Point getStartVelocity() {
-        return p01;
+        return p01.scale(0.3);
     }
 
     public Point getStartLocation() {
