@@ -96,9 +96,9 @@ public class Path<T extends Point> implements Iterable<T> {
 
     /**
      * finds values representing potential intersections between a circle and a segment
-     * 0 -> segStart
-     * 1 -> segEnd
-     * negative/greater than one -> not on the segment
+     * 0 - segStart
+     * 1 - segEnd
+     * negative/greater than one - not on the segment
      *
      * @param center   the circle center
      * @param radius   the circle radius

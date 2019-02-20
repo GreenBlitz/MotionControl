@@ -17,7 +17,7 @@ public class APPCTestingCommand extends Command {
     public APPCTestingCommand(AbstractPositionPursuitController<Position> controller) {
         requires(Chassis.getInstance());
         m_controller = controller;
-        m_path = controller.getM_path();
+        m_path = controller.getPath();
         System.out.println(m_path);
         //m_path.sendToCSV("the_path");
         m_chassis = Chassis.getInstance();
