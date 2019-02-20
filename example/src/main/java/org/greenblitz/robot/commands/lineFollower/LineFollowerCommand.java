@@ -1,6 +1,7 @@
 package org.greenblitz.robot.commands.lineFollower;
 
 import org.greenblitz.motion.linefollower.LineFollower;
+import org.greenblitz.motion.tolerance.ITolerance;
 import org.greenblitz.robot.commands.PeriodicCommand;
 import org.greenblitz.robot.subsystems.Chassis;
 import org.greenblitz.utils.ColorSensor;
@@ -9,7 +10,6 @@ public class LineFollowerCommand extends PeriodicCommand {
 
     protected Chassis m_chassis;
     protected double speed;
-    protected boolean m_finished;
     protected boolean m_firstRun;
     protected LineFollower m_controller;
     protected ColorSensor sensor;
@@ -31,6 +31,7 @@ public class LineFollowerCommand extends PeriodicCommand {
         this.distance = distance;
         m_firstRun = true;
         this.side = side ? 1 : -1;
+        m_controller.setGoal(50.0);
     }
 
     public LineFollowerCommand(double kp, double ki, double kd, double speed, ColorSensor sensor, double distance, boolean side) {
@@ -40,28 +41,21 @@ public class LineFollowerCommand extends PeriodicCommand {
     @Override
     protected void periodic() {
         if (m_firstRun) {
-            m_controller.init(50.0, getPrecentage(sensor.read()));
             initDistance = Chassis.getInstance().getDistance();
             m_firstRun = false;
         }
-        m_chassis.arcadeDrive(speed, side * m_controller.calculatePID(50.0, getPrecentage(sensor.read())));
+        m_chassis.arcadeDrive(speed, side * m_controller.calculatePID(getPercentage(sensor.read())));
 
-        synchronized (this) {
-            m_finished = Chassis.getInstance().getDistance() > initDistance + distance;
-        }
     }
 
     @Override
     protected boolean isFinished() {
-        synchronized (this) {
-            return m_finished;
-        }
+        return Chassis.getInstance().getDistance() > initDistance + distance;
     }
 
-    protected double getPrecentage(short[] rgb) {
-        short[] current = rgb;
-        return 100.0 / 3.0 * ((current[0] - backround[0]) / (line[0] - backround[0])
-                + (current[1] - backround[1]) / (line[1] - backround[1])
-                + (current[2] - backround[2]) / (line[2] - backround[2]));
+    protected double getPercentage(short[] rgb) {
+        return 100.0 / 3.0 * ((rgb[0] - backround[0]) / (line[0] - backround[0])
+                + (rgb[1] - backround[1]) / (line[1] - backround[1])
+                + (rgb[2] - backround[2]) / (line[2] - backround[2]));
     }
 }

@@ -40,7 +40,6 @@ public class TalonEncoder extends AbstractEncoder {
 
     /**
      * This function resets the encoder
-     *
      */
     public void reset() {
         m_talon.getSensorCollection().setQuadraturePosition(0, 30);

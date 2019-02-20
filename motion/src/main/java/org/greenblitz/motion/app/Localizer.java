@@ -1,6 +1,5 @@
 package org.greenblitz.motion.app;
 
-import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
@@ -37,7 +36,7 @@ public class Localizer {
 
     private static final Localizer instance = new Localizer();
 
-    public static Localizer getInstance(){
+    public static Localizer getInstance() {
         return instance;
     }
 
@@ -57,21 +56,13 @@ public class Localizer {
         }
     }
 
-    /**
-     * sets initial values of Localizer, functions as constructor.
-     *
-     * @param leftTicks
-     * @param rightTicks
-     */
+
     public void configure(double wheelDistance, int leftTicks, int rightTicks) {
         m_wheelDistance = wheelDistance;
         reset(leftTicks, rightTicks);
     }
 
-    /**
-     * Reset prevDistanceLeft and prevDistanceRight.
-     * You want to call this when reseting encoders for example
-     */
+
     public void reset(double currentLeftDistance, double currentRightDistance, Position newPos) {
         synchronized (LOCK) {
             prevDistanceLeft = currentLeftDistance;
@@ -83,31 +74,16 @@ public class Localizer {
         }
     }
 
-    /**
-     * Location is the same, encoder values are reset
-     * @param currLeft
-     * @param currRight
-     */
-    public void resetEncoders(double currLeft, double currRight){
+
+    public void resetEncoders(double currLeft, double currRight) {
         reset(currLeft, currRight, getLocation());
     }
 
-    /**
-     * Reset prevDistanceLeft and prevDistanceRight.
-     * You want to call this when reseting encoders for example
-     */
+
     public void reset(double currentLeftDistance, double currentRightDistance) {
         reset(currentLeftDistance, currentRightDistance, new Position(0, 0, 0));
     }
 
-    /**
-     * calculateMovement the location
-     *
-     * @param rightDist distance right wheel traveled
-     * @param leftDist  distance left wheel traveled
-     * @param robotAng  the angle of the robot
-     * @return x difference, y difference, angle difference
-     */
     public static Point calculateMovement(double rightDist, double leftDist, double wheelDistance, double robotAng) {
         if (rightDist == leftDist) {
             return new Point(0, rightDist).rotate(robotAng);
@@ -125,7 +101,8 @@ public class Localizer {
     double sleepSpeedL;
     double sleepSpeedR;
     double sleepTime;
-    public void setSleep(long milis, double leftSpeed, double rightSpeed){
+
+    public void setSleep(long milis, double leftSpeed, double rightSpeed) {
         synchronized (SLEEP_LOCK) {
             if (!awake) return;
 
@@ -141,7 +118,7 @@ public class Localizer {
      * Don't use, this can fuck up the location
      */
     @Deprecated
-    public void wakeUp(){
+    public void wakeUp() {
         synchronized (SLEEP_LOCK) {
             wakeTime = System.currentTimeMillis();
         }
@@ -172,8 +149,8 @@ public class Localizer {
                 resetEncoders(currentLeftDistance, currentRightDistance);
 
                 Point keepUp = calculateMovement(
-                        sleepSpeedR*dt,
-                        sleepSpeedL*dt,
+                        sleepSpeedR * dt,
+                        sleepSpeedL * dt,
                         m_wheelDistance,
                         m_location.getAngle()
                 );
@@ -201,12 +178,11 @@ public class Localizer {
     }
 
     /**
-     *
-     * @param location current orientation
-     * @param currentLeftDistance current distance as measured in left encoder
+     * @param location             current orientation
+     * @param currentLeftDistance  current distance as measured in left encoder
      * @param currentRightDistance current distance as measured in right encoder
-     * @deprecated Use reset instead
      * @see Localizer#reset(double, double, Position)
+     * @deprecated Use reset instead
      */
     @Deprecated
     public void forceSetLocation(Position location, double currentLeftDistance, double currentRightDistance) {

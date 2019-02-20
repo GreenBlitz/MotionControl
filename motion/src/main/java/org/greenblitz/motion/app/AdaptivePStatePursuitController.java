@@ -6,12 +6,7 @@ import org.greenblitz.motion.pathing.Path;
 @Deprecated
 public class AdaptivePStatePursuitController extends AbstractPositionPursuitController<State> {
 
-    /**
-     * @param m_path
-     * @param m_lookahead
-     * @param m_wheelBase
-     * @param m_tolerance
-     */
+
     public AdaptivePStatePursuitController(Path<State> m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
         super(m_path, m_lookahead, m_wheelBase, m_tolerance);
     }

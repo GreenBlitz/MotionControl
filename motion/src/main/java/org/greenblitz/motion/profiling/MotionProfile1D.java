@@ -19,29 +19,18 @@ public class MotionProfile1D {
      */
     protected List<Segment> segments;
 
-    //<editor-fold desc="Constructors">
 
-    /**
-     * @param segs
-     */
     public MotionProfile1D(List<Segment> segs) {
         segments = segs;
     }
 
-    /**
-     * @param segs
-     */
     public MotionProfile1D(Segment... segs) {
         segments = Arrays.asList(segs);
     }
 
-    /**
-     *
-     */
     public MotionProfile1D() {
         this(new ArrayList<>());
     }
-    //</editor-fold>
 
     @Override
     public String toString() {
@@ -82,11 +71,7 @@ public class MotionProfile1D {
         safeAdd(second);
     }
 
-    /**
-     * Adds to profiles together, assuming the second starts where the first ends.
-     *
-     * @param second
-     */
+
     public void safeAdd(MotionProfile1D second) {
         MotionProfile1D first = this;
         if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0))) {
@@ -250,12 +235,6 @@ public class MotionProfile1D {
         return true;
     }
 
-    /**
-     * @param name
-     * @param samplesPerSecond
-     * @return
-     * @see MotionProfile1D#generateCSV(String, double)
-     */
     public boolean generateCSV(String name, int samplesPerSecond) {
         return generateCSV(name, 1.0 / samplesPerSecond);
     }
@@ -270,13 +249,6 @@ public class MotionProfile1D {
         private final IndexOutOfBoundsException timeException =
                 new IndexOutOfBoundsException("Time not in this segment");
 
-        /**
-         * @param tStart
-         * @param tEnd
-         * @param accel
-         * @param startVelocity
-         * @param startLocation
-         */
         public Segment(double tStart, double tEnd, double accel, double startVelocity, double startLocation) {
             this.tStart = tStart;
             this.tEnd = tEnd;

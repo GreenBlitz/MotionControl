@@ -8,11 +8,12 @@ public class ActuatorLocation {
     /**
      * The 'location' of the actuator in 1D space
      */
-    protected double x,
+    protected double x;
+
     /**
      * The 'velocity' of the actuator at this location. essentially it's the derivative of the location at x.
      */
-    v;
+    protected double v;
 
     @Override
     public boolean equals(Object o) {
@@ -44,10 +45,7 @@ public class ActuatorLocation {
                 '}';
     }
 
-    /**
-     * @param x
-     * @param v
-     */
+
     public ActuatorLocation(double x, double v) {
         this.x = x;
         this.v = v;

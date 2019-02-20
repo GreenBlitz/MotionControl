@@ -40,7 +40,7 @@ public class FindMaxValues extends Command {
 
     @Override
     protected void initialize() {
-        System.out.println("init");
+        System.out.println("setGoal");
         this.lastTime = System.currentTimeMillis();
     }
 
