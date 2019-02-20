@@ -153,13 +153,13 @@ public class ChassisProfiler2D {
 
             m_chunks = new ArrayList<>();
             m_chunks.add(new VelocityChunk(0, 0, 0));
-            for(ICurve curve: track)
+            for (ICurve curve : track)
                 m_chunks.add(new VelocityChunk(
                         m_chunks.get(m_chunks.size() - 1).dEnd,
                         m_chunks.get(m_chunks.size() - 1).dEnd + curve.getLength(1),
                         curve.getCurvature()));
 
-            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size()-1).dEnd));
+            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size() - 1).dEnd));
 
             for (int ind = 1; ind < m_chunks.size(); ind++)
                 m_chunks.get(ind).concatBackwards(m_chunks.get(ind - 1));
@@ -196,16 +196,16 @@ public class ChassisProfiler2D {
                 inertia = new VelocitySegment(maxVelocity, AccelerationMode.INERTIA);
             }
 
-            public VelocityChunk(double d){
+            public VelocityChunk(double d) {
                 this.dStart = d;
-                this.dEnd=d;
-                this.maxVelocity=0;
-                this.maxAcceleration=0;
+                this.dEnd = d;
+                this.maxVelocity = 0;
+                this.maxAcceleration = 0;
                 inertia = new VelocitySegment(0, AccelerationMode.INERTIA);
             }
 
-            public boolean isPartOfChunk(double dist){
-                return dist>=dStart && dist<= dEnd;
+            public boolean isPartOfChunk(double dist) {
+                return dist >= dStart && dist <= dEnd;
             }
 
             public double getVelocity(double dist) {
@@ -279,14 +279,14 @@ public class ChassisProfiler2D {
 
             }
 
-            /**
-             * INERTIA = constant speed
-             */
         }
 
         public enum AccelerationMode {
             SPEED_UP,
             SLOW_DOWN,
+            /**
+             * INERTIA = constant speed
+             */
             INERTIA
         }
     }
