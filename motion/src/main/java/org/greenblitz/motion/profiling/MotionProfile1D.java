@@ -51,8 +51,15 @@ public class MotionProfile1D {
         return toRet;
     }
 
-
-    public void add(MotionProfile1D second, double maxV, double maxA, double minA) {
+    /**
+     * Adds the given profile to this one, and if needed generates a in-between profile to bridge a potential gap.
+     *
+     * @param second
+     * @param maxV
+     * @param maxA
+     * @param minA
+     */
+    public void autocompleteAdd(MotionProfile1D second, double maxV, double maxA, double minA) {
         MotionProfile1D first = this;
         if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0))) {
             List<ActuatorLocation> startAndEnd = new ArrayList<>();
@@ -82,6 +89,14 @@ public class MotionProfile1D {
         }
 
         segments.addAll(secondSegs);
+    }
+
+    /**
+     * Will append the segments from second directly to this profile. take care when using this function.
+     * @param second
+     */
+    public void unsafeAdd(MotionProfile1D second){
+        segments.addAll(second.getSegments());
     }
 
     private int previous = 0;
@@ -314,7 +329,7 @@ public class MotionProfile1D {
             return "BezierSegment{" +
                     "tStart=" + tStart +
                     ", tEnd=" + tEnd +
-                    ", accel=" + accel +
+                    ", slpoe=" + accel +
                     ", startVelocity=" + startVelocity +
                     ", startLocation=" + startLocation +
                     '}';

@@ -30,6 +30,7 @@ public interface ICurve {
 
     /**
      *
+     * pre the curve approximates an arc
      * @param u in the range [0, 1] representing the location on the curve.
      * @return the length of the arc up to the given point
      */
@@ -41,6 +42,13 @@ public interface ICurve {
      * @return the angle of the tangent line to the given point on the curve
      */
     double getAngle(double u);
+
+    /**
+     *
+     * pre the curve approximates an arc
+     * @return The curvature of the curve at that point
+     */
+    double getCurvature();
 
     /**
      *

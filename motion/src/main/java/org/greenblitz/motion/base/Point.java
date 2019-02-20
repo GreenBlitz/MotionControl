@@ -265,7 +265,7 @@ public class Point {
 
     @Deprecated
     public Point mathToFrcCoords() {
-        return localizerToMathCoords();
+        return changeCoords(CoordinateSystems.MATH, CoordinateSystems.LOCALIZER);
     }
 
     /**

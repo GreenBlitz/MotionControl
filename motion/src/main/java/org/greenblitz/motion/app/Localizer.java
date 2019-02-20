@@ -40,7 +40,16 @@ public class Localizer {
         return instance;
     }
 
-
+    /**
+     * <p>Get the org.greenblitz.example.robot location. This is the system: </p>
+     * ^<br>
+     * |<br>
+     * |<br>
+     * R
+     * <br> <br> Where 'R' is the org.greenblitz.example.robot, up is the y coord and left is the x coord
+     *
+     * @return
+     */
     public Position getLocation() {
         synchronized (LOCK) {
             return m_location.clone();
