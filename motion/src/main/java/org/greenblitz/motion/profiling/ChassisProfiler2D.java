@@ -146,13 +146,19 @@ public class ChassisProfiler2D {
         private List<VelocityChunk> m_chunks;
         private int previous;
 
+        @Deprecated // testing purposes only
+        public VelocityGraph(double maxLinearVel, double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+            previous = 0;
+            initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
+        }
+
         public VelocityGraph(List<ICurve> track, double maxLinearVel,
                              double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
             previous = 0;
             initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
 
             m_chunks = new ArrayList<>();
-            m_chunks.add(new VelocityChunk(0, 0, 0));
+            m_chunks.add(new VelocityChunk(0));
             for (ICurve curve : track)
                 m_chunks.add(new VelocityChunk(
                         m_chunks.get(m_chunks.size() - 1).dEnd,
@@ -166,6 +172,11 @@ public class ChassisProfiler2D {
 
             for (int ind = m_chunks.size() - 2; ind >= 0; ind--)
                 m_chunks.get(ind).concatForwards(m_chunks.get(ind + 1));
+        }
+
+        @Deprecated // testing purposes only
+        public VelocityChunk makeChunk(double length, double curvature){
+            return new VelocityChunk(0, length, curvature);
         }
 
         private VelocityChunk quickGetChunk(double dist) {
@@ -202,6 +213,11 @@ public class ChassisProfiler2D {
                 this.maxVelocity = 0;
                 this.maxAcceleration = 0;
                 inertia = new VelocitySegment(0, AccelerationMode.INERTIA);
+            }
+
+            @Deprecated // testing purposes only
+            public VelocitySegment makeSegment(double velocity, AccelerationMode mode){
+                return new VelocitySegment(velocity, mode);
             }
 
             public boolean isPartOfChunk(double dist) {
