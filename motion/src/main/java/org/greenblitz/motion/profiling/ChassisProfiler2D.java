@@ -152,13 +152,13 @@ public class ChassisProfiler2D {
             initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
 
             m_chunks = new ArrayList<>();
-            m_chunks.add(new VelocityChunk(0, 0, 0));
+            m_chunks.add(new VelocityChunk(0));
             for(ICurve curve: track)
                 m_chunks.add(new VelocityChunk(
                         m_chunks.get(m_chunks.size()-1).dEnd,
                         m_chunks.get(m_chunks.size()-1).dEnd + curve.getLength(1),
                         curve.getCurvature()));
-            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size()-1).dEnd, m_chunks.get(m_chunks.size()-1).dEnd, 0));
+            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size()-1).dEnd));
 
             for(int ind=1; ind<m_chunks.size(); ind++)
                 m_chunks.get(ind).concatBackwards(m_chunks.get(ind-1));
@@ -195,6 +195,14 @@ public class ChassisProfiler2D {
                 inertia = new VelocitySegment(maxVelocity, AccelerationMode.INERTIA);
             }
 
+            public VelocityChunk(double d){
+                this.dStart = d;
+                this.dEnd=d;
+                this.maxVelocity=0;
+                this.maxAcceleration=0;
+                inertia = new VelocitySegment(0, AccelerationMode.INERTIA);
+            }
+
             public boolean isPartOfChunk(double dist){
                 return dist>=dStart && dist<= dEnd;
             }
@@ -202,27 +210,27 @@ public class ChassisProfiler2D {
             public double getVelocity(double dist) {
                 double ret = inertia.getVelocity(dist);
                 if (speedup != null)
-                    ret = Math.max(ret, speedup.getVelocity(dist));
+                    ret = Math.min(ret, speedup.getVelocity(dist));
                 if (slowdown != null)
-                    ret = Math.max(ret, slowdown.getVelocity(dist));
+                    ret = Math.min(ret, slowdown.getVelocity(dist));
                 return ret;
             }
 
             public double getStartVelocity() {
                 double ret = inertia.getStartVelocity();
                 if (speedup != null)
-                    ret = Math.max(ret, speedup.getStartVelocity());
+                    ret = Math.min(ret, speedup.getStartVelocity());
                 if (slowdown != null)
-                    ret = Math.max(ret, slowdown.getStartVelocity());
+                    ret = Math.min(ret, slowdown.getStartVelocity());
                 return ret;
             }
 
             public double getEndVelocity() {
                 double ret = inertia.getEndVelocity();
                 if (speedup != null)
-                    ret = Math.max(ret, speedup.getEndVelocity());
+                    ret = Math.min(ret, speedup.getEndVelocity());
                 if (slowdown != null)
-                    ret = Math.max(ret, slowdown.getEndVelocity());
+                    ret = Math.min(ret, slowdown.getEndVelocity());
                 return ret;
             }
 
