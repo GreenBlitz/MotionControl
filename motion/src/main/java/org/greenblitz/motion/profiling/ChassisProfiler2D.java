@@ -36,9 +36,11 @@ public class ChassisProfiler2D {
 
             subCurves.clear(); // All subcurves with kinda equal curvature
             divideToEqualCurvatureSubcurves(subCurves, curve, jump, curvatureTolerance);
-            System.out.println(subCurves);
 
-            double currentMaxLinearVelocity, currenctMaxLinearAccel, curvature;
+            VelocityGraph velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
+                    maxLinearAcc, maxAngularAcc);
+
+            double currentMaxLinearVelocity, currentMaxLinearAccel, curvature;
             path.clear();
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
@@ -46,17 +48,17 @@ public class ChassisProfiler2D {
             for (ICurve subCur : subCurves) {
                 curvature = subCur.getCurvature();
                 currentMaxLinearVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
-                currenctMaxLinearAccel = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
+                currentMaxLinearAccel = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
 
                 path.get(0).setX(lenSoFar);
-                path.get(0).setV(subCur.getLinearVelocity(0));
+                path.get(0).setV(velByLoc.getVelocity(lenSoFar));
                 path.get(1).setX(lenSoFar + subCur.getLength(1));
-                path.get(1).setV(subCur.getLinearVelocity(1));
+                path.get(1).setV(velByLoc.getVelocity(lenSoFar + subCur.getAngle(1)));
                 lenSoFar = path.get(1).getX();
 
                 tempProfile = Profiler1D.generateProfile(
                         path,
-                        currentMaxLinearVelocity, currenctMaxLinearAccel, -currenctMaxLinearAccel, t0
+                        currentMaxLinearVelocity, currentMaxLinearAccel, -currentMaxLinearAccel, t0
                 );
                 t0 = tempProfile.getTEnd();
 
@@ -178,6 +180,10 @@ public class ChassisProfiler2D {
         public VelocityChunk makeChunk(double length, double curvature){
             return new VelocityChunk(0, length, curvature);
         }
+        @Deprecated // testing purposes only
+        public VelocityChunk makeChunk(double ds, double length, double curvature){
+            return new VelocityChunk(ds, ds+length, curvature);
+        }
 
         private VelocityChunk quickGetChunk(double dist) {
             for (int i = 0; i < m_chunks.size(); i++) {
@@ -187,6 +193,14 @@ public class ChassisProfiler2D {
                 }
             }
             throw new IndexOutOfBoundsException("No segment with distance " + dist);
+        }
+
+        @Override
+        public String toString() {
+            return "VelocityGraph{" +
+                    "m_chunks=" + m_chunks +
+                    ", previous=" + previous +
+                    '}';
         }
 
         public double getVelocity(double dist) {
@@ -251,6 +265,19 @@ public class ChassisProfiler2D {
                 return ret;
             }
 
+            @Override
+            public String toString() {
+                return "VelocityChunk{" +
+                        "dStart=" + dStart +
+                        ", dEnd=" + dEnd +
+                        ", maxVelocity=" + maxVelocity +
+                        ", maxAcceleration=" + maxAcceleration +
+                        ", speedup=" + speedup +
+                        ", slowdown=" + slowdown +
+                        ", inertia=" + inertia +
+                        '}';
+            }
+
             public void concatBackwards(VelocityChunk other) {
                 speedup = new VelocitySegment(other.getEndVelocity(), AccelerationMode.SPEED_UP);
             }
@@ -261,10 +288,13 @@ public class ChassisProfiler2D {
 
             public class VelocitySegment {
 
+                /**
+                 * Start velocity on speed up, end velocity on slowdown
+                 */
                 private final double velocity;
                 private final AccelerationMode mode;
 
-                public VelocitySegment(double velocity, AccelerationMode mode) {
+                public  VelocitySegment(double velocity, AccelerationMode mode) {
                     this.velocity = velocity;
                     this.mode = mode;
                 }
@@ -293,6 +323,13 @@ public class ChassisProfiler2D {
                     return mode != AccelerationMode.SPEED_UP ? velocity : getVelocity(dEnd);
                 }
 
+                @Override
+                public String toString() {
+                    return "VelocitySegment{" +
+                            "velocity=" + velocity +
+                            ", mode=" + mode +
+                            '}';
+                }
             }
 
         }
