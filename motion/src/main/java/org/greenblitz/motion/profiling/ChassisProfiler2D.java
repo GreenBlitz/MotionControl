@@ -126,7 +126,7 @@ public class ChassisProfiler2D {
     }
 
     private static VelocityGraph getVelocityGraph(List<ICurve> track, double maxLinearVel,
-                                                          double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
         return new VelocityGraph(track, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
     }
 
@@ -153,21 +153,21 @@ public class ChassisProfiler2D {
 
             m_chunks = new ArrayList<>();
             m_chunks.add(new VelocityChunk(0, 0, 0));
-            for(ICurve curve: track)
+            for (ICurve curve : track)
                 m_chunks.add(new VelocityChunk(
-                        m_chunks.get(m_chunks.size()-1).dEnd,
-                        m_chunks.get(m_chunks.size()-1).dEnd + curve.getLength(1),
+                        m_chunks.get(m_chunks.size() - 1).dEnd,
+                        m_chunks.get(m_chunks.size() - 1).dEnd + curve.getLength(1),
                         curve.getCurvature()));
-            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size()-1).dEnd, m_chunks.get(m_chunks.size()-1).dEnd, 0));
+            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size() - 1).dEnd, m_chunks.get(m_chunks.size() - 1).dEnd, 0));
 
-            for(int ind=1; ind<m_chunks.size(); ind++)
-                m_chunks.get(ind).concatBackwards(m_chunks.get(ind-1));
+            for (int ind = 1; ind < m_chunks.size(); ind++)
+                m_chunks.get(ind).concatBackwards(m_chunks.get(ind - 1));
 
-            for(int ind=m_chunks.size()-2; ind>=0; ind--)
-                m_chunks.get(ind).concatForwards(m_chunks.get(ind+1));
+            for (int ind = m_chunks.size() - 2; ind >= 0; ind--)
+                m_chunks.get(ind).concatForwards(m_chunks.get(ind + 1));
         }
 
-        private VelocityChunk quickGetChunk(double dist){
+        private VelocityChunk quickGetChunk(double dist) {
             for (int i = 0; i < m_chunks.size(); i++) {
                 if (m_chunks.get((previous + i) % m_chunks.size()).isPartOfChunk(dist)) {
                     previous = (i + previous) % m_chunks.size();
@@ -177,7 +177,7 @@ public class ChassisProfiler2D {
             throw new IndexOutOfBoundsException("No segment with distance " + dist);
         }
 
-        public double getVelocity(double dist){
+        public double getVelocity(double dist) {
             return quickGetChunk(dist).getVelocity(dist);
         }
 
@@ -195,8 +195,8 @@ public class ChassisProfiler2D {
                 inertia = new VelocitySegment(maxVelocity, AccelerationMode.INERTIA);
             }
 
-            public boolean isPartOfChunk(double dist){
-                return dist>=dStart && dist<= dEnd;
+            public boolean isPartOfChunk(double dist) {
+                return dist >= dStart && dist <= dEnd;
             }
 
             public double getVelocity(double dist) {
@@ -274,6 +274,7 @@ public class ChassisProfiler2D {
              * INERTIA = constant speed
              */
         }
+
         public enum AccelerationMode {
             SPEED_UP,
             SLOW_DOWN,
