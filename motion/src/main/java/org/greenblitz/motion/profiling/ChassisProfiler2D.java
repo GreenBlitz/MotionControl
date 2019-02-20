@@ -152,60 +152,89 @@ public class ChassisProfiler2D {
         }
     }
 
-    public static class VelocitySegment{
-        private double dStart, dEnd, vStart, vEnd, rootConst;
+    public static class VelocityChunk {
 
-        public VelocitySegment(double dStart, double dEnd, double vStart, double rootConst) {
+        private static double maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc;
+
+        public void initialize(double maxLinearVel, double maxAngularVel,
+                               double maxLinearAcc, double maxAngularAcc){
+            VelocityChunk.maxLinearVel = maxLinearVel;
+            VelocityChunk.maxAngularVel = maxAngularVel;
+            VelocityChunk.maxLinearAcc = maxLinearAcc;
+            VelocityChunk.maxAngularAcc = maxAngularAcc;
+        }
+
+        public final double dStart, dEnd,
+                maxVelocity, maxAcceleration;
+        private List<VelocitySegment> segments;
+
+        public VelocityChunk(double dStart, double dEnd, double curvature){
             this.dStart = dStart;
             this.dEnd = dEnd;
-            this.vStart = vStart;
-            this.rootConst = rootConst;
-            this.vEnd = vStart + rootConst *(dEnd-dStart);
+            maxVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
+            maxAcceleration = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
+            this.segments = new ArrayList<>();
+            segments.add(new VelocitySegment(dStart, dEnd, maxVelocity, maxAcceleration));
         }
 
-        public double getDStart() {
-            return dStart;
-        }
 
-        public void setDStart(double dStart) {
-            this.dStart = dStart;
-            this.vStart = ;
-        }
 
-        public double getDEnd() {
-            return dEnd;
-        }
+        public class VelocitySegment {
 
-        public void setDEnd(double dEnd) {
-            this.dEnd = dEnd;
-            this.vEnd = vStart + rootConst *(dEnd-dStart);
-        }
+            private double dStart, dEnd, vStart, vEnd, rootConst;
 
-        public double getVStart() {
-            return vStart;
-        }
+            public VelocitySegment(double dStart, double dEnd, double vStart, double rootConst) {
+                this.dStart = dStart;
+                this.dEnd = dEnd;
+                this.vStart = vStart;
+                this.rootConst = rootConst;
+                this.vEnd = vStart + rootConst * (dEnd - dStart);
+            }
 
-        public void setVStart(double vStart) {
-            this.vStart = vStart;
-            this.rootConst = (vEnd-vStart)/(dEnd-dStart);
-        }
+            public double getDStart() {
+                return dStart;
+            }
 
-        public double getVEnd() {
-            return vEnd;
-        }
+            public void setDStart(double dStart) {
+                this.dStart = dStart;
+                this.vStart =;
+            }
 
-        public void setVEnd(double vEnd) {
-            this.vEnd = vEnd;
-            this.rootConst = (vEnd-vStart)/(dEnd-dStart);
-        }
+            public double getDEnd() {
+                return dEnd;
+            }
 
-        public double getRootConst() {
-            return rootConst;
-        }
+            public void setDEnd(double dEnd) {
+                this.dEnd = dEnd;
+                this.vEnd = vStart + rootConst * (dEnd - dStart);
+            }
 
-        public void setRootConst(double rootConst) {
-            this.rootConst = rootConst;
-            this.vEnd = vStart + rootConst *(dEnd-dStart);
+            public double getVStart() {
+                return vStart;
+            }
+
+            public void setVStart(double vStart) {
+                this.vStart = vStart;
+                this.rootConst = (vEnd - vStart) / (dEnd - dStart);
+            }
+
+            public double getVEnd() {
+                return vEnd;
+            }
+
+            public void setVEnd(double vEnd) {
+                this.vEnd = vEnd;
+                this.rootConst = (vEnd - vStart) / (dEnd - dStart);
+            }
+
+            public double getRootConst() {
+                return rootConst;
+            }
+
+            public void setRootConst(double rootConst) {
+                this.rootConst = rootConst;
+                this.vEnd = vStart + rootConst * (dEnd - dStart);
+            }
         }
     }
 }
