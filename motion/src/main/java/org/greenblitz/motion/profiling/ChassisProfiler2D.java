@@ -64,7 +64,7 @@ public class ChassisProfiler2D {
 
                 rotationSegs = tempProfile.getSegments();
                 MotionProfile1D.Segment seg0 = rotationSegs.get(0);
-                seg0.setAccel(seg0.getAccel()*curvature);
+                seg0.setAccel(seg0.getAccel() * curvature);
                 seg0.setStartLocation(first.getAngle());
                 seg0.setStartVelocity(first.getAngularVelocity());
                 MotionProfile1D.Segment curr, prev;
@@ -82,11 +82,11 @@ public class ChassisProfiler2D {
         return new MotionProfile2D(linearProfile, angularProfile);
     }
 
-    private static double getMaxVelocity(double maxLinearVel, double maxAngularVel, double curvature){
+    private static double getMaxVelocity(double maxLinearVel, double maxAngularVel, double curvature) {
         return 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
     }
 
-    private static double getMaxAcceleration(double maxLinearAcc, double maxAngularAcc, double curvature){
+    private static double getMaxAcceleration(double maxLinearAcc, double maxAngularAcc, double curvature) {
         return 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
     }
 
@@ -94,14 +94,15 @@ public class ChassisProfiler2D {
      * This function takes one curve, and stores it's subcurves in a list,
      * such as each subcurve continues the previous one and each subcurve will have
      * roughly equal curvature.
-     * @param returnList The list to which the subcurves will be added
-     * @param source The main curve to be divided
-     * @param jump Jump intervals, when sampling the curvature the function will sample
-     *             every 'jump' units.
+     *
+     * @param returnList         The list to which the subcurves will be added
+     * @param source             The main curve to be divided
+     * @param jump               Jump intervals, when sampling the curvature the function will sample
+     *                           every 'jump' units.
      * @param curvatureTolerance The maximum curvature difference within each subcurve.
      * @return returnList
      */
-    private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump, double curvatureTolerance){
+    private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump, double curvatureTolerance) {
         double t0 = 0;
         double curveStart, prevt0;
         while (t0 < 1.0) {
@@ -124,117 +125,159 @@ public class ChassisProfiler2D {
         return returnList;
     }
 
-    private static List<VelocitySegment> getVelocityGragh(List<ICurve> track, double maxLinearVel,
-                                                          double maxAngularVel, double maxLinearAcc, double maxAngularAcc){
-        List<VelocitySegment> gragh1 = new ArrayList<>();
-        gragh1.add(new VelocitySegment(0, 0, 0, 0));
-        for(ICurve curve: track){
-            double start = gragh1.get(gragh1.size()-1).getDEnd();
-            double length = curve.getLength(1);
-            double vStart = getMaxVelocity(maxLinearVel, maxAngularVel, curve.getCurvature());
-            double slope = 0;
-            gragh1.add(new VelocitySegment(start,start+length, vStart, slope));
-        }
-        double end = gragh1.get(gragh1.size()-1).getDEnd();
-        gragh1.add(new VelocitySegment(end, end, 0, 0));
-
-        List<VelocitySegment> gragh2 = new ArrayList<>();
-        gragh2.add(gragh1.get(0));
-        for(int ind=1; ind<gragh1.size(); ind++){
-            if(gragh1.get(ind).getVStart() > gragh2.get(ind-1).getVStart()){
-                ICurve curve = track.get(ind);
-                double slope = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curve.getCurvature())/;
-                double start = gragh2.get(ind-1).getDEnd();
-                double length = curve.getLength(1);
-                double vStart = gragh1.get(gragh1.size()-1).getVEnd();
-
-            }
-        }
+    private static VelocityGraph getVelocityGraph(List<ICurve> track, double maxLinearVel,
+                                                          double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+        return new VelocityGraph(track, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
     }
 
-    public static class VelocityChunk {
+
+    public static class VelocityGraph {
 
         private static double maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc;
 
         public void initialize(double maxLinearVel, double maxAngularVel,
-                               double maxLinearAcc, double maxAngularAcc){
-            VelocityChunk.maxLinearVel = maxLinearVel;
-            VelocityChunk.maxAngularVel = maxAngularVel;
-            VelocityChunk.maxLinearAcc = maxLinearAcc;
-            VelocityChunk.maxAngularAcc = maxAngularAcc;
+                               double maxLinearAcc, double maxAngularAcc) {
+            VelocityGraph.maxLinearVel = maxLinearVel;
+            VelocityGraph.maxAngularVel = maxAngularVel;
+            VelocityGraph.maxLinearAcc = maxLinearAcc;
+            VelocityGraph.maxAngularAcc = maxAngularAcc;
         }
 
-        public final double dStart, dEnd,
-                maxVelocity, maxAcceleration;
-        private List<VelocitySegment> segments;
+        private List<VelocityChunk> m_chunks;
+        private int previous;
 
-        public VelocityChunk(double dStart, double dEnd, double curvature){
-            this.dStart = dStart;
-            this.dEnd = dEnd;
-            maxVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
-            maxAcceleration = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
-            this.segments = new ArrayList<>();
-            segments.add(new VelocitySegment(dStart, dEnd, maxVelocity, maxAcceleration));
+        public VelocityGraph(List<ICurve> track, double maxLinearVel,
+                             double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+            previous = 0;
+            initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
+
+            m_chunks = new ArrayList<>();
+            m_chunks.add(new VelocityChunk(0, 0, 0));
+            for(ICurve curve: track)
+                m_chunks.add(new VelocityChunk(
+                        m_chunks.get(m_chunks.size()-1).dEnd,
+                        m_chunks.get(m_chunks.size()-1).dEnd + curve.getLength(1),
+                        curve.getCurvature()));
+            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size()-1).dEnd, m_chunks.get(m_chunks.size()-1).dEnd, 0));
+
+            for(int ind=1; ind<m_chunks.size(); ind++)
+                m_chunks.get(ind).concatBackwards(m_chunks.get(ind-1));
+
+            for(int ind=m_chunks.size()-2; ind>=0; ind--)
+                m_chunks.get(ind).concatForwards(m_chunks.get(ind+1));
         }
 
+        private VelocityChunk quickGetChunk(double dist){
+            for (int i = 0; i < m_chunks.size(); i++) {
+                if (m_chunks.get((previous + i) % m_chunks.size()).isPartOfChunk(dist)) {
+                    previous = (i + previous) % m_chunks.size();
+                    return m_chunks.get(previous);
+                }
+            }
+            throw new IndexOutOfBoundsException("No segment with distance " + dist);
+        }
 
+        public double getVelocity(double dist){
+            return quickGetChunk(dist).getVelocity(dist);
+        }
 
-        public class VelocitySegment {
+        public class VelocityChunk {
 
-            private double dStart, dEnd, vStart, vEnd, rootConst;
+            public final double dStart, dEnd,
+                    maxVelocity, maxAcceleration;
+            private VelocitySegment speedup = null, slowdown = null, inertia;
 
-            public VelocitySegment(double dStart, double dEnd, double vStart, double rootConst) {
+            public VelocityChunk(double dStart, double dEnd, double curvature) {
                 this.dStart = dStart;
                 this.dEnd = dEnd;
-                this.vStart = vStart;
-                this.rootConst = rootConst;
-                this.vEnd = vStart + rootConst * (dEnd - dStart);
+                maxVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
+                maxAcceleration = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
+                inertia = new VelocitySegment(maxVelocity, AccelerationMode.INERTIA);
             }
 
-            public double getDStart() {
-                return dStart;
+            public boolean isPartOfChunk(double dist){
+                return dist>=dStart && dist<= dEnd;
             }
 
-            public void setDStart(double dStart) {
-                this.dStart = dStart;
-                this.vStart =;
+            public double getVelocity(double dist) {
+                double ret = inertia.getVelocity(dist);
+                if (speedup != null)
+                    ret = Math.max(ret, speedup.getVelocity(dist));
+                if (slowdown != null)
+                    ret = Math.max(ret, slowdown.getVelocity(dist));
+                return ret;
             }
 
-            public double getDEnd() {
-                return dEnd;
+            public double getStartVelocity() {
+                double ret = inertia.getStartVelocity();
+                if (speedup != null)
+                    ret = Math.max(ret, speedup.getStartVelocity());
+                if (slowdown != null)
+                    ret = Math.max(ret, slowdown.getStartVelocity());
+                return ret;
             }
 
-            public void setDEnd(double dEnd) {
-                this.dEnd = dEnd;
-                this.vEnd = vStart + rootConst * (dEnd - dStart);
+            public double getEndVelocity() {
+                double ret = inertia.getEndVelocity();
+                if (speedup != null)
+                    ret = Math.max(ret, speedup.getEndVelocity());
+                if (slowdown != null)
+                    ret = Math.max(ret, slowdown.getEndVelocity());
+                return ret;
             }
 
-            public double getVStart() {
-                return vStart;
+            public void concatBackwards(VelocityChunk other) {
+                speedup = new VelocitySegment(other.getEndVelocity(), AccelerationMode.SPEED_UP);
             }
 
-            public void setVStart(double vStart) {
-                this.vStart = vStart;
-                this.rootConst = (vEnd - vStart) / (dEnd - dStart);
+            public void concatForwards(VelocityChunk other) {
+                slowdown = new VelocitySegment(other.getStartVelocity(), AccelerationMode.SLOW_DOWN);
             }
 
-            public double getVEnd() {
-                return vEnd;
+            public class VelocitySegment {
+
+                private final double velocity;
+                private final AccelerationMode mode;
+
+                public VelocitySegment(double velocity, AccelerationMode mode) {
+                    this.velocity = velocity;
+                    this.mode = mode;
+                }
+
+                public AccelerationMode getMode() {
+                    return mode;
+                }
+
+                public double getVelocity(double dist) {
+                    switch (mode) {
+                        case INERTIA:
+                            return velocity;
+                        case SPEED_UP:
+                            return Math.sqrt(velocity * velocity + 2 * maxAcceleration * (dist - dStart));
+                        case SLOW_DOWN:
+                            return Math.sqrt(velocity * velocity + 2 * maxAcceleration * (dEnd - dist));
+                    }
+                    throw new RuntimeException("congratulations! you have discovered a hidden part of the code!");
+                }
+
+                public double getStartVelocity() {
+                    return mode != AccelerationMode.SLOW_DOWN ? velocity : getVelocity(dStart);
+                }
+
+                public double getEndVelocity() {
+                    return mode != AccelerationMode.SPEED_UP ? velocity : getVelocity(dEnd);
+                }
+
             }
 
-            public void setVEnd(double vEnd) {
-                this.vEnd = vEnd;
-                this.rootConst = (vEnd - vStart) / (dEnd - dStart);
-            }
-
-            public double getRootConst() {
-                return rootConst;
-            }
-
-            public void setRootConst(double rootConst) {
-                this.rootConst = rootConst;
-                this.vEnd = vStart + rootConst * (dEnd - dStart);
-            }
+            /**
+             * INERTIA = constant speed
+             */
+        }
+        public enum AccelerationMode {
+            SPEED_UP,
+            SLOW_DOWN,
+            INERTIA
         }
     }
 }
