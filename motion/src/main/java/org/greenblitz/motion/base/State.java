@@ -105,10 +105,10 @@ public class /*united*/State extends Position {
     @Override
     public String toString() {
         return "State{" +
-                ", x=" + x +
+                "x=" + x +
                 ", y=" + y +
                 ", angle=" + angle +
-                "linearVelocity=" + linearVelocity +
+                ", linearVelocity=" + linearVelocity +
                 ", angularVelocity=" + angularVelocity +
                 ", linearAccel=" + linearAccel +
                 ", angularAccel=" + angularAccel +

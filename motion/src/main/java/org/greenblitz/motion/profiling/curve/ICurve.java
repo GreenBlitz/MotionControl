@@ -46,14 +46,14 @@ public interface ICurve {
     /**
      *
      * pre the curve approximates an arc
-     * @return The curvature of the curve at that point
+     * @return The curve of the curve at that point
      */
     double getCurvature();
 
     /**
      *
      * @param u in the range [0, 1] representing the location on the curve.
-     * @return The curvature of the curve at that point
+     * @return The curve of the curve at that point
      */
     double getCurvature(double u);
 

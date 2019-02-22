@@ -34,8 +34,9 @@ public class ChassisProfiler2D {
 
             curve = new BezierCurve(first, second);
 
-            subCurves.clear(); // All subcurves with kinda equal curvature
+            subCurves.clear(); // All subcurves with kinda equal curve
             divideToEqualCurvatureSubcurves(subCurves, curve, jump, curvatureTolerance);
+            System.out.println(subCurves);
 
             VelocityGraph velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
                     maxLinearAcc, maxAngularAcc);
@@ -45,15 +46,19 @@ public class ChassisProfiler2D {
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
             double lenSoFar = 0;
-            for (ICurve subCur : subCurves) {
+            for (int i1 = 0; i1 < subCurves.size(); i1++) {
+                ICurve subCur = subCurves.get(i1);
                 curvature = subCur.getCurvature();
                 currentMaxLinearVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
                 currentMaxLinearAccel = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
+                System.out.println("------------------------");
+                System.out.println("for curve=" + subCur);
+                System.out.println(lenSoFar);
 
                 path.get(0).setX(lenSoFar);
-                path.get(0).setV(velByLoc.getVelocity(lenSoFar));
+                path.get(0).setV(velByLoc.getStartVelocity(i1, true));
                 path.get(1).setX(lenSoFar + subCur.getLength(1));
-                path.get(1).setV(velByLoc.getVelocity(lenSoFar + subCur.getAngle(1)));
+                path.get(1).setV(velByLoc.getEndVelocity(i1, true));
                 lenSoFar = path.get(1).getX();
 
                 tempProfile = Profiler1D.generateProfile(
@@ -93,15 +98,16 @@ public class ChassisProfiler2D {
     }
 
     /**
+     * FIX THIS NOT WORK!
      * This function takes one curve, and stores it's subcurves in a list,
      * such as each subcurve continues the previous one and each subcurve will have
-     * roughly equal curvature.
+     * roughly equal curve.
      *
      * @param returnList         The list to which the subcurves will be added
      * @param source             The main curve to be divided
-     * @param jump               Jump intervals, when sampling the curvature the function will sample
+     * @param jump               Jump intervals, when sampling the curve the function will sample
      *                           every 'jump' units.
-     * @param curvatureTolerance The maximum curvature difference within each subcurve.
+     * @param curvatureTolerance The maximum curve difference within each subcurve.
      * @return returnList
      */
     private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump, double curvatureTolerance) {
@@ -147,42 +153,53 @@ public class ChassisProfiler2D {
 
         private List<VelocityChunk> m_chunks;
         private int previous;
+        public final double length;
 
         @Deprecated // testing purposes only
         public VelocityGraph(double maxLinearVel, double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
             previous = 0;
             initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
+            length=0;
         }
 
         public VelocityGraph(List<ICurve> track, double maxLinearVel,
                              double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
             previous = 0;
             initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
+            double tmpLength=0;
 
             m_chunks = new ArrayList<>();
-            m_chunks.add(new VelocityChunk(0));
-            for (ICurve curve : track)
+            m_chunks.add(new VelocityChunk(Double.NEGATIVE_INFINITY, 0));
+            for (ICurve curve : track) {
                 m_chunks.add(new VelocityChunk(
                         m_chunks.get(m_chunks.size() - 1).dEnd,
                         m_chunks.get(m_chunks.size() - 1).dEnd + curve.getLength(1),
-                        curve.getCurvature()));
+                        curve.getCurvature(), curve));
+                tmpLength+=m_chunks.get(m_chunks.size()-1).dEnd-m_chunks.get(m_chunks.size()-1).dStart;
+            }
 
-            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size() - 1).dEnd));
+            m_chunks.add(new VelocityChunk(m_chunks.get(m_chunks.size() - 1).dEnd, Double.POSITIVE_INFINITY));
 
             for (int ind = 1; ind < m_chunks.size(); ind++)
                 m_chunks.get(ind).concatBackwards(m_chunks.get(ind - 1));
 
             for (int ind = m_chunks.size() - 2; ind >= 0; ind--)
                 m_chunks.get(ind).concatForwards(m_chunks.get(ind + 1));
+
+            length = tmpLength;
         }
 
         @Deprecated // testing purposes only
-        public VelocityChunk makeChunk(double length, double curvature){
-            return new VelocityChunk(0, length, curvature);
+        public VelocityChunk makeChunk(double length, double curvature, ICurve curve){
+            return new VelocityChunk(0, length, curvature, curve);
         }
         @Deprecated // testing purposes only
-        public VelocityChunk makeChunk(double ds, double length, double curvature){
-            return new VelocityChunk(ds, ds+length, curvature);
+        public VelocityChunk makeChunk(double ds, double length, double curvature, ICurve curve){
+            return new VelocityChunk(ds, ds+length, curvature, curve);
+        }
+
+        public double getLength() {
+            return length;
         }
 
         private VelocityChunk quickGetChunk(double dist) {
@@ -195,16 +212,24 @@ public class ChassisProfiler2D {
             throw new IndexOutOfBoundsException("No segment with distance " + dist);
         }
 
+        public double getVelocity(double dist) {
+            return quickGetChunk(dist).getVelocity(dist);
+        }
+
+        public double getStartVelocity(int ind, boolean print){
+            return m_chunks.get(ind+1).getStartVelocity(print);
+        }
+
+        public double getEndVelocity(int ind, boolean print){
+            return m_chunks.get(ind+1).getEndVelocity(print);
+        }
+
         @Override
         public String toString() {
             return "VelocityGraph{" +
-                    "m_chunks=" + m_chunks +
-                    ", previous=" + previous +
+                    "length=" + length +
+                    ", m_chunks=" + m_chunks +
                     '}';
-        }
-
-        public double getVelocity(double dist) {
-            return quickGetChunk(dist).getVelocity(dist);
         }
 
         public class VelocityChunk {
@@ -212,18 +237,21 @@ public class ChassisProfiler2D {
             public final double dStart, dEnd,
                     maxVelocity, maxAcceleration;
             private VelocitySegment speedup = null, slowdown = null, inertia;
+            public final ICurve curve;
 
-            public VelocityChunk(double dStart, double dEnd, double curvature) {
+            public VelocityChunk(double dStart, double dEnd, double curvature, ICurve curve) {
                 this.dStart = dStart;
                 this.dEnd = dEnd;
+                this.curve =curve;
                 maxVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
                 maxAcceleration = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
                 inertia = new VelocitySegment(maxVelocity, AccelerationMode.INERTIA);
             }
 
-            public VelocityChunk(double d) {
-                this.dStart = d;
-                this.dEnd = d;
+            public VelocityChunk(double dStart, double dEnd) {
+                this.dStart = dStart;
+                this.dEnd = dEnd;
+                this.curve =null;
                 this.maxVelocity = 0;
                 this.maxAcceleration = 0;
                 inertia = new VelocitySegment(0, AccelerationMode.INERTIA);
@@ -239,12 +267,22 @@ public class ChassisProfiler2D {
             }
 
             public double getVelocity(double dist) {
+                System.out.println("curve="+ curve);
+                System.out.println(dist);
                 double ret = inertia.getVelocity(dist);
                 if (speedup != null)
                     ret = Math.min(ret, speedup.getVelocity(dist));
                 if (slowdown != null)
                     ret = Math.min(ret, slowdown.getVelocity(dist));
                 return ret;
+            }
+
+            public double getStartVelocity(boolean print){
+                if(print){
+                    System.out.println("curve=" + curve);
+                    System.out.println(dStart);
+                }
+                return getStartVelocity();
             }
 
             public double getStartVelocity() {
@@ -254,6 +292,14 @@ public class ChassisProfiler2D {
                 if (slowdown != null)
                     ret = Math.min(ret, slowdown.getStartVelocity());
                 return ret;
+            }
+
+            public double getEndVelocity(boolean print){
+                if(print){
+                    System.out.println("curve=" + curve);
+                    System.out.println(dEnd);
+                }
+                return getEndVelocity();
             }
 
             public double getEndVelocity() {
