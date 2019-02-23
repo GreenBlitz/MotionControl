@@ -212,6 +212,10 @@ public class ChassisProfiler2D {
             throw new IndexOutOfBoundsException("No segment with distance " + dist);
         }
 
+        public double getVelocity(double dist, boolean print){
+            return quickGetChunk(dist).getVelocity(dist, print);
+        }
+
         public double getVelocity(double dist) {
             return quickGetChunk(dist).getVelocity(dist);
         }
@@ -222,6 +226,10 @@ public class ChassisProfiler2D {
 
         public double getEndVelocity(int ind, boolean print){
             return m_chunks.get(ind+1).getEndVelocity(print);
+        }
+
+        public double getAcceleration(double dist){
+            return quickGetChunk(dist).getAcceleration(dist);
         }
 
         @Override
@@ -266,9 +274,15 @@ public class ChassisProfiler2D {
                 return dist >= dStart && dist <= dEnd;
             }
 
+            public double getVelocity(double dist, boolean print){
+                if(print){
+                    System.out.println("curve="+ curve);
+                    System.out.println(dist);
+                }
+                return getVelocity(dist);
+            }
+
             public double getVelocity(double dist) {
-                System.out.println("curve="+ curve);
-                System.out.println(dist);
                 double ret = inertia.getVelocity(dist);
                 if (speedup != null)
                     ret = Math.min(ret, speedup.getVelocity(dist));
@@ -332,6 +346,15 @@ public class ChassisProfiler2D {
                 slowdown = new VelocitySegment(other.getStartVelocity(), AccelerationMode.SLOW_DOWN);
             }
 
+            public double getAcceleration(double dist){
+                VelocitySegment min = inertia;
+                if(speedup != null && speedup.getVelocity(dist) < min.getVelocity(dist))
+                    min = speedup;
+                if(slowdown != null && slowdown.getVelocity(dist) < min.getVelocity(dist))
+                    min = slowdown;
+                return  min.getAcceleration(dist);
+            }
+
             public class VelocitySegment {
 
                 /**
@@ -375,6 +398,15 @@ public class ChassisProfiler2D {
                             "velocity=" + velocity +
                             ", mode=" + mode +
                             '}';
+                }
+
+                public double getAcceleration(double dist){
+                    switch (mode){
+                        case INERTIA:
+                            return 0;
+                        default:
+                            return (getVelocity(dist+0.05)-getVelocity(dist-0.05))/0.1 * getVelocity(dist);
+                    }
                 }
             }
 

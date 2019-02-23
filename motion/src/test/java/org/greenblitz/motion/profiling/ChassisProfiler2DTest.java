@@ -2,13 +2,11 @@ package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph.VelocityChunk.VelocitySegment;
-import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph.VelocityChunk;
 import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph;
-
+import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph.VelocityChunk;
+import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph.VelocityChunk.VelocitySegment;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.junit.jupiter.api.Test;
-import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,42 +15,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ChassisProfiler2DTest {
 
-    private VelocitySegment makeSegment(VelocityGraph.AccelerationMode mode){
-        return new VelocityGraph(10,10,10,10)
+    private VelocitySegment makeSegment(VelocityGraph.AccelerationMode mode) {
+        return new VelocityGraph(10, 10, 10, 10)
                 .makeChunk(7, 0, null).makeSegment(5, mode);
     }
 
     @Test
-    void VSegmentGetVelocityTest(){
+    void VSegmentGetVelocityTest() {
         VelocitySegment seg = makeSegment(VelocityGraph.AccelerationMode.INERTIA);
         assertEquals(seg.getVelocity(4), 5);
     }
 
     @Test
-    void vsUpTest(){
+    void vsUpTest() {
         VelocitySegment s = makeSegment(VelocityGraph.AccelerationMode.SPEED_UP);
 
-        assertEquals(s.getVelocity(4), Math.sqrt(5*5 + 2*4*10));
-        assertEquals(s.getVelocity(1), Math.sqrt(5*5 + 2*10));
-        assertEquals(s.getVelocity(7), Math.sqrt(5*5 + 2*7*10));
+        assertEquals(s.getVelocity(4), Math.sqrt(5 * 5 + 2 * 4 * 10));
+        assertEquals(s.getVelocity(1), Math.sqrt(5 * 5 + 2 * 10));
+        assertEquals(s.getVelocity(7), Math.sqrt(5 * 5 + 2 * 7 * 10));
 
     }
 
     @Test
-    void vsDownTest(){
+    void vsDownTest() {
         VelocitySegment s = makeSegment(VelocityGraph.AccelerationMode.SLOW_DOWN);
 
-        assertEquals(s.getVelocity(4), Math.sqrt(5*5 + 2*(7-4)*10));
-        assertEquals(s.getVelocity(1), Math.sqrt(5*5 + 2*(7-1)*10));
-        assertEquals(s.getVelocity(7), Math.sqrt(5*5 + 2*(7-7)*10));
+        assertEquals(s.getVelocity(4), Math.sqrt(5 * 5 + 2 * (7 - 4) * 10));
+        assertEquals(s.getVelocity(1), Math.sqrt(5 * 5 + 2 * (7 - 1) * 10));
+        assertEquals(s.getVelocity(7), Math.sqrt(5 * 5 + 2 * (7 - 7) * 10));
 
     }
 
     @Test
-    void concatForwardsTest(){
-        VelocityChunk s1 = new VelocityGraph(10,10,10,10)
+    void concatForwardsTest() {
+        VelocityChunk s1 = new VelocityGraph(10, 10, 10, 10)
                 .makeChunk(7, 0, null);
-        VelocityChunk s2 = new VelocityGraph(10,10,10,10)
+        VelocityChunk s2 = new VelocityGraph(10, 10, 10, 10)
                 .makeChunk(7, 10, null);
         s1.concatForwards(s2);
 
@@ -61,10 +59,10 @@ public class ChassisProfiler2DTest {
     }
 
     @Test
-    void concatBackwardsTest(){
-        VelocityChunk s1 = new VelocityGraph(10,10,10,10)
+    void concatBackwardsTest() {
+        VelocityChunk s1 = new VelocityGraph(10, 10, 10, 10)
                 .makeChunk(7, 5, null);
-        VelocityChunk s2 = new VelocityGraph(10,10,10,10)
+        VelocityChunk s2 = new VelocityGraph(10, 10, 10, 10)
                 .makeChunk(7, 2, null);
         s2.concatBackwards(s1);
 
@@ -73,11 +71,11 @@ public class ChassisProfiler2DTest {
     }
 
     @Test
-    void velocityGraphTest(){
+    void velocityGraphTest() {
 
         List<ICurve> path = new ArrayList<>();
 
-        class ArcCurve implements ICurve{
+        class ArcCurve implements ICurve {
 
             double length, curvature;
 
@@ -135,17 +133,17 @@ public class ChassisProfiler2DTest {
 
         VelocityGraph g = new VelocityGraph(path, 10, 10, 10, 10);
 
-//        for(double dist=0; dist<=g.getLength()+0.1; dist+=0.1)
-//            System.out.println(dist + ", " + g.getVelocity(dist));
+        for (double dist = 0; dist <= g.getLength() + 0.1; dist += 0.1)
+            System.out.println(dist + ", " + g.getVelocity(dist) + ", " + g.getAcceleration(dist));
 
         throw new RuntimeException("I've decided that you have FAILED!!!!!");
     }
 
     @Test
-    void ChassisProfiler2DTest(){
+    void ChassisProfiler2DTest() {
         List<State> lst = new ArrayList<>();
-        lst.add(new State(0,0, 0, 0, 0));
-        lst.add(new State(3,5, 0, 0, 0));
+        lst.add(new State(0, 0, 0, 0, 0));
+        lst.add(new State(3, 5, 0, 0, 0));
         System.out.println(ChassisProfiler2D.generateProfile(lst, 0.01, 0.01, 5, 4, 3, 2));
     }
 
