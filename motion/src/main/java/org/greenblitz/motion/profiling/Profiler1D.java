@@ -75,7 +75,7 @@ public class Profiler1D {
             if (Math.abs(minDistPass) - Math.abs(S) > 0.001 && Math.signum(minDistPass) == Math.signum(S)) {
                 doNothing();
                 throw new NotEnoughAcceleratingSpace("Not enough space to accelerate, minimum "
-                        + minDistPass + "m required. Occurred when profiling between point " + i + " and point " + (i + 1) + "."
+                        + minDistPass + "m required, " + S + "m used. Occurred when profiling between point " + i + " and point " + (i + 1) + "."
                 );
             }
 

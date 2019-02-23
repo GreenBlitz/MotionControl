@@ -52,7 +52,7 @@ public class ChassisProfiler2D {
                 currentMaxLinearVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
                 currentMaxLinearAccel = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
                 System.out.println("------------------------");
-                System.out.println("for curve=" + subCur);
+                System.out.println("absolute max acc=" + currentMaxLinearAccel);
                 System.out.println(lenSoFar);
 
                 path.get(0).setX(lenSoFar);
@@ -276,7 +276,7 @@ public class ChassisProfiler2D {
 
             public double getVelocity(double dist, boolean print){
                 if(print){
-                    System.out.println("curve="+ curve);
+                    System.out.println("acc=" + getAcceleration(dist));
                     System.out.println(dist);
                 }
                 return getVelocity(dist);
@@ -293,7 +293,7 @@ public class ChassisProfiler2D {
 
             public double getStartVelocity(boolean print){
                 if(print){
-                    System.out.println("curve=" + curve);
+                    System.out.println("acc=" + getAcceleration(dStart));
                     System.out.println(dStart);
                 }
                 return getStartVelocity();
@@ -310,7 +310,7 @@ public class ChassisProfiler2D {
 
             public double getEndVelocity(boolean print){
                 if(print){
-                    System.out.println("curve=" + curve);
+                    System.out.println("acc=" + getAcceleration(dEnd));
                     System.out.println(dEnd);
                 }
                 return getEndVelocity();
@@ -405,7 +405,7 @@ public class ChassisProfiler2D {
                         case INERTIA:
                             return 0;
                         default:
-                            return (getVelocity(dist+0.05)-getVelocity(dist-0.05))/0.1 * getVelocity(dist);
+                            return (getVelocity(dist+0.005)-getVelocity(dist-0.005))/0.01 * getVelocity(dist);
                     }
                 }
             }
