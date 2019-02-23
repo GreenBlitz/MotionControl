@@ -4,8 +4,6 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
 
-import java.util.Arrays;
-
 /**
  * This represents any controller that goes after a Path using lookahead and curve driving
  */
@@ -17,12 +15,6 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
     protected double m_toleranceSquared;
     protected double m_lookahead;
 
-    /**
-     * @param m_path
-     * @param m_lookahead
-     * @param m_wheelBase
-     * @param m_tolerance
-     */
     public AbstractPositionPursuitController(Path<T> m_path, double m_lookahead, double m_wheelBase, double m_tolerance) {
         this.m_path = m_path;
         this.m_wheelBase = m_wheelBase;
@@ -31,33 +23,13 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
         this.m_toleranceSquared = m_tolerance * m_tolerance;
     }
 
-    /**
-     * Given data, this should return the curvature
-     *
-     * @param robotLoc
-     * @param goalPoint
-     * @return
-     */
     protected abstract double getCurvature(T robotLoc, T goalPoint);
 
-    /**
-     * What should be the power of the fast side of the robot?
-     *
-     * @param robotLoc
-     * @param goalPoint
-     * @return
-     */
     protected double getSpeed(T robotLoc, T goalPoint) {
-        System.err.println("Using default speed function of APPC is not recommended!");
+        System.err.println("Using default speed function of motion is not recommended!");
         return 1;
     }
 
-    /**
-     * Used for dynamic lookahead
-     *
-     * @param robotLoc
-     * @return
-     */
     protected double getLookahead(T robotLoc) {
         return m_lookahead;
     }
@@ -65,7 +37,7 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
     /**
      * Should be ran every cycle by a command
      *
-     * @param robotLoc
+     * @param robotLoc current robot location
      * @return The values to be passed to the motors
      */
     public double[] iteration(T robotLoc) {
@@ -76,14 +48,13 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
     }
 
     /**
-     * finds the goal point (the point to witch the robot drives) according to the APPC algorithm
+     * finds the goal point (the point to witch the robot drives) according to the motion algorithm
      *
      * @param robotLoc  the robot location
      * @param lookAhead look ahead distance
      * @return the last intersection on the m_path with the look ahead circle iff such intersection exists
      * the closest point on the m_path O.W.
      */
-    @SuppressWarnings("unchecked")
     protected T getGoalPoint(T robotLoc, double lookAhead) {
         if (Point.distSqared(m_path.get(m_path.size() - 1), robotLoc) <= lookAhead * lookAhead) {
             return m_path.get(m_path.size() - 1);
@@ -105,23 +76,11 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
         return closest;
     }
 
-    /**
-     * Quite obvious, remember to use in utilizing command
-     *
-     * @param robotLoc
-     * @return
-     */
+
     public final boolean isFinished(T robotLoc) {
         return Position.distSqared(robotLoc, m_path.getLast()) <= m_toleranceSquared;
     }
 
-    /**
-     * Drives along a curvature
-     *
-     * @param curvature
-     * @param speed
-     * @return
-     */
     protected final double[] arcDrive(double curvature, double speed) {
         if (curvature == 0)
             return new double[]{speed, speed};
@@ -134,19 +93,19 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
             return new double[]{speed, speed * rightRadius / leftRadius};
     }
 
-    public Path<T> getM_path() {
+    public Path<T> getPath() {
         return m_path;
     }
 
-    public double getM_wheelBase() {
+    public double getWheelBase() {
         return m_wheelBase;
     }
 
-    public double getM_tolerance() {
+    public double getTolerance() {
         return m_tolerance;
     }
 
-    public double getM_lookahead() {
+    public double getLookahead() {
         return m_lookahead;
     }
 }

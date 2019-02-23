@@ -7,7 +7,7 @@ package org.greenblitz.motion.base;
  */
 public class Point {
 
-    public enum CoordinateSystems{
+    public enum CoordinateSystems {
         /**
          * Regular mathematics coordinate system.
          * positive x is right
@@ -17,7 +17,7 @@ public class Point {
          */
         MATH(0),
         /**
-         * Locations used by localizer and follower commands such as APPC.
+         * Locations used by localizer and follower commands such as motion.
          * positive x is left.
          * positive y is forwards.
          * angle 0 is facing positive y.
@@ -34,7 +34,8 @@ public class Point {
         WEAVER(2);
 
         int index;
-        CoordinateSystems(int ind){
+
+        CoordinateSystems(int ind) {
             index = ind;
         }
 
@@ -50,77 +51,54 @@ public class Point {
      */
     protected double x;
     /**
-     * the y coordinate: forwards & backwards
+     * the y coordinate: forwards and backwards
      */
     protected double y;
 
-    /**
-     * @param x
-     * @param y
-     */
     public Point(double x, double y) {
         this.setX(x);
         this.setY(y);
     }
 
-    public static Point cis(double ang, double len){
-        return new Point(len*Math.sin(ang), len*Math.cos(ang));
+    public static Point cis(double ang, double len) {
+        return new Point(len * Math.sin(ang), len * Math.cos(ang));
     }
 
-    /**
-     * Returns a new point in the same location
-     */
+
     public Point clone() {
         return new Point(x, y);
     }
 
-    /**
-     * @return A double array of the x and y values in that order
-     */
+
     public double[] get() {
         return new double[]{x, y};
     }
 
-    /**
-     * Set new coordinates to the point
-     *
-     * @param x
-     * @param y
-     */
+
     public void set(double x, double y) {
         setX(x);
         setY(y);
     }
 
-    /**
-     * Move the point by [x, y]
-     *
-     * @param x
-     * @param y
-     */
+
     public Point translate(double x, double y) {
         this.x += x;
         this.y += y;
         return this;
     }
 
-    public static Point add(Point first, Point other){
+    public static Point add(Point first, Point other) {
         return first.clone().translate(other);
     }
 
-    /**
-     *
-     * @return The negative of this point
-     */
-    public Point negate(){
-        return new Point(-getX(), -getY());
+    public Point negate() {
+        return new Point(-x, -y);
     }
 
-    /**
-     * Rotate the point COUNTER-CLOCKWISE around (0, 0)
-     *
-     * @param radians
-     */
+    public Point scale(double scale){
+        return new Point(scale*x, scale*y);
+    }
+
     public Point rotate(double radians) {
         double cos = Math.cos(radians),
                 sin = Math.sin(radians);
@@ -130,11 +108,6 @@ public class Point {
         return this;
     }
 
-    /**
-     * Move by the x and y of the point
-     *
-     * @param p
-     */
     public Point translate(Point p) {
         return translate(p.getX(), p.getY());
     }
@@ -167,6 +140,12 @@ public class Point {
         return dotProduct(point, point);
     }
 
+    public static double norm(Point point) {
+        return Math.hypot(point.x, point.y);
+    }
+
+    public double norm(){return norm(this);}
+
     public static double distSqared(Point a, Point b) {
         return normSquared(subtract(a, b));
     }
@@ -195,21 +174,42 @@ public class Point {
         return weightedAvg(b, 0.5);
     }
 
-    /**
-     * calculates a point on a Bezier curve.
-     * @param locInCurve the location of the point along the curve. 0 iff start, 1 iff end
-     * @param corners the corners of the curve
-     * @return the desired point
-     */
-    public static Point bezierSample(double locInCurve, Point... corners){
-        return bezierSample(corners, corners.length, locInCurve);
+    public static Point bezierSample(double locInCurve, Point... corners) {
+        if(locInCurve == 0) return corners[0];
+        int degree = corners.length - 1;
+        double factor = Math.pow(locInCurve, degree);
+        double factorFactor = 1 / locInCurve - 1;
+        double binomial = 1;
+        double sumX = 0, sumY = 0;
+
+        for (int ind = 0; ind < corners.length; ind++) {
+            sumX += binomial * factor * corners[degree-ind].getX();
+            sumY += binomial * factor * corners[degree-ind].getY();
+            if (ind == degree)
+                break;
+            binomial *= (degree - ind);
+            binomial /= ind + 1;
+            factor *= factorFactor;
+        }
+        return new Point(sumX, sumY);
     }
 
-    private static Point bezierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
+    /**
+     * calculates a point on a Bezier curve.
+     *
+     * @param locInCurve the location of the point along the curve. 0 iff start, 1 iff end
+     * @param corners    the corners of the curve
+     * @return the desired point
+     */
+    public static Point recursiveBezierSample(double locInCurve, Point... corners) {
+        return recursiveBezierSample(corners, corners.length, locInCurve);
+    }
+
+    private static Point recursiveBezierSample(Point[] corners, int cornersUsedLength, double locInCurve) {
         if (cornersUsedLength == 1) return corners[0];
-        for (int ind = 0; ind < cornersUsedLength-1; ind++)
+        for (int ind = 0; ind < cornersUsedLength - 1; ind++)
             corners[ind] = corners[ind].weightedAvg(corners[ind + 1], locInCurve);
-        return bezierSample(corners, cornersUsedLength - 1, locInCurve);
+        return recursiveBezierSample(corners, cornersUsedLength - 1, locInCurve);
     }
 
     @Override
@@ -231,28 +231,28 @@ public class Point {
                 && isFuzzyEqual(this.getY(), point.getY());
     }
 
-    public Point localizerToMathCoords(){
+    public Point localizerToMathCoords() {
         return new Point(-x, y);
     }
 
-    public Point mathToWeaverCoords(){
+    public Point mathToWeaverCoords() {
         return new Point(-y, x);
     }
 
-    public Point weaverToLocalizerCoords(){
+    public Point weaverToLocalizerCoords() {
         return new Point(-y, x);
     }
 
 
-    public Point changeCoords(CoordinateSystems src, CoordinateSystems dest){
-        if (src == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH){
+    public Point changeCoords(CoordinateSystems src, CoordinateSystems dest) {
+        if (src == CoordinateSystems.LOCALIZER && dest == CoordinateSystems.MATH) {
             return localizerToMathCoords();
-        } else if (src == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER){
+        } else if (src == CoordinateSystems.MATH && dest == CoordinateSystems.WEAVER) {
             return mathToWeaverCoords();
-        } else if (src == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER){
+        } else if (src == CoordinateSystems.WEAVER && dest == CoordinateSystems.LOCALIZER) {
             return weaverToLocalizerCoords();
         }
-        switch (src){
+        switch (src) {
             case MATH:
                 return mathToWeaverCoords().changeCoords(CoordinateSystems.WEAVER, dest);
             case LOCALIZER:
@@ -260,20 +260,19 @@ public class Point {
             case WEAVER:
                 return weaverToLocalizerCoords().changeCoords(CoordinateSystems.LOCALIZER, dest);
         }
-        throw new IllegalArgumentException("What");
+        throw new IllegalArgumentException("Roses are red, Violets are blue, I don't know this enum, what should I do???");
     }
 
     @Deprecated
-    public Point mathToFrcCoords(){
-        return localizerToMathCoords();
+    public Point mathToFrcCoords() {
+        return changeCoords(CoordinateSystems.MATH, CoordinateSystems.LOCALIZER);
     }
 
     /**
-     *
      * @return first element is the length, second is the angle
      */
-    public double[] toPolarCoords(){
-        return new double[] {dist(Point.ORIGIN, this), Math.atan2(getY(), getX())};
+    public double[] toPolarCoords() {
+        return new double[]{dist(Point.ORIGIN, this), Math.atan2(getY(), getX())};
     }
 
     @Override
@@ -286,4 +285,5 @@ public class Point {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
+
 }

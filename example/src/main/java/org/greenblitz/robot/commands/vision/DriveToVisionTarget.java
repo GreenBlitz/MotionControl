@@ -26,7 +26,7 @@ public class DriveToVisionTarget extends Command implements PIDSource, PIDOutput
     protected void initialize() {
         m_onTarget = -1;
         m_controller.setAbsoluteTolerance(0.1);
-        m_controller.setSetpoint(0.75);
+        m_controller.setSetpoint(0.85);
         m_controller.setOutputRange(-0.8, 0.8);
         m_controller.enable();
     }

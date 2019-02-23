@@ -17,7 +17,7 @@ public class CSVWrapper {
      * @param name The new file location and name
      * @param len How many elements per row? (0 for dynamic number)
      * @param headers The headers for each row (must be same as length as len unless len is 0)
-     * @return
+     * @return csv writer with given headers in given file
      */
     public static CSVWrapper generateWrapper(String name, int len, String... headers){
         CSVWrapper newW;

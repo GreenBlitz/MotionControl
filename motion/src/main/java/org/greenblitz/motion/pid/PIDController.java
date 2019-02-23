@@ -1,16 +1,27 @@
 package org.greenblitz.motion.pid;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.greenblitz.motion.tolerance.ITolerance;
 
 public class PIDController {
 
-    protected PIDObject obj;
-    protected long previousTime;
+    private PIDObject m_obj;
+    private long m_previousTime;
+    private double m_goal;
+    private double m_previousError;
+    private double m_integral;
 
-    public PIDController(PIDObject object){
-        obj = object;
+    private double m_minimumOutput;
+    private double m_maximumOutput;
+
+    private ITolerance m_tolerance;
+
+    public PIDController(PIDObject obj, ITolerance tolerance) {
+        m_obj = obj;
+        m_tolerance = tolerance;
+    }
+
+    public PIDController(PIDObject obj) {
+        this(obj, null);
     }
 
     public PIDController(double kP, double kI, double kD, double kF) {
@@ -21,43 +32,79 @@ public class PIDController {
         this(kP, kI, kD, 0);
     }
 
-    /**
-     * Calling this implies starting to use the controller
-     * @param goal
-     * @param value
-     */
-    public void init(double goal, double value){
-        obj.init(goal, value);
-        previousTime = System.currentTimeMillis();
+    public void configureOutputLimits(double min, double max) {
+        m_minimumOutput = min;
+        m_maximumOutput = max;
     }
 
-    /**
-     *
-     * @param goal
-     * @param current
-     * @return
-     */
-    public double calculatePID(double goal, double current){
-
-        double secsPassed = (System.currentTimeMillis() - previousTime) / 1000.0;
-        previousTime = System.currentTimeMillis();
-
-        return obj.calculatePID(goal, current, secsPassed);
+    public void setGoal(double goal) {
+        m_goal = goal;
     }
 
-    /**
-     *
-     * @param goal
-     * @param current
-     * @param maxAllowedError
-     * @return
-     */
-    public boolean isFinished(double goal, double current, double maxAllowedError){
-        return Math.abs(goal - current) <= maxAllowedError;
+    public double getGoal() {
+        return m_goal;
     }
 
-    public PIDObject getPidObject(){
-        return obj;
+    public double getLowerOutputLimit() {
+        return m_minimumOutput;
+    }
+
+    public double getUpperOutputLimit() {
+        return m_maximumOutput;
+    }
+
+    public double calculatePID(double current) {
+        var err = m_goal - current;
+        var dt = updateTime();
+
+        var p = m_obj.getKp() * err;
+
+        m_integral += err * dt;
+        var i = m_obj.getKi() * m_integral;
+
+        var d = m_obj.getKd() * (err - m_previousError) / dt;
+
+        m_previousError = err;
+        return clamp(p + i + d);
+    }
+
+    public PIDObject getPidObject() {
+        return m_obj;
+    }
+
+    public double getLastError() {
+        return m_previousError;
+    }
+
+    public void resetIntegralZone(double iZone) {
+        m_integral = iZone;
+    }
+
+    public ITolerance getTolerance() {
+        return m_tolerance;
+    }
+
+    public void setTolerance(ITolerance tol) {
+        m_tolerance = tol;
+    }
+
+    public boolean isFinished() {
+        return hasTolerance() && m_tolerance.onTarget(getGoal(), getLastError());
+    }
+
+    public boolean hasTolerance() {
+        return m_tolerance != null;
+    }
+
+    private double updateTime() {
+        var current = System.currentTimeMillis();
+        double ms = current - m_previousTime;
+        m_previousTime = current;
+        return ms;
+    }
+
+    private double clamp(double value) {
+        return Math.max(Math.min(value, m_minimumOutput), m_maximumOutput);
     }
 
 }

@@ -12,7 +12,7 @@ import org.greenblitz.robot.subsystems.Chassis;
 /**
  * This command uses the P part of the PID control loop to turn an exact angle.
  * The command uses the Chassis subsystem.
- * For the PID controller, we use a kP value of 0.8, a setpoint of angle/90 set through a parameter in the constructor, an output range of -0.8 to0.8 and a tolerance of 5 degrees per 90 degrees.
+ * For the PID controller, we use a kP value of 0.8, a setpoint of angle/90 drive through a parameter in the constructor, an output range of -0.8 to0.8 and a tolerance of 5 degrees per 90 degrees.
  * The PID controller uses the gyro angle as the input and the arcadeDrive() function as the output.
  * The command will stop as soon it is within range (+- 5 degrees of the setpoint) for 4 or more iterations.
  *

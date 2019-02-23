@@ -5,6 +5,8 @@ import org.greenblitz.motion.app.AdaptivePurePursuitController;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.robot.OI;
 import org.greenblitz.robot.RobotStats;
+import org.greenblitz.robot.commands.motion.APPC.APPCTestingCommand;
+import org.greenblitz.robot.commands.motion.APPC.SetLocalizerLocation;
 import org.greenblitz.robot.commands.vision.DriveToVisionTarget;
 
 public class MotionAndVision extends CommandGroup {

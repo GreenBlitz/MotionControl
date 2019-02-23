@@ -4,7 +4,9 @@ bin/
 build/
 out/
 
-*.jar
+# non deploy csv files
+*.csv
+!*/deploy/
 
 # eclipse/intellij config files
 .idea/
@@ -29,6 +31,7 @@ log/
 
 # Package Files #
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.zip
