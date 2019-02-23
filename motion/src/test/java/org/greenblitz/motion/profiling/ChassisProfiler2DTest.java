@@ -126,15 +126,13 @@ public class ChassisProfiler2DTest {
         }
 
         path.add(new ArcCurve(20, 0));
-        path.add(new ArcCurve(3, 2));
+        path.add(new ArcCurve(3, 2) );
         path.add(new ArcCurve(7, -3));
         path.add(new ArcCurve(0.5, 0));
         path.add(new ArcCurve(2.7, -0.3));
 
         VelocityGraph g = new VelocityGraph(path, 10, 10, 10, 10);
 
-        for (double dist = 0; dist <= g.getLength() + 0.1; dist += 0.1)
-            System.out.println(dist + ", " + g.getVelocity(dist) + ", " + g.getAcceleration(dist));
 
         throw new RuntimeException("I've decided that you have FAILED!!!!!");
     }
@@ -144,6 +142,8 @@ public class ChassisProfiler2DTest {
         List<State> lst = new ArrayList<>();
         lst.add(new State(0, 0, 0, 0, 0));
         lst.add(new State(3, 5, 0, 0, 0));
+        for (double dist = 0; dist <= g.getLength() + 0.1; dist += 0.1)
+            System.out.println(dist + ", " + g.getVelocity(dist) + ", " + g.getAcceleration(dist));
         System.out.println(ChassisProfiler2D.generateProfile(lst, 0.01, 0.01, 5, 4, 3, 2));
     }
 
