@@ -70,17 +70,16 @@ public class ChassisProfiler2D {
                 linearProfile.unsafeAdd(tempProfile);
 
                 rotationSegs = tempProfile.getSegments();
-                MotionProfile1D.Segment seg0 = rotationSegs.get(0);
-                seg0.setAccel(seg0.getAccel() * curvature);
-                seg0.setStartLocation(first.getAngle());
-                seg0.setStartVelocity(first.getAngularVelocity());
                 MotionProfile1D.Segment curr, prev;
-                for (int k = 1; k < rotationSegs.size(); k++) {
+                for (int k = 0; k < rotationSegs.size(); k++) {
                     curr = rotationSegs.get(k);
-                    prev = rotationSegs.get(k - 1);
+                    if(k!=0)
+                        prev = rotationSegs.get(k - 1);
+                    else
+                        prev=null;
                     curr.setAccel(curr.getAccel() * curvature);
-                    curr.setStartVelocity(prev.getVelocity(prev.getTEnd()));
-                    curr.setStartLocation(prev.getLocation(prev.getTEnd()));
+                    curr.setStartVelocity(k==0 ? first.getAngle() : prev.getVelocity(prev.getTEnd()));
+                    curr.setStartLocation(k==0 ? first.getAngularVelocity() : prev.getLocation(prev.getTEnd()));
                 }
                 angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
             }
@@ -187,6 +186,8 @@ public class ChassisProfiler2D {
                 m_chunks.get(ind).concatForwards(m_chunks.get(ind + 1));
 
             length = tmpLength;
+            for (double dist = 0; dist <= getLength() + 0.1; dist += 0.1)
+                System.out.println(dist + ", " + getVelocity(dist) + ", " + getAcceleration(dist));
         }
 
         @Deprecated // testing purposes only
@@ -405,7 +406,7 @@ public class ChassisProfiler2D {
                         case INERTIA:
                             return 0;
                         default:
-                            return (getVelocity(dist+0.005)-getVelocity(dist-0.005))/0.01 * getVelocity(dist);
+                            return (Math.pow(getVelocity(dist+0.005), 2)-Math.pow(getVelocity(dist-0.005), 2)) * 50;//*50 means /(0.005-(-0.005))/2
                     }
                 }
             }

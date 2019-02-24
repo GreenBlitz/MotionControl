@@ -326,10 +326,10 @@ public class MotionProfile1D {
 
         @Override
         public String toString() {
-            return "BezierSegment{" +
+            return "Segment{" +
                     "tStart=" + tStart +
                     ", tEnd=" + tEnd +
-                    ", slpoe=" + accel +
+                    ", accel=" + accel +
                     ", startVelocity=" + startVelocity +
                     ", startLocation=" + startLocation +
                     '}';

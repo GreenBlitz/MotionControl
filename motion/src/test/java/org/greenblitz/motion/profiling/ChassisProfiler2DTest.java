@@ -142,8 +142,6 @@ public class ChassisProfiler2DTest {
         List<State> lst = new ArrayList<>();
         lst.add(new State(0, 0, 0, 0, 0));
         lst.add(new State(3, 5, 0, 0, 0));
-        for (double dist = 0; dist <= g.getLength() + 0.1; dist += 0.1)
-            System.out.println(dist + ", " + g.getVelocity(dist) + ", " + g.getAcceleration(dist));
         System.out.println(ChassisProfiler2D.generateProfile(lst, 0.01, 0.01, 5, 4, 3, 2));
     }
 
