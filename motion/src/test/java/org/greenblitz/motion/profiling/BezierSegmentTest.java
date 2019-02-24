@@ -66,7 +66,7 @@ class BezierSegmentTest {
                     p1 = s1.unsafeGetLocation(i),
                     p2 = s1.unsafeGetLocation(i + 0.01);
             double angle = Point.subtract(p0, p1).toPolarCoords()[1] - Point.subtract(p2, p1).toPolarCoords()[1];
-            double estCurvature = 2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
+            double estCurvature = -2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
             assertEquals(curvature, estCurvature, BIG_EPSILON);
         }
         for (double i = 0; i <= 1; i += 0.1) {
@@ -75,7 +75,7 @@ class BezierSegmentTest {
                     p1 = s2.unsafeGetLocation(i),
                     p2 = s2.unsafeGetLocation(i + 0.0001);
             double angle = Point.subtract(p0, p1).toPolarCoords()[1] - Point.subtract(p2, p1).toPolarCoords()[1];
-            double estCurvature = 2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
+            double estCurvature = -2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
             assertEquals(curvature, estCurvature, BIG_EPSILON);
         }
     }
@@ -89,7 +89,7 @@ class BezierSegmentTest {
                     p1 = s1.unsafeGetLocation(i),
                     p2 = s1.unsafeGetLocation(i + 0.01);
             double angle = Point.subtract(p0, p1).toPolarCoords()[1] - Point.subtract(p2, p1).toPolarCoords()[1];
-            double estCurvature = 2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
+            double estCurvature = -2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
             assertEquals(angVel, estCurvature * lVelocity, BIG_EPSILON);
         }
         for (double i = 0; i <= 1; i += 0.1) {
@@ -99,7 +99,7 @@ class BezierSegmentTest {
                     p1 = s2.unsafeGetLocation(i),
                     p2 = s2.unsafeGetLocation(i + 0.00001);
             double angle = Point.subtract(p0, p1).toPolarCoords()[1] - Point.subtract(p2, p1).toPolarCoords()[1];
-            double estCurvature = 2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
+            double estCurvature = -2 * Math.sin(angle) / Point.subtract(p2, p0).norm();
             assertEquals(angVel, estCurvature * lVelocity, BIG_EPSILON);
         }
     }

@@ -9,7 +9,7 @@ public class BezierCurve implements ICurve {
     double uStart, uSize;
     double curvature = Double.NaN;
 
-    static final double DEFAULT_MIN_VELOCITY = 0.1;
+    static final double DEFAULT_MIN_VELOCITY = 10;
 
     private BezierCurve(BezierSegment segment, double uStart, double uEnd) {
         this.segment = segment;

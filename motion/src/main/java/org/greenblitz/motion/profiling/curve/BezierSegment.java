@@ -78,7 +78,7 @@ public class BezierSegment {
         double numerator = (derivative1X * derivative2.getY() - derivative1Y * derivative2.getX());
         double denominator = Math.pow(derivative1X, 2) + Math.pow(derivative1Y, 2);
         denominator = Math.pow(denominator, 1.5);
-        return numerator / denominator;
+        return -numerator / denominator;
     }
 
     public double getAngularVelocity(double t) {
@@ -89,7 +89,7 @@ public class BezierSegment {
 
         double numerator = (derivative1X * derivative2.getY() - derivative1Y * derivative2.getX());
         double denominator = Math.pow(derivative1X, 2) + Math.pow(derivative1Y, 2);
-        return numerator / denominator;
+        return -numerator / denominator;
     }
 
     public boolean isTimeOutOfSegment(double t) {

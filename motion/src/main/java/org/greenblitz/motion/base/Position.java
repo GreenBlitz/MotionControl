@@ -87,6 +87,22 @@ public class Position extends Point {
         this.angle = normalizeAngle(angle);
     }
 
+    public Position translate(Position p){
+        return new Position(x+p.x, y+p.y, angle+p.angle);
+    }
+
+    public Position moveBy(double linearV, double angularV, double t){
+        if(t==0 || (linearV==0 && angularV==0))
+            return clone();
+        if(linearV==0)
+            return clone().changeAngleBy(angularV*t);
+        if(angularV==0)
+            return new Position(clone().rotate(-angle).translate(0, linearV*t).rotate(angle), angle);
+
+        double curvature = angularV/linearV;
+        return clone().rotateWithAngle(-angle).translate(new Position((1-Math.cos(angularV*t))/curvature,Math.sin(angularV*t)/curvature, angularV*t)).rotateWithAngle(angle);
+    }
+
     @Override
     public Position localizerToMathCoords(){
         return new Position(-x,y,angle+Math.PI/2);

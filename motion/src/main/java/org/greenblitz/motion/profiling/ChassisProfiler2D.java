@@ -17,8 +17,8 @@ public class ChassisProfiler2D {
     public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
 
-        MotionProfile1D linearProfile = new MotionProfile1D();
-        MotionProfile1D angularProfile = new MotionProfile1D();
+        MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
+        MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D tempProfile;
         State first, second;
         ICurve curve;
@@ -51,14 +51,11 @@ public class ChassisProfiler2D {
                 curvature = subCur.getCurvature();
                 currentMaxLinearVelocity = getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
                 currentMaxLinearAccel = getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
-                System.out.println("------------------------");
-                System.out.println("absolute max acc=" + currentMaxLinearAccel);
-                System.out.println(lenSoFar);
 
                 path.get(0).setX(lenSoFar);
-                path.get(0).setV(velByLoc.getStartVelocity(i1, true));
+                path.get(0).setV(velByLoc.getStartVelocity(i1, false));
                 path.get(1).setX(lenSoFar + subCur.getLength(1));
-                path.get(1).setV(velByLoc.getEndVelocity(i1, true));
+                path.get(1).setV(velByLoc.getEndVelocity(i1, false));
                 lenSoFar = path.get(1).getX();
 
                 tempProfile = Profiler1D.generateProfile(
@@ -73,13 +70,13 @@ public class ChassisProfiler2D {
                 MotionProfile1D.Segment curr, prev;
                 for (int k = 0; k < rotationSegs.size(); k++) {
                     curr = rotationSegs.get(k);
-                    if(k!=0)
+                    if(k != 0)
                         prev = rotationSegs.get(k - 1);
                     else
-                        prev=null;
-                    curr.setAccel(curr.getAccel() * curvature);
-                    curr.setStartVelocity(k==0 ? first.getAngle() : prev.getVelocity(prev.getTEnd()));
-                    curr.setStartLocation(k==0 ? first.getAngularVelocity() : prev.getLocation(prev.getTEnd()));
+                        prev = null;
+                    curr.setAccel(Math.abs(curr.getAccel()) * curvature);
+                    curr.setStartVelocity(k == 0 ? linearProfile.getVelocity(linearProfile.getTEnd())*curvature : prev.getVelocity(prev.getTEnd()));
+                    curr.setStartLocation(k == 0 ? angularProfile.getLocation(angularProfile.getTEnd()) : prev.getLocation(prev.getTEnd()));
                 }
                 angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
             }

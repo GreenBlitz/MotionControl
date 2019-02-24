@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.Vector2D;
 
 import java.util.function.Function;
@@ -55,6 +56,21 @@ public class MotionProfile2D {
         return new Vector2D(firstProfile.getLocation(t), secondProfile.getLocation(t));
     }
 
+    public Position getActualLocation(double t, double epsilon){
+        return getActualLocation(t, new Position(0,0,0), 0, epsilon);
+    }
+
+    public Position getActualLocation(double t, Position prev, double prevT, double epsilon){
+        if(prevT>t)
+            throw new UnsupportedOperationException();
+        Position ret = prev;
+        final double dt = epsilon;
+        for(double t2=prevT; t2<t; t2+=dt){
+            ret = ret.moveBy(firstProfile.getVelocity(t), secondProfile.getVelocity(t), dt);
+        }
+        return ret;
+    }
+
     /**
      * Removes all segments with time length less then a milisecond.
      * @see MotionProfile1D#removeBugSegments()
@@ -68,7 +84,7 @@ public class MotionProfile2D {
     public String toString() {
         return "MotionProfile2D{" +
                 "firstProfile=" + firstProfile +
-                ", secondProfile=" + secondProfile +
+                "\n, secondProfile=" + secondProfile +
                 '}';
     }
 }

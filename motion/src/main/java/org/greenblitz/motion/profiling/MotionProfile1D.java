@@ -25,7 +25,9 @@ public class MotionProfile1D {
     }
 
     public MotionProfile1D(Segment... segs) {
-        segments = Arrays.asList(segs);
+        this();
+        for (Segment s : segs)
+            segments.add(s);
     }
 
     public MotionProfile1D() {
@@ -34,9 +36,10 @@ public class MotionProfile1D {
 
     @Override
     public String toString() {
-        return "MotionProfile1D{" +
-                "segments=" + segments +
-                '}';
+        String ret = "MotionProfile1D{";
+        for(Segment s: segments)
+            ret += "\n\t" + s;
+        return ret;
     }
 
     /**
@@ -193,10 +196,16 @@ public class MotionProfile1D {
      * Removes all segments with time length less then a milisecond.
      */
     public void removeBugSegments() {
+        double tStart = segments.get(0).getTStart();
         List<Segment> goodSegments = new ArrayList<>();
         for (Segment s : segments) {
-            if (Math.abs(s.tEnd - s.tStart) > 1E-3)
+            if (Math.abs(s.tEnd - s.tStart) > 0)
                 goodSegments.add(s);
+        }
+        if (goodSegments.size() != 0) {
+            goodSegments.get(0).setTStart(tStart);
+            for (int i = 1; i < goodSegments.size(); i++)
+                goodSegments.get(i).setTStart(goodSegments.get(i - 1).getTEnd());
         }
         segments = goodSegments;
     }
@@ -246,8 +255,7 @@ public class MotionProfile1D {
     public static class Segment {
 
         protected double tStart, tEnd, accel, startVelocity, startLocation;
-        private final IndexOutOfBoundsException timeException =
-                new IndexOutOfBoundsException("Time not in this segment");
+        private final static double EPSILON = 1E-8;
 
         public Segment(double tStart, double tEnd, double accel, double startVelocity, double startLocation) {
             this.tStart = tStart;
@@ -262,24 +270,24 @@ public class MotionProfile1D {
         }
 
         public boolean isTimePartOfSegment(double t) {
-            return t >= tStart && t <= tEnd;
+            return t - tStart >= -EPSILON && t - tEnd <= EPSILON;
         }
 
         public double getAcceleration(double t) {
             if (!isTimePartOfSegment(t))
-                throw timeException;
+                throw new IndexOutOfBoundsException("Time not in this segment");
             return accel;
         }
 
         public double getVelocity(double t) {
             if (!isTimePartOfSegment(t))
-                throw timeException;
+                throw new IndexOutOfBoundsException("Time not in this segment");
             return startVelocity + (t - tStart) * accel;
         }
 
         public double getLocation(double t) {
             if (!isTimePartOfSegment(t))
-                throw timeException;
+                throw new IndexOutOfBoundsException("Time not in this segment");
             double timePassed = (t - tStart);
             return startLocation + timePassed * startVelocity + 0.5 * timePassed * timePassed * accel;
         }
