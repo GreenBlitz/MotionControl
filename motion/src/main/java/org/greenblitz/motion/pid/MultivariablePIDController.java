@@ -38,9 +38,9 @@ public class MultivariablePIDController {
         return ret;
     }
 
-    public boolean isFinished() {
+    public boolean isFinished(double[] currs) {
         for (var i = 0; i < m_controllers.length; i++) {
-            if (m_controllers[i].isFinished()) {
+            if (m_controllers[i].isFinished(currs[i])) {
                 return true;
             }
         }

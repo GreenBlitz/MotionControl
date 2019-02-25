@@ -80,7 +80,7 @@ public class PIDController {
         if (!configured)
             throw new RuntimeException("PID - " + this + " - not configured");
 
-        if (isFinished())
+        if (isFinished(current))
             return 0;
 
         var err = m_goal - current;
@@ -118,8 +118,8 @@ public class PIDController {
         m_tolerance = tol;
     }
 
-    public boolean isFinished() {
-        return hasTolerance() && m_tolerance.onTarget(getGoal(), getLastError());
+    public boolean isFinished(double current) {
+        return hasTolerance() && m_tolerance.onTarget(getGoal(), current);
     }
 
     public boolean hasTolerance() {
