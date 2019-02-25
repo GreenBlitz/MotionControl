@@ -13,11 +13,14 @@ public class PIDController {
     private double m_minimumOutput;
     private double m_maximumOutput;
 
+    private boolean configured;
+
     private ITolerance m_tolerance;
 
     public PIDController(PIDObject obj, ITolerance tolerance) {
         m_obj = obj;
         m_tolerance = tolerance;
+        configured = false;
     }
 
     public PIDController(PIDObject obj) {
@@ -41,6 +44,15 @@ public class PIDController {
         m_goal = goal;
     }
 
+    public void configure(double curr, double goal, double limitLower, double limitUpper){
+        setGoal(goal);
+        m_previousError = goal - curr;
+        resetIntegralZone(0);
+        configureOutputLimits(limitLower, limitUpper);
+        m_previousTime = System.currentTimeMillis();
+        configured = true;
+    }
+
     public double getGoal() {
         return m_goal;
     }
@@ -54,6 +66,8 @@ public class PIDController {
     }
 
     public double calculatePID(double current) {
+        if (!configured)
+            throw new RuntimeException("PID - " + this + " - not configured");
         var err = m_goal - current;
         var dt = updateTime();
 
@@ -65,7 +79,7 @@ public class PIDController {
         var d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
-        return clamp(p + i + d);
+        return clamp(p + i + d + m_obj.getKf());
     }
 
     public PIDObject getPidObject() {

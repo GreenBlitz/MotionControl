@@ -21,8 +21,8 @@ public class DriveToVisionTargetMotion extends Command {
     public DriveToVisionTargetMotion() {
         requires(Chassis.getInstance());
         m_controller = new MultivariablePIDController(2);
-        m_controller.configure(0, LINEAR_PID, LINEAR_TOLERANCE);
-        m_controller.configure(1, ANGULAR_PID, ANGULAR_TOLERANCE);
+        m_controller.setPIDObject(0, LINEAR_PID, LINEAR_TOLERANCE);
+        m_controller.setPIDObject(1, ANGULAR_PID, ANGULAR_TOLERANCE);
     }
 
     @Override

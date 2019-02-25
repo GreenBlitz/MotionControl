@@ -13,8 +13,12 @@ public class MultivariablePIDController {
         m_controllers = pids;
     }
 
-    public void configure(int index, PIDObject obj, ITolerance tol) {
+    public void setPIDObject(int index, PIDObject obj, ITolerance tol) {
         m_controllers[index] = new PIDController(obj, tol);
+    }
+
+    public void configurePID(int index, double curr, double value, double limLower, double limUpper){
+        m_controllers[index].configure(curr, value, limLower, limUpper);
     }
 
     public PIDController get(int index) {
