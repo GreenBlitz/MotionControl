@@ -17,8 +17,8 @@ public class MultivariablePIDController {
         m_controllers[index] = new PIDController(obj, tol);
     }
 
-    public void configurePID(int index, double curr, double value, double limLower, double limUpper){
-        m_controllers[index].configure(curr, value, limLower, limUpper);
+    public void configurePID(int index, double curr, double value, double limLower, double limUpper, double absLimit){
+        m_controllers[index].configure(curr, value, limLower, limUpper, absLimit);
     }
 
     public PIDController get(int index) {

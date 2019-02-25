@@ -1,6 +1,7 @@
 package org.greenblitz.motion.pid;
 
 import org.greenblitz.motion.tolerance.ITolerance;
+import org.opencv.core.Mat;
 
 public class PIDController {
 
@@ -12,6 +13,7 @@ public class PIDController {
 
     private double m_minimumOutput;
     private double m_maximumOutput;
+    private double m_absoluteMinimumOut;
 
     private boolean configured;
 
@@ -44,13 +46,22 @@ public class PIDController {
         m_goal = goal;
     }
 
-    public void configure(double curr, double goal, double limitLower, double limitUpper){
+    public void configure(double curr, double goal, double limitLower, double limitUpper, double absoluteMinimumOut){
         setGoal(goal);
         m_previousError = goal - curr;
         resetIntegralZone(0);
         configureOutputLimits(limitLower, limitUpper);
         m_previousTime = System.currentTimeMillis();
+        m_absoluteMinimumOut = absoluteMinimumOut;
         configured = true;
+    }
+
+    public double getAbsoluteMinimumOut() {
+        return m_absoluteMinimumOut;
+    }
+
+    public void setAbsoluteMinimumOut(double m_absoluteMinimumOut) {
+        this.m_absoluteMinimumOut = m_absoluteMinimumOut;
     }
 
     public double getGoal() {
@@ -79,7 +90,8 @@ public class PIDController {
         var d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
-        return clamp(p + i + d + m_obj.getKf());
+        double calc = clamp(p + i + d + m_obj.getKf());
+        return Math.max(Math.abs(calc), m_absoluteMinimumOut) * Math.signum(calc);
     }
 
     public PIDObject getPidObject() {
