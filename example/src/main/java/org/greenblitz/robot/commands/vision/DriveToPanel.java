@@ -33,7 +33,7 @@ public class DriveToPanel extends Command {
 
     @Override
     protected boolean isFinished() {
-        return controller.isFinished();
+        return false;//controller.isFinished();
     }
 
     @Override
