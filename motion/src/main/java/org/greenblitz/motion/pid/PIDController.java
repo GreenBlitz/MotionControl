@@ -79,6 +79,10 @@ public class PIDController {
     public double calculatePID(double current) {
         if (!configured)
             throw new RuntimeException("PID - " + this + " - not configured");
+
+        if (isFinished())
+            return 0;
+
         var err = m_goal - current;
         var dt = updateTime();
 
