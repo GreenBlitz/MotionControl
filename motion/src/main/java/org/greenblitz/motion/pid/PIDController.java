@@ -118,7 +118,7 @@ public class PIDController {
     }
 
     private double clamp(double value) {
-        return Math.max(Math.min(value, m_minimumOutput), m_maximumOutput);
+        return Math.min(Math.max(value, m_minimumOutput), m_maximumOutput);
     }
 
 }
