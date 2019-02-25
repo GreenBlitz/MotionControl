@@ -1,5 +1,6 @@
 package org.greenblitz.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,12 +16,17 @@ public class Robot extends TimedRobot {
 
     private AnalogInput colorSensor;
     private Relay LEDs;
+    private AnalogInput IRSensor = new AnalogInput(3);
+    private TalonSRX talon = new TalonSRX(12);
+
 
     @Override
     public void robotInit() {
         Chassis.init();
         Chassis.getInstance().setCoast();
         OI.init();
+        talon.configMotionCruiseVelocity(21);
+        talon.configMotionAcceleration(33);
       //  colorSensor = new AnalogInput(0);
     }
 
@@ -31,6 +37,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("NavX Yaw", Navx.getInstance().get_navx().getYaw());
         SmartDashboard.putNumber("NavX Pitch", Navx.getInstance().get_navx().getPitch());
         SmartDashboard.putNumber("NavX Roll", Navx.getInstance().get_navx().getRoll());
+        SmartDashboard.putNumber("IR reading", IRSensor.getVoltage());
 
     }
 

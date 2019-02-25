@@ -28,7 +28,6 @@ public class OI {
     private static OI instance;
 
     private NetworkTable visionTable;
-
     private SmartJoystick mainJS;
 
     public static OI getInstance() {
