@@ -133,7 +133,7 @@ public class ChassisProfiler2DTest {
         VelocityGraph g = new VelocityGraph(path, 10, 10, 10, 10);
 
 
-        throw new RuntimeException("I've decided that you have FAILED!!!!!");
+        //throw new RuntimeException("I've decided that you have FAILED!!!!!");
     }
 
     @Test

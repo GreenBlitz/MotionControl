@@ -21,8 +21,8 @@ public class DriveToVisionTargetMotion extends Command {
     public DriveToVisionTargetMotion() {
         requires(Chassis.getInstance());
         m_controller = new MultivariablePIDController(2);
-        m_controller.configure(0, LINEAR_PID, LINEAR_TOLERANCE);
-        m_controller.configure(1, ANGULAR_PID, ANGULAR_TOLERANCE);
+        m_controller.setPIDObject(0, LINEAR_PID, LINEAR_TOLERANCE);
+        m_controller.setPIDObject(1, ANGULAR_PID, ANGULAR_TOLERANCE);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class DriveToVisionTargetMotion extends Command {
         double[] outputs = m_controller.calculate(OI.getInstance().getHatchDistance(), OI.getInstance().getHatchAngle());
         Chassis.getInstance().arcadeDrive(outputs[0], outputs[1]);
 
-        if (m_controller.isFinished())
+        if (m_controller.isFinished(outputs))
             if (m_onTarget == -1)
                 m_onTarget = System.currentTimeMillis();
             else
@@ -45,7 +45,7 @@ public class DriveToVisionTargetMotion extends Command {
 
     @Override
     protected boolean isFinished() {
-        return m_controller.isFinished() && (System.currentTimeMillis() - m_onTarget > TIME_ON_TARGET);
+        return false;//m_controller.isFinished() && (System.currentTimeMillis() - m_onTarget > TIME_ON_TARGET);
     }
 
     @Override

@@ -14,8 +14,8 @@ public class DriveToPanel extends Command {
     public DriveToPanel() {
         requires(Chassis.getInstance());
         controller = new MultivariablePIDController(2);
-        controller.configure(0, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(0.1));
-        controller.configure(1, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(3));
+        controller.setPIDObject(0, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(0.1));
+        controller.setPIDObject(1, new PIDObject(0.8, 0, 0), new AbsoluteTolerance(3));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DriveToPanel extends Command {
 
     @Override
     protected boolean isFinished() {
-        return controller.isFinished();
+        return false;//controller.isFinished();
     }
 
     @Override

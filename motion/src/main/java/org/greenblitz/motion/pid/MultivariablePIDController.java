@@ -13,8 +13,12 @@ public class MultivariablePIDController {
         m_controllers = pids;
     }
 
-    public void configure(int index, PIDObject obj, ITolerance tol) {
+    public void setPIDObject(int index, PIDObject obj, ITolerance tol) {
         m_controllers[index] = new PIDController(obj, tol);
+    }
+
+    public void configurePID(int index, double curr, double value, double limLower, double limUpper, double absLimit){
+        m_controllers[index].configure(curr, value, limLower, limUpper, absLimit);
     }
 
     public PIDController get(int index) {
@@ -34,9 +38,9 @@ public class MultivariablePIDController {
         return ret;
     }
 
-    public boolean isFinished() {
+    public boolean isFinished(double[] currs) {
         for (var i = 0; i < m_controllers.length; i++) {
-            if (m_controllers[i].isFinished()) {
+            if (m_controllers[i].isFinished(currs[i])) {
                 return true;
             }
         }
