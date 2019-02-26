@@ -5,6 +5,7 @@ import org.greenblitz.motion.profiling.exceptions.NotEnoughAcceleratingSpace;
 import org.greenblitz.motion.profiling.exceptions.ProfilingException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,6 +14,8 @@ import java.util.List;
  * @author Alexey ~ Savioor
  */
 public class Profiler1D {
+
+    private static final double EPSILON = 2E-2;
 
     /**
      * generates the quickest motion brofile going through all the waypoints at the specified velocities.
@@ -29,6 +32,10 @@ public class Profiler1D {
         return Profiler1D.generateProfile(waypoints, maxV, maxAcc, minAcc, 0);
     }
 
+    public static MotionProfile1D generateProfile(double maxV, double maxA, double minA, double tStart, ActuatorLocation... waypoints){
+        return generateProfile(Arrays.asList(waypoints), maxV, maxA, minA, tStart);
+    }
+
     /**
      * generates the quickest motion brofile going through all the waypoints at the specified velocities.
      *
@@ -43,10 +50,10 @@ public class Profiler1D {
     public static MotionProfile1D generateProfile(List<ActuatorLocation> waypoints,
                                                   double maxV, double maxAcc, double minAcc, double tStart) {
         if (Math.signum(minAcc) == Math.signum(maxAcc))
-            throw new ProfilingException("Sign of max speedup and max slowdown can't be the same.");
+            throw new ProfilingException("Sign of max speedup and max slowdown can't be the same. " + maxAcc);
         if (maxV == 0 || minAcc == 0 || maxAcc == 0)
             throw new ProfilingException("One of the actuator constants is 0 but isn't allowed to be.");
-        if (waypoints.size() > 0 && Math.abs(waypoints.get(0).getV()) > Math.abs(maxV))
+        if (waypoints.size() > 0 && Math.abs(waypoints.get(0).getV()) - Math.abs(maxV) > EPSILON)
             throw new ProfilingException("Can't accelerate past +-" + maxV + "m/s. " + waypoints.get(0).getV() + "m/s was given on point 0");
 
         double v1, v2, S, a1, a2, t1, t2, t0;
@@ -73,7 +80,6 @@ public class Profiler1D {
             double minTime = (v2-v1)/(v2 >= v1 ? a1 : a2);
             double minDistPass = minTime * v1 + 0.5 * (v2>=v1 ? a1 : a2) * minTime * minTime;
             if (Math.abs(minDistPass) - Math.abs(S) > 0.001 && Math.signum(minDistPass) == Math.signum(S)) {
-                doNothing();
                 throw new NotEnoughAcceleratingSpace("Not enough space to accelerate, minimum "
                         + minDistPass + "m required, " + S + "m used. Occurred when profiling between point " + i + " and point " + (i + 1) + "."
                 );
@@ -95,8 +101,6 @@ public class Profiler1D {
         return ret;
     }
 
-    private static void doNothing() {
-    }
 
     /**
      * @param a1 maxA in first segment
@@ -120,7 +124,6 @@ public class Profiler1D {
         double t1 = (v2 - a2 * t2 - v1) / a1;
 
         if (t1 < -0.001 || t2 < -0.001) {
-            System.out.println(t1 + ", " + t2);
             throw new ProfilingException("Path entered not valid for unknown reason. " +
                     "Occurred when profiling between point " + i + " and point " + (i + 1) + ".");
         }

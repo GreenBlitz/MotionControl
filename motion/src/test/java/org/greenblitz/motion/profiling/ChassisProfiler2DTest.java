@@ -2,9 +2,8 @@ package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph;
-import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph.VelocityChunk;
-import org.greenblitz.motion.profiling.ChassisProfiler2D.VelocityGraph.VelocityChunk.VelocitySegment;
+import org.greenblitz.motion.profiling.VelocityGraph.VelocityGraphRange;
+import org.greenblitz.motion.profiling.VelocityGraph.VelocityGraphRange.VelocitySegment;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,7 @@ public class ChassisProfiler2DTest {
 
     private VelocitySegment makeSegment(VelocityGraph.AccelerationMode mode) {
         return new VelocityGraph(10, 10, 10, 10)
-                .makeChunk(7, 0, null).makeSegment(5, mode);
+                .makeRange(7, 0, null).makeSegment(5, mode);
     }
 
     @Test
@@ -48,10 +47,10 @@ public class ChassisProfiler2DTest {
 
     @Test
     void concatForwardsTest() {
-        VelocityChunk s1 = new VelocityGraph(10, 10, 10, 10)
-                .makeChunk(7, 0, null);
-        VelocityChunk s2 = new VelocityGraph(10, 10, 10, 10)
-                .makeChunk(7, 10, null);
+        VelocityGraphRange s1 = new VelocityGraph(10, 10, 10, 10)
+                .makeRange(7, 0, null);
+        VelocityGraphRange s2 = new VelocityGraph(10, 10, 10, 10)
+                .makeRange(7, 10, null);
         s1.concatForwards(s2);
 
         assertEquals(s1.getEndVelocity(), s2.maxVelocity);
@@ -60,10 +59,10 @@ public class ChassisProfiler2DTest {
 
     @Test
     void concatBackwardsTest() {
-        VelocityChunk s1 = new VelocityGraph(10, 10, 10, 10)
-                .makeChunk(7, 5, null);
-        VelocityChunk s2 = new VelocityGraph(10, 10, 10, 10)
-                .makeChunk(7, 2, null);
+        VelocityGraphRange s1 = new VelocityGraph(10, 10, 10, 10)
+                .makeRange(7, 5, null);
+        VelocityGraphRange s2 = new VelocityGraph(10, 10, 10, 10)
+                .makeRange(7, 2, null);
         s2.concatBackwards(s1);
 
         assertEquals(s1.getEndVelocity(), s2.getStartVelocity());

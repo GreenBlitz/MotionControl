@@ -22,34 +22,32 @@ public class ChassisProfiler2DCSVGenerators {
         states.add(new State(0, 0, 0, 0, 0));
         states.add(new State(3, 5, 0, 0, 0));
 
-        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.000001, 0.0002, 5,
+        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.0000, 0.0001, 5,
                 Math.PI, 5 * 2, 2 * Math.PI);
 
         CSVWrapper broFile = CSVWrapper.generateWrapper("profile.csv", 0, "t", "x", "y", "linearV", "angularV", "linearA", "angularA");
 
         Position loc = null;
+        final double jmp = 0.001;
         Vector2D vel, acc;
-        for (double t = 0; t < brofile.getTEnd(); t += 0.01) {
-            System.out.println(brofile.getTEnd());
+        for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
                 loc = new Position(0, 0, 0);
             else
-                loc = brofile.getActualLocation(t, loc, t - 0.01, EPSILON);
+                loc = brofile.getActualLocation(t, loc, t - jmp, EPSILON);
             vel = brofile.getVelocity(t);
             acc = brofile.getAcceleration(t);
             broFile.addValues(t, loc.getX(), loc.getY(), vel.getX(), vel.getY(), acc.getX(), acc.getY());
-            System.out.println(loc.getAngle() + ", " + vel.getY());
         }
         broFile.flush();
         CSVWrapper locFile = CSVWrapper.generateWrapper("location.csv", 0, "x", "y");
 
-        for (double t = 0; t < brofile.getTEnd(); t += 0.01) {
+        for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
                 loc = new Position(0, 0, 0);
             else
-                loc = brofile.getActualLocation(t, loc, t - 0.01, EPSILON);
+                loc = brofile.getActualLocation(t, loc, t - jmp, EPSILON);
             locFile.addValues(loc.getX(), loc.getY());
-            System.out.println(loc.getAngle());
         }
         ICurve curve = new BezierCurve(states.get(0), states.get(1));
         for (double u = 0; u <= 1; u += 0.001) {
@@ -57,10 +55,6 @@ public class ChassisProfiler2DCSVGenerators {
             locFile.addValues(p.getX(), p.getY());
         }
         locFile.flush();
-
-        System.out.println(brofile.getTEnd());
-
-        System.out.println(brofile);
 
     }
 
