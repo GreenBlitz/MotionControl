@@ -144,7 +144,7 @@ public class VelocityGraph {
     public MotionProfile1D generateProfile(int ind, double tStart) {
         if(ind<0 || ind>m_ranges.size()-2)
             throw new IllegalArgumentException("cannot generate profile for a degenerate case");
-        return m_ranges.get(ind + 1).generateProfile(tStart);
+        return m_ranges.get(ind + 1).generateProfile(tStart, m_ranges.get(ind+2));
     }
 
     @Override
@@ -232,8 +232,6 @@ public class VelocityGraph {
 
         public double getStartVelocity(){return getActiveRange(dStart).getStartVelocity();}
 
-        public double getEndVelocity(){return getActiveRange(dEnd).getEndVelocity();}
-
         public void concatBackwards(VelocityGraphRange other) {
             speedup = new VelocitySegment(other.getEndVelocitySquared(), AccelerationMode.SPEED_UP);
             if (slowdown != null)
@@ -290,9 +288,9 @@ public class VelocityGraph {
                     '}';
         }
 
-        public MotionProfile1D generateProfile(double tStart) {
-            if (isLinear()) return new MotionProfile1D(linear.generateSegment(tStart));
-            return Profiler1D.generateProfile(maxVelocity, maxAcceleration, -maxAcceleration, tStart, new ActuatorLocation(dStart, getStartVelocity()), new ActuatorLocation(dEnd, getEndVelocity()));
+        public MotionProfile1D generateProfile(double tStart, VelocityGraphRange next) {
+            if (isLinear()) return new MotionProfile1D(linear.generateSegment(tStart, next.getActiveRange(dEnd)));
+            return Profiler1D.generateProfile(maxVelocity, maxAcceleration, -maxAcceleration, tStart, new ActuatorLocation(dStart, getStartVelocity()), new ActuatorLocation(dEnd, next.getStartVelocity()));
         }
 
         public class VelocitySegment {
@@ -370,14 +368,8 @@ public class VelocityGraph {
                 return startVelocity;
             }
 
-            public double getEndVelocity(){
-                if(Double.isNaN(endVelocity))
-                    endVelocity = endVelocitySquared;
-                return endVelocity;
-            }
-
-            public Segment generateSegment(double tStart) {
-                return new Segment(tStart, tStart + 2 * (dEnd - dStart) / (getStartVelocity() + getEndVelocity()), acceleration, getStartVelocity(), dStart);
+            public Segment generateSegment(double tStart, VelocitySegment next) {
+                return new Segment(tStart, tStart + 2 * (dEnd - dStart) / (getStartVelocity() + next.getStartVelocity()), acceleration, getStartVelocity(), dStart);
             }
 
             public double getAcceleration() {

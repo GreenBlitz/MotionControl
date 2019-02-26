@@ -48,7 +48,7 @@ public class Profiling2DTestingCommand extends PeriodicCommand {
         this.maxAcc = maxAcc; kA = 1/maxAcc;
         this.maxAngVel = maxAngVel; kAV = 1/maxAngVel;
         this.maxAngAcc = maxAngAcc; kAA = 1/maxAngAcc;
-        profile = ChassisProfiler2D.generateProfile(locs, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
+        profile = ChassisProfiler2D.generateProfile(locs, 0.01, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
         m_chasis = Chassis.getInstance();
         requires(m_chasis);
         tmpLogger = new LinkedList<>();
