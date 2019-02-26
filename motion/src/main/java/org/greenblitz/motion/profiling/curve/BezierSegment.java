@@ -50,7 +50,7 @@ public class BezierSegment {
 
     public Point getLocation(double t) {
         if (isTimeOutOfSegment(t))
-            throw new IllegalArgumentException("Time not in this segment");
+            throw new IllegalArgumentException("Time " + t + " not in this segment (" + getTStart() + ", " + getTEnd() + ")");
         return Point.bezierSample((t - uStart) / uSize, p0, p1, p2, p3);
     }
 

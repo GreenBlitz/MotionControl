@@ -44,7 +44,7 @@ public class Profiling2DDrive extends Command {
     public Profiling2DDrive(List<State> locs) {
         super(Chassis.getInstance());
 //        locationController = new PIDController(new PIDObject(kP));
-        profile = ChassisProfiler2D.generateProfile(locs, 0.01, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
+        profile = ChassisProfiler2D.generateProfile(locs, 0.05, Math.random(), Math.random(), Math.random(), Math.random());
         m_chasis = Chassis.getInstance();
     }
 
@@ -77,7 +77,7 @@ public class Profiling2DDrive extends Command {
 //                    t,
 //                    profile.getLocation(profile.getTEnd()),
 //                    getLoction(),
-//                    profile.getVelocity(profile.getTEnd()),
+//                    profile.getVelocitySquared(profile.getTEnd()),
 //                    getActualSpeed());
             return;
         }
@@ -108,7 +108,7 @@ public class Profiling2DDrive extends Command {
 //        }
 
 //            if (printerVel != null)
-//                printerVel.report(t, profile.getVelocity(t), prototype.getSpeed());
+//                printerVel.report(t, profile.getVelocitySquared(t), prototype.getSpeed());
 //            if (printerLoc != null)
 //                printerLoc.report(t, profile.getLocation(t), prototype.getDistance());
     }

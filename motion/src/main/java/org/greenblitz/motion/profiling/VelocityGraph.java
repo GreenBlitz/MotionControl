@@ -10,7 +10,11 @@ import java.util.List;
 public class VelocityGraph {
 
     private static double maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc;
-    private static final double EPSILON = 1E-2;
+    private static double defaultEpsilon = 1E-2;
+
+    public static void setDefaultEpsilon(double epsilon){
+        defaultEpsilon = epsilon;
+    }
 
     public void initialize(double maxLinearVel, double maxAngularVel,
                            double maxLinearAcc, double maxAngularAcc) {
@@ -23,18 +27,26 @@ public class VelocityGraph {
     private List<VelocityGraphRange> m_ranges;
     private int previous;
     public final double length;
+    private final double epsilon;
 
     @Deprecated // testing purposes only
     public VelocityGraph(double maxLinearVel, double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
         previous = 0;
         initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
+        epsilon = defaultEpsilon;
         length = 0;
     }
 
     public VelocityGraph(List<ICurve> track, double maxLinearVel,
                          double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+        this(track, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, defaultEpsilon);
+    }
+    public VelocityGraph(List<ICurve> track, double maxLinearVel,
+            double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double epsilon) {
+        long time = System.currentTimeMillis();
         previous = 0;
         initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
+        this.epsilon = epsilon;
         double tmpLength = 0;
 
 
@@ -50,22 +62,24 @@ public class VelocityGraph {
         m_ranges.add(new VelocityGraphRange(m_ranges.get(m_ranges.size() - 1).dEnd, Double.POSITIVE_INFINITY));
 
 //        for(int ind=1; ind<m_ranges.size(); ind++){
-//            file.addValues(m_ranges.get(ind).dStart, m_ranges.get(ind).getStartVelocity(), m_ranges.get(ind).getAcceleration(m_ranges.get(ind).dStart));
+//            file.addValues(m_ranges.get(ind).dStart, m_ranges.get(ind).getStartVelocitySquared(), m_ranges.get(ind).getAcceleration(m_ranges.get(ind).dStart));
 //        }
 
 
         for (int ind = 1; ind < m_ranges.size(); ind++)
             m_ranges.get(ind).concatBackwards(m_ranges.get(ind - 1));
 //        for(int ind=1; ind<m_ranges.size(); ind++){
-//            file.addValues(m_ranges.get(ind).dStart, m_ranges.get(ind).getStartVelocity(), m_ranges.get(ind).getAcceleration(m_ranges.get(ind).dStart));
+//            file.addValues(m_ranges.get(ind).dStart, m_ranges.get(ind).getStartVelocitySquared(), m_ranges.get(ind).getAcceleration(m_ranges.get(ind).dStart));
 //        }
 
         for (int ind = m_ranges.size() - 2; ind >= 0; ind--)
             m_ranges.get(ind).concatForwards(m_ranges.get(ind + 1));
 
-        generateCSV("velocityByDistance.csv");
+//        generateCSV("velocityByDistance.csv");
 
         length = tmpLength;
+        System.out.println("VelocityGraph generation");
+        System.out.println(System.currentTimeMillis()-time);
     }
 
     @Deprecated // testing purposes only
@@ -92,20 +106,24 @@ public class VelocityGraph {
         throw new IndexOutOfBoundsException("No segment with distance " + dist);
     }
 
-    public double getVelocity(double dist, boolean print) {
-        return quickGetRange(dist).getVelocity(dist, print);
+    public double getVelocitySquared(double dist, boolean print) {
+        return quickGetRange(dist).getVelocitySquared(dist, print);
     }
 
-    public double getVelocity(double dist) {
+    public double getVelocitySquared(double dist) {
+        return quickGetRange(dist).getVelocitySquared(dist);
+    }
+
+    public double getVelocity(double dist){
         return quickGetRange(dist).getVelocity(dist);
     }
 
-    public double getStartVelocity(int ind, boolean print) {
-        return m_ranges.get(ind + 1).getStartVelocity(print);
+    public double getStartVelocitySquared(int ind, boolean print) {
+        return m_ranges.get(ind + 1).getStartVelocitySquared(print);
     }
 
-    public double getEndVelocity(int ind, boolean print) {
-        return m_ranges.get(ind + 1).getEndVelocity(print);
+    public double getEndVelocitySquared(int ind, boolean print) {
+        return m_ranges.get(ind + 1).getEndVelocitySquared(print);
     }
 
     public double getAcceleration(double dist) {
@@ -117,7 +135,7 @@ public class VelocityGraph {
     }
 
     public void generateCSV(String name) {
-        CSVWrapper file = CSVWrapper.generateWrapper(name, 0, "d", "velocity", "acceleration", "mode");
+        CSVWrapper file = CSVWrapper.generateWrapper(name, 0, "d", "velocity", "acceleration", "ratio");
         for (VelocityGraphRange range : m_ranges)
             range.insertToCSV(file);
         file.flush();
@@ -150,7 +168,7 @@ public class VelocityGraph {
             this.curve = curve;
             maxVelocity = ChassisProfiler2D.getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
             maxAcceleration = ChassisProfiler2D.getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
-            inertia = new VelocitySegment(maxVelocity, AccelerationMode.INERTIA);
+            inertia = new VelocitySegment(maxVelocity*maxVelocity, AccelerationMode.INERTIA);
         }
 
         public VelocityGraphRange(double dStart, double dEnd) {
@@ -171,53 +189,61 @@ public class VelocityGraph {
             return dist >= dStart && dist <= dEnd;
         }
 
-        public double getVelocity(double dist, boolean print) {
+        public double getVelocitySquared(double dist, boolean print) {
             if (print) {
                 System.out.println("print");
                 System.out.println("acc=" + getAcceleration(dist));
                 System.out.println(dist);
             }
-            return getVelocity(dist);
+            return getVelocitySquared(dist);
         }
 
-        public double getVelocity(double dist) {
+        public double getVelocitySquared(double dist) {
+            return getActiveRange(dist).getVelocitySquared(dist);
+        }
+
+        public double getVelocity(double dist){
             return getActiveRange(dist).getVelocity(dist);
         }
 
-        public double getStartVelocity(boolean print) {
+        public double getStartVelocitySquared(boolean print) {
             if (print) {
                 System.out.println("acc=" + getAcceleration(dStart));
                 System.out.println(dStart);
             }
-            return getStartVelocity();
+            return getStartVelocitySquared();
         }
 
-        public double getStartVelocity() {
-            return getActiveRange(dStart).getStartVelocity();
+        public double getStartVelocitySquared() {
+            return getActiveRange(dStart).getStartVelocitySquared();
         }
 
-        public double getEndVelocity(boolean print) {
+        public double getEndVelocitySquared(boolean print) {
             if (print) {
                 System.out.println("acc=" + getAcceleration(dEnd));
                 System.out.println(dEnd);
             }
-            return getEndVelocity();
+            return getEndVelocitySquared();
         }
 
-        public double getEndVelocity() {
-            return getActiveRange(dEnd).getEndVelocity();
+        public double getEndVelocitySquared() {
+            return getActiveRange(dEnd).getEndVelocitySquared();
         }
+
+        public double getStartVelocity(){return getActiveRange(dStart).getStartVelocity();}
+
+        public double getEndVelocity(){return getActiveRange(dEnd).getEndVelocity();}
 
         public void concatBackwards(VelocityGraphRange other) {
-            speedup = new VelocitySegment(other.getEndVelocity(), AccelerationMode.SPEED_UP);
+            speedup = new VelocitySegment(other.getEndVelocitySquared(), AccelerationMode.SPEED_UP);
             if (slowdown != null)
-                linear = new VelocitySegment(getStartVelocity(), getEndVelocity());
+                linear = new VelocitySegment(getStartVelocitySquared(), getEndVelocitySquared());
         }
 
         public void concatForwards(VelocityGraphRange other) {
-            slowdown = new VelocitySegment(other.getStartVelocity(), AccelerationMode.SLOW_DOWN);
+            slowdown = new VelocitySegment(other.getStartVelocitySquared(), AccelerationMode.SLOW_DOWN);
             if (speedup != null)
-                linear = new VelocitySegment(Math.min(speedup.startVelocity, slowdown.startVelocity), Math.min(speedup.endVelocity, slowdown.endVelocity));
+                linear = new VelocitySegment(Math.min(speedup.startVelocitySquared, slowdown.startVelocitySquared), Math.min(speedup.endVelocitySquared, slowdown.endVelocitySquared));
         }
 
         public double getAcceleration(double dist) {
@@ -229,15 +255,15 @@ public class VelocityGraph {
         }
 
         public boolean isLinear() {
-            return dEnd - dStart < EPSILON && linear != null;
+            return dEnd - dStart < epsilon && linear != null;
         }
 
         private VelocitySegment getActiveRange(double dist) {
             if (isLinear()) return linear;
             VelocitySegment min = inertia;
-            if (speedup != null && min.getVelocity(dist) > speedup.getVelocity(dist))
+            if (speedup != null && min.getVelocitySquared(dist) > speedup.getVelocitySquared(dist))
                 min = speedup;
-            if (slowdown != null && min.getVelocity(dist) > slowdown.getVelocity(dist))
+            if (slowdown != null && min.getVelocitySquared(dist) > slowdown.getVelocitySquared(dist))
                 min = slowdown;
             return min;
         }
@@ -271,42 +297,43 @@ public class VelocityGraph {
 
         public class VelocitySegment {
 
-            private final double startVelocity, endVelocity;
+            private final double startVelocitySquared, endVelocitySquared;
+            private double startVelocity = Double.NaN, endVelocity = Double.NaN;
             private final AccelerationMode mode;
             private final double acceleration;
 
-            public VelocitySegment(double velocity, AccelerationMode mode) {
+            public VelocitySegment(double velocitySquared, AccelerationMode mode) {
                 if (mode == AccelerationMode.LINEAR)
                     throw new IllegalArgumentException("cannot construct general segment without specified start & end velocities");
                 this.mode = mode;
                 acceleration = mode.ratio * maxAcceleration;
                 if (mode == AccelerationMode.SLOW_DOWN) {
                     if (dStart == Double.NEGATIVE_INFINITY || dEnd == Double.POSITIVE_INFINITY)
-                        this.startVelocity = 0;
+                        this.startVelocitySquared = 0;
                     else
-                        this.startVelocity = Math.sqrt(velocity * velocity - 2 * acceleration * (dEnd - dStart));
-                    if (Double.isNaN(startVelocity))
-                        throw new RuntimeException(velocity * velocity + ", " + acceleration + ", " + (dEnd - dStart));
-                    this.endVelocity = velocity;
+                        this.startVelocitySquared = velocitySquared - 2 * acceleration * (dEnd - dStart);
+                    if (Double.isNaN(startVelocitySquared))
+                        throw new RuntimeException(velocitySquared + ", " + acceleration + ", " + (dEnd - dStart));
+                    this.endVelocitySquared = velocitySquared;
                 } else {
-                    this.startVelocity = velocity;
+                    this.startVelocitySquared = velocitySquared;
                     if (dStart == Double.NEGATIVE_INFINITY || dEnd == Double.POSITIVE_INFINITY)
-                        this.endVelocity = 0;
+                        this.endVelocitySquared = 0;
                     else
-                        this.endVelocity = Math.sqrt(velocity * velocity + 2 * acceleration * (dEnd - dStart));
-                    if (Double.isNaN(endVelocity))
-                        throw new RuntimeException(velocity * velocity + ", " + acceleration + ", " + (dEnd - dStart));
+                        this.endVelocitySquared = velocitySquared + 2 * acceleration * (dEnd - dStart);
+                    if (Double.isNaN(endVelocitySquared))
+                        throw new RuntimeException(velocitySquared + ", " + acceleration + ", " + (dEnd - dStart));
                 }
             }
 
-            public VelocitySegment(double vStart, double vEnd) {
-                this.startVelocity = vStart;
-                this.endVelocity = vEnd;
+            public VelocitySegment(double vStartSquared, double vEndSquared) {
+                this.startVelocitySquared = vStartSquared;
+                this.endVelocitySquared = vEndSquared;
                 this.mode = AccelerationMode.LINEAR;
                 if (dStart == Double.NEGATIVE_INFINITY || dEnd == Double.POSITIVE_INFINITY)
                     this.acceleration = 0;
                 else
-                    this.acceleration = (vEnd * vEnd - vStart * vStart) / (2 * (dEnd - dStart));
+                    this.acceleration = (vEndSquared - vStartSquared) / (2 * (dEnd - dStart));
                 if (Double.isNaN(acceleration))
                     throw new RuntimeException("NaN");
             }
@@ -319,22 +346,38 @@ public class VelocityGraph {
                 return acceleration / maxAcceleration;
             }
 
-            public double getVelocity(double dist) {
+            public double getVelocitySquared(double dist) {
                 if (mode == AccelerationMode.INERTIA)
-                    return startVelocity;
-                return Math.sqrt(startVelocity * startVelocity + 2 * acceleration * (dist - dStart));
+                    return startVelocitySquared;
+                return startVelocitySquared + 2 * acceleration * (dist - dStart);
             }
 
-            public double getStartVelocity() {
+            public double getVelocity(double dist){
+                return Math.sqrt(getVelocitySquared(dist));
+            }
+
+            public double getStartVelocitySquared() {
+                return startVelocitySquared;
+            }
+
+            public double getEndVelocitySquared() {
+                return endVelocitySquared;
+            }
+
+            public double getStartVelocity(){
+                if(Double.isNaN(startVelocity))
+                    startVelocity = Math.sqrt(startVelocitySquared);
                 return startVelocity;
             }
 
-            public double getEndVelocity() {
+            public double getEndVelocity(){
+                if(Double.isNaN(endVelocity))
+                    endVelocity = endVelocitySquared;
                 return endVelocity;
             }
 
             public Segment generateSegment(double tStart) {
-                return new Segment(tStart, tStart + 2 * (dEnd - dStart) / (startVelocity + endVelocity), acceleration, startVelocity, dStart);
+                return new Segment(tStart, tStart + 2 * (dEnd - dStart) / (getStartVelocity() + getEndVelocity()), acceleration, getStartVelocity(), dStart);
             }
 
             public double getAcceleration() {
@@ -349,8 +392,8 @@ public class VelocityGraph {
             @Override
             public String toString() {
                 return "VelocitySegment{" +
-                        "startVelocity=" + startVelocity +
-                        ", mode=" + mode +
+                        "startVelocitySquared=" + startVelocitySquared +
+                        ", acceleration=" + acceleration +
                         '}';
             }
         }

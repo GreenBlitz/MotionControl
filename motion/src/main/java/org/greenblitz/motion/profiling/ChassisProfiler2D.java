@@ -10,12 +10,18 @@ import java.util.List;
 
 public class ChassisProfiler2D {
 
-    public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
-                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
-        return generateProfile(locs, curvatureTolerance, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, 0);
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
+                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart, double epsilon){
+        VelocityGraph.setDefaultEpsilon(epsilon);
+        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart);
     }
 
-    public static MotionProfile2D generateProfile(List<State> locs, double curvatureTolerance, double jump, double maxLinearVel,
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
+                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, 0);
+    }
+
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
 
         MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
@@ -23,28 +29,31 @@ public class ChassisProfiler2D {
         MotionProfile1D tempProfile;
         State first, second;
         ICurve curve;
-        List<ICurve> subCurves = new ArrayList<>();
+        List<ICurve> subCurves = new ArrayList<>(); // All sub-curves with kinda equal curve
         ArrayList<ActuatorLocation> path = new ArrayList<>();
         List<MotionProfile1D.Segment> rotationSegs;
 
         double t0 = tStart;
-        for (int i = 0; i < locs.size() - 1; i++) {
+        for (int i = 0; i < locations.size() - 1; i++) {
 
-            first = locs.get(i);
-            second = locs.get(i + 1);
+            first = locations.get(i);
+            second = locations.get(i + 1);
 
             curve = new BezierCurve(first, second);
 
-            subCurves.clear(); // All subcurves with kinda equal curve
-            divideToEqualCurvatureSubcurves(subCurves, curve, jump, curvatureTolerance);
+            subCurves.clear();
+            divideToEqualCurvatureSubcurves(subCurves, curve, jump);
 
             VelocityGraph velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
                     maxLinearAcc, maxAngularAcc);
+            velByLoc.generateCSV("velocityByDistance.csv");
 
             double curvature;
             path.clear();
             path.add(new ActuatorLocation(0, 0));
             path.add(new ActuatorLocation(0, 0));
+
+            long t0profiling = System.currentTimeMillis();
 
             for (int j = 0; j < subCurves.size(); j++) {
                 ICurve subCur = subCurves.get(j);
@@ -69,6 +78,9 @@ public class ChassisProfiler2D {
                 }
                 angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
             }
+
+            System.out.println("Profiling");
+            System.out.println(System.currentTimeMillis() - t0profiling);
         }
 
         return new MotionProfile2D(linearProfile, angularProfile);
@@ -92,30 +104,28 @@ public class ChassisProfiler2D {
      * @param source             The main curve to be divided
      * @param jump               Jump intervals, when sampling the curve the function will sample
      *                           every 'jump' units.
-     * @param curvatureTolerance The maximum curve difference within each subcurve.
      * @return returnList
      */
-    private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump, double curvatureTolerance) {
-        double t0 = 0;
-        double curveStart, prevt0;
-        while (t0 < 1.0) {
-            curveStart = source.getCurvature(t0);
-            prevt0 = t0;
+    private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump) {
+        long time = System.currentTimeMillis();
+        double t0, tPrev = 0;
+        for (t0 = getJump(source, 0, jump); t0 < 1.0; tPrev = t0, t0 += getJump(source, t0, jump)) {
 
-            for (double j = t0 + jump; j <= 1; j += jump) {
-                if (Math.abs(source.getCurvature(j) - curveStart) > curvatureTolerance) {
-                    returnList.add(source.getSubCurve(t0, j));
-                    t0 = j;
-                    break;
-                }
-            }
+            if(t0 > 1)
+                throw new RuntimeException("how you do this");
+            returnList.add(source.getSubCurve(tPrev, t0));
 
-            if (t0 == prevt0) {
-                returnList.add(source.getSubCurve(t0, 1));
-                break;
-            }
         }
+        returnList.add(source.getSubCurve(tPrev, 1));
+        System.out.println("curve division");
+        System.out.println(System.currentTimeMillis()-time);
         return returnList;
+    }
+
+    private static double getJump(ICurve curve, double location, double jump){
+        double vel = curve.getLinearVelocity(location);
+        double ret = vel > jump ? jump/vel : 0.01;
+        return ret;
     }
 
     private static VelocityGraph getVelocityGraph(List<ICurve> track, double maxLinearVel,

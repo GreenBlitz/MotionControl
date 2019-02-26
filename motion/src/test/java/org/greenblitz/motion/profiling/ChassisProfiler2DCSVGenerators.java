@@ -22,8 +22,11 @@ public class ChassisProfiler2DCSVGenerators {
         states.add(new State(0, 0, 0, 0, 0));
         states.add(new State(3, 5, 0, 0, 0));
 
-        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.0000, 0.0001, 5,
-                Math.PI, 5 * 2, 2 * Math.PI);
+        long time = System.currentTimeMillis();
+        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.001, 5,
+                Math.PI, 5 * 2, 2 * Math.PI, 0, 0.1);
+        System.out.println("Full Generation");
+        System.out.println(System.currentTimeMillis() - time);
 
         CSVWrapper broFile = CSVWrapper.generateWrapper("profile.csv", 0, "t", "x", "y", "linearV", "angularV", "linearA", "angularA");
 
@@ -40,8 +43,8 @@ public class ChassisProfiler2DCSVGenerators {
             broFile.addValues(t, loc.getX(), loc.getY(), vel.getX(), vel.getY(), acc.getX(), acc.getY());
         }
         broFile.flush();
-        CSVWrapper locFile = CSVWrapper.generateWrapper("location.csv", 0, "x", "y");
 
+        CSVWrapper locFile = CSVWrapper.generateWrapper("location.csv", 0, "x", "y");
         for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
                 loc = new Position(0, 0, 0);

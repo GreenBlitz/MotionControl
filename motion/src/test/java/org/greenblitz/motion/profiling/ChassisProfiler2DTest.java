@@ -22,16 +22,16 @@ public class ChassisProfiler2DTest {
     @Test
     void VSegmentGetVelocityTest() {
         VelocitySegment seg = makeSegment(VelocityGraph.AccelerationMode.INERTIA);
-        assertEquals(seg.getVelocity(4), 5);
+        assertEquals(seg.getVelocitySquared(4), 5);
     }
 
     @Test
     void vsUpTest() {
         VelocitySegment s = makeSegment(VelocityGraph.AccelerationMode.SPEED_UP);
 
-        assertEquals(s.getVelocity(4), Math.sqrt(5 * 5 + 2 * 4 * 10));
-        assertEquals(s.getVelocity(1), Math.sqrt(5 * 5 + 2 * 10));
-        assertEquals(s.getVelocity(7), Math.sqrt(5 * 5 + 2 * 7 * 10));
+        assertEquals(s.getVelocitySquared(4), Math.sqrt(5 * 5 + 2 * 4 * 10));
+        assertEquals(s.getVelocitySquared(1), Math.sqrt(5 * 5 + 2 * 10));
+        assertEquals(s.getVelocitySquared(7), Math.sqrt(5 * 5 + 2 * 7 * 10));
 
     }
 
@@ -39,9 +39,9 @@ public class ChassisProfiler2DTest {
     void vsDownTest() {
         VelocitySegment s = makeSegment(VelocityGraph.AccelerationMode.SLOW_DOWN);
 
-        assertEquals(s.getVelocity(4), Math.sqrt(5 * 5 + 2 * (7 - 4) * 10));
-        assertEquals(s.getVelocity(1), Math.sqrt(5 * 5 + 2 * (7 - 1) * 10));
-        assertEquals(s.getVelocity(7), Math.sqrt(5 * 5 + 2 * (7 - 7) * 10));
+        assertEquals(s.getVelocitySquared(4), Math.sqrt(5 * 5 + 2 * (7 - 4) * 10));
+        assertEquals(s.getVelocitySquared(1), Math.sqrt(5 * 5 + 2 * (7 - 1) * 10));
+        assertEquals(s.getVelocitySquared(7), Math.sqrt(5 * 5 + 2 * (7 - 7) * 10));
 
     }
 
@@ -53,7 +53,7 @@ public class ChassisProfiler2DTest {
                 .makeRange(7, 10, null);
         s1.concatForwards(s2);
 
-        assertEquals(s1.getEndVelocity(), s2.maxVelocity);
+        assertEquals(s1.getEndVelocitySquared(), s2.maxVelocity);
 
     }
 
@@ -65,7 +65,7 @@ public class ChassisProfiler2DTest {
                 .makeRange(7, 2, null);
         s2.concatBackwards(s1);
 
-        assertEquals(s1.getEndVelocity(), s2.getStartVelocity());
+        assertEquals(s1.getEndVelocitySquared(), s2.getStartVelocitySquared());
 
     }
 
@@ -141,7 +141,7 @@ public class ChassisProfiler2DTest {
         List<State> lst = new ArrayList<>();
         lst.add(new State(0, 0, 0, 0, 0));
         lst.add(new State(3, 5, 0, 0, 0));
-        System.out.println(ChassisProfiler2D.generateProfile(lst, 0.01, 0.01, 5, 4, 3, 2));
+        System.out.println(ChassisProfiler2D.generateProfile(lst, 0.01, 5, 4, 3, 2));
     }
 
 }
