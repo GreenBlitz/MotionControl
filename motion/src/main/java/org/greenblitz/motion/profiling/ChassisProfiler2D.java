@@ -46,7 +46,7 @@ public class ChassisProfiler2D {
 
             VelocityGraph velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
                     maxLinearAcc, maxAngularAcc);
-            velByLoc.generateCSV("velocityByDistance.csv");
+//            velByLoc.generateCSV("velocityByDistance.csv");
 
             double curvature;
             path.clear();
@@ -58,7 +58,10 @@ public class ChassisProfiler2D {
             for (int j = 0; j < subCurves.size(); j++) {
                 ICurve subCur = subCurves.get(j);
                 curvature = subCur.getCurvature();
+                long tDab = System.currentTimeMillis();
                 tempProfile = velByLoc.generateProfile(j, t0);
+                long dTDab = System.currentTimeMillis() - tDab;
+                if(dTDab != 0) System.out.println(dTDab);
                 t0 = tempProfile.getTEnd();
 
                 linearProfile.unsafeAdd(tempProfile);
@@ -123,9 +126,10 @@ public class ChassisProfiler2D {
     }
 
     private static double getJump(ICurve curve, double location, double jump){
-        double vel = curve.getLinearVelocity(location);
-        double ret = vel > jump ? jump/vel : 0.01;
-        return ret;
+//        double vel = curve.getLinearVelocity(location);
+//        double ret = vel > jump ? jump/vel : 0.01;
+//        return ret;
+        return jump;
     }
 
     private static VelocityGraph getVelocityGraph(List<ICurve> track, double maxLinearVel,

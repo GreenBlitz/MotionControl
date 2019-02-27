@@ -296,7 +296,7 @@ public class VelocityGraph {
         public class VelocitySegment {
 
             private final double startVelocitySquared, endVelocitySquared;
-            private double startVelocity = Double.NaN, endVelocity = Double.NaN;
+            private double startVelocity = Double.NaN;
             private final AccelerationMode mode;
             private final double acceleration;
 
