@@ -96,6 +96,10 @@ public class PIDController {
         return m_tolerance != null;
     }
 
+    public void startTime() {
+	m_previousTime = System.currentTimeMillis();
+    }
+
     private double updateTime() {
         var current = System.currentTimeMillis();
         double ms = current - m_previousTime;
