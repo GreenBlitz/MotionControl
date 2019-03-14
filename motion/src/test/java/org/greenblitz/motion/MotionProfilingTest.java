@@ -3,7 +3,7 @@ package org.greenblitz.motion;
 import org.greenblitz.motion.profiling.ActuatorLocation;
 import org.greenblitz.motion.profiling.MotionProfile1D;
 import org.greenblitz.motion.profiling.Profiler1D;
-import org.greenblitz.motion.profiling.exceptions.ProfilingException;
+import org.greenblitz.motion.exceptions.ProfilingException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

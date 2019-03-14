@@ -1,11 +1,12 @@
 package org.greenblitz.motion.pid;
 
+import org.greenblitz.motion.exceptions.UninitializedPIDException;
 import org.greenblitz.motion.tolerance.ITolerance;
-import org.opencv.core.Mat;
 
 public class PIDController {
 
     private PIDObject m_obj;
+
     private long m_previousTime;
     private double m_goal;
     private double m_previousError;
@@ -13,16 +14,16 @@ public class PIDController {
 
     private double m_minimumOutput;
     private double m_maximumOutput;
-    private double m_absoluteMinimumOut;
+    private double m_deadband;
 
-    private boolean configured;
+    private boolean m_initialized;
 
     private ITolerance m_tolerance;
 
     public PIDController(PIDObject obj, ITolerance tolerance) {
         m_obj = obj;
         m_tolerance = tolerance;
-        configured = false;
+        m_initialized = false;
     }
 
     public PIDController(PIDObject obj) {
@@ -46,22 +47,25 @@ public class PIDController {
         m_goal = goal;
     }
 
-    public void configure(double curr, double goal, double limitLower, double limitUpper, double absoluteMinimumOut){
+    public void initialize(double goal, double limitLower, double limitUpper, double deadband){
         setGoal(goal);
-        m_previousError = goal - curr;
         resetIntegralZone(0);
         configureOutputLimits(limitLower, limitUpper);
         m_previousTime = System.currentTimeMillis();
-        m_absoluteMinimumOut = absoluteMinimumOut;
-        configured = true;
+        m_deadband = deadband;
+        m_initialized = true;
     }
 
-    public double getAbsoluteMinimumOut() {
-        return m_absoluteMinimumOut;
+    public void initialize(double goal) {
+        initialize(goal, -Double.MAX_VALUE, Double.MAX_VALUE, 0);
     }
 
-    public void setAbsoluteMinimumOut(double m_absoluteMinimumOut) {
-        this.m_absoluteMinimumOut = m_absoluteMinimumOut;
+    public double getDeadband() {
+        return m_deadband;
+    }
+
+    public void setDeadband(double deadband) {
+        this.m_deadband = deadband;
     }
 
     public double getGoal() {
@@ -77,13 +81,15 @@ public class PIDController {
     }
 
     public double calculatePID(double current) {
-        if (!configured)
-            throw new RuntimeException("PID - " + this + " - not configured");
+        if (!m_initialized)
+            throw new UninitializedPIDException(this);
 
         if (isFinished(current))
             return 0;
 
-        var err = m_goal - current;
+        var err = error(m_goal, current);
+        m_previousError = err;
+
         var dt = updateTime();
 
         var p = m_obj.getKp() * err;
@@ -91,11 +97,11 @@ public class PIDController {
         m_integral += err * dt;
         var i = m_obj.getKi() * m_integral;
 
-        var d = m_obj.getKd() * (err - m_previousError) / dt;
+        var d = m_obj.getKd() * error(err, m_previousError) / dt;
 
-        m_previousError = err;
-        double calc = clamp(p + i + d + m_obj.getKf());
-        return Math.max(Math.abs(calc), m_absoluteMinimumOut) * Math.signum(calc);
+        var f = m_obj.getKf() * getGoal();
+
+        return applyDeadband(clamp(p + i + d + f));
     }
 
     public PIDObject getPidObject() {
@@ -118,16 +124,22 @@ public class PIDController {
         m_tolerance = tol;
     }
 
-    public boolean isFinished(double current) {
-        return hasTolerance() && m_tolerance.onTarget(getGoal(), current);
+    public boolean isFinished() {
+        return isFinished(getLastError());
     }
+
+    public boolean isFinished(double current) { return hasTolerance() && m_tolerance.onTarget(getGoal(), error(getGoal(), current)); }
 
     public boolean hasTolerance() {
         return m_tolerance != null;
     }
 
-    public void startTime() {
-	m_previousTime = System.currentTimeMillis();
+    public boolean isInitialized() {
+        return m_initialized;
+    }
+
+    public void setP(double kP) {
+        m_obj.setKp(kP);
     }
 
     private double updateTime() {
@@ -141,4 +153,11 @@ public class PIDController {
         return Math.min(Math.max(value, m_minimumOutput), m_maximumOutput);
     }
 
+    private double error(double goal, double current) {
+        return goal - current;
+    }
+
+    private double applyDeadband(double value) {
+        return Math.max(Math.abs(value), m_deadband) * Math.signum(value);
+    }
 }

@@ -1,4 +1,4 @@
-package org.greenblitz.motion.profiling.exceptions;
+package org.greenblitz.motion.exceptions;
 
 /**
  * A Profiling error thrown when the distance to cover between to points is so short, the actuator completes

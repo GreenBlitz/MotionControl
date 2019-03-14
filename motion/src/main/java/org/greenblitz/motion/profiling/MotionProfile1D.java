@@ -3,13 +3,12 @@ package org.greenblitz.motion.profiling;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.profiling.exceptions.ProfilingException;
+import org.greenblitz.motion.exceptions.ProfilingException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MotionProfile1D {

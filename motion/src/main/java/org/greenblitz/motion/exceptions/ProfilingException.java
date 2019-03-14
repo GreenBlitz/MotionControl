@@ -1,4 +1,4 @@
-package org.greenblitz.motion.profiling.exceptions;
+package org.greenblitz.motion.exceptions;
 
 /**
  * An error which is thrown when profiling fails for whatever reason
