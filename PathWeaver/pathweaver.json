@@ -6,5 +6,5 @@
   "maxJerk": 1000.0,
   "wheelBase": 0.7,
   "gameName": "Destination: Deep Space",
-  "outputDir": "../../../../git/MotionControl/example/src/main/deploy"
+  "outputDir": "../../Deep-Space-Robot/PathWeaver"
 }

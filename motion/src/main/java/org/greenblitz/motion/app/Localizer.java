@@ -139,6 +139,12 @@ public class Localizer {
     }
 
     public void update(double currentLeftDistance, double currentRightDistance, double angle) {
+        double rDist, lDist;
+        synchronized (LOCK){
+            rDist = currentRightDistance - prevDistanceRight;
+            lDist = currentLeftDistance - prevDistanceLeft;
+        }
+
         synchronized (SLEEP_LOCK) {
             double dt = (System.currentTimeMillis() - wakeTime) / 1000.0;
             if (dt < 0) return;
@@ -164,8 +170,9 @@ public class Localizer {
 
             }
         }
+
         Point dXdY = calculateMovement(
-                currentRightDistance - prevDistanceRight, currentLeftDistance - prevDistanceLeft,
+                rDist, lDist,
                 m_wheelDistance, m_location.getAngle());
 
         synchronized (LOCK) {
