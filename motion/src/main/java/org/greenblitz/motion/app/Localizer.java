@@ -178,10 +178,10 @@ public class Localizer {
         synchronized (LOCK) {
             m_location.translate(dXdY);
             m_location.setAngle(angle + angle0);
+            prevDistanceLeft = currentLeftDistance;
+            prevDistanceRight = currentRightDistance;
         }
 
-        prevDistanceLeft = currentLeftDistance;
-        prevDistanceRight = currentRightDistance;
     }
 
     /**
