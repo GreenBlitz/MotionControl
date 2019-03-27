@@ -135,7 +135,7 @@ public class Localizer {
                 ang = ((sleepSpeedR - sleepSpeedL) * dt / m_wheelDistance);
             }
         }
-        update(currentLeftDistance, currentRightDistance, ang);
+        update(currentLeftDistance, currentRightDistance, ang + angle0);
     }
 
     public void update(double currentLeftDistance, double currentRightDistance, double angle) {
@@ -170,7 +170,7 @@ public class Localizer {
 
         synchronized (LOCK) {
             m_location.translate(dXdY);
-            m_location.setAngle(angle + angle0);
+            m_location.setAngle(angle);
         }
 
         prevDistanceLeft = currentLeftDistance;
