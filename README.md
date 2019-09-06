@@ -12,7 +12,7 @@ In order to add this project you will need to use [gradle](https://gradle.org/).
         mavenCentral()
     }
 
-And alongside that, in you `dependencies` section add the line:
+And alongside that, in your `dependencies` section add the line:
 
     compile 'com.github.GreenBlitz.MotionControl:motion:master-SNAPSHOT'
 
