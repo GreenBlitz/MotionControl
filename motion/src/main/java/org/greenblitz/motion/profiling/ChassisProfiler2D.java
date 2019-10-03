@@ -116,9 +116,11 @@ public class ChassisProfiler2D {
 
             if(t0 > 1)
                 throw new RuntimeException("how you do this");
+
             returnList.add(source.getSubCurve(tPrev, t0));
 
         }
+
         returnList.add(source.getSubCurve(tPrev, 1));
         System.out.println("curve division");
         System.out.println(System.currentTimeMillis()-time);
