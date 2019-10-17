@@ -7,6 +7,9 @@ import org.greenblitz.utils.CSVWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Udi
+ */
 public class VelocityGraph {
 
     private static double maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc;

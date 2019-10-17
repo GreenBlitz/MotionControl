@@ -3,6 +3,9 @@ package org.greenblitz.motion.profiling.curve;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
 
+/**
+ * @author Udi
+ */
 public class BezierCurve implements ICurve {
 
     BezierSegment segment;

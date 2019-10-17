@@ -6,6 +6,9 @@ import org.greenblitz.motion.base.Vector2D;
 
 import java.util.function.Function;
 
+/**
+ * @author Alexey
+ */
 public class MotionProfile2D {
 
     private MotionProfile1D firstProfile, secondProfile;

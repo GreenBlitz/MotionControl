@@ -8,6 +8,7 @@ import org.greenblitz.motion.base.Position;
  *
  * @author Udi    ~ MudiAtalon
  * @author Alexey ~ savioor
+ * @author Or Karl
  */
 public class Localizer {
 

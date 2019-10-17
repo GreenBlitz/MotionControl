@@ -2,6 +2,9 @@ package org.greenblitz.motion.base;
 
 import java.util.Objects;
 
+/**
+ * @author Alexey
+ */
 public class /*united*/State extends Position {
 
     protected double linearVelocity /* meter/sec */, angularVelocity /* radians/sec */;

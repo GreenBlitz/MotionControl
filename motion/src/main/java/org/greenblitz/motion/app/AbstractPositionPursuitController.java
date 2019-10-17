@@ -6,6 +6,8 @@ import org.greenblitz.motion.pathing.Path;
 
 /**
  * This represents any controller that goes after a Path using lookahead and curve driving
+ *
+ * @author - Alexey
  */
 public abstract class AbstractPositionPursuitController<T extends Position> {
 

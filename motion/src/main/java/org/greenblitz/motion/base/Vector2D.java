@@ -2,6 +2,7 @@ package org.greenblitz.motion.base;
 
 /**
  * This just represents a different thing.
+ * @author Alexey
  */
 public class Vector2D extends Point {
 

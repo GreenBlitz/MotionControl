@@ -5,6 +5,9 @@ import org.greenblitz.motion.pathing.Path;
 
 import java.util.List;
 
+/**
+ * @author Alexey
+ */
 public class BasicAngleInterpolator {
 
 

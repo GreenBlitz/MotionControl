@@ -8,6 +8,10 @@ import org.greenblitz.utils.CSVWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Alexey
+ * @author Udi
+ */
 public class ChassisProfiler2D {
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,

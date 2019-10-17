@@ -3,6 +3,9 @@ package org.greenblitz.motion.profiling.curve;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
 
+/**
+ * @author Udi
+ */
 public class BezierSegment {
 
     private Point p0, p1, p2, p3; // points for location calculation (defines the curve)
