@@ -27,8 +27,8 @@ public class FeedForwards1DFollower {
 
     public double run(){
         double timeNow = (System.currentTimeMillis() - startTime)/1000.0;
-        if (logVelocity) SmartDashboard.putNumber("Profile::Vel", profile.getVelocity(timeNow));
         if (profile.isOver(timeNow)) return 0;
+        if (logVelocity) SmartDashboard.putNumber("Profile::Vel", profile.getVelocity(timeNow));
         return profile.getVelocity(timeNow)*kV + profile.getAcceleration(timeNow)*kA;
     }
 
