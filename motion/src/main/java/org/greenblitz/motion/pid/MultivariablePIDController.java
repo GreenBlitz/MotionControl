@@ -2,6 +2,10 @@ package org.greenblitz.motion.pid;
 
 import org.greenblitz.motion.tolerance.ITolerance;
 
+/**
+ * @deprecated untested and unreliable
+ */
+@Deprecated
 public class MultivariablePIDController {
     private PIDController[] m_controllers;
 
