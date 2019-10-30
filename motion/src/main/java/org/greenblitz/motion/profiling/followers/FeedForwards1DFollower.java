@@ -1,17 +1,24 @@
 package org.greenblitz.motion.profiling.followers;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.greenblitz.motion.profiling.MotionProfile1D;
 
 public class FeedForwards1DFollower {
 
     protected MotionProfile1D profile;
     protected long startTime;
+    protected boolean logVelocity;
     protected double kV, kA;
 
-    public FeedForwards1DFollower(MotionProfile1D profile, double kV, double kA){
+    public FeedForwards1DFollower(MotionProfile1D profile, double kV, double kA, boolean l){
         this.profile = profile;
         this.kV = kV;
         this.kA = kA;
+        this.logVelocity = l;
+    }
+
+    public FeedForwards1DFollower(MotionProfile1D profile, double kV, double kA){
+        this(profile, kV, kA, false);
     }
 
     public void init(){
@@ -20,6 +27,7 @@ public class FeedForwards1DFollower {
 
     public double run(){
         double timeNow = (System.currentTimeMillis() - startTime)/1000.0;
+        if (logVelocity) SmartDashboard.putNumber("Profile::Vel", profile.getVelocity(timeNow));
         if (profile.isOver(timeNow)) return 0;
         return profile.getVelocity(timeNow)*kV + profile.getAcceleration(timeNow)*kA;
     }
