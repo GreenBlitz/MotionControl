@@ -55,6 +55,7 @@ public class VelocityGraph {
 
         m_ranges = new ArrayList<>();
         m_ranges.add(new VelocityGraphRange(Double.NEGATIVE_INFINITY, 0));
+
         for (ICurve curve : track) {
             m_ranges.add(new VelocityGraphRange(
                     m_ranges.get(m_ranges.size() - 1).dEnd,

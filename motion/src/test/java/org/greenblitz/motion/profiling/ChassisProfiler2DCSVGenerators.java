@@ -20,11 +20,11 @@ public class ChassisProfiler2DCSVGenerators {
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
         states.add(new State(0, 0, 0, 0, 0));
-        states.add(new State(3, 5, 0, 0, 0));
+        states.add(new State(0, 1, 0, 0, 0));
 
         long time = System.currentTimeMillis();
-        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.0004, 5,
-                Math.PI, 5 * 2, 2 * Math.PI, 0, 0.1);
+        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.0004, 0.7,
+                2.1, 4.6, 10, 0, 0.1);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -38,6 +38,7 @@ public class ChassisProfiler2DCSVGenerators {
                 loc = new Position(0, 0, 0);
             else
                 loc = brofile.getActualLocation(t, loc, t - jmp, EPSILON);
+            System.out.println(loc);
             vel = brofile.getVelocity(t);
             acc = brofile.getAcceleration(t);
             broFile.addValues(t, loc.getX(), loc.getY(), vel.getX(), vel.getY(), acc.getX(), acc.getY());

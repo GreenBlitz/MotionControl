@@ -68,8 +68,6 @@ public class ChassisProfiler2D {
                 if(dTDab != 0) System.out.println(dTDab);
                 t0 = tempProfile.getTEnd();
 
-                linearProfile.unsafeAdd(tempProfile);
-
                 rotationSegs = new ArrayList<>();
                 MotionProfile1D.Segment curr, prev;
                 for (int k = 0; k < tempProfile.segments.size(); k++) {
@@ -83,6 +81,8 @@ public class ChassisProfiler2D {
                     curr.setStartLocation(k == 0 ? angularProfile.getLocation(angularProfile.getTEnd()) : prev.getLocation(prev.getTEnd()));
                     rotationSegs.add(curr);
                 }
+
+                linearProfile.unsafeAdd(tempProfile);
                 angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
             }
 
