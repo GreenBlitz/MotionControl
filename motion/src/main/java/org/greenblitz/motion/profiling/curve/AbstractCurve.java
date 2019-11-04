@@ -15,11 +15,6 @@ public abstract class AbstractCurve implements ICurve {
 
     protected double uStart, uEnd;
 
-    public AbstractCurve(){
-        uStart = 0;
-        uEnd = 1;
-    }
-
     public double clamp(double u){
         return u * (uEnd - uStart) + uStart;
     }
@@ -46,12 +41,12 @@ public abstract class AbstractCurve implements ICurve {
 
     @Override
     public double getAngle(double u) {
-        return getAngleInternal(u);
+        return getAngleInternal(clamp(u));
     }
 
     @Override
     public double getCurvature() {
-        return getCurvatureInternal((uStart + uEnd)/2.0);
+        return getCurvature(0.5);
     }
 
     @Override

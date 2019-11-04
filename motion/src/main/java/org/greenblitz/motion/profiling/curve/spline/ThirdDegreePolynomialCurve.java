@@ -39,19 +39,19 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
                          y[0] + u*(y[1] + u*(y[2] + u*y[3])));
     }
 
-    protected Vector2D getDerivative(double u){
+    protected Vector2D getDerivativeInter(double u){
         return new Vector2D(x[1] + u*(2*x[2] + u*(3*x[3])),
                             y[1] + u*(2*y[2] + u*(3*y[3])));
     }
 
-    protected Vector2D getDoubleDerivative(double u){
+    protected Vector2D getDoubleDerivativeInter(double u){
         return new Vector2D(2*x[2] + 6*u*x[3],
                             2*y[2] + 6*u*y[3]);
     }
 
     @Override
     protected double getLinearVelocityInternal(double u) {
-        return getDerivative(u).norm();
+        return getDerivativeInter(u).norm();
     }
 
     @Override
@@ -66,7 +66,8 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
      */
     @Override
     protected double getLengthInternal(double u) {
-        double length = Point.subtract(getLocationInternal(u), getLocationInternal(uStart)).norm();
+        double length = Point.subtract(getLocationInternal(u),
+                getLocationInternal(uStart)).norm();
         double curvature = getCurvature();
         if (Point.isFuzzyEqual(curvature, 0, 1E-3))
             return length;
@@ -75,7 +76,7 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
 
     @Override
     protected double getAngleInternal(double u) {
-        Vector2D d = getDerivative(u);
+        Vector2D d = getDerivativeInter(u);
         return Math.atan2(d.getY(), d.getX());
     }
 
@@ -86,8 +87,11 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
      */
     @Override
     protected double getCurvatureInternal(double u) {
-        Vector2D derv = getDerivative(u);
-        Vector2D doubleDerv = getDoubleDerivative(u);
+        Vector2D derv = getDerivativeInter(u);
+        Vector2D doubleDerv = getDoubleDerivativeInter(u);
+        if (derv.norm() < 1E-3){
+            return 0;
+        }
         return (derv.getX()*doubleDerv.getY() - derv.getY()*doubleDerv.getX()) /
                 Math.pow(derv.norm(), 3);
     }

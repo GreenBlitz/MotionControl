@@ -10,9 +10,11 @@ public class CubicSplineGenerator {
      * @return
      */
     public static ThirdDegreePolynomialCurve generateSpline(State start, State end){
+        double angS = start.getAngle();
+        double angE = end.getAngle();
         return new ThirdDegreePolynomialCurve(
-                getParams(start.getX(), end.getX(), start.getVelocity().getX(), end.getVelocity().getX()),
-                getParams(start.getY(), end.getY(), start.getVelocity().getY(), end.getVelocity().getY())
+                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE)),
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE))
         );
     }
 

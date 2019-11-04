@@ -3,6 +3,7 @@ package org.greenblitz.motion.profiling;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
+import org.greenblitz.motion.profiling.curve.spline.CubicSplineGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class ChassisProfiler2D {
             first = locations.get(i);
             second = locations.get(i + 1);
 
-            curve = new BezierCurve(first, second);
+            curve = CubicSplineGenerator.generateSpline(first, second);
 
             subCurves.clear();
             divideToEqualCurvatureSubcurves(subCurves, curve, jump);
@@ -67,8 +68,6 @@ public class ChassisProfiler2D {
                 if(dTDab != 0) System.out.println(dTDab);
                 t0 = tempProfile.getTEnd();
 
-                linearProfile.unsafeAdd(tempProfile);
-
                 rotationSegs = new ArrayList<>();
                 MotionProfile1D.Segment curr, prev;
                 for (int k = 0; k < tempProfile.segments.size(); k++) {
@@ -82,6 +81,8 @@ public class ChassisProfiler2D {
                     curr.setStartLocation(k == 0 ? angularProfile.getLocation(angularProfile.getTEnd()) : prev.getLocation(prev.getTEnd()));
                     rotationSegs.add(curr);
                 }
+
+                linearProfile.unsafeAdd(tempProfile);
                 angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
             }
 
