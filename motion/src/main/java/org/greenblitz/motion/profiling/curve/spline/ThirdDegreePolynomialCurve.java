@@ -5,6 +5,9 @@ import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.curve.AbstractCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
 
+/**
+ * @author alexey
+ */
 public class ThirdDegreePolynomialCurve extends AbstractCurve {
 
     /**
@@ -81,7 +84,7 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
     }
 
     /**
-     * See wikipedia.org/wiki/Curvature
+     * See https://www.wikipedia.org/wiki/Curvature
      * @param u
      * @return
      */

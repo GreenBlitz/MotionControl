@@ -2,6 +2,9 @@ package org.greenblitz.motion.profiling.curve.spline;
 
 import org.greenblitz.motion.base.State;
 
+/**
+ * @author alexey
+ */
 public class CubicSplineGenerator {
 
     /**

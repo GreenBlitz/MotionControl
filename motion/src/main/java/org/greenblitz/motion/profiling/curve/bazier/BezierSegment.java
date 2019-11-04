@@ -5,6 +5,7 @@ import org.greenblitz.motion.base.State;
 
 /**
  * @author Udi
+ * @deprecated bugged, needs fixing if future use is planned
  */
 public class BezierSegment {
 

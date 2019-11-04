@@ -2,6 +2,9 @@ package org.greenblitz.motion.profiling.curve;
 
 import org.greenblitz.motion.base.Point;
 
+/**
+ * @author alexey
+ */
 public abstract class AbstractCurve implements ICurve {
 
     protected abstract Point getLocationInternal(double u);

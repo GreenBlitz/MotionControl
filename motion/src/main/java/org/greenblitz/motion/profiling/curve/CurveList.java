@@ -6,7 +6,9 @@ import org.greenblitz.motion.base.TwoTuple;
 import java.util.ArrayList;
 
 /**
- * @deprecated Not tested
+ *
+ * @author alexey
+ * @deprecated Not tested, most likely bugge
  */
 @Deprecated
 public class CurveList extends AbstractCurve {
