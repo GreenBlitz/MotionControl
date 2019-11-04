@@ -4,7 +4,7 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
-import org.greenblitz.motion.profiling.curve.BezierCurve;
+import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.utils.CSVWrapper;
 import org.junit.jupiter.api.Test;

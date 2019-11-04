@@ -19,14 +19,18 @@ public interface ICurve {
      *
      * @param u in the range [0, 1] representing the location on the curve.
      * @return The velocity element tangent to the given location on the curve.
+     * @deprecated Not used for profiling and therefor not that important. Implementation may be omitted.
      */
+    @Deprecated
     double getLinearVelocity(double u);
 
     /**
      *
      * @param u in the range [0, 1] representing the location on the curve.
      * @return the rotational velocity of the curve at this location.
+     *s @deprecated Not used for profiling and therefor not that important. Implementation may be omitted.
      */
+    @Deprecated
     double getAngularVelocity(double u);
 
     /**

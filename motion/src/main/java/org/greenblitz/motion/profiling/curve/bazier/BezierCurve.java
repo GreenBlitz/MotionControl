@@ -1,7 +1,8 @@
-package org.greenblitz.motion.profiling.curve;
+package org.greenblitz.motion.profiling.curve.bazier;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
+import org.greenblitz.motion.profiling.curve.ICurve;
 
 /**
  * @author Udi

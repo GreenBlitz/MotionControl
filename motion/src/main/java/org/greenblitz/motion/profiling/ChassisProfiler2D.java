@@ -1,9 +1,8 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.profiling.curve.BezierCurve;
+import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
-import org.greenblitz.utils.CSVWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
