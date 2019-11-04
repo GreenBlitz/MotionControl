@@ -3,7 +3,7 @@ package org.greenblitz.motion.profiling;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
-import org.greenblitz.motion.profiling.curve.BezierSegment;
+import org.greenblitz.motion.profiling.curve.bazier.BezierSegment;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

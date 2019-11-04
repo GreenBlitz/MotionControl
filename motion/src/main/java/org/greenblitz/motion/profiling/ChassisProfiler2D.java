@@ -1,9 +1,9 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.profiling.curve.BezierCurve;
+import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
-import org.greenblitz.utils.CSVWrapper;
+import org.greenblitz.motion.profiling.curve.spline.CubicSplineGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class ChassisProfiler2D {
             first = locations.get(i);
             second = locations.get(i + 1);
 
-            curve = new BezierCurve(first, second);
+            curve = CubicSplineGenerator.generateSpline(first, second);
 
             subCurves.clear();
             divideToEqualCurvatureSubcurves(subCurves, curve, jump);
