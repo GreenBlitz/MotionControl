@@ -181,6 +181,7 @@ public class VelocityGraph {
             this.curve = null;
             this.maxVelocity = 0;
             this.maxAcceleration = 0;
+            // TODO make this not stop
             inertia = new VelocitySegment(0, AccelerationMode.INERTIA);
         }
 
@@ -336,8 +337,10 @@ public class VelocityGraph {
                     this.acceleration = 0;
                 else
                     this.acceleration = (vEndSquared - vStartSquared) / (2 * (dEnd - dStart));
-                if (Double.isNaN(acceleration))
+
+                if (Double.isNaN(acceleration)) {
                     throw new RuntimeException("NaN");
+                }
             }
 
             public AccelerationMode getMode() {

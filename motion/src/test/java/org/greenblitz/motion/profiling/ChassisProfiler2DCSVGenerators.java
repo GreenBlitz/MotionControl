@@ -21,26 +21,29 @@ public class ChassisProfiler2DCSVGenerators {
     @Test
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
-        states.add(new State(0, 0, 0, 0, 0));
-        states.add(new State(0, 1.2, 0, 0, 0));
+        states.add(new org.greenblitz.motion.base.State(0, 0, 0, 0, 0));
+        states.add(new org.greenblitz.motion.base.State(0.8, 3, Math.PI/4, 0, 0));
+        states.add(new org.greenblitz.motion.base.State(2, 3, Math.PI/2, 0, 0));
 
         long time = System.currentTimeMillis();
-        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.0004, 0.7,
+        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.01, 0.7,
                 2.1, 4.6, 10, 0, 0.1);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
         CSVWrapper broFile = CSVWrapper.generateWrapper("profile.csv", 0, "t", "x", "y", "linearV", "angularV", "linearA", "angularA");
 
+        System.out.println("Tend " + brofile.getTEnd());
+
         Position loc = null;
-        final double jmp = 0.001;
+        final double jmp = 0.1;
         Vector2D vel, acc;
         for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
                 loc = new Position(0, 0, 0);
             else
                 loc = brofile.getActualLocation(t, loc, t - jmp, EPSILON);
-            System.out.println(loc);
+//            System.out.println(loc);
             vel = brofile.getVelocity(t);
             acc = brofile.getAcceleration(t);
             broFile.addValues(t, loc.getX(), loc.getY(), vel.getX(), vel.getY(), acc.getX(), acc.getY());

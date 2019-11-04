@@ -89,11 +89,13 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
     protected double getCurvatureInternal(double u) {
         Vector2D derv = getDerivativeInter(u);
         Vector2D doubleDerv = getDoubleDerivativeInter(u);
-        if (derv.norm() < 1E-3){
+        double normCubed = Math.pow(derv.norm(), 3);
+        if (normCubed < 1E-3){
             return 0;
         }
+
         return (derv.getX()*doubleDerv.getY() - derv.getY()*doubleDerv.getX()) /
-                Math.pow(derv.norm(), 3);
+                normCubed;
     }
 
     @Override
