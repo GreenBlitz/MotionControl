@@ -5,6 +5,10 @@ import org.greenblitz.motion.base.TwoTuple;
 
 import java.util.ArrayList;
 
+/**
+ * @deprecated Not tested
+ */
+@Deprecated
 public class CurveList extends AbstractCurve {
 
     public ArrayList<ICurve> curves;

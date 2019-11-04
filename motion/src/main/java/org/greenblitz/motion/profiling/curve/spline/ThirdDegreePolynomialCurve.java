@@ -90,7 +90,7 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
         Vector2D derv = getDerivativeInter(u);
         Vector2D doubleDerv = getDoubleDerivativeInter(u);
         double normCubed = Math.pow(derv.norm(), 3);
-        if (normCubed < 1E-3){
+        if (normCubed < 1E-5){
             return 0;
         }
 

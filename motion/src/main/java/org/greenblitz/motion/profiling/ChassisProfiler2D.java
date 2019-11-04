@@ -38,24 +38,19 @@ public class ChassisProfiler2D {
 
         VelocityGraph velByLoc;
 
-        CurveList curve = new CurveList(new ArrayList<>(), 0, 1);
         double t0 = tStart;
         for (int i = 0; i < locations.size() - 1; i++) {
 
             first = locations.get(i);
             second = locations.get(i + 1);
 
-            curve.curves.add(CubicSplineGenerator.generateSpline(first, second));
+            divideToEqualCurvatureSubcurves(subCurves, CubicSplineGenerator.generateSpline(first, second), jump);
         }
-        System.out.println(curve.getLocation(1));
-        divideToEqualCurvatureSubcurves(subCurves, curve, jump);
-        System.out.println(subCurves.get(subCurves.size() - 1).getLength(1));
-
 
         velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
                 maxLinearAcc, maxAngularAcc);
-        velByLoc.generateCSV("velByLoc.csv");
-        System.out.println("Wrote to mem");
+//        velByLoc.generateCSV("velByLoc.csv");
+//        System.out.println("Wrote to mem");
 
         long t0profiling = System.currentTimeMillis();
 

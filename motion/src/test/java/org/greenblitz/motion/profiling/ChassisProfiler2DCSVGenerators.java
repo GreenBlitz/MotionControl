@@ -26,7 +26,7 @@ public class ChassisProfiler2DCSVGenerators {
         states.add(new org.greenblitz.motion.base.State(2, 3, Math.PI/2, 0, 0));
 
         long time = System.currentTimeMillis();
-        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.01, 0.7,
+        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.005, 0.7,
                 2.1, 4.6, 10, 0, 0.1);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
@@ -36,7 +36,7 @@ public class ChassisProfiler2DCSVGenerators {
         System.out.println("Tend " + brofile.getTEnd());
 
         Position loc = null;
-        final double jmp = 0.1;
+        final double jmp = 0.001;
         Vector2D vel, acc;
         for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
