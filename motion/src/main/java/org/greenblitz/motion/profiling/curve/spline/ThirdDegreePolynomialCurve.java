@@ -74,6 +74,8 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
         double curvature = getCurvature();
         if (Point.isFuzzyEqual(curvature, 0, 1E-3))
             return length;
+        if (Math.abs(length * curvature / 2) > 1)
+            throw new RuntimeException("len * curve / 2 is too big");
         return 2 / curvature * Math.asin(length * curvature / 2);
     }
 
@@ -93,7 +95,7 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
         Vector2D derv = getDerivativeInter(u);
         Vector2D doubleDerv = getDoubleDerivativeInter(u);
         double normCubed = Math.pow(derv.norm(), 3);
-        if (normCubed < 1E-5){
+        if (normCubed < 1E-3){
             return 0;
         }
 
