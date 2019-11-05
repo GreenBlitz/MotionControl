@@ -60,10 +60,10 @@ public class ChassisProfiler2D {
 
             ICurve subCur = subCurves.get(j);
             curvature = subCur.getCurvature();
-            long tDab = System.currentTimeMillis();
+//            long tDab = System.currentTimeMillis();
             tempProfile = velByLoc.generateProfile(j, t0);
-            long dTDab = System.currentTimeMillis() - tDab;
-            if(dTDab != 0) System.out.println(dTDab);
+//            long dTDab = System.currentTimeMillis() - tDab;
+//            if(dTDab != 0) System.out.println(dTDab);
             t0 = tempProfile.getTEnd();
 
             rotationSegs = new ArrayList<>();
