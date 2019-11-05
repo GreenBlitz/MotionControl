@@ -339,7 +339,7 @@ public class VelocityGraph {
                     this.acceleration = (vEndSquared - vStartSquared) / (2 * (dEnd - dStart));
 
                 if (Double.isNaN(acceleration)) {
-                    throw new RuntimeException("NaN");
+                    throw new RuntimeException("dEnd  = " + dEnd + ", dStart = " + dStart + " and together it's NaN");
                 }
             }
 
