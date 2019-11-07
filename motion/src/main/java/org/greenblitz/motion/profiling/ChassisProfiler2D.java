@@ -111,7 +111,7 @@ public class ChassisProfiler2D {
      * @return returnList
      */
     private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump) {
-        long time = System.currentTimeMillis();
+//        long time = System.currentTimeMillis();
         double t0, tPrev = 0;
         for (t0 = getJump(source, 0, jump); t0 < 1.0; tPrev = t0, t0 += getJump(source, t0, jump)) {
 
@@ -123,8 +123,8 @@ public class ChassisProfiler2D {
         }
 
         returnList.add(source.getSubCurve(tPrev, 1));
-        System.out.println("curve division");
-        System.out.println(System.currentTimeMillis()-time);
+//        System.out.println("curve division");
+//        System.out.println(System.currentTimeMillis()-time);
         return returnList;
     }
 
