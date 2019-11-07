@@ -27,7 +27,7 @@ public class ChassisProfiler2DCSVGenerators {
 
         long time = System.currentTimeMillis();
         MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.005, 0.7,
-                2.1, 4.6, 10, 0, 0.1);
+                2.1, 4.6, 10, 0, .97f);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -59,7 +59,7 @@ public class ChassisProfiler2DCSVGenerators {
             locFile.addValues(loc.getX(), loc.getY());
 //            System.out.println(loc);
         }
-        ICurve curve = CubicSplineGenerator.generateSpline(states.get(0), states.get(1));
+        ICurve curve = CubicSplineGenerator.generateSpline(states.get(0), states.get(1), 0.8);
         for (double u = 0; u <= 1; u += 0.001) {
             Point p = curve.getLocation(u);
             locFile.addValues(-p.getX(), p.getY());

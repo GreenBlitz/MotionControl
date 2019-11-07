@@ -34,7 +34,7 @@ public class ChassisProfiler2D {
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart,
                                                   float tForCurve) {
-
+//        VelocityGraph.setDefaultEpsilon(0.1);
         MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D tempProfile;

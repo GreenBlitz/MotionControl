@@ -1,6 +1,9 @@
 package org.greenblitz.motion.profiling.curve.spline;
 
+import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
+
+import java.awt.*;
 
 /**
  * @author alexey
@@ -26,10 +29,14 @@ public class CubicSplineGenerator {
     public static ThirdDegreePolynomialCurve generateSpline(State start, State end, double t){
         double angS = start.getAngle();
         double angE = end.getAngle();
-        return new ThirdDegreePolynomialCurve(
+        ThirdDegreePolynomialCurve ret = new ThirdDegreePolynomialCurve(
                 getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), t),
-                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), t)
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), t), 0, 1, t
         );
+//        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
+//            throw new RuntimeException("What");
+//        }
+        return ret;
     }
 
     /**

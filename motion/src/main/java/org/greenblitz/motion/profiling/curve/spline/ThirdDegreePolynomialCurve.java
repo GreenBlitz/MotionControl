@@ -18,13 +18,15 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
      */
     protected double[] x;
     protected double[] y;
+    double tScaling;
 
-    public ThirdDegreePolynomialCurve(double[] xArr, double[] yArr, double uStart, double uEnd){
+    public ThirdDegreePolynomialCurve(double[] xArr, double[] yArr, double uStart, double uEnd, double tScaling){
         x = new double[4];
         y = new double[4];
+        this.tScaling = tScaling;
 
-        this.uStart = uStart;
-        this.uEnd = uEnd;
+        this.uStart = uStart*tScaling;
+        this.uEnd = uEnd*tScaling;
 
         for (int i = 0; i < 4; i++){
             x[i] = xArr[i];
@@ -32,8 +34,13 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
         }
     }
 
+    @Override
+    public double clamp(double u) {
+        return super.clamp(u*tScaling);
+    }
+
     public ThirdDegreePolynomialCurve(double[] xArr, double[] yArr){
-        this(xArr, yArr, 0, 1);
+        this(xArr, yArr, 0, 1, 1);
     }
 
     @Override
@@ -105,6 +112,6 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
 
     @Override
     public ICurve getSubCurve(double uStart, double uEnd) {
-        return new ThirdDegreePolynomialCurve(x, y, uStart, uEnd);
+        return new ThirdDegreePolynomialCurve(x, y, uStart, uEnd, tScaling);
     }
 }
