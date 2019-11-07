@@ -28,6 +28,12 @@ public class ChassisProfiler2D {
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
+        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, 1.0f);
+    }
+
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
+                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart,
+                                                  float tForCurve) {
 
         MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
@@ -44,7 +50,7 @@ public class ChassisProfiler2D {
             first = locations.get(i);
             second = locations.get(i + 1);
 
-            divideToEqualCurvatureSubcurves(subCurves, CubicSplineGenerator.generateSpline(first, second), jump);
+            divideToEqualCurvatureSubcurves(subCurves, CubicSplineGenerator.generateSpline(first, second, tForCurve), jump);
         }
 
         velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
