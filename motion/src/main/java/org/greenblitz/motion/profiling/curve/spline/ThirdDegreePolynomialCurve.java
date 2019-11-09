@@ -34,11 +34,6 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
         }
     }
 
-    @Override
-    public double clamp(double u) {
-        return super.clamp(u*tScaling);
-    }
-
     public ThirdDegreePolynomialCurve(double[] xArr, double[] yArr){
         this(xArr, yArr, 0, 1, 1);
     }
@@ -112,6 +107,8 @@ public class ThirdDegreePolynomialCurve extends AbstractCurve {
 
     @Override
     public ICurve getSubCurve(double uStart, double uEnd) {
-        return new ThirdDegreePolynomialCurve(x, y, uStart, uEnd, tScaling);
+        return new ThirdDegreePolynomialCurve(x, y,
+                clamp(uStart)/tScaling, clamp(uEnd)/tScaling,
+                tScaling);
     }
 }

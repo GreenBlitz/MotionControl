@@ -4,6 +4,7 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
+import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.profiling.curve.spline.CubicSplineGenerator;
@@ -26,8 +27,10 @@ public class ChassisProfiler2DCSVGenerators {
         states.add(new org.greenblitz.motion.base.State(2, 3, Math.PI/2, 0, 0));
 
         long time = System.currentTimeMillis();
-        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(states, 0.005, 0.7,
-                2.1, 4.6, 10, 0, .97f);
+        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
+                pathToState(Paths.get("LTurn", true))
+                , .01, 0.7,
+                2.1, 4.6, 10, 0, 0.1);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -59,13 +62,21 @@ public class ChassisProfiler2DCSVGenerators {
             locFile.addValues(loc.getX(), loc.getY());
 //            System.out.println(loc);
         }
-        ICurve curve = CubicSplineGenerator.generateSpline(states.get(0), states.get(1), 0.8);
-        for (double u = 0; u <= 1; u += 0.001) {
-            Point p = curve.getLocation(u);
-            locFile.addValues(-p.getX(), p.getY());
-        }
-        locFile.flush();
+//        ICurve curve = CubicSplineGenerator.generateSpline(states.get(0), states.get(1), 0.8);
+//        for (double u = 0; u <= 1; u += 0.001) {
+//            Point p = curve.getLocation(u);
+//            locFile.addValues(-p.getX(), p.getY());
+//        }
+//        locFile.flush();
 
+    }
+
+    List<State> pathToState(Path<Position> pth){
+        List<State> retList = new ArrayList<>();
+        for (Position p : pth){
+            retList.add(new State(p.getX(), p.getY(), p.getAngle()));
+        }
+        return retList;
     }
 
 }
