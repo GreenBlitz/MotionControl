@@ -43,10 +43,35 @@ user is `iteration(T robotLocation)`. This function returns a double array who's
 you need to supply to the left motor and the second value is for the right motor.
 
 Using this command you can easily incorporate the calculation of the controller into your main robot loop.
-### Custom PID controller - WIP
+### Custom PID controller
 TODO
-### 1D Continuous Motion Profile Generation - WIP
-TODO
+### 1D Continuous Motion Profile Generation
+A 1 dimensional motion profile can be generated for any actuator. The profile can be
+generated using `Profiler1D` that returns a `MotionProfie1D`. In order to do so, supply the
+profiler with a set of actuator locations which are waypoints for your actuator. Each 
+actuator location contains a location (a number, because there is 1 dimension) and the velocity
+of the actuator. Of course you will also need to supply maximum velocity and acceleration of
+your actuator.
+
+The generated profile will pass through all the locations, at the given speeds, as fast
+as physically possible. Note that the profile is continuous, and you can get the desired
+velocity, acceleration and position of the actuator at any point in time.
+
+#### Assumptions:
+* No external forces affect the actuator location, if they do (e.g. elevator) then
+you will need a custom profiler.
+* The jerk is infinite. This is a safe assumption for most cases, as we have found through testing
+that the jerk is always at least 2 orders of magnitude larger than the acceleration and therefor can
+be neglected.
+
+#### Advantages of a continuous profile 
+* No need to run the code at a constant speed, any speed fast enough will work. Also,
+this eliminates errors that happens when your code does not run at the exact cycle speed
+needed for some discrete profiles.
+* Small amounts of memory taken for much higher accuracy. Since only segments of equal acceleration
+are saved, you can have as little as 3 segments (each is an object with 5 doubles) for the whole profile. Despite the small
+amount of saved information, the data saved within it is more accurate then any discrete
+set of points.
 ### 2D Continuous Motion Profile Generation For Tank Drive - WIP
 TODO
 ## Contributing
