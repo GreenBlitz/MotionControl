@@ -1,0 +1,10 @@
+{
+  "lengthUnit": "Meter",
+  "timeStep": 0.01,
+  "maxVelocity": 10.0,
+  "maxAcceleration": 20.0,
+  "maxJerk": 30.0,
+  "wheelBase": 1.0,
+  "gameName": "Destination: Deep Space",
+  "outputDir": "../weaverOut"
+}

@@ -1,5 +1,6 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.CurveList;
 import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
@@ -50,7 +51,9 @@ public class ChassisProfiler2D {
             first = locations.get(i);
             second = locations.get(i + 1);
 
-            divideToEqualCurvatureSubcurves(subCurves, CubicSplineGenerator.generateSpline(first, second, tForCurve), jump);
+            divideToEqualCurvatureSubcurves(subCurves, CubicSplineGenerator.generateSpline(first, second,
+                    tForCurve //* (Position.subtract(first, second).norm()/maxLinearVel) // TODO make sure it's ok
+            ), jump);
         }
 
         velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
