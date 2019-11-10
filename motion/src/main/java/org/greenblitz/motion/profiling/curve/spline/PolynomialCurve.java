@@ -5,6 +5,10 @@ import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.profiling.curve.AbstractCurve;
 
+/**
+ * @author peleg
+ */
+
 public class PolynomialCurve extends AbstractCurve {
 
     /**
