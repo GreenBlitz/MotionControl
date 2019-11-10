@@ -121,7 +121,7 @@ public class PolynomialCurve extends AbstractCurve {
 
     @Override
     public ICurve getSubCurve(double uStart, double uEnd) {
-        return new ThirdDegreePolynomialCurve(x, y,
+        return new PolynomialCurve(rank,x, y,
                 clamp(uStart)/tScaling, clamp(uEnd)/tScaling,
                 tScaling);
     }
