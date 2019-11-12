@@ -27,9 +27,11 @@ public class QuinticSplineGenerator {
     public static PolynomialCurve generateSpline(State start, State end, double t){
         double angS = start.getAngle();
         double angE = end.getAngle();
+        double kS = start.getAngularVelocity()/start.getLinearVelocity();
+        double kE = end.getAngularVelocity()/end.getLinearVelocity();
         PolynomialCurve ret = new PolynomialCurve(5,
-                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), t),
-                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), t), 0, 1, t
+                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), -kS*Math.cos(angS),-kE*Math.cos(angE), t),
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), kS*Math.sin(angS),kE*Math.sin(angE), t), 0, 1, t
         );
 //        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
 //            throw new RuntimeException("What");
@@ -51,13 +53,11 @@ public class QuinticSplineGenerator {
      * @param dervEnd
      * @return
      */
-    protected static double[] getParams(double dStart, double dEnd, double dervStart, double dervEnd, double t){
+    protected static double[] getParams(double dStart, double dEnd, double dervStart, double dervEnd, double derv2Start,double derv2End, double t){
         double dx = dEnd - dStart;
         double tt = t*t;
         return new double[] {
                 dStart, dervStart, (-2*dervStart*t - dervEnd*t + 3*dx)/tt, (dervStart*t + dervEnd*t - 2*dx)/(t*tt)
         };
     }
-
-
 }

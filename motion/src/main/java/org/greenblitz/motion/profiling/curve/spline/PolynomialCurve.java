@@ -130,4 +130,8 @@ public class PolynomialCurve extends AbstractCurve {
                 tScaling);
     }
 
+    public int getRank(){
+        return rank;
+    }
+
 }
