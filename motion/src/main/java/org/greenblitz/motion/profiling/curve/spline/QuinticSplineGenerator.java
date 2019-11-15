@@ -18,6 +18,27 @@ public class QuinticSplineGenerator {
     }
 
     /**
+     * Mathematical explanation for the calculation of the first and second derivatives:
+     * Let x and y be functions of the parameter b
+     *
+     * FIRST DERIVATIVE:
+     * dy/dx = cot a (when a is the angle with the y axis)
+     * Therefore (dy/db)*(db/dx) = cos(a)/sin(a) ===> (dy/db)*sin(a) = (dx/db)*cos(a)
+     * The values of the first derivatives doesn't matter because x(b) and y(b) aren't defined yet.
+     *
+     * So we chose these values according to the equation above
+     * y' = dy/db = cos(a)
+     * x' = dx/db = sin(a)
+     *
+     * SECOND DERIVATIVE:
+     * x'' = (d/db)(dx/db) = (da/db)[(d/da) sin(a)] = (da/dt)*(dt/dx)*(dx/db)*[cos(a)] =
+     *  = W*(1/(dx/dt))*(dx/db)*cos(a) = W*(1/(V*sin(a)))*sin(a)*cos(a) = (W/V)*cos(a) = K*cos(a)
+     *
+     * x'' = K*cos(a)
+     * When: t - time, W - angular velocity, V - linear velocity, K - curvature = W/V
+     *
+     * Similar calculation with y results:
+     * y'' = -K*sin(a)
      *
      * @param start
      * @param end
@@ -30,8 +51,8 @@ public class QuinticSplineGenerator {
         double kS = start.getAngularVelocity()/start.getLinearVelocity();
         double kE = end.getAngularVelocity()/end.getLinearVelocity();
         PolynomialCurve ret = new PolynomialCurve(5,
-                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), -kS*Math.cos(angS),-kE*Math.cos(angE), t),
-                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), kS*Math.sin(angS),kE*Math.sin(angE), t), 0, 1, t
+                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), kS*Math.cos(angS),kE*Math.cos(angE), t),
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), -kS*Math.sin(angS),-kE*Math.sin(angE), t), 0, 1, t
         );
 //        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
 //            throw new RuntimeException("What");
