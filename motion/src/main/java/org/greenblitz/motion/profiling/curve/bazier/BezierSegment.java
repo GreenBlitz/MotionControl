@@ -7,6 +7,7 @@ import org.greenblitz.motion.base.State;
  * @author Udi
  * @deprecated bugged, needs fixing if future use is planned
  */
+@Deprecated
 public class BezierSegment {
 
     private Point p0, p1, p2, p3; // points for location calculation (defines the curve)

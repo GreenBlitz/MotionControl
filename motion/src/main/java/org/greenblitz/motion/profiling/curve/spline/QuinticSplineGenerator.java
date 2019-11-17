@@ -23,7 +23,7 @@ public class QuinticSplineGenerator {
      *
      * FIRST DERIVATIVE:
      * dy/dx = cot a (when a is the angle with the y axis)
-     * Therefore (dy/db)*(db/dx) = cos(a)/sin(a) ===> (dy/db)*sin(a) = (dx/db)*cos(a)
+     * Therefore (dy/db)*(db/dx) = cos(a)/sin(a) implies (dy/db)*sin(a) = (dx/db)*cos(a)
      * The values of the first derivatives doesn't matter because x(b) and y(b) aren't defined yet.
      *
      * So we chose these values according to the equation above

@@ -8,6 +8,7 @@ import org.greenblitz.motion.profiling.curve.ICurve;
  * @author Udi
  * @deprecated bugged, needs fixing if future use is planned
  */
+@Deprecated
 public class BezierCurve implements ICurve {
 
     BezierSegment segment;
