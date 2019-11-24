@@ -64,7 +64,7 @@ public class Paths {
                     path.add(toAdd);
                     continue;
                 }
-                if (Point.subtract(toAdd, path.get(path.size() - 1)).norm() > 0.01) {
+                if (Point.subtract(toAdd, path.get(path.size() - 1)).norm() > 0.1) {
                     path.add(toAdd);
                 }
 //                System.out.println(path.get(path.size() - 1));

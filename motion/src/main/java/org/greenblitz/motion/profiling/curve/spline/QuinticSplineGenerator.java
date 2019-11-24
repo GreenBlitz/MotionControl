@@ -1,6 +1,9 @@
 package org.greenblitz.motion.profiling.curve.spline;
 
+import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
+
+import java.util.Stack;
 
 /**
  * @author peleg
@@ -58,6 +61,61 @@ public class QuinticSplineGenerator {
 //            throw new RuntimeException("What");
 //        }
         return ret;
+    }
+
+    public static PolynomialCurve generateSplineDervApprox(State start, State end, State bStart, State aftEnd, double t){
+        double angS = start.getAngle();
+        double angE = end.getAngle();
+        double dx2s = (Math.sin(bStart.getAngle()) - Math.sin(angE)) / Point.dist(end, bStart);
+        double dx2e = (Math.sin(angS) - Math.sin(aftEnd.getAngle())) / Point.dist(start, aftEnd);
+        double dy2s = (Math.cos(bStart.getAngle()) - Math.cos(angE)) / Point.dist(end, bStart);
+        double dy2e = (Math.cos(angS) - Math.cos(aftEnd.getAngle())) / Point.dist(start, aftEnd);
+
+        PolynomialCurve ret = new PolynomialCurve(5,
+                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), dx2s, dx2e, t),
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), dy2s, dy2e, t), 0, 1, t
+        );
+//        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
+//            throw new RuntimeException("What");
+//        }
+        return ret;
+    }
+
+    public static PolynomialCurve generateSplineForStartOrEnd(State start, State end, State other, double t, boolean forStart){
+        double angS, angE, dx2s, dx2e, dy2s, dy2e;
+        if (forStart) {
+            angS = start.getAngle();
+            angE = end.getAngle();
+            dx2s = 0;
+            dx2e = (Math.sin(angS) - Math.sin(other.getAngle())) / Point.dist(start, other);
+            dy2s = 0;
+            dy2e = (Math.cos(angS) - Math.cos(other.getAngle())) / Point.dist(start, other);
+        } else {
+            angS = start.getAngle();
+            angE = end.getAngle();
+            dx2s = (Math.sin(other.getAngle()) - Math.sin(angE)) / Point.dist(end, other);
+            dx2e = 0;
+            dy2s = (Math.cos(other.getAngle()) - Math.cos(angE)) / Point.dist(end, other);
+            dy2e = 0;
+        }
+
+        PolynomialCurve ret = new PolynomialCurve(5,
+                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), dx2s, dx2e, t),
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), dy2s, dy2e, t), 0, 1, t
+        );
+//        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
+//            throw new RuntimeException("What");
+//        }
+        return ret;
+    }
+
+    public static PolynomialCurve generateForStartAndEnd(State start, State end, double t){
+        double angS = start.getAngle();
+        double angE = end.getAngle();
+        return new PolynomialCurve(5,
+                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), 0, 0, t),
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), 0, 0, t), 0, 1, t
+        );
     }
 
     /**

@@ -8,6 +8,7 @@ import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.profiling.curve.spline.CubicSplineGenerator;
+import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
 import org.greenblitz.motion.profiling.curve.spline.ThirdDegreePolynomialCurve;
 import org.greenblitz.utils.CSVWrapper;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class ChassisProfiler2DCSVGenerators {
         MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
                 pathToState(Paths.get("LTurn", true))
                 , .01, 0.7,
-                2.1, 4.6, 10, 0, 0.1);
+                2.1, 4.6, 10, 0, 0.85f);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -39,7 +40,7 @@ public class ChassisProfiler2DCSVGenerators {
         System.out.println("Tend " + brofile.getTEnd());
 
         Position loc = null;
-        final double jmp = 0.001;
+        final double jmp = 0.01;
         Vector2D vel, acc;
         for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
@@ -62,12 +63,22 @@ public class ChassisProfiler2DCSVGenerators {
             locFile.addValues(loc.getX(), loc.getY());
 //            System.out.println(loc);
         }
-//        ICurve curve = CubicSplineGenerator.generateSpline(states.get(0), states.get(1), 0.8);
-//        for (double u = 0; u <= 1; u += 0.001) {
+//        ICurve curve = QuinticSplineGenerator.generateSplineForStartOrEnd(states.get(0), states.get(1), states.get(2), 1, true);
+//
+//        for (double u = 0; u <= 1; u += 0.01) {
 //            Point p = curve.getLocation(u);
+//            System.out.println(p);
 //            locFile.addValues(-p.getX(), p.getY());
 //        }
-//        locFile.flush();
+////        locFile.flush();
+//        curve = QuinticSplineGenerator.generateSplineForStartOrEnd(states.get(1), states.get(2), states.get(0), 1, false);
+//
+//        for (double u = 0; u <= 1; u += 0.01) {
+//            Point p = curve.getLocation(u);
+//            System.out.println(p);
+//            locFile.addValues(-p.getX(), p.getY());
+//        }
+        locFile.flush();
 
     }
 

@@ -22,7 +22,7 @@ public class PolynomialCurve extends AbstractCurve {
     double tScaling;
     private int rank;
 
-    public PolynomialCurve(int rank,double[] xArr, double[] yArr, double uStart, double uEnd, double tScaling){
+    public PolynomialCurve(int rank, double[] xArr, double[] yArr, double uStart, double uEnd, double tScaling){
         x = new double[rank + 1];
         y = new double[rank + 1];
         this.tScaling = tScaling;
@@ -46,8 +46,8 @@ public class PolynomialCurve extends AbstractCurve {
         double xVal = 0;
         double yVal = 0;
         for(int i = rank; i >= 0; i --){
-            xVal = u*(xVal + x[i]);
-            yVal = u*(yVal + y[i]);
+            xVal = u*xVal + x[i];
+            yVal = u*yVal + y[i];
         }
         return new Point(xVal,yVal);
     }
@@ -56,8 +56,8 @@ public class PolynomialCurve extends AbstractCurve {
         double xVal = 0;
         double yVal = 0;
         for(int i = rank; i > 0; i --){
-            xVal = u*(xVal + i*x[i]);
-            yVal = u*(yVal + i*y[i]);
+            xVal = u*xVal + i*x[i];
+            yVal = u*yVal + i*y[i];
         }
         return new Vector2D(xVal,yVal);
     }
@@ -66,8 +66,8 @@ public class PolynomialCurve extends AbstractCurve {
         double xVal = 0;
         double yVal = 0;
         for(int i = rank; i > 1; i --){
-            xVal = u*(xVal + (i-1)*i*x[i]);
-            yVal = u*(yVal + (i-1)*i*y[i]);
+            xVal = u*xVal + (i-1)*i*x[i];
+            yVal = u*yVal + (i-1)*i*y[i];
         }
         return new Vector2D(xVal,yVal);
     }
@@ -89,8 +89,8 @@ public class PolynomialCurve extends AbstractCurve {
      */
     @Override
     protected double getLengthInternal(double u) {
-        double length = Point.subtract(getLocationInternal(u),
-                getLocationInternal(uStart)).norm();
+        double length = Point.dist(getLocationInternal(u),
+                getLocationInternal(uStart));
         double curvature = getCurvature();
         if (Point.isFuzzyEqual(curvature, 0, 1E-3))
             return length;
