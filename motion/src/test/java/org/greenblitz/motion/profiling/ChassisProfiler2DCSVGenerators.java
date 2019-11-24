@@ -24,20 +24,14 @@ public class ChassisProfiler2DCSVGenerators {
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
         states.add(new org.greenblitz.motion.base.State(0, 0, 0, 0, 0));
-        states.add(new org.greenblitz.motion.base.State(1, 3, Math.PI/4, 0, 0));
+        states.add(new org.greenblitz.motion.base.State(1, 3, Math.PI/4, 0.01, 0.5));
         states.add(new org.greenblitz.motion.base.State(2, 3, Math.PI/2, 0, 0));
 
         long time = System.currentTimeMillis();
         MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
-<<<<<<< HEAD
-                states
-                , .005, 0.7,
-                2.1, 4.6, 10, 0, 0.1);
-=======
-                pathToState(Paths.get("LTurn", true))
-                , .01, 0.7,
-                2.1, 4.6, 10, 0, 0.85f);
->>>>>>> 91b879cf0dd5cdbbf60ffa56bf9efa70dd178625
+                states//pathToState(Paths.get("LTurn", true))
+                , .001, 0.7,
+                2.1, 4.6, 10, 0, 1f);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -69,15 +63,10 @@ public class ChassisProfiler2DCSVGenerators {
             locFile.addValues(loc.getX(), loc.getY());
 //            System.out.println(loc);
         }
-<<<<<<< HEAD
         locFile.flush();
 //        ICurve curve = CubicSplineGenerator.generateSpline(states.get(0), states.get(1), 0.8);
 //        for (double u = 0; u <= 1; u += 0.001) {
-=======
-//        ICurve curve = QuinticSplineGenerator.generateSplineForStartOrEnd(states.get(0), states.get(1), states.get(2), 1, true);
-//
-//        for (double u = 0; u <= 1; u += 0.01) {
->>>>>>> 91b879cf0dd5cdbbf60ffa56bf9efa70dd178625
+
 //            Point p = curve.getLocation(u);
 //            System.out.println(p);
 //            locFile.addValues(-p.getX(), p.getY());

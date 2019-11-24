@@ -17,7 +17,7 @@ public class Paths {
     private static final double MIDDLE = -4.1;
 
     private static String mkNativePath(String pathname) {
-        return "C:/git/MotionControl/motion/src/test/resources/weaverOutq:q" +
+        return "/home/alexey/IdeaProjects/MotionControl/motion/src/test/resources/weaverOut" +
                 "/output/" + pathname + ".pf1.csv";
     }
 

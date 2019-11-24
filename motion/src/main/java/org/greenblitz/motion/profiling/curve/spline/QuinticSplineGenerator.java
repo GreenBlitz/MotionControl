@@ -51,8 +51,17 @@ public class QuinticSplineGenerator {
     public static PolynomialCurve generateSpline(State start, State end, double t){
         double angS = start.getAngle();
         double angE = end.getAngle();
-        double kS = start.getAngularVelocity()/start.getLinearVelocity();
-        double kE = end.getAngularVelocity()/end.getLinearVelocity();
+        double kS, kE;
+        if (start.getLinearVelocity() == 0){
+            kS = start.getAngularVelocity() / 0.00001;
+        } else {
+            kS = start.getAngularVelocity() / start.getLinearVelocity();
+        }
+        if (end.getLinearVelocity() == 0){
+            kE = end.getAngularVelocity() / 0.00001;
+        } else {
+            kE = end.getAngularVelocity() / end.getLinearVelocity();
+        }
         PolynomialCurve ret = new PolynomialCurve(5,
                 getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), kS*Math.cos(angS),kE*Math.cos(angE), t),
                 getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), -kS*Math.sin(angS),-kE*Math.sin(angE), t), 0, 1, t

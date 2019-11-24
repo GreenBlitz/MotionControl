@@ -55,28 +55,32 @@ public class ChassisProfiler2D {
             // TODO this is very arbitrary
             double tToUse = Math.min(1.5 * tForCurve, tForCurve * Point.dist(first, second));
 
-            if (i == 0 && i == locations.size() - 2){
-                System.out.println("i = first and last");
-                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateForStartAndEnd(first, second,
+//            if (i == 0 && i == locations.size() - 2){
+//                System.out.println("i = first and last");
+//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateForStartAndEnd(first, second,
+//                        tToUse
+//                ), jump);
+//            } else if (i == 0){
+//                System.out.println("i = 0");
+//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
+//                        locations.get(i + 2), tToUse, true
+//                ), jump);
+//            } else if (i == locations.size() - 2){
+//                System.out.println("i = last");
+//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
+//                        locations.get(i - 1), tToUse, false
+//                ), jump);
+//            } else {
+//                System.out.println("i = mid");
+//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineDervApprox(first, second,
+//                        locations.get(i - 1), locations.get(i + 2),
+//                        tToUse
+//                ), jump);
+//            }
+
+            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
                         tToUse
                 ), jump);
-            } else if (i == 0){
-                System.out.println("i = 0");
-                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
-                        locations.get(i + 2), tToUse, true
-                ), jump);
-            } else if (i == locations.size() - 2){
-                System.out.println("i = last");
-                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
-                        locations.get(i - 1), tToUse, false
-                ), jump);
-            } else {
-                System.out.println("i = mid");
-                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineDervApprox(first, second,
-                        locations.get(i - 1), locations.get(i + 2),
-                        tToUse
-                ), jump);
-            }
 
         }
 
