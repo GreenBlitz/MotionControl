@@ -8,6 +8,7 @@ import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.profiling.curve.spline.CubicSplineGenerator;
+import org.greenblitz.motion.profiling.curve.spline.PolynomialCurve;
 import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
 import org.greenblitz.motion.profiling.curve.spline.ThirdDegreePolynomialCurve;
 import org.greenblitz.utils.CSVWrapper;
@@ -24,14 +25,14 @@ public class ChassisProfiler2DCSVGenerators {
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
         states.add(new org.greenblitz.motion.base.State(0, 0, 0, 0, 0));
-        states.add(new org.greenblitz.motion.base.State(1, 3, Math.PI/4, 0.01, 0.5));
-        states.add(new org.greenblitz.motion.base.State(2, 3, Math.PI/2, 0, 0));
+        states.add(new org.greenblitz.motion.base.State(1, 1, Math.PI/4, 0,0));
+        states.add(new org.greenblitz.motion.base.State(2, 2, Math.PI/2, 0, 0));
 
         long time = System.currentTimeMillis();
         MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
                 states//pathToState(Paths.get("LTurn", true))
-                , .001, 0.7,
-                2.1, 4.6, 10, 0, 1f);
+                , .00001, 1,
+                2, 5, 10, 0, 2f);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -40,7 +41,7 @@ public class ChassisProfiler2DCSVGenerators {
         System.out.println("Tend " + brofile.getTEnd());
 
         Position loc = null;
-        final double jmp = 0.01;
+        final double jmp = 0.001;
         Vector2D vel, acc;
         for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
@@ -64,21 +65,26 @@ public class ChassisProfiler2DCSVGenerators {
 //            System.out.println(loc);
         }
         locFile.flush();
-//        ICurve curve = CubicSplineGenerator.generateSpline(states.get(0), states.get(1), 0.8);
-//        for (double u = 0; u <= 1; u += 0.001) {
+        PolynomialCurve curve = QuinticSplineGenerator.generateSpline(states.get(0), states.get(1), 1);
+        for (double u = 0; u <= 1; u += 0.001) {
 
-//            Point p = curve.getLocation(u);
+            Point p = curve.getLocation(u);
 //            System.out.println(p);
-//            locFile.addValues(-p.getX(), p.getY());
-//        }
-////        locFile.flush();
-//        curve = QuinticSplineGenerator.generateSplineForStartOrEnd(states.get(1), states.get(2), states.get(0), 1, false);
-//
-//        for (double u = 0; u <= 1; u += 0.01) {
-//            Point p = curve.getLocation(u);
+            locFile.addValues(-p.getX(), p.getY());
+        }
+//        locFile.flush();
+        PolynomialCurve curve2 = QuinticSplineGenerator.generateSpline(states.get(1), states.get(2), 1);
+
+        System.out.println("---------------------");
+        System.out.println(curve.getDerivativeInter(1) + ", " + curve2.getDerivativeInter(0));
+        System.out.println(curve.getDoubleDerivativeInter(1) + ", " + curve2.getDoubleDerivativeInter(0));
+
+
+        for (double u = 0; u <= 1; u += 0.01)  {
+            Point p = curve2.getLocation(u);
 //            System.out.println(p);
-//            locFile.addValues(-p.getX(), p.getY());
-//        }
+            locFile.addValues(-p.getX(), p.getY());
+        }
         locFile.flush();
 
     }

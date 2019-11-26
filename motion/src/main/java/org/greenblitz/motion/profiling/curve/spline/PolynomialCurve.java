@@ -52,7 +52,7 @@ public class PolynomialCurve extends AbstractCurve {
         return new Point(xVal,yVal);
     }
 
-    protected Vector2D getDerivativeInter(double u){
+    public Vector2D getDerivativeInter(double u){
         double xVal = 0;
         double yVal = 0;
         for(int i = rank; i > 0; i --){
@@ -62,7 +62,7 @@ public class PolynomialCurve extends AbstractCurve {
         return new Vector2D(xVal,yVal);
     }
 
-    protected Vector2D getDoubleDerivativeInter(double u){
+    public Vector2D getDoubleDerivativeInter(double u){
         double xVal = 0;
         double yVal = 0;
         for(int i = rank; i > 1; i --){

@@ -56,38 +56,34 @@ public class ChassisProfiler2D {
             double tToUse = Math.min(1.5 * tForCurve, tForCurve * Point.dist(first, second));
 
 //            if (i == 0 && i == locations.size() - 2){
-//                System.out.println("i = first and last");
 //                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateForStartAndEnd(first, second,
 //                        tToUse
 //                ), jump);
 //            } else if (i == 0){
-//                System.out.println("i = 0");
 //                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
 //                        locations.get(i + 2), tToUse, true
 //                ), jump);
 //            } else if (i == locations.size() - 2){
-//                System.out.println("i = last");
 //                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
 //                        locations.get(i - 1), tToUse, false
 //                ), jump);
 //            } else {
-//                System.out.println("i = mid");
 //                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineDervApprox(first, second,
 //                        locations.get(i - 1), locations.get(i + 2),
 //                        tToUse
 //                ), jump);
 //            }
 
-            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
-                        tToUse
-                ), jump);
+                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
+                            tToUse
+                    ), jump);
 
         }
 
         velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
                 maxLinearAcc, maxAngularAcc);
-//        velByLoc.generateCSV("velByLoc.csv");
-//        System.out.println("Wrote to mem");
+        velByLoc.generateCSV("velByLoc.csv");
+        System.out.println("Wrote to mem");
 
         long t0profiling = System.currentTimeMillis();
 
@@ -150,12 +146,28 @@ public class ChassisProfiler2D {
     private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump) {
 //        long time = System.currentTimeMillis();
         double t0, tPrev = 0;
+        final double MINIMUN_ELGACY = 0.001 * 0.001;
+
+        double prevAlloced = 0;
+        Point currentEnd, prevEnd;
         for (t0 = getJump(source, 0, jump); t0 < 1.0; tPrev = t0, t0 += getJump(source, t0, jump)) {
 
             if(t0 > 1)
                 throw new RuntimeException("how you do this");
+//            if (prevAlloced == 0){
+//                returnList.add(source.getSubCurve(prevAlloced, t0));
+//                prevEnd = source.getLocation(0);
+//            } else {
+//                prevEnd = returnList.get(returnList.size() - 1).getLocation(1);
+//            }
+//
+//            currentEnd = source.getLocation(t0);
 
-            returnList.add(source.getSubCurve(tPrev, t0));
+//            if (Point.distSqared(currentEnd, prevEnd) > MINIMUN_ELGACY) {
+                returnList.add(source.getSubCurve(tPrev, t0));
+//                System.out.println(Point.distSqared(currentEnd, prevEnd));
+//                prevAlloced = t0;
+//            }
 
         }
 

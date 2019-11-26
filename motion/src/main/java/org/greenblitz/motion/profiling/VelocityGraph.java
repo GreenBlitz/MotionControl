@@ -55,11 +55,11 @@ public class VelocityGraph {
 
         m_ranges = new ArrayList<>();
         m_ranges.add(new VelocityGraphRange(Double.NEGATIVE_INFINITY, 0));
-
+        double prevDEnd;
         for (ICurve curve : track) {
+            prevDEnd = m_ranges.get(m_ranges.size() - 1).dEnd;
             m_ranges.add(new VelocityGraphRange(
-                    m_ranges.get(m_ranges.size() - 1).dEnd,
-                    m_ranges.get(m_ranges.size() - 1).dEnd + curve.getLength(1),
+                    prevDEnd, prevDEnd + curve.getLength(1),
                     curve.getCurvature(), curve));
             tmpLength += m_ranges.get(m_ranges.size() - 1).dEnd - m_ranges.get(m_ranges.size() - 1).dStart;
         }
