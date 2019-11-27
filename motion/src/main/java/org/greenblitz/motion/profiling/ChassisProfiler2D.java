@@ -107,7 +107,7 @@ public class ChassisProfiler2D {
                     prev = tempProfile.segments.get(k - 1);
                 else
                     prev = null;
-                curr.setAccel(curr.getAccel() * curvature);
+                curr.setAccel(curr.getAccel() * -curvature);
                 curr.setStartVelocity((k == 0 ? linearProfile.getVelocity(linearProfile.getTEnd()) : prev.getVelocity(prev.getTEnd()))*curvature);
                 curr.setStartLocation(k == 0 ? angularProfile.getLocation(angularProfile.getTEnd()) : prev.getLocation(prev.getTEnd()));
                 rotationSegs.add(curr);

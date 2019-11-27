@@ -66,7 +66,7 @@ public class ChassisProfiler2DCSVGenerators {
         }
         locFile.flush();
         PolynomialCurve curve = QuinticSplineGenerator.generateSpline(states.get(0), states.get(1), 1);
-        for (double u = 0; u <= 1; u += 0.001) {
+        for (double u = 0; u <= 1; u += 0.05) {
 
             Point p = curve.getLocation(u);
 //            System.out.println(p);
@@ -80,7 +80,7 @@ public class ChassisProfiler2DCSVGenerators {
         System.out.println(curve.getDoubleDerivativeInter(1) + ", " + curve2.getDoubleDerivativeInter(0));
 
 
-        for (double u = 0; u <= 1; u += 0.01)  {
+        for (double u = 0; u <= 1; u += 0.05)  {
             Point p = curve2.getLocation(u);
 //            System.out.println(p);
             locFile.addValues(-p.getX(), p.getY());
