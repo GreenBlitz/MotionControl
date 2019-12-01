@@ -74,7 +74,7 @@ public class ChassisProfiler2D {
 //                ), jump);
 //            }
 
-                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
+                divideToEqualCurvatureSubcurves(subCurves, CubicSplineGenerator.generateSpline(first, second,
                             tToUse
                     ), jump);
 
@@ -82,8 +82,6 @@ public class ChassisProfiler2D {
 
         velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
                 maxLinearAcc, maxAngularAcc);
-        velByLoc.generateCSV("velByLoc.csv");
-        System.out.println("Wrote to mem");
 
         long t0profiling = System.currentTimeMillis();
 
