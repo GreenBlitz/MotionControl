@@ -24,15 +24,15 @@ public class ChassisProfiler2DCSVGenerators {
     @Test
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
-        states.add(new org.greenblitz.motion.base.State(0, 0, 0, 0, 0));
-        states.add(new org.greenblitz.motion.base.State(1, 1, Math.PI/4, 0,0));
-        states.add(new org.greenblitz.motion.base.State(2, 2, Math.PI/2, 0, 0));
+        states.add(new State(0, 0, 0, 0, 0));
+        states.add(new State(.8, 2,Math.PI/2, 0, 0));
+        states.add(new State(1.6, 4,0, 0, 0));
 
         long time = System.currentTimeMillis();
         MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
                 states//pathToState(Paths.get("LTurn", true))
-                , .00001, 1,
-                2, 5, 10, 0, 2f);
+                , .0001, 1.25,
+                4, 10, 15, 0, 1f);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 

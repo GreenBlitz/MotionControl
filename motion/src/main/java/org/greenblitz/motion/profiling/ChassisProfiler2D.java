@@ -55,26 +55,7 @@ public class ChassisProfiler2D {
             // TODO this is very arbitrary
             double tToUse = tForCurve * Point.dist(first, second);
 
-//            if (i == 0 && i == locations.size() - 2){
-//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateForStartAndEnd(first, second,
-//                        tToUse
-//                ), jump);
-//            } else if (i == 0){
-//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
-//                        locations.get(i + 2), tToUse, true
-//                ), jump);
-//            } else if (i == locations.size() - 2){
-//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineForStartOrEnd(first, second,
-//                        locations.get(i - 1), tToUse, false
-//                ), jump);
-//            } else {
-//                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSplineDervApprox(first, second,
-//                        locations.get(i - 1), locations.get(i + 2),
-//                        tToUse
-//                ), jump);
-//            }
-
-                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
+            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
                             tToUse
                     ), jump);
 
