@@ -53,7 +53,7 @@ public class ChassisProfiler2D {
             first = locations.get(i);
             second = locations.get(i + 1);
             // TODO this is very arbitrary
-            double tToUse = Math.min(1.5 * tForCurve, tForCurve * Point.dist(first, second));
+            double tToUse = tForCurve * Point.dist(first, second);
 
 //            if (i == 0 && i == locations.size() - 2){
 //                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateForStartAndEnd(first, second,
@@ -74,7 +74,7 @@ public class ChassisProfiler2D {
 //                ), jump);
 //            }
 
-                divideToEqualCurvatureSubcurves(subCurves, CubicSplineGenerator.generateSpline(first, second,
+                divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
                             tToUse
                     ), jump);
 
