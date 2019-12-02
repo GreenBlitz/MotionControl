@@ -17,7 +17,7 @@ public class Paths {
     private static final double MIDDLE = -4.1;
 
     private static String mkNativePath(String pathname) {
-        return "/home/alexey/IdeaProjects/MotionControl/motion/src/test/resources/weaverOut" +
+        return "C:/git/MotionControl/motion/src/test/resources/weaverOut" +
                 "/output/" + pathname + ".pf1.csv";
     }
 
@@ -71,6 +71,7 @@ public class Paths {
 //                System.out.println(path.get(path.size() - 1));
 //                Thread.sleep(100);
             }
+            System.out.println("Path size " + path.size());
             return new Path<>(path);
         } catch (Exception e) {
             e.printStackTrace();

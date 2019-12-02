@@ -12,7 +12,7 @@ public class PidFollower2D {
     protected double kVr, kAr;
     protected MotionProfile2D profile;
     double PIDLimit;
-    protected PIDController leftController, rightController;
+    protected PIDController linController, rotController;
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr, MotionProfile2D profile) {
         this(kVl, kAl, kVr, kAr, new PIDObject(0), new PIDObject(0), 0, profile);
@@ -26,18 +26,18 @@ public class PidFollower2D {
         this.kVr = kVr;
         this.kAr = kAr;
         this.profile = profile;
-        leftController = new PIDController(leftVals);
-        rightController = new PIDController(rightVals);
+        linController = new PIDController(leftVals);
+        rotController = new PIDController(rightVals);
         PIDLimit = pidLimit;
     }
 
     public void init(){
         startTime = System.currentTimeMillis();
-        leftController.configure(0,0,-PIDLimit,PIDLimit,0);
-        rightController.configure(0,0,-PIDLimit,PIDLimit,0);
+        linController.configure(0,0,-PIDLimit,PIDLimit,0);
+        rotController.configure(0,0,-PIDLimit,PIDLimit,0);
     }
 
-    public Vector2D run(double leftVelocity, double rightVelocity){
+    public Vector2D run(double linearCurr, double angularCurr){
 
         double timeNow = (System.currentTimeMillis() - startTime)/1000.0;
 
@@ -46,14 +46,17 @@ public class PidFollower2D {
         Vector2D velocity = profile.getVelocity(timeNow);
         Vector2D acceleration = profile.getAcceleration(timeNow);
 
-        double lin = velocity.getX()*kVl + acceleration.getX()*kAl;
-        double angular = velocity.getY()*kVr + acceleration.getY()*kAr;
+        double linDesired = velocity.getX();
+        double accDesired = velocity.getY();
 
-        leftController.setGoal(velocity.getX() - velocity.getY());
-        rightController.setGoal(velocity.getX() + velocity.getY());
+        linController.setGoal(linDesired);
+        rotController.setGoal(accDesired);
 
-        return new Vector2D((lin - angular) + leftController.calculatePID(leftVelocity),
-                lin + angular + rightController.calculatePID(rightVelocity));
+        double lin = linDesired*kVl + acceleration.getX()*kAl + linController.calculatePID(linearCurr);
+        double angular = accDesired*kVr + acceleration.getY()*kAr + rotController.calculatePID(angularCurr);
+
+        return new Vector2D((lin - angular),
+                lin + angular);
 
     }
 
