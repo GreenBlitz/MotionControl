@@ -46,17 +46,13 @@ public class PidFollower2D {
         Vector2D velocity = profile.getVelocity(timeNow);
         Vector2D acceleration = profile.getAcceleration(timeNow);
 
-        double linDesired = velocity.getX();
-        double accDesired = velocity.getY();
+        double leftMotorV = velocity.getX() + velocity.getY();
+        double leftMotorA = acceleration.getX() + acceleration.getY();
+        double rightMotorV = velocity.getX() - velocity.getY();
+        double rightMotorA = acceleration.getX() - acceleration.getY();
 
-        linController.setGoal(linDesired);
-        rotController.setGoal(accDesired);
-
-        double lin = linDesired*kVl + acceleration.getX()*kAl + linController.calculatePID(linearCurr);
-        double angular = accDesired*kVr + acceleration.getY()*kAr + rotController.calculatePID(angularCurr);
-
-        return new Vector2D((lin - angular),
-                lin + angular);
+        return new Vector2D(leftMotorV*kVl + leftMotorA*kAl,
+                rightMotorV*kVr + rightMotorA*kAr);
 
     }
 
