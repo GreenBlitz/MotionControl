@@ -20,21 +20,28 @@ public class ChassisProfiler2DCSVGenerators {
 
     final double EPSILON = 1E-6;
 
+    List<State> generateCircle(){
+        List<State> ret = new ArrayList<>();
+        for (int i = 0; i <= 50; i++){
+            double percent = i/50.0;
+            ret.add(new State(Math.cos(percent*Math.PI/2), Math.sin(percent*Math.PI/2), -i*Math.PI/2, -1, 1));
+        }
+        return ret;
+    }
+
+
     @Test
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
         states.add(new org.greenblitz.motion.base.State(0, 0, 0, 0, 0));
         states.add(new org.greenblitz.motion.base.State(1, 1, Math.PI/4, 1,2));
         states.add(new org.greenblitz.motion.base.State(2, 2, Math.PI/2, 1,0.5));
-        states.add(new org.greenblitz.motion.base.State(3, 3, Math.PI/4, 1,4));
-        states.add(new org.greenblitz.motion.base.State(4, 4, Math.PI/2, 1, 0.25));
-        states.add(new org.greenblitz.motion.base.State(5, 5, Math.PI/4, 0,0));
 
         long time = System.currentTimeMillis();
         MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
-                states//pathToState(Paths.get("LTurn", true))
-                , .001, 0.7,
-                2.1, 4.6, 10, 0, 2f);
+                generateCircle()//pathToState(Paths.get("LTurn", true))
+                , .1, 0.7,
+                2.1, 4.6, 10, 0, 1f);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
