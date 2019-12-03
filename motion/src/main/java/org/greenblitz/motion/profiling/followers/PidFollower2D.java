@@ -12,7 +12,7 @@ public class PidFollower2D {
     protected double kVr, kAr;
     protected MotionProfile2D profile;
     double PIDLimit;
-    protected PIDController linController, rotController;
+    protected PIDController leftController, rightController;
     protected double wheelDist;
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr, double wheelDist, MotionProfile2D profile) {
@@ -28,15 +28,15 @@ public class PidFollower2D {
         this.kAr = kAr;
         this.profile = profile;
         this.wheelDist = wheelDist;
-        linController = new PIDController(leftVals);
-        rotController = new PIDController(rightVals);
+        leftController = new PIDController(leftVals);
+        rightController = new PIDController(rightVals);
         PIDLimit = pidLimit;
     }
 
     public void init(){
         startTime = System.currentTimeMillis();
-        linController.configure(0,0,-PIDLimit,PIDLimit,0);
-        rotController.configure(0,0,-PIDLimit,PIDLimit,0);
+        leftController.configure(0,0,-PIDLimit,PIDLimit,0);
+        rightController.configure(0,0,-PIDLimit,PIDLimit,0);
     }
 
     public Vector2D run(double leftCurr, double rightCurr){
@@ -57,8 +57,11 @@ public class PidFollower2D {
         double rightMotorV = (-wheelDist*velocity.getY() + 2*velocity.getX())/2.0;
         double rightMotorA = (-wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
 
-        return new Vector2D(leftMotorV*kVl + leftMotorA*kAl,
-                rightMotorV*kVr + rightMotorA*kAr);
+        leftController.setGoal(leftMotorV);
+        rightController.setGoal(rightMotorV);
+
+        return new Vector2D(leftMotorV*kVl + leftMotorA*kAl + leftController.calculatePID(leftCurr),
+                rightMotorV*kVr + rightMotorA*kAr + rightController.calculatePID(rightCurr));
 
     }
 
