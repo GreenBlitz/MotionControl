@@ -13,19 +13,21 @@ public class PidFollower2D {
     protected MotionProfile2D profile;
     double PIDLimit;
     protected PIDController linController, rotController;
+    protected double wheelDist;
 
-    public PidFollower2D(double kVl, double kAl, double kVr, double kAr, MotionProfile2D profile) {
-        this(kVl, kAl, kVr, kAr, new PIDObject(0), new PIDObject(0), 0, profile);
+    public PidFollower2D(double kVl, double kAl, double kVr, double kAr, double wheelDist, MotionProfile2D profile) {
+        this(kVl, kAl, kVr, kAr, new PIDObject(0), new PIDObject(0), 0, wheelDist, profile);
     }
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr,
-                         PIDObject leftVals, PIDObject rightVals, double pidLimit,
+                         PIDObject leftVals, PIDObject rightVals, double pidLimit, double wheelDist,
                          MotionProfile2D profile) {
         this.kVl = kVl;
         this.kAl = kAl;
         this.kVr = kVr;
         this.kAr = kAr;
         this.profile = profile;
+        this.wheelDist = wheelDist;
         linController = new PIDController(leftVals);
         rotController = new PIDController(rightVals);
         PIDLimit = pidLimit;
@@ -37,7 +39,7 @@ public class PidFollower2D {
         rotController.configure(0,0,-PIDLimit,PIDLimit,0);
     }
 
-    public Vector2D run(double linearCurr, double angularCurr){
+    public Vector2D run(double leftCurr, double rightCurr){
 
         double timeNow = (System.currentTimeMillis() - startTime)/1000.0;
 
@@ -46,10 +48,14 @@ public class PidFollower2D {
         Vector2D velocity = profile.getVelocity(timeNow);
         Vector2D acceleration = profile.getAcceleration(timeNow);
 
-        double leftMotorV = velocity.getX() + velocity.getY();
-        double leftMotorA = acceleration.getX() + acceleration.getY();
-        double rightMotorV = velocity.getX() - velocity.getY();
-        double rightMotorA = acceleration.getX() - acceleration.getY();
+        /*
+        See:
+        https://matrixcalc.org/en/slu.html#solve-using-Cramer%27s-rule%28%7B%7B1/2,1/2,0,0,v%7D,%7B1/d,-1/d,0,0,o%7D%7D%29
+         */
+        double leftMotorV = (wheelDist*velocity.getY() + 2*velocity.getX())/2.0;
+        double leftMotorA = (wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
+        double rightMotorV = (-wheelDist*velocity.getY() + 2*velocity.getX())/2.0;
+        double rightMotorA = (-wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
 
         return new Vector2D(leftMotorV*kVl + leftMotorA*kAl,
                 rightMotorV*kVr + rightMotorA*kAr);

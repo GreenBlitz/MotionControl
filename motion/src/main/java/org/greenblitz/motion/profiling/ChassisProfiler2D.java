@@ -111,7 +111,6 @@ public class ChassisProfiler2D {
     }
 
     /**
-     * FIX THIS NOT WORK!
      * This function takes one curve, and stores it's subcurves in a list,
      * such as each subcurve continues the previous one and each subcurve will have
      * roughly equal curve.
