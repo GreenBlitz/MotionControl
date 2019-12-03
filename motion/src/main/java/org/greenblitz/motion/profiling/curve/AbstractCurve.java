@@ -49,7 +49,7 @@ public abstract class AbstractCurve implements ICurve {
 
     @Override
     public double getCurvature() {
-        return getCurvature(0.5);
+        return (getCurvature(0) + getCurvature(0.5) + getCurvature(1)) / 3.0;
     }
 
     @Override

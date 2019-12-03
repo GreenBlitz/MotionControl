@@ -46,6 +46,9 @@ public class VelocityGraph {
     }
     public VelocityGraph(List<ICurve> track, double maxLinearVel,
             double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double epsilon) {
+
+        // TODO decipher this
+
         long time = System.currentTimeMillis();
         previous = 0;
         initialize(maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
@@ -55,26 +58,21 @@ public class VelocityGraph {
 
         m_ranges = new ArrayList<>();
         m_ranges.add(new VelocityGraphRange(Double.NEGATIVE_INFINITY, 0));
-        double prevDEnd;
         for (ICurve curve : track) {
-            prevDEnd = m_ranges.get(m_ranges.size() - 1).dEnd;
             m_ranges.add(new VelocityGraphRange(
-                    prevDEnd, prevDEnd + curve.getLength(1),
-                    curve.getCurvature(), curve));
-            tmpLength += m_ranges.get(m_ranges.size() - 1).dEnd - m_ranges.get(m_ranges.size() - 1).dStart;
+                    m_ranges.get(m_ranges.size() - 1).dEnd,                                 // Distance start
+                    m_ranges.get(m_ranges.size() - 1).dEnd + curve.getLength(1),  // Distance end
+                    curve.getCurvature(), curve)                                            // Curvature + curve
+            );
+            tmpLength += curve.getLength(1);
+
         }
         m_ranges.add(new VelocityGraphRange(m_ranges.get(m_ranges.size() - 1).dEnd, Double.POSITIVE_INFINITY));
-
-//        for(int ind=1; ind<m_ranges.size(); ind++){
-//            file.addValues(m_ranges.get(ind).dStart, m_ranges.get(ind).getStartVelocitySquared(), m_ranges.get(ind).getAcceleration(m_ranges.get(ind).dStart));
-//        }
 
 
         for (int ind = 1; ind < m_ranges.size(); ind++)
             m_ranges.get(ind).concatBackwards(m_ranges.get(ind - 1));
-//        for(int ind=1; ind<m_ranges.size(); ind++){
-//            file.addValues(m_ranges.get(ind).dStart, m_ranges.get(ind).getStartVelocitySquared(), m_ranges.get(ind).getAcceleration(m_ranges.get(ind).dStart));
-//        }
+
 
         for (int ind = m_ranges.size() - 2; ind >= 0; ind--)
             m_ranges.get(ind).concatForwards(m_ranges.get(ind + 1));
@@ -172,6 +170,7 @@ public class VelocityGraph {
             this.curve = curve;
             maxVelocity = ChassisProfiler2D.getMaxVelocity(maxLinearVel, maxAngularVel, curvature);
             maxAcceleration = ChassisProfiler2D.getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature);
+            // TODO what is this below?
             inertia = new VelocitySegment(maxVelocity*maxVelocity, AccelerationMode.INERTIA);
         }
 
@@ -308,22 +307,30 @@ public class VelocityGraph {
             public VelocitySegment(double velocitySquared, AccelerationMode mode) {
                 if (mode == AccelerationMode.LINEAR)
                     throw new IllegalArgumentException("cannot construct general segment without specified start & end velocities");
+
                 this.mode = mode;
                 acceleration = mode.ratio * maxAcceleration;
+
                 if (mode == AccelerationMode.SLOW_DOWN) {
+                    // SLOW_DOWN mode
                     if (dStart == Double.NEGATIVE_INFINITY || dEnd == Double.POSITIVE_INFINITY)
                         this.startVelocitySquared = 0;
                     else
                         this.startVelocitySquared = velocitySquared - 2 * acceleration * (dEnd - dStart);
+
                     if (Double.isNaN(startVelocitySquared))
                         throw new RuntimeException(velocitySquared + ", " + acceleration + ", " + (dEnd - dStart));
+
                     this.endVelocitySquared = velocitySquared;
                 } else {
+                    // Intertia ore SPEED_UP
+
                     this.startVelocitySquared = velocitySquared;
                     if (dStart == Double.NEGATIVE_INFINITY || dEnd == Double.POSITIVE_INFINITY)
                         this.endVelocitySquared = 0;
                     else
                         this.endVelocitySquared = velocitySquared + 2 * acceleration * (dEnd - dStart);
+
                     if (Double.isNaN(endVelocitySquared))
                         throw new RuntimeException(velocitySquared + ", " + acceleration + ", " + (dEnd - dStart));
                 }

@@ -21,9 +21,20 @@ public class ChassisProfiler2DCSVGenerators {
 
     final double EPSILON = 1E-6;
 
+    List<State> generateCircle(){
+        List<State> ret = new ArrayList<>();
+        for (int i = 0; i <= 50; i++){
+            double percent = i/50.0;
+            ret.add(new State(Math.cos(percent*Math.PI/2), Math.sin(percent*Math.PI/2), -i*Math.PI/2, -1, 1));
+        }
+        return ret;
+    }
+
+
     @Test
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
+
         states.add(new State(0, 0, 0, 0, 0));
         states.add(new State(.8, 2,Math.PI/2, 0, 0));
         states.add(new State(1.6, 4,0, 0, 0));
