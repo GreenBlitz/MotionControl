@@ -150,7 +150,7 @@ public class ChassisProfiler2D {
             }
         }
 
-        returnList.add(source.getSubCurve(tPrev, 1));
+        returnList.add(source.getSubCurve(tPrevUsed, 1));
         return returnList;
     }
 
