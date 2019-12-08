@@ -109,6 +109,8 @@ public class ChassisProfiler2D {
         return 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
     }
 
+
+    public static final double DIST = 0.005;
     /**
      * This function takes one curve, and stores it's subcurves in a list,
      * such as each subcurve continues the previous one and each subcurve will have
@@ -123,12 +125,18 @@ public class ChassisProfiler2D {
     private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump) {
 //        long time = System.currentTimeMillis();
         double t0, tPrev = 0;
+        double sumSoFar = 0;
+        double tPrevUsed = 0;
 
         for (t0 = getJump(source, 0, jump); t0 < 1.0; tPrev = t0, t0 += getJump(source, t0, jump)) {
             if(t0 > 1)
                 throw new RuntimeException("how you do this");
-            returnList.add(source.getSubCurve(tPrev, t0));
-
+            sumSoFar += source.getSubCurve(tPrev, t0).getLength(1);
+            if (sumSoFar >= DIST){
+                returnList.add(source.getSubCurve(tPrevUsed, t0));
+                tPrevUsed = t0;
+                sumSoFar = 0;
+            }
         }
 
         returnList.add(source.getSubCurve(tPrev, 1));

@@ -55,7 +55,6 @@ public class VelocityGraph {
         this.epsilon = epsilon;
         double tmpLength = 0;
 
-
         m_ranges = new ArrayList<>();
         m_ranges.add(new VelocityGraphRange(Double.NEGATIVE_INFINITY, 0));
         for (ICurve curve : track) {
@@ -77,7 +76,6 @@ public class VelocityGraph {
         for (int ind = m_ranges.size() - 2; ind >= 0; ind--)
             m_ranges.get(ind).concatForwards(m_ranges.get(ind + 1));
 
-//        generateCSV("velocityByDistance.csv");
 
         length = tmpLength;
         System.out.println("VelocityGraph generation");
@@ -294,7 +292,9 @@ public class VelocityGraph {
 
         public MotionProfile1D generateProfile(double tStart, VelocityGraphRange next) {
             if (isLinear()) return new MotionProfile1D(linear.generateSegment(tStart, next.getActiveRange(dEnd)));
-            return Profiler1D.generateProfile(maxVelocity, maxAcceleration, -maxAcceleration, tStart, new ActuatorLocation(dStart, getStartVelocity()), new ActuatorLocation(dEnd, next.getStartVelocity()));
+            return Profiler1D.generateProfile(maxVelocity, maxAcceleration, -maxAcceleration, tStart,
+                    new ActuatorLocation(dStart, getStartVelocity()),
+                    new ActuatorLocation(dEnd, next.getStartVelocity()));
         }
 
         public class VelocitySegment {

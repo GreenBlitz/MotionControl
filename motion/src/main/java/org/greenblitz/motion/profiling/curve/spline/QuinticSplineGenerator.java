@@ -139,28 +139,14 @@ public class QuinticSplineGenerator {
     protected static double[] getParams(double dStart, double dEnd, double dervS, double dervE, double derv2S,double derv2E, double t){
         double dx = dEnd - dStart;
         double tt = t*t;
+        double oneOverTttt2 = 1.0/(2*tt*tt);
         return new double[] {
                 dStart, dervS, derv2S/2
                 ,(tt*(-3*derv2S + derv2E) - t*(12*dervS + 8*dervE) + 20*dx)/(2*tt*t)
-                ,(tt*(3*derv2S - 2*derv2E) + t*(16*dervS + 14*dervE) - 30*dx)/(2*tt*tt)
-                ,(tt*(-derv2S + derv2E) - 6*t*(dervS + dervE) + 12*dx)/(2*tt*tt*t)
+                ,(tt*(3*derv2S - 2*derv2E) + t*(16*dervS + 14*dervE) - 30*dx)*oneOverTttt2
+                ,(t*(-derv2S + derv2E) - 6*(dervS + dervE) + 12*dx/t)*oneOverTttt2
         };
     }
 
-//    protected static double[] getParamsCustom(double x0, double x1, double d0, double d1, double D0,double D1, double u, double t){
-//        double v = 2.0 * Math.pow(t, 3) - 6.0 * Math.pow(t, 2) * u + 6.0 * t * Math.pow(u, 2) - 2.0 * Math.pow(u, 3);
-//        double v1 = 1.0 * Math.pow(t, 2) - 2.0 * t * u + 1.0 * Math.pow(u, 2);
-//        double v2 = 2.0 * Math.pow(t, 4) - 8.0 * Math.pow(t, 3) * u + 12.0 * Math.pow(t, 2) * Math.pow(u, 2) - 8.0 * t * Math.pow(u, 3) + 2.0 * Math.pow(u, 4);
-//        return new double[] {
-//                (1.0*D0*Math.pow(t, 5)*Math.pow(u, 2) - 2.0*D0*Math.pow(t, 4)*Math.pow(u, 3) + 1.0*D0*Math.pow(t, 3)*Math.pow(u, 4) - 1.0*D1*Math.pow(t, 4)*Math.pow(u, 3) + 2.0*D1*Math.pow(t, 3)*Math.pow(u, 4) - 1.0*D1*Math.pow(t, 2)*Math.pow(u, 5) - 2.0*d0*Math.pow(t, 5)*u + 10.0*d0*Math.pow(t, 4)*Math.pow(u, 2) - 8.0*d0*Math.pow(t, 3)*Math.pow(u, 3) + 8.0*d1*Math.pow(t, 3)*Math.pow(u, 3) - 10.0*d1*Math.pow(t, 2)*Math.pow(u, 4) + 2.0*d1*t*Math.pow(u, 5) + 2.0*Math.pow(t, 5)*x0 - 10.0*Math.pow(t, 4)*u*x0 + 20.0*Math.pow(t, 3)*Math.pow(u, 2)*x0 - 20.0*Math.pow(t, 2)*Math.pow(u, 3)*x1 + 10.0*t*Math.pow(u, 4)*x1 - 2.0*Math.pow(u, 5)*x1)/(v1 * v)
-//                ,
-//                (-4.0*D0*Math.pow(t, 5)*u + 2.0*D0*Math.pow(t, 4)*Math.pow(u, 2) + 8.0*D0*Math.pow(t, 3)*Math.pow(u, 3) - 6.0*D0*Math.pow(t, 2)*Math.pow(u, 4) + 6.0*D1*Math.pow(t, 4)*Math.pow(u, 2) - 8.0*D1*Math.pow(t, 3)*Math.pow(u, 3) - 2.0*D1*Math.pow(t, 2)*Math.pow(u, 4) + 4.0*D1*t*Math.pow(u, 5) + 4.0*d0*Math.pow(t, 5) - 20.0*d0*Math.pow(t, 4)*u - 32.0*d0*Math.pow(t, 3)*Math.pow(u, 2) + 48.0*d0*Math.pow(t, 2)*Math.pow(u, 3) - 48.0*d1*Math.pow(t, 3)*Math.pow(u, 2) + 32.0*d1*Math.pow(t, 2)*Math.pow(u, 3) + 20.0*d1*t*Math.pow(u, 4) - 4.0*d1*Math.pow(u, 5) - 120.0*Math.pow(t, 2)*Math.pow(u, 2)*x0 + 120.0*Math.pow(t, 2)*Math.pow(u, 2)*x1)/((2.0*Math.pow(t, 2) - 4.0*t*u + 2.0*Math.pow(u, 2))* v),
-//                1.0*(2.0*D0*Math.pow(t, 5) + 8.0*D0*Math.pow(t, 4)*u - 16.0*D0*Math.pow(t, 3)*Math.pow(u, 2) + 6.0*D0*t*Math.pow(u, 4) - 6.0*D1*Math.pow(t, 4)*u + 16.0*D1*Math.pow(t, 2)*Math.pow(u, 3) - 8.0*D1*t*Math.pow(u, 4) - 2.0*D1*Math.pow(u, 5) + 72.0*d0*Math.pow(t, 3)*u - 24.0*d0*Math.pow(t, 2)*Math.pow(u, 2) - 48.0*d0*t*Math.pow(u, 3) + 48.0*d1*Math.pow(t, 3)*u + 24.0*d1*Math.pow(t, 2)*Math.pow(u, 2) - 72.0*d1*t*Math.pow(u, 3) + 120.0*Math.pow(t, 2)*u*x0 - 120.0*Math.pow(t, 2)*u*x1 + 120.0*t*Math.pow(u, 2)*x0 - 120.0*t*Math.pow(u, 2)*x1)/(v1 *(4.0*Math.pow(t, 3) - 12.0*Math.pow(t, 2)*u + 12.0*t*Math.pow(u, 2) - 4.0*Math.pow(u, 3)))
-//                ,(-3.0*D0*Math.pow(t, 4) + 8.0*D0*Math.pow(t, 2)*Math.pow(u, 2) - 4.0*D0*t*Math.pow(u, 3) - 1.0*D0*Math.pow(u, 4) + 1.0*D1*Math.pow(t, 4) + 4.0*D1*Math.pow(t, 3)*u - 8.0*D1*Math.pow(t, 2)*Math.pow(u, 2) + 3.0*D1*Math.pow(u, 4) - 12.0*d0*Math.pow(t, 3) - 28.0*d0*Math.pow(t, 2)*u + 32.0*d0*t*Math.pow(u, 2) + 8.0*d0*Math.pow(u, 3) - 8.0*d1*Math.pow(t, 3) - 32.0*d1*Math.pow(t, 2)*u + 28.0*d1*t*Math.pow(u, 2) + 12.0*d1*Math.pow(u, 3) - 20.0*Math.pow(t, 2)*x0 + 20.0*Math.pow(t, 2)*x1 - 80.0*t*u*x0 + 80.0*t*u*x1 - 20.0*Math.pow(u, 2)*x0 + 20.0*Math.pow(u, 2)*x1)/((t - u)* v2)
-//
-//                ,(3.0*D0*Math.pow(t, 3) - 4.0*D0*Math.pow(t, 2)*u - 1.0*D0*t*Math.pow(u, 2) + 2.0*D0*Math.pow(u, 3) - 2.0*D1*Math.pow(t, 3) + 1.0*D1*Math.pow(t, 2)*u + 4.0*D1*t*Math.pow(u, 2) - 3.0*D1*Math.pow(u, 3) + 16.0*d0*Math.pow(t, 2) - 2.0*d0*t*u - 14.0*d0*Math.pow(u, 2) + 14.0*d1*Math.pow(t, 2) + 2.0*d1*t*u - 16.0*d1*Math.pow(u, 2) + 30.0*t*x0 - 30.0*t*x1 + 30.0*u*x0 - 30.0*u*x1)/((1.0*t - u)* v2)
-//
-//                ,(-2.0*D0*Math.pow(t, 2) + 4.0*D0*t*u - 2.0*D0*Math.pow(u, 2) + 2.0*D1*Math.pow(t, 2) - 4.0*D1*t*u + 2.0*D1*Math.pow(u, 2) - 12.0*d0*t + 12.0*d0*u - 12.0*d1*t + 12.0*d1*u - 24.0*x0 + 24.0*x1)/(4.0*Math.pow(t, 5) - 20.0*Math.pow(t, 4)*u + 40.0*Math.pow(t, 3)*Math.pow(u, 2) - 40.0*Math.pow(t, 2)*Math.pow(u, 3) + 20.0*t*Math.pow(u, 4) - 4.0*Math.pow(u, 5))
-//        };
-//    }
+
 }
