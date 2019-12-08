@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.profiling.curve.ICurve;
+import org.greenblitz.utils.CSVWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +17,14 @@ public class DiscreteVelocityGraph {
         double tmpLength = 0;
 
         segments = new ArrayList<>();
+        double curveLen;
         for (ICurve curve : track) {
-            segments.add(new VelocitySegment(tmpLength, tmpLength + curve.getLength(1),
+            curveLen = curve.getLength(1);
+            segments.add(new VelocitySegment(tmpLength, tmpLength + curveLen,
                     ChassisProfiler2D.getMaxVelocity(maxLinearVel, maxAngularVel, curve.getCurvature()),
                     ChassisProfiler2D.getMaxAcceleration(maxLinearAcc, maxAngularAcc, curve.getCurvature()))
             );
-            tmpLength += curve.getLength(1);
+            tmpLength += curveLen;
         }
         int segCount = segments.size();
 
@@ -41,11 +44,31 @@ public class DiscreteVelocityGraph {
 
     public MotionProfile1D generateProfile(int index, double tStart) {
         VelocitySegment seg = segments.get(index);
-        return Profiler1D.generateProfile(seg.velocityMax, seg.accel, -seg.accel, tStart,
-                new ActuatorLocation(seg.distanceStart, seg.getStartVelocity()),
-                new ActuatorLocation(seg.distanceEnd, seg.getEndVelocity()));
+
+        // TODO not mathematically perfect (dt)
+
+        double vS = seg.getStartVelocity();
+        double vE = seg.getEndVelocity();
+
+        double dt = 2*((seg.distanceEnd - seg.distanceStart)/(vS + vE));
+        return new MotionProfile1D(new MotionProfile1D.Segment(
+                tStart, tStart + dt, (vE - vS)/dt, vS, seg.distanceStart));
+//        if (Math.abs(vS - vE) < 0.001){
+//            double dt = 2*((seg.distanceEnd - seg.distanceStart)/(vS + vE));
+//            return new MotionProfile1D(new MotionProfile1D.Segment(
+//                    tStart, tStart + dt, (vE - vS)/dt, vS, seg.distanceStart));
+//        }
+//        return Profiler1D.generateProfile(seg.velocityMax, seg.accel, -seg.accel, tStart,
+//                new ActuatorLocation(seg.distanceStart, vS),
+//                new ActuatorLocation(seg.distanceEnd, vE));
     }
 
+    public void generateCSV(String name) {
+        CSVWrapper file = CSVWrapper.generateWrapper(name, 0, "d", "velocity", "acceleration");
+        for (VelocitySegment range : segments)
+            range.insertToCSV(file);
+        file.flush();
+    }
 
     class VelocitySegment {
 
@@ -73,7 +96,7 @@ public class DiscreteVelocityGraph {
             velocityEndForwards = Math.min(velocityMax,
                     Math.sqrt(velocityStartForwards*velocityStartForwards + 2*(distanceEnd - distanceStart)*accel));
             if (next != null){
-                velocityEndForwards = Math.min(velocityStartForwards, next.velocityMax);
+                velocityEndForwards = Math.min(velocityEndForwards, next.velocityMax);
             }
         }
 
@@ -100,6 +123,10 @@ public class DiscreteVelocityGraph {
 
         public boolean isPartOfRange(double d){
             return d >= distanceStart && d <= distanceEnd;
+        }
+
+        public void insertToCSV(CSVWrapper file) {
+            file.addValues(distanceStart, getStartVelocity(), accel);
         }
 
     }

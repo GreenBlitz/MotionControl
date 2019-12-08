@@ -50,7 +50,7 @@ public class ChassisProfiler2D {
                                                   float tForCurve) {
         long t0profiling = System.currentTimeMillis();
 
-        VelocityGraph.setDefaultEpsilon(0.1);
+//        VelocityGraph.setDefaultEpsilon(0.1);
 
         MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
@@ -59,7 +59,7 @@ public class ChassisProfiler2D {
         List<ICurve> subCurves = new ArrayList<>(); // All sub-curves with kinda equal curve
         List<MotionProfile1D.Segment> rotationSegs;
 
-        VelocityGraph velByLoc;
+        DiscreteVelocityGraph velByLoc;
 
         double t0 = tStart;
         for (int i = 0; i < locations.size() - 1; i++) {
@@ -75,8 +75,7 @@ public class ChassisProfiler2D {
 
         }
 
-        velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
-                maxLinearAcc, maxAngularAcc);
+        velByLoc = new DiscreteVelocityGraph(subCurves, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
         double curvature;
 
 
@@ -121,7 +120,7 @@ public class ChassisProfiler2D {
     }
 
 
-    public static final double DIST = 0.005;
+    public static final double DIST = 0;
     /**
      * This function takes one curve, and stores it's subcurves in a list,
      * such as each subcurve continues the previous one and each subcurve will have
@@ -143,7 +142,7 @@ public class ChassisProfiler2D {
             if(t0 > 1)
                 throw new RuntimeException("how you do this");
             sumSoFar += source.getSubCurve(tPrev, t0).getLength(1);
-            if (sumSoFar >= DIST){
+            if (true){
                 returnList.add(source.getSubCurve(tPrevUsed, t0));
                 tPrevUsed = t0;
                 sumSoFar = 0;
