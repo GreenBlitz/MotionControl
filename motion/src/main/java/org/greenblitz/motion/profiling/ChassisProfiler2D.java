@@ -29,9 +29,20 @@ public class ChassisProfiler2D {
         return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, 0);
     }
 
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData data, double tStart) {
+        return generateProfile(locations, jump, data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
+                data.getMaxLinearAccel(), data.getMaxAngularAccel(), tStart, 1.0f);
+    }
+
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
         return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, 1.0f);
+    }
+
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
+                                                  float tForCurve){
+        return generateProfile(locations, jump, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
