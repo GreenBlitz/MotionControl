@@ -26,7 +26,12 @@ public class DiscreteVelocityGraph {
             );
             tmpLength += curveLen;
         }
+
+
         int segCount = segments.size();
+        for (int i = 1; i < segCount - 1; i++){
+            segments.get(i).filter(segments.get(i - 1), segments.get(i + 1));
+        }
 
         segments.get(0).developForwards(null, segments.get(1));
         segments.get(segCount - 1).developBackwards(segments.get(segCount - 2), null);
@@ -98,6 +103,10 @@ public class DiscreteVelocityGraph {
             if (next != null){
                 velocityEndForwards = Math.min(velocityEndForwards, next.velocityMax);
             }
+        }
+
+        public void filter(VelocitySegment prev, VelocitySegment next){
+            if (prev != null) velocityMax = 0.5*velocityMax + 0.25*prev.velocityMax + 0.25*next.velocityMax;
         }
 
         public void developBackwards(VelocitySegment prev, VelocitySegment next){
