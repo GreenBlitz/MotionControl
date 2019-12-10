@@ -30,7 +30,7 @@ public class DiscreteVelocityGraph {
 
         int segCount = segments.size();
         for (int i = 1; i < segCount - 1; i++){
-            segments.get(i).filter(segments.get(i - 1), segments.get(i + 1));
+            segments.get(i).filter(segments, i, 5 * segments.size() / 100);
         }
 
         segments.get(0).developForwards(null, segments.get(1));
@@ -78,6 +78,7 @@ public class DiscreteVelocityGraph {
     class VelocitySegment {
 
         public double velocityMax;
+        public double velocityMaxSmoothed;
         public double velocityStartForwards;
         public double velocityEndForwards;
         public double velocityStartBackwards;
@@ -90,6 +91,7 @@ public class DiscreteVelocityGraph {
             this.distanceEnd = end;
             this.accel = accel;
             this.velocityMax = maxV;
+            this.velocityMaxSmoothed = maxV;
         }
 
         public void developForwards(VelocitySegment prev, VelocitySegment next){
@@ -98,15 +100,11 @@ public class DiscreteVelocityGraph {
             } else {
                 velocityStartForwards = prev.velocityEndForwards;
             }
-            velocityEndForwards = Math.min(velocityMax,
+            velocityEndForwards = Math.min(velocityMaxSmoothed,
                     Math.sqrt(velocityStartForwards*velocityStartForwards + 2*(distanceEnd - distanceStart)*accel));
             if (next != null){
-                velocityEndForwards = Math.min(velocityEndForwards, next.velocityMax);
+                velocityEndForwards = Math.min(velocityEndForwards, next.velocityMaxSmoothed);
             }
-        }
-
-        public void filter(VelocitySegment prev, VelocitySegment next){
-            if (prev != null) velocityMax = 0.5*velocityMax + 0.25*prev.velocityMax + 0.25*next.velocityMax;
         }
 
         public void developBackwards(VelocitySegment prev, VelocitySegment next){
@@ -115,11 +113,20 @@ public class DiscreteVelocityGraph {
             } else {
                 velocityEndBackwards = next.velocityStartBackwards;
             }
-            velocityStartBackwards = Math.min(velocityMax,
+            velocityStartBackwards = Math.min(velocityMaxSmoothed,
                     Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2*(distanceEnd - distanceStart)*accel));
             if (prev != null){
-                velocityStartBackwards = Math.min(velocityStartBackwards, prev.velocityMax);
+                velocityStartBackwards = Math.min(velocityStartBackwards, prev.velocityMaxSmoothed);
             }
+        }
+
+        public void filter(List<VelocitySegment> segs, int subject, int tailSize){
+            int size = Math.min(subject + tailSize, segs.size() - 1) - Math.max(subject - tailSize, 0) + 1;
+            double val = 0;
+            for (int i = Math.max(subject - tailSize, 0); i <= Math.min(subject + tailSize, segs.size() - 1); i++){
+                val += segs.get(i).velocityMax / size;
+            }
+            this.velocityMaxSmoothed = Math.min(val, this.velocityMax);
         }
 
         public double getStartVelocity(){
