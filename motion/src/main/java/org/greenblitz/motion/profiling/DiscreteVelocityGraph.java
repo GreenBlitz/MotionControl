@@ -50,22 +50,12 @@ public class DiscreteVelocityGraph {
     public MotionProfile1D generateProfile(int index, double tStart) {
         VelocitySegment seg = segments.get(index);
 
-        // TODO not mathematically perfect (dt)
-
         double vS = seg.getStartVelocity();
         double vE = seg.getEndVelocity();
 
         double dt = 2*((seg.distanceEnd - seg.distanceStart)/(vS + vE));
         return new MotionProfile1D(new MotionProfile1D.Segment(
                 tStart, tStart + dt, (vE - vS)/dt, vS, seg.distanceStart));
-//        if (Math.abs(vS - vE) < 0.001){
-//            double dt = 2*((seg.distanceEnd - seg.distanceStart)/(vS + vE));
-//            return new MotionProfile1D(new MotionProfile1D.Segment(
-//                    tStart, tStart + dt, (vE - vS)/dt, vS, seg.distanceStart));
-//        }
-//        return Profiler1D.generateProfile(seg.velocityMax, seg.accel, -seg.accel, tStart,
-//                new ActuatorLocation(seg.distanceStart, vS),
-//                new ActuatorLocation(seg.distanceEnd, vE));
     }
 
     public void generateCSV(String name) {
