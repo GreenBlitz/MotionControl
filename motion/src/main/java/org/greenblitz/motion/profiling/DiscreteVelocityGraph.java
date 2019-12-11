@@ -12,7 +12,7 @@ public class DiscreteVelocityGraph {
     protected List<VelocitySegment> segments;
 
     public DiscreteVelocityGraph(List<ICurve> track, double maxLinearVel,
-                         double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
+                         double maxAngularVel, double maxLinearAcc, double maxAngularAcc, int tailSize) {
 
         double tmpLength = 0;
 
@@ -30,7 +30,7 @@ public class DiscreteVelocityGraph {
 
         int segCount = segments.size();
         for (int i = 1; i < segCount - 1; i++){
-            segments.get(i).filter(segments, i, 5 * segments.size() / 100);
+            segments.get(i).filter(segments, i, tailSize);
         }
 
         segments.get(0).developForwards(null, segments.get(1));

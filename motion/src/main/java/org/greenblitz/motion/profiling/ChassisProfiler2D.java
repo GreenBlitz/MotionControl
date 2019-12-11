@@ -18,11 +18,7 @@ import java.util.List;
  */
 public class ChassisProfiler2D {
 
-    public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
-                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart, double epsilon){
-        VelocityGraph.setDefaultEpsilon(epsilon);
-        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart);
-    }
+    public static final int SMOOTHING_TAIL_SIZE = 200;
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
@@ -31,26 +27,25 @@ public class ChassisProfiler2D {
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData data, double tStart) {
         return generateProfile(locations, jump, data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
-                data.getMaxLinearAccel(), data.getMaxAngularAccel(), tStart, 1.0f);
+                data.getMaxLinearAccel(), data.getMaxAngularAccel(), tStart, 1.0, SMOOTHING_TAIL_SIZE);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
-        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, 1.0f);
+        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, 1.0, SMOOTHING_TAIL_SIZE);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
-                                                  float tForCurve){
+                                                  double tForCurve){
         return generateProfile(locations, jump, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
-                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve);
+                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, SMOOTHING_TAIL_SIZE);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart,
-                                                  float tForCurve) {
+                                                  double tForCurve, int smoothingTail) {
         long t0profiling = System.currentTimeMillis();
 
-//        VelocityGraph.setDefaultEpsilon(0.1);
 
         MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
@@ -75,9 +70,8 @@ public class ChassisProfiler2D {
 
         }
 
-        velByLoc = new DiscreteVelocityGraph(subCurves, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
+        velByLoc = new DiscreteVelocityGraph(subCurves, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
         double curvature;
-
 
         for (int j = 0; j < subCurves.size(); j++) {
 
