@@ -41,34 +41,37 @@ public class ChassisProfiler2D {
                 d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, SMOOTHING_TAIL_SIZE);
     }
 
+    /**
+     * @param locations path with points
+     * @param jump
+     * @param maxLinearVel maximal linear velocity
+     * @param maxAngularVel maximal angular velocity
+     * @param maxLinearAcc maximal linear acceleration
+     * @param maxAngularAcc maximal angular acceleration
+     * @param tStart
+     * @param tForCurve
+     * @param smoothingTail the bigger the smoother the velocity graph will be, but a little slower
+     * @return
+     */
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart,
                                                   double tForCurve, int smoothingTail) {
         long t0profiling = System.currentTimeMillis();
 
-
+        /**
+         *
+         */
         MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D tempProfile;
-        State first, second;
-        List<ICurve> subCurves = new ArrayList<>(); // All sub-curves with kinda equal curve
         List<MotionProfile1D.Segment> rotationSegs;
-
         DiscreteVelocityGraph velByLoc;
 
         double t0 = tStart;
-        for (int i = 0; i < locations.size() - 1; i++) {
-
-            first = locations.get(i);
-            second = locations.get(i + 1);
-            // TODO this is very arbitrary
-            double tToUse = tForCurve * Point.dist(first, second);
-
-            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
-                            tToUse
-                    ), jump);
-
-        }
+        /**
+         * divides the path All sub-curves with kinda equal curve
+         */
+        List<ICurve> subCurves = dividePathToSubCurves(locations,jump,tForCurve);
 
         velByLoc = new DiscreteVelocityGraph(subCurves, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
         double curvature;
@@ -103,6 +106,24 @@ public class ChassisProfiler2D {
         System.out.println(System.currentTimeMillis() - t0profiling);
 
         return new MotionProfile2D(linearProfile, angularProfile);
+    }
+
+    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve){
+        List<ICurve> subCurves = new ArrayList<>();
+        State first,second;
+        for (int i = 0; i < locations.size() - 1; i++) {
+
+            first = locations.get(i);
+            second = locations.get(i + 1);
+            // TODO this is very arbitrary
+            double tToUse = tForCurve * Point.dist(first, second);
+
+            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
+                    tToUse
+            ), jump);
+
+        }
+        return subCurves;
     }
 
     public static double getMaxVelocity(double maxLinearVel, double maxAngularVel, double curvature) {
