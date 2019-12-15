@@ -8,13 +8,16 @@ import java.util.List;
 
 public class DiscreteVelocityGraph {
 
-
+    protected double maxLinVel, maxLinAcc;
     protected List<VelocitySegment> segments;
 
     public DiscreteVelocityGraph(List<ICurve> track, double maxLinearVel,
                          double maxAngularVel, double maxLinearAcc, double maxAngularAcc, int tailSize) {
 
         double tmpLength = 0;
+
+        maxLinVel = maxLinearVel;
+        maxLinAcc = maxLinearAcc;
 
         segments = new ArrayList<>();
         double curveLen;
@@ -67,6 +70,23 @@ public class DiscreteVelocityGraph {
 
     class VelocitySegment {
 
+        public final AccelerationInterpolator exponentialInterpolator =
+            (currentVelocity, maximumAsymptoticVelocity, maximumInitialAccel) -> {
+                if (currentVelocity == maximumAsymptoticVelocity)
+                    return 0;
+                else
+                    return Math.pow(Math.E, 1/maximumAsymptoticVelocity + 1/(currentVelocity - maximumAsymptoticVelocity))*maximumInitialAccel;
+            };
+
+        public final AccelerationInterpolator hyperbolicInterpolator =
+                (currentVelocity, maximumAsymptoticVelocity, maximumInitialAccel)
+                        -> 1 / (currentVelocity + (1 / maximumInitialAccel))
+                        - (currentVelocity / maximumAsymptoticVelocity) / (maximumAsymptoticVelocity + (1 / maximumInitialAccel));
+
+        public final AccelerationInterpolator linearInterpolator =
+                (currentVelocity, maximumAsymptoticVelocity, maximumInitialAccel)
+                        -> -(maximumInitialAccel / maximumAsymptoticVelocity) * currentVelocity + maximumInitialAccel;
+
         public double velocityMax;
         public double velocityMaxSmoothed;
         public double velocityStartForwards;
@@ -75,6 +95,7 @@ public class DiscreteVelocityGraph {
         public double velocityEndBackwards;
         public double accel;
         public double distanceStart, distanceEnd;
+        public AccelerationInterpolator interpolator;
 
         public VelocitySegment(double start, double end, double maxV, double accel){
             this.distanceStart = start;
@@ -82,6 +103,7 @@ public class DiscreteVelocityGraph {
             this.accel = accel;
             this.velocityMax = maxV;
             this.velocityMaxSmoothed = maxV;
+            interpolator = linearInterpolator;
         }
 
         public void developForwards(VelocitySegment prev, VelocitySegment next){
@@ -90,8 +112,11 @@ public class DiscreteVelocityGraph {
             } else {
                 velocityStartForwards = prev.velocityEndForwards;
             }
+
+            double withTheGrainAccel = interpolator.getRealMaxAccel(velocityStartForwards, velocityMax, accel);
+
             velocityEndForwards = Math.min(velocityMaxSmoothed,
-                    Math.sqrt(velocityStartForwards*velocityStartForwards + 2*(distanceEnd - distanceStart)*accel));
+                    Math.sqrt(velocityStartForwards*velocityStartForwards + 2*(distanceEnd - distanceStart)*withTheGrainAccel));
             if (next != null){
                 velocityEndForwards = Math.min(velocityEndForwards, next.velocityMaxSmoothed);
             }
@@ -110,10 +135,10 @@ public class DiscreteVelocityGraph {
             }
         }
 
-        public void filter(List<VelocitySegment> segs, int subject, int tailSize){
+        public void filter(List<VelocitySegment> segs, int subject, int tailSize) {
             int size = Math.min(subject + tailSize, segs.size() - 1) - Math.max(subject - tailSize, 0) + 1;
             double val = 0;
-            for (int i = Math.max(subject - tailSize, 0); i <= Math.min(subject + tailSize, segs.size() - 1); i++){
+            for (int i = Math.max(subject - tailSize, 0); i <= Math.min(subject + tailSize, segs.size() - 1); i++) {
                 val += segs.get(i).velocityMax / size;
             }
             this.velocityMaxSmoothed = Math.min(val, this.velocityMax);
@@ -125,10 +150,6 @@ public class DiscreteVelocityGraph {
 
         public double getEndVelocity(){
             return Math.min(velocityEndForwards, velocityEndBackwards);
-        }
-
-        public boolean isPartOfRange(double d){
-            return d >= distanceStart && d <= distanceEnd;
         }
 
         public void insertToCSV(CSVWrapper file) {

@@ -36,14 +36,13 @@ public class ChassisProfiler2DCSVGenerators {
         List<State> states = new ArrayList<>();
 
         states.add(new State(0, 0, 0, 0, 0));
-        states.add(new State(.8, 2,Math.PI/2, 0, 0));
-        states.add(new State(1.6, 4,0, 0, 0));
+        states.add(new State(0, 5,0, 0, 0));
 
         long time = System.currentTimeMillis();
         MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
                 states//pathToState(Paths.get("LTurn", true))
-                , .0001, 1.25,
-                4, 10, 15, 0, 1.0, 800);
+                , .0001, 3,
+                8, 4.5, 13, 0, 1.0, 800);
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -84,19 +83,19 @@ public class ChassisProfiler2DCSVGenerators {
             locFile.addValues(-p.getX(), p.getY());
         }
 //        locFile.flush();
-        PolynomialCurve curve2 = QuinticSplineGenerator.generateSpline(states.get(1), states.get(2), 1);
+//        PolynomialCurve curve2 = QuinticSplineGenerator.generateSpline(states.get(1), states.get(2), 1);
 
-        System.out.println("---------------------");
-        System.out.println(curve.getDerivativeInter(1) + ", " + curve2.getDerivativeInter(0));
-        System.out.println(curve.getDoubleDerivativeInter(1) + ", " + curve2.getDoubleDerivativeInter(0));
-
-
-        for (double u = 0; u <= 1; u += 0.05)  {
-            Point p = curve2.getLocation(u);
-//            System.out.println(p);
-            locFile.addValues(-p.getX(), p.getY());
-        }
-        locFile.flush();
+//        System.out.println("---------------------");
+//        System.out.println(curve.getDerivativeInter(1) + ", " + curve2.getDerivativeInter(0));
+//        System.out.println(curve.getDoubleDerivativeInter(1) + ", " + curve2.getDoubleDerivativeInter(0));
+//
+//
+//        for (double u = 0; u <= 1; u += 0.05)  {
+//            Point p = curve2.getLocation(u);
+////            System.out.println(p);
+//            locFile.addValues(-p.getX(), p.getY());
+//        }
+//        locFile.flush();
 
     }
 
