@@ -86,15 +86,26 @@ public class ChassisProfiler2D {
 
             rotationSegs = new ArrayList<>();
             MotionProfile1D.Segment curr, prev;
+
+            // TODO this loop can be slightly optimised to remove all the if statements
             for (int k = 0; k < tempProfile.segments.size(); k++) {
                 curr = tempProfile.segments.get(k).clone();
                 if(k != 0)
                     prev = tempProfile.segments.get(k - 1);
                 else
                     prev = null;
-                curr.setAccel(curr.getAccel() * -curvature);
+
                 curr.setStartVelocity((k == 0 ? linearProfile.getVelocity(linearProfile.getTEnd()) : prev.getVelocity(prev.getTEnd()))*curvature);
                 curr.setStartLocation(k == 0 ? angularProfile.getLocation(angularProfile.getTEnd()) : prev.getLocation(prev.getTEnd()));
+
+                if (prev != null){
+                    curr.setAccel(Math.abs(curr.accel * curvature) *
+                            Math.signum(curr.startVelocity - rotationSegs.get(k - 1).startVelocity));
+                } else {
+                    curr.setAccel(Math.abs(curr.accel * curvature) *
+                            Math.signum(curr.startVelocity - angularProfile.getVelocity(angularProfile.getTEnd())));
+                }
+
                 rotationSegs.add(curr);
             }
 
