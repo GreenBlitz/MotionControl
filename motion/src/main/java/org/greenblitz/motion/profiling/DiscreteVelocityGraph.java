@@ -103,7 +103,7 @@ public class DiscreteVelocityGraph {
             this.accel = accel;
             this.velocityMax = maxV;
             this.velocityMaxSmoothed = maxV;
-            interpolator = linearInterpolator;
+            interpolator = exponentialInterpolator;
         }
 
         public void developForwards(VelocitySegment prev, VelocitySegment next){
