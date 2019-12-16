@@ -1,5 +1,6 @@
 package org.greenblitz.motion.profiling.followers;
 
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
@@ -11,9 +12,13 @@ public class PidFollower2D {
     protected double kVl, kAl;
     protected double kVr, kAr;
     protected MotionProfile2D profile;
-    double PIDLimit;
+    protected double PIDLimit;
     protected PIDController leftController, rightController;
     protected double wheelDist;
+
+    protected RemoteCSVTarget wheelTarget;
+    protected RemoteCSVTarget globalTarget;
+    protected boolean sendData = false;
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr, double wheelDist, MotionProfile2D profile) {
         this(kVl, kAl, kVr, kAr, new PIDObject(0), new PIDObject(0), 0, wheelDist, profile);
@@ -37,6 +42,13 @@ public class PidFollower2D {
         startTime = System.currentTimeMillis();
         leftController.configure(0,0,-PIDLimit,PIDLimit,0);
         rightController.configure(0,0,-PIDLimit,PIDLimit,0);
+
+        if (sendData) {
+            wheelTarget = RemoteCSVTarget.initTarget("WheelData", "time", "DesiredLeft", "ActualLeft",
+                    "DesiredRight", "ActualRight");
+            globalTarget = RemoteCSVTarget.initTarget("ProfileData", "time", "DesiredLinVel",
+                    "ActualLinVel", "DesiredAngVel", "ActualAngVel");
+        }
     }
 
     public Vector2D run(double leftCurr, double rightCurr){
@@ -57,6 +69,12 @@ public class PidFollower2D {
         double rightMotorV = (-wheelDist*velocity.getY() + 2*velocity.getX())/2.0;
         double rightMotorA = (-wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
 
+        if (sendData){
+            wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
+            globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr)/2.0, velocity.getY(),
+                    (leftCurr - rightCurr)/wheelDist);
+        }
+
         leftController.setGoal(leftMotorV);
         rightController.setGoal(rightMotorV);
 
@@ -69,5 +87,8 @@ public class PidFollower2D {
         return profile.isOver((System.currentTimeMillis() - startTime)/1000.0);
     }
 
+    public void setSendData(boolean val){
+        sendData = val;
+    }
 
 }

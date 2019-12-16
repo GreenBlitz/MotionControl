@@ -9,7 +9,9 @@ import java.util.List;
 
 /**
  * @author Udi
+ * @deprecated Works well, but is lacking some essential features and is generally too complex.
  */
+@Deprecated
 public class VelocityGraph {
 
     private static double maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc;
