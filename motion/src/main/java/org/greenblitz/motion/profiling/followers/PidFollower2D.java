@@ -47,7 +47,7 @@ public class PidFollower2D {
             wheelTarget = RemoteCSVTarget.initTarget("WheelData", "time", "DesiredLeft", "ActualLeft",
                     "DesiredRight", "ActualRight");
             globalTarget = RemoteCSVTarget.initTarget("ProfileData", "time", "DesiredLinVel",
-                    "ActualLinVel", "DesiredAngVel", "ActualAngVel");
+                    "ActualLinVel", "DesiredAngVel", "ActualAngVel", "DesiredLinAcc", "DesiredAngAcc");
         }
     }
 
@@ -72,7 +72,7 @@ public class PidFollower2D {
         if (sendData){
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
             globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr)/2.0, velocity.getY(),
-                    (leftCurr - rightCurr)/wheelDist);
+                    (leftCurr - rightCurr)/wheelDist, acceleration.getX(), acceleration.getY());
         }
 
         leftController.setGoal(leftMotorV);
