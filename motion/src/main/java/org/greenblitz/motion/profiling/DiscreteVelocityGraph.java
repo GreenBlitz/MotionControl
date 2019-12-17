@@ -132,7 +132,7 @@ public class DiscreteVelocityGraph {
             double actAcc = interpolator.getRealMaxAccel(-velocityEndBackwards, velocityMax, accel);
 
             velocityStartBackwards = Math.min(velocityMaxSmoothed,
-                    Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2*(distanceEnd - distanceStart)*accel));
+                    Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2*(distanceEnd - distanceStart)*actAcc));
             if (prev != null){
                 velocityStartBackwards = Math.min(velocityStartBackwards, prev.velocityMaxSmoothed);
             }
