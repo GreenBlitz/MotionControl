@@ -22,7 +22,7 @@ public class PIDObject {
     }
 
     public PIDObject(double kp, double ki, double kd){
-        this(kp, kd, ki, 0);
+        this(kp, ki, kd, 0);
     }
 
     public PIDObject(double kp, double ki){
