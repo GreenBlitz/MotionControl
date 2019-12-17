@@ -103,7 +103,7 @@ public class DiscreteVelocityGraph {
             this.accel = accel;
             this.velocityMax = maxV;
             this.velocityMaxSmoothed = maxV;
-            interpolator = exponentialInterpolator;
+            interpolator = linearInterpolator;
         }
 
         public void developForwards(VelocitySegment prev, VelocitySegment next){
@@ -129,8 +129,10 @@ public class DiscreteVelocityGraph {
                 velocityEndBackwards = next.velocityStartBackwards;
             }
 
+            double actAcc = interpolator.getRealMaxAccel(-velocityEndBackwards, velocityMax, accel);
+
             velocityStartBackwards = Math.min(velocityMaxSmoothed,
-                    Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2*(distanceEnd - distanceStart)*accel*2));
+                    Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2*(distanceEnd - distanceStart)*accel));
             if (prev != null){
                 velocityStartBackwards = Math.min(velocityStartBackwards, prev.velocityMaxSmoothed);
             }
