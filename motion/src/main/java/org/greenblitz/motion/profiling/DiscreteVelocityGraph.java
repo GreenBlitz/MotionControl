@@ -117,8 +117,7 @@ public class DiscreteVelocityGraph {
                 velocityStartForwards = prev.velocityEndForwards;
             }
 
-            // TODO this is temp
-            double withTheGrainAccel = equationInterpolator.getRealMaxAccel(velocityStartForwards, velocityMax, accel);
+            double withTheGrainAccel = interpolator.getRealMaxAccel(velocityStartForwards, velocityMax, accel);
 
             velocityEndForwards = Math.min(velocityMaxSmoothed,
                     Math.sqrt(velocityStartForwards*velocityStartForwards + 2*(distanceEnd - distanceStart)*withTheGrainAccel));
