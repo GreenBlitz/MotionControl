@@ -2,6 +2,7 @@ package org.greenblitz.motion.profiling.followers;
 
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Vector2D;
+import org.greenblitz.motion.pid.CollapsingPIDController;
 import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
@@ -13,7 +14,7 @@ public class PidFollower2D {
     protected double kVr, kAr;
     protected MotionProfile2D profile;
     protected double PIDLimit;
-    protected PIDController leftController, rightController;
+    protected CollapsingPIDController leftController, rightController;
     protected double wheelDist;
 
     protected RemoteCSVTarget wheelTarget;
@@ -21,11 +22,11 @@ public class PidFollower2D {
     protected boolean sendData = false;
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr, double wheelDist, MotionProfile2D profile) {
-        this(kVl, kAl, kVr, kAr, new PIDObject(0), new PIDObject(0), 0, wheelDist, profile);
+        this(kVl, kAl, kVr, kAr, new PIDObject(0), 0, 0, wheelDist, profile);
     }
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr,
-                         PIDObject leftVals, PIDObject rightVals, double pidLimit, double wheelDist,
+                         PIDObject vals, double collapseVals, double pidLimit, double wheelDist,
                          MotionProfile2D profile) {
         this.kVl = kVl;
         this.kAl = kAl;
@@ -33,8 +34,8 @@ public class PidFollower2D {
         this.kAr = kAr;
         this.profile = profile;
         this.wheelDist = wheelDist;
-        leftController = new PIDController(leftVals);
-        rightController = new PIDController(rightVals);
+        leftController = new CollapsingPIDController(vals, collapseVals);
+        rightController = new CollapsingPIDController(vals, collapseVals);
         PIDLimit = pidLimit;
     }
 
