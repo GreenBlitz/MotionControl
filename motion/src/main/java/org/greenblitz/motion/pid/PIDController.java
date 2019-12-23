@@ -5,19 +5,19 @@ import org.opencv.core.Mat;
 
 public class PIDController {
 
-    private PIDObject m_obj;
-    private long m_previousTime;
-    private double m_goal;
-    private double m_previousError;
-    private double m_integral;
+    protected PIDObject m_obj;
+    protected long m_previousTime;
+    protected double m_goal;
+    protected double m_previousError;
+    protected double m_integral;
 
-    private double m_minimumOutput;
-    private double m_maximumOutput;
-    private double m_absoluteMinimumOut;
+    protected double m_minimumOutput;
+    protected double m_maximumOutput;
+    protected double m_absoluteMinimumOut;
 
-    private boolean configured;
+    protected boolean configured;
 
-    private ITolerance m_tolerance;
+    protected ITolerance m_tolerance;
 
     public PIDController(PIDObject obj, ITolerance tolerance) {
         m_obj = obj;
@@ -126,14 +126,14 @@ public class PIDController {
         return m_tolerance != null;
     }
 
-    private double updateTime() {
+    protected double updateTime() {
         var current = System.currentTimeMillis();
         double ms = current - m_previousTime;
         m_previousTime = current;
         return ms;
     }
 
-    private double clamp(double value) {
+    protected double clamp(double value) {
         return Math.min(Math.max(value, m_minimumOutput), m_maximumOutput);
     }
 
