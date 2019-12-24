@@ -1,6 +1,7 @@
 package org.greenblitz.motion.pid;
 
 import org.greenblitz.motion.tolerance.ITolerance;
+import org.opencv.core.Mat;
 
 public class CollapsingPIDController extends PIDController {
 
@@ -39,7 +40,7 @@ public class CollapsingPIDController extends PIDController {
         m_integral += err * dt;
         var i = m_obj.getKi() * m_integral;
 
-        if (err < ICollapseThreshold){
+        if (Math.abs(err) < ICollapseThreshold){
             m_integral = 0;
         }
 
