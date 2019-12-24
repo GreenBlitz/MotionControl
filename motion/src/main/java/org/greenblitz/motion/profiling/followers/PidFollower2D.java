@@ -52,9 +52,13 @@ public class PidFollower2D {
         }
     }
 
-    public Vector2D run(double leftCurr, double rightCurr){
+    public Vector2D run(double left, double right){
+        return run(left, right, System.currentTimeMillis());
+    }
 
-        double timeNow = (System.currentTimeMillis() - startTime)/1000.0;
+    public Vector2D run(double leftCurr, double rightCurr, double curTime){
+
+        double timeNow = (curTime - startTime)/1000.0;
 
         if (profile.isOver(timeNow)) return new Vector2D(0, 0);
 
