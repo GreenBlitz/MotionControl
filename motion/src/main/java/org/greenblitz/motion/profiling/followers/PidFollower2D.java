@@ -15,6 +15,7 @@ public class PidFollower2D {
     protected MotionProfile2D profile;
     protected double PIDLimit;
     protected CollapsingPIDController leftController, rightController;
+    protected PIDController angularVelocityController;
     protected double wheelDist;
 
     protected RemoteCSVTarget wheelTarget;
@@ -22,11 +23,11 @@ public class PidFollower2D {
     protected boolean sendData = false;
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr, double wheelDist, MotionProfile2D profile) {
-        this(kVl, kAl, kVr, kAr, new PIDObject(0), 0, 0, wheelDist, profile);
+        this(kVl, kAl, kVr, kAr, new PIDObject(0), 0, 0, new PIDObject(0), wheelDist, profile);
     }
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr,
-                         PIDObject vals, double collapseVals, double pidLimit, double wheelDist,
+                         PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double wheelDist,
                          MotionProfile2D profile) {
         this.kVl = kVl;
         this.kAl = kAl;
@@ -36,6 +37,7 @@ public class PidFollower2D {
         this.wheelDist = wheelDist;
         leftController = new CollapsingPIDController(vals, collapseVals);
         rightController = new CollapsingPIDController(vals, collapseVals);
+        angularVelocityController = new PIDController(angVals);
         PIDLimit = pidLimit;
     }
 
@@ -43,6 +45,7 @@ public class PidFollower2D {
         startTime = System.currentTimeMillis();
         leftController.configure(0,0,-PIDLimit,PIDLimit,0);
         rightController.configure(0,0,-PIDLimit,PIDLimit,0);
+        angularVelocityController.configure(0, 0, -PIDLimit, PIDLimit, 0);
 
         if (sendData) {
             wheelTarget = RemoteCSVTarget.initTarget("WheelData", "time", "DesiredLeft", "ActualLeft",
@@ -52,11 +55,11 @@ public class PidFollower2D {
         }
     }
 
-    public Vector2D run(double left, double right){
-        return run(left, right, System.currentTimeMillis());
+    public Vector2D run(double left, double right, double angularVel){
+        return run(left, right, angularVel, System.currentTimeMillis());
     }
 
-    public Vector2D run(double leftCurr, double rightCurr, double curTime){
+    public Vector2D run(double leftCurr, double rightCurr, double angularVel, double curTime){
 
         double timeNow = (curTime - startTime)/1000.0;
 
@@ -64,6 +67,9 @@ public class PidFollower2D {
 
         Vector2D velocity = profile.getVelocity(timeNow);
         Vector2D acceleration = profile.getAcceleration(timeNow);
+
+        angularVelocityController.setGoal(velocity.getY());
+        double angularPIDOut = angularVelocityController.calculatePID(angularVel);
 
         /*
         See:
@@ -83,8 +89,8 @@ public class PidFollower2D {
         leftController.setGoal(leftMotorV);
         rightController.setGoal(rightMotorV);
 
-        return new Vector2D(leftMotorV*kVl + leftMotorA*kAl + leftController.calculatePID(leftCurr),
-                rightMotorV*kVr + rightMotorA*kAr + rightController.calculatePID(rightCurr));
+        return new Vector2D(leftMotorV*kVl + leftMotorA*kAl + leftController.calculatePID(leftCurr) + angularPIDOut,
+                rightMotorV*kVr + rightMotorA*kAr + rightController.calculatePID(rightCurr) - angularPIDOut);
 
     }
 
