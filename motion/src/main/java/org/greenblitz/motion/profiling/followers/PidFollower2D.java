@@ -89,8 +89,13 @@ public class PidFollower2D {
         leftController.setGoal(leftMotorV);
         rightController.setGoal(rightMotorV);
 
-        return new Vector2D(leftMotorV*kVl + leftMotorA*kAl + leftController.calculatePID(leftCurr) + angularPIDOut,
-                rightMotorV*kVr + rightMotorA*kAr + rightController.calculatePID(rightCurr) - angularPIDOut);
+        if (acceleration.getX() > 0) {
+            return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftController.calculatePID(leftCurr) + angularPIDOut,
+                    rightMotorV * kVr + rightMotorA * kAr + rightController.calculatePID(rightCurr) - angularPIDOut);
+        } else {
+            return new Vector2D(leftMotorV * kVl + leftMotorA * kAl * 0.5 + leftController.calculatePID(leftCurr) + angularPIDOut,
+                    rightMotorV * kVr + rightMotorA * kAr * 0.5 + rightController.calculatePID(rightCurr) - angularPIDOut);
+        }
 
     }
 
