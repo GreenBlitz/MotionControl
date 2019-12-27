@@ -23,11 +23,11 @@ public class PidFollower2D {
     protected boolean sendData = false;
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr, double wheelDist, MotionProfile2D profile) {
-        this(kVl, kAl, kVr, kAr, new PIDObject(0), 0, 0, new PIDObject(0), wheelDist, profile);
+        this(kVl, kAl, kVr, kAr, new PIDObject(0), 0, 0, new PIDObject(0), 0, wheelDist, profile);
     }
 
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr,
-                         PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double wheelDist,
+                         PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double angCollapse, double wheelDist,
                          MotionProfile2D profile) {
         this.kVl = kVl;
         this.kAl = kAl;
@@ -37,7 +37,7 @@ public class PidFollower2D {
         this.wheelDist = wheelDist;
         leftController = new CollapsingPIDController(vals, collapseVals);
         rightController = new CollapsingPIDController(vals, collapseVals);
-        angularVelocityController = new PIDController(angVals);
+        angularVelocityController = new CollapsingPIDController(angVals, angCollapse);
         PIDLimit = pidLimit;
     }
 
@@ -89,13 +89,8 @@ public class PidFollower2D {
         leftController.setGoal(leftMotorV);
         rightController.setGoal(rightMotorV);
 
-        if (acceleration.getX() > 0) {
-            return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftController.calculatePID(leftCurr) + angularPIDOut,
-                    rightMotorV * kVr + rightMotorA * kAr + rightController.calculatePID(rightCurr) - angularPIDOut);
-        } else {
-            return new Vector2D(leftMotorV * kVl + leftMotorA * kAl * 0.5 + leftController.calculatePID(leftCurr) + angularPIDOut,
-                    rightMotorV * kVr + rightMotorA * kAr * 0.5 + rightController.calculatePID(rightCurr) - angularPIDOut);
-        }
+        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftController.calculatePID(leftCurr) + angularPIDOut,
+                rightMotorV * kVr + rightMotorA * kAr + rightController.calculatePID(rightCurr) - angularPIDOut);
 
     }
 
