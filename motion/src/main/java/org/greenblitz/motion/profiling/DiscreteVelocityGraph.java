@@ -152,9 +152,9 @@ public class DiscreteVelocityGraph {
             double sizeInv = 1.0 / (end - start + 1);
             double val = 0;
             for (int i = start; i <= end; i++) {
-                val += segs.get(i).velocityMax * sizeInv;
+                val += segs.get(i).velocityMax;
             }
-            this.velocityMaxSmoothed = Math.min(val, this.velocityMax);
+            this.velocityMaxSmoothed = Math.min(val * sizeInv, this.velocityMax);
         }
 
         public double getStartVelocity(){
