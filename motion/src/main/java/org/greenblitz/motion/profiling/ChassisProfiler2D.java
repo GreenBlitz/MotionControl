@@ -56,7 +56,7 @@ public class ChassisProfiler2D {
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart,
                                                   double tForCurve, int smoothingTail) {
-        int capacity = ((int) (1 / jump)) + 2;
+        int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
         MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D.Segment tempSegment;

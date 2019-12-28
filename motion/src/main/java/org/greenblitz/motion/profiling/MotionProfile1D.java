@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,8 +30,7 @@ public class MotionProfile1D {
 
     public MotionProfile1D(Segment... segs) {
         this();
-        for (Segment s : segs)
-            segments.add(s);
+        segments.addAll(Arrays.asList(segs));
     }
 
     public MotionProfile1D() {
@@ -39,8 +39,7 @@ public class MotionProfile1D {
 
     public MotionProfile1D(int capacity, Segment... segs) {
         this(capacity);
-        for (Segment s : segs)
-            segments.add(s);
+        segments.addAll(Arrays.asList(segs));
     }
 
     public MotionProfile1D(int capacity) {
@@ -143,7 +142,6 @@ public class MotionProfile1D {
         }
         throw new IndexOutOfBoundsException("No segment with time " + t);
     }
-
 
     /**
      * Uses binary searching
