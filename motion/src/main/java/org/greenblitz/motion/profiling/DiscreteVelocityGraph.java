@@ -8,7 +8,6 @@ import java.util.List;
 
 public class DiscreteVelocityGraph {
 
-    protected double maxLinVel, maxLinAcc;
     protected List<VelocitySegment> segments;
 
     public DiscreteVelocityGraph(List<ICurve> track, double maxLinearVel,
@@ -16,16 +15,16 @@ public class DiscreteVelocityGraph {
 
         double tmpLength = 0;
 
-        maxLinVel = maxLinearVel;
-        maxLinAcc = maxLinearAcc;
-
         segments = new ArrayList<>();
         double curveLen;
+        double curvature;
+
         for (ICurve curve : track) {
             curveLen = curve.getLength(1);
+            curvature = curve.getCurvature();
             segments.add(new VelocitySegment(tmpLength, tmpLength + curveLen,
-                    ChassisProfiler2D.getMaxVelocity(maxLinearVel, maxAngularVel, curve.getCurvature()),
-                    ChassisProfiler2D.getMaxAcceleration(maxLinearAcc, maxAngularAcc, curve.getCurvature()))
+                    ChassisProfiler2D.getMaxVelocity(maxLinearVel, maxAngularVel, curvature),
+                    ChassisProfiler2D.getMaxAcceleration(maxLinearAcc, maxAngularAcc, curvature))
             );
             tmpLength += curveLen;
         }
@@ -51,15 +50,20 @@ public class DiscreteVelocityGraph {
 
 
     public MotionProfile1D generateProfile(int index, double tStart) {
+        return new MotionProfile1D(generateSegment(index, tStart));
+    }
+
+    public MotionProfile1D.Segment generateSegment(int index, double tStart){
         VelocitySegment seg = segments.get(index);
 
         double vS = seg.getStartVelocity();
         double vE = seg.getEndVelocity();
 
         double dt = 2*((seg.distanceEnd - seg.distanceStart)/(vS + vE));
-        return new MotionProfile1D(new MotionProfile1D.Segment(
-                tStart, tStart + dt, (vE - vS)/dt, vS, seg.distanceStart));
+        return new MotionProfile1D.Segment(
+                tStart, tStart + dt, (vE - vS)/dt, vS, seg.distanceStart);
     }
+
 
     public void generateCSV(String name) {
         CSVWrapper file = CSVWrapper.generateWrapper(name, 0, "d", "velocity", "acceleration");
@@ -143,10 +147,12 @@ public class DiscreteVelocityGraph {
         }
 
         public void filter(List<VelocitySegment> segs, int subject, int tailSize) {
-            int size = Math.min(subject + tailSize, segs.size() - 1) - Math.max(subject - tailSize, 0) + 1;
+            int start =  Math.max(subject - tailSize, 0);
+            int end = Math.min(subject + tailSize, segs.size() - 1);
+            double sizeInv = 1.0 / (end - start + 1);
             double val = 0;
-            for (int i = Math.max(subject - tailSize, 0); i <= Math.min(subject + tailSize, segs.size() - 1); i++) {
-                val += segs.get(i).velocityMax / size;
+            for (int i = start; i <= end; i++) {
+                val += segs.get(i).velocityMax * sizeInv;
             }
             this.velocityMaxSmoothed = Math.min(val, this.velocityMax);
         }

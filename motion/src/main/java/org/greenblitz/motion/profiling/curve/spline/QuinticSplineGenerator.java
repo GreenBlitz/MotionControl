@@ -62,14 +62,11 @@ public class QuinticSplineGenerator {
         } else {
             kE = end.getAngularVelocity() / end.getLinearVelocity();
         }
-        PolynomialCurve ret = new PolynomialCurve(5,
+
+        return new PolynomialCurve(5,
                 getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), kS*Math.cos(angS),kE*Math.cos(angE), t),
                 getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), -kS*Math.sin(angS),-kE*Math.sin(angE), t), 0, 1, t
         );
-//        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
-//            throw new RuntimeException("What");
-//        }
-        return ret;
     }
 
     public static PolynomialCurve generateSplineDervApprox(State start, State end, State bStart, State aftEnd, double t){
@@ -92,6 +89,7 @@ public class QuinticSplineGenerator {
 
     public static PolynomialCurve generateSplineForStartOrEnd(State start, State end, State other, double t, boolean forStart){
         double angS, angE, dx2s, dx2e, dy2s, dy2e;
+
         if (forStart) {
             angS = start.getAngle();
             angE = end.getAngle();

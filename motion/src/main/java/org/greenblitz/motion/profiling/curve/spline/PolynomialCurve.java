@@ -19,57 +19,57 @@ public class PolynomialCurve extends AbstractCurve {
      */
     protected double[] x;
     protected double[] y;
-    double tScaling;
+    protected double tScaling;
     private int rank;
 
-    public PolynomialCurve(int rank, double[] xArr, double[] yArr, double uStart, double uEnd, double tScaling){
+    public PolynomialCurve(int rank, double[] xArr, double[] yArr, double uStart, double uEnd, double tScaling) {
         x = new double[rank + 1];
         y = new double[rank + 1];
         this.tScaling = tScaling;
         this.rank = rank;
 
-        this.uStart = uStart*tScaling;
-        this.uEnd = uEnd*tScaling;
+        this.uStart = uStart * tScaling;
+        this.uEnd = uEnd * tScaling;
 
-        for (int i = 0; i < this.rank + 1; i++){
+        for (int i = 0; i < this.rank + 1; i++) {
             x[i] = xArr[i];
             y[i] = yArr[i];
         }
     }
 
-    public PolynomialCurve(int rank,double[] xArr, double[] yArr){
-        this(rank,xArr, yArr, 0, 1, 1);
+    public PolynomialCurve(int rank, double[] xArr, double[] yArr) {
+        this(rank, xArr, yArr, 0, 1, 1);
     }
 
     @Override
     protected Point getLocationInternal(double u) {
         double xVal = 0;
         double yVal = 0;
-        for(int i = rank; i >= 0; i --){
-            xVal = u*xVal + x[i];
-            yVal = u*yVal + y[i];
+        for (int i = rank; i >= 0; i--) {
+            xVal = u * xVal + x[i];
+            yVal = u * yVal + y[i];
         }
-        return new Point(xVal,yVal);
+        return new Point(xVal, yVal);
     }
 
-    public Vector2D getDerivativeInter(double u){
+    public Vector2D getDerivativeInter(double u) {
         double xVal = 0;
         double yVal = 0;
-        for(int i = rank; i > 0; i --){
-            xVal = u*xVal + i*x[i];
-            yVal = u*yVal + i*y[i];
+        for (int i = rank; i > 0; i--) {
+            xVal = u * xVal + i * x[i];
+            yVal = u * yVal + i * y[i];
         }
-        return new Vector2D(xVal,yVal);
+        return new Vector2D(xVal, yVal);
     }
 
-    public Vector2D getDoubleDerivativeInter(double u){
+    public Vector2D getDoubleDerivativeInter(double u) {
         double xVal = 0;
         double yVal = 0;
-        for(int i = rank; i > 1; i --){
-            xVal = u*xVal + (i-1)*i*x[i];
-            yVal = u*yVal + (i-1)*i*y[i];
+        for (int i = rank; i > 1; i--) {
+            xVal = u * xVal + (i - 1) * i * x[i];
+            yVal = u * yVal + (i - 1) * i * y[i];
         }
-        return new Vector2D(xVal,yVal);
+        return new Vector2D(xVal, yVal);
     }
 
     @Override
@@ -79,11 +79,12 @@ public class PolynomialCurve extends AbstractCurve {
 
     @Override
     protected double getAngularVelocityInternal(double u) {
-        return getCurvatureInternal(u)*getLinearVelocityInternal(u);
+        return getCurvatureInternal(u) * getLinearVelocityInternal(u);
     }
 
     /**
      * Assumes constant curvature. to calculate actual length you will actually die.
+     *
      * @param u
      * @return
      */
@@ -107,6 +108,7 @@ public class PolynomialCurve extends AbstractCurve {
 
     /**
      * See https://www.wikipedia.org/wiki/Curvature
+     *
      * @param u
      * @return
      */
@@ -115,22 +117,22 @@ public class PolynomialCurve extends AbstractCurve {
         Vector2D derv = getDerivativeInter(u);
         Vector2D doubleDerv = getDoubleDerivativeInter(u);
         double normCubed = Math.pow(derv.norm(), 3);
-        if (normCubed < 1E-3){
+        if (normCubed < 1E-3) {
             return 0;
         }
 
-        return (derv.getX()*doubleDerv.getY() - derv.getY()*doubleDerv.getX()) /
+        return (derv.getX() * doubleDerv.getY() - derv.getY() * doubleDerv.getX()) /
                 normCubed;
     }
 
     @Override
     public ICurve getSubCurve(double uStart, double uEnd) {
-        return new PolynomialCurve(rank,x, y,
-                clamp(uStart)/tScaling, clamp(uEnd)/tScaling,
+        return new PolynomialCurve(rank, x, y,
+                clamp(uStart) / tScaling, clamp(uEnd) / tScaling,
                 tScaling);
     }
 
-    public int getRank(){
+    public int getRank() {
         return rank;
     }
 

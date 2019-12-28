@@ -37,6 +37,16 @@ public class MotionProfile1D {
         this(new ArrayList<>());
     }
 
+    public MotionProfile1D(int capacity, Segment... segs) {
+        this(capacity);
+        for (Segment s : segs)
+            segments.add(s);
+    }
+
+    public MotionProfile1D(int capacity) {
+        this(new ArrayList<>(capacity));
+    }
+
     @Override
     public String toString() {
         String ret = "MotionProfile1D{";
@@ -103,6 +113,14 @@ public class MotionProfile1D {
      */
     public void unsafeAdd(MotionProfile1D second){
         segments.addAll(second.getSegments());
+    }
+
+    /**
+     * Directly adds the given segment to the profile. Use with care.
+     * @param seg
+     */
+    public void unsafeAddSegment(MotionProfile1D.Segment seg){
+        segments.add(seg);
     }
 
     private int previous = 0;

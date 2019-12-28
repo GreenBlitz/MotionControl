@@ -56,77 +56,53 @@ public class ChassisProfiler2D {
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart,
                                                   double tForCurve, int smoothingTail) {
-        long t0profiling = System.currentTimeMillis();
-
-        /**
-         *
-         */
-        MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
-        MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
-        MotionProfile1D tempProfile;
-        List<MotionProfile1D.Segment> rotationSegs;
+        int capacity = ((int) (1 / jump)) + 2;
+        MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
+        MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
+        MotionProfile1D.Segment tempSegment;
+        MotionProfile1D.Segment curr;
         DiscreteVelocityGraph velByLoc;
 
         double t0 = tStart;
-        /**
+        /*
          * divides the path All sub-curves with kinda equal curve
          */
-        List<ICurve> subCurves = dividePathToSubCurves(locations,jump,tForCurve);
+        List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
 
         velByLoc = new DiscreteVelocityGraph(subCurves, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
         double curvature;
 
         for (int j = 0; j < subCurves.size(); j++) {
 
-            ICurve subCur = subCurves.get(j);
-            curvature = subCur.getCurvature();
-            tempProfile = velByLoc.generateProfile(j, t0);
+            curvature = subCurves.get(j).getCurvature();
+            tempSegment = velByLoc.generateSegment(j, t0);
 
-            t0 = tempProfile.getTEnd();
+            t0 = tempSegment.getTEnd();
 
-            rotationSegs = new ArrayList<>();
-            MotionProfile1D.Segment curr, prev;
+            curr = tempSegment.clone();
 
-            // TODO this loop can be slightly optimised to remove all the if statements
-            for (int k = 0; k < tempProfile.segments.size(); k++) {
-                curr = tempProfile.segments.get(k).clone();
-                if(k != 0)
-                    prev = tempProfile.segments.get(k - 1);
-                else
-                    prev = null;
+            curr.setStartVelocity(linearProfile.getVelocity(linearProfile.getTEnd()));
+            curr.setStartLocation(angularProfile.getLocation(angularProfile.getTEnd()));
 
-                curr.setStartVelocity((k == 0 ? linearProfile.getVelocity(linearProfile.getTEnd()) : prev.getVelocity(prev.getTEnd()))*curvature);
-                curr.setStartLocation(k == 0 ? angularProfile.getLocation(angularProfile.getTEnd()) : prev.getLocation(prev.getTEnd()));
-
-                if (prev != null){
-                    curr.setAccel(Math.abs(curr.accel * curvature) *
-                            Math.signum(curr.startVelocity - rotationSegs.get(k - 1).startVelocity));
-                } else {
-                    curr.setAccel(Math.abs(curr.accel * curvature) *
+            curr.setAccel(Math.abs(curr.accel * curvature) *
                             Math.signum(curr.startVelocity - angularProfile.getVelocity(angularProfile.getTEnd())));
-                }
 
-                rotationSegs.add(curr);
-            }
+            linearProfile.unsafeAddSegment(tempSegment);
+            angularProfile.unsafeAddSegment(curr);
 
-            linearProfile.unsafeAdd(tempProfile);
-            angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
         }
-
-        System.out.println("Profiling");
-        System.out.println(System.currentTimeMillis() - t0profiling);
 
         return new MotionProfile2D(linearProfile, angularProfile);
     }
 
-    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve){
-        List<ICurve> subCurves = new ArrayList<>();
-        State first,second;
+    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity){
+        List<ICurve> subCurves = new ArrayList<>(capacity);
+        State first, second;
         for (int i = 0; i < locations.size() - 1; i++) {
 
             first = locations.get(i);
             second = locations.get(i + 1);
-            // TODO this is very arbitrary
+            // This is arbitrary, but empirical evidence suggests this works well
             double tToUse = tForCurve * Point.dist(first, second);
 
             divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
@@ -145,8 +121,6 @@ public class ChassisProfiler2D {
         return 1.0 / (1.0 / maxLinearAcc + Math.abs(curvature) / maxAngularAcc);
     }
 
-
-    public static final double DIST = 0;
     /**
      * This function takes one curve, and stores it's subcurves in a list,
      * such as each subcurve continues the previous one and each subcurve will have
@@ -159,30 +133,17 @@ public class ChassisProfiler2D {
      * @return returnList
      */
     private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump) {
-//        long time = System.currentTimeMillis();
         double t0, tPrev = 0;
-        double sumSoFar = 0;
-        double tPrevUsed = 0;
 
-        for (t0 = getJump(source, 0, jump); t0 < 1.0; tPrev = t0, t0 += getJump(source, t0, jump)) {
-            if(t0 > 1)
-                throw new RuntimeException("how you do this");
-            sumSoFar += source.getSubCurve(tPrev, t0).getLength(1);
-            if (true){
-                returnList.add(source.getSubCurve(tPrevUsed, t0));
-                tPrevUsed = t0;
-                sumSoFar = 0;
-            }
+        for (t0 = jump; t0 < 1.0; tPrev = t0, t0 += jump) {
+            returnList.add(source.getSubCurve(tPrev, t0));
         }
 
-        returnList.add(source.getSubCurve(tPrevUsed, 1));
+        returnList.add(source.getSubCurve(tPrev, 1));
         return returnList;
     }
 
-    private static double getJump(ICurve curve, double location, double jump){
-        return jump;
-    }
-
+    @Deprecated
     private static VelocityGraph getVelocityGraph(List<ICurve> track, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
         return new VelocityGraph(track, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);

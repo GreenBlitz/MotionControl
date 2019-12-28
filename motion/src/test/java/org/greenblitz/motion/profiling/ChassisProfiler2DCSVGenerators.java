@@ -38,13 +38,23 @@ public class ChassisProfiler2DCSVGenerators {
         states.add(new State(0, 0, 0, 0, 0));
         states.add(new State(1, 2,Math.PI/2, 0, 0));
         states.add(new State(2, 4,0, 0, 0));
+        states.add(new State(4, 5, 0, 0, 0));
+        states.add(new State(0, 2,Math.PI/2, 0, 0));
+        states.add(new State(8, 7,0, 0, 0));
+        states.add(new State(0, 9, 0, 0, 0));
+        states.add(new State(2, 12,Math.PI/2, 0, 0));
+        states.add(new State(-1, 10,0, 0, 0));
 
-
+        MotionProfile2D brofile = null;
         long time = System.currentTimeMillis();
-        MotionProfile2D brofile = ChassisProfiler2D.generateProfile(
-                states//pathToState(Paths.get("LTurn", true))
-                , .0001, 3,
-                8, 4.5, 13, 0, 1.0, 800);
+
+        for (int i = 0; i < 1000; i++) {
+            brofile = ChassisProfiler2D.generateProfile(
+                    states//pathToState(Paths.get("LTurn", true))
+                    , .0001, 3,
+                    8, 4.5, 13, 0, 1.0, 800);
+        }
+
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
@@ -77,15 +87,15 @@ public class ChassisProfiler2DCSVGenerators {
 //            System.out.println(loc);
         }
         locFile.flush();
-        PolynomialCurve curve = QuinticSplineGenerator.generateSpline(states.get(0), states.get(1), 1);
-        for (double u = 0; u <= 1; u += 0.05) {
-
-            Point p = curve.getLocation(u);
-//            System.out.println(p);
-            locFile.addValues(-p.getX(), p.getY());
-        }
-//        locFile.flush();
-//        PolynomialCurve curve2 = QuinticSplineGenerator.generateSpline(states.get(1), states.get(2), 1);
+//        PolynomialCurve curve = QuinticSplineGenerator.generateSpline(states.get(0), states.get(1), 1);
+//        for (double u = 0; u <= 1; u += 0.05) {
+//
+//            Point p = curve.getLocation(u);
+////            System.out.println(p);
+//            locFile.addValues(-p.getX(), p.getY());
+//        }
+////        locFile.flush();
+////        PolynomialCurve curve2 = QuinticSplineGenerator.generateSpline(states.get(1), states.get(2), 1);
 
 //        System.out.println("---------------------");
 //        System.out.println(curve.getDerivativeInter(1) + ", " + curve2.getDerivativeInter(0));
