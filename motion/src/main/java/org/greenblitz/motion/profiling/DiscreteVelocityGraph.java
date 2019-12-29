@@ -2,7 +2,6 @@ package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.utils.CSVWrapper;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +114,7 @@ public class DiscreteVelocityGraph {
             interpolator = linearInterpolator;
         }
 
-        public void developForwardsFirst(@NotNull VelocitySegment next, double startVel){
+        public void developForwardsFirst( VelocitySegment next, double startVel){
             velocityStartForwards = startVel;
 
             double withTheGrainAccel = interpolator.getRealMaxAccel(velocityStartForwards, velocityMax, accel);
@@ -126,7 +125,7 @@ public class DiscreteVelocityGraph {
             velocityEndForwards = Math.min(velocityEndForwards, next.velocityMaxSmoothed);
         }
 
-        public void developForwardsLast(@NotNull VelocitySegment prev){
+        public void developForwardsLast( VelocitySegment prev){
             velocityStartForwards = prev.velocityEndForwards;
 
             double withTheGrainAccel = interpolator.getRealMaxAccel(velocityStartForwards, velocityMax, accel);
@@ -135,7 +134,7 @@ public class DiscreteVelocityGraph {
                     Math.sqrt(velocityStartForwards*velocityStartForwards + 2*(distanceEnd - distanceStart)*withTheGrainAccel));
         }
 
-        public void developForwards(@NotNull VelocitySegment prev, @NotNull VelocitySegment next){
+        public void developForwards( VelocitySegment prev,  VelocitySegment next){
             velocityStartForwards = prev.velocityEndForwards;
 
 
@@ -147,7 +146,7 @@ public class DiscreteVelocityGraph {
             velocityEndForwards = Math.min(velocityEndForwards, next.velocityMaxSmoothed);
         }
 
-        public void developBackwardsFirst(@NotNull VelocitySegment next){
+        public void developBackwardsFirst( VelocitySegment next){
             velocityEndBackwards = next.velocityStartBackwards;
 
             double actAcc = interpolator.getRealMaxAccel(-velocityEndBackwards, velocityMax, accel);
@@ -156,7 +155,7 @@ public class DiscreteVelocityGraph {
                     Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2*(distanceEnd - distanceStart)*actAcc));
         }
 
-        public void developBackwardsLast(@NotNull VelocitySegment prev, double endVel){
+        public void developBackwardsLast( VelocitySegment prev, double endVel){
             velocityEndBackwards = endVel;
 
             double actAcc = interpolator.getRealMaxAccel(-velocityEndBackwards, velocityMax, accel);
@@ -166,7 +165,7 @@ public class DiscreteVelocityGraph {
             velocityStartBackwards = Math.min(velocityStartBackwards, prev.velocityMaxSmoothed);
         }
 
-        public void developBackwards(@NotNull VelocitySegment prev, @NotNull VelocitySegment next){
+        public void developBackwards( VelocitySegment prev,  VelocitySegment next){
             velocityEndBackwards = next.velocityStartBackwards;
 
             double actAcc = interpolator.getRealMaxAccel(-velocityEndBackwards, velocityMax, accel);
