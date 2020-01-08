@@ -24,11 +24,4 @@ public class PathTest {
         assertEquals(intersections[2], 0.5, EPSILON);
     }
 
-    @Test
-    void testPathIntersection() {
-        // TODO
-    }
-
-    // TODO autocompleteAdd interpolation tests
-
 }
