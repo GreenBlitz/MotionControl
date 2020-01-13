@@ -8,20 +8,39 @@ import org.greenblitz.motion.profiling.curve.AbstractCurve;
 /**
  * @author peleg
  */
-
 public class PolynomialCurve extends AbstractCurve {
 
     /**
-     * The degree of the polynomial. For a list:
+     * The degree of the polynomial for the x coord. For a list:
      * [a, b, c, d]
      * we get a polynomial:
      * d*x^3 + c*x^2 + b*x + a
      */
     protected double[] x;
+    /**
+     * Same as `double[] x`, but for the y coord
+     */
     protected double[] y;
+    /**
+     * Used to scale the time factor so it would be possible to create [0, t] curves and subcurves for them.
+     */
     protected double tScaling;
+    /**
+     * Highest degree with non-zero coef. Must be 0 or bigger.
+     * e.g. a polynomial of degree 0 is a constant.
+     *      of degree 2 is a parabola.
+     */
     private int rank;
 
+    /**
+     *
+     * @param rank Highest degree with non-zero coef. Must be 0 or bigger.
+     * @param xArr The array of x coefs
+     * @param yArr The array of y coefs
+     * @param uStart The start of the range
+     * @param uEnd The end of the range
+     * @param tScaling The scaling of the range to get a new range
+     */
     public PolynomialCurve(int rank, double[] xArr, double[] yArr, double uStart, double uEnd, double tScaling) {
         x = new double[rank + 1];
         y = new double[rank + 1];
@@ -37,6 +56,12 @@ public class PolynomialCurve extends AbstractCurve {
         }
     }
 
+    /**
+     * @see PolynomialCurve#PolynomialCurve(int, double[], double[], double, double, double)
+     * @param rank
+     * @param xArr
+     * @param yArr
+     */
     public PolynomialCurve(int rank, double[] xArr, double[] yArr) {
         this(rank, xArr, yArr, 0, 1, 1);
     }
@@ -52,6 +77,11 @@ public class PolynomialCurve extends AbstractCurve {
         return new Point(xVal, yVal);
     }
 
+    /**
+     *
+     * @param u the "time" param
+     * @return the vector of partial derivatives at that point
+     */
     public Vector2D getDerivativeInter(double u) {
         double xVal = 0;
         double yVal = 0;
@@ -62,6 +92,11 @@ public class PolynomialCurve extends AbstractCurve {
         return new Vector2D(xVal, yVal);
     }
 
+    /**
+     *
+     * @param u the "time" param
+     * @return the vector of second partial derivative
+     */
     public Vector2D getDoubleDerivativeInter(double u) {
         double xVal = 0;
         double yVal = 0;
@@ -108,6 +143,7 @@ public class PolynomialCurve extends AbstractCurve {
 
     /**
      * See https://www.wikipedia.org/wiki/Curvature
+     * @see AbstractCurve#getCurvatureInternal(double)
      *
      * @param u
      * @return

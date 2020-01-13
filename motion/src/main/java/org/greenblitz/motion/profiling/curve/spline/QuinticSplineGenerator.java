@@ -2,8 +2,6 @@ package org.greenblitz.motion.profiling.curve.spline;
 
 import org.greenblitz.motion.base.State;
 
-import java.util.Stack;
-
 /**
  * @author peleg
  */
