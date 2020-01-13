@@ -107,16 +107,6 @@ public class PolynomialCurve extends AbstractCurve {
         return new Vector2D(xVal, yVal);
     }
 
-    @Override
-    protected double getLinearVelocityInternal(double u) {
-        return getDerivativeInter(u).norm();
-    }
-
-    @Override
-    protected double getAngularVelocityInternal(double u) {
-        return getCurvatureInternal(u) * getLinearVelocityInternal(u);
-    }
-
     /**
      * Assumes constant curvature. to calculate actual length you will actually die.
      *

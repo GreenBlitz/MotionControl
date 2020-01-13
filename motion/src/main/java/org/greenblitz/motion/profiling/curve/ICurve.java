@@ -4,6 +4,15 @@ import org.greenblitz.motion.base.Point;
 
 /**
  * Represents a curve. values given to it's function must be between 0 and 1.
+ * The curve is on the form:
+ * <math>\gamma (t) : [0, 1] \to \mathbb{R}^2</math>
+ *
+ * Helpful pages:
+ * https://en.wikipedia.org/wiki/Curve
+ * https://en.wikipedia.org/wiki/Curvature
+ * https://en.wikipedia.org/wiki/Parametric_equation
+ * https://math.stackexchange.com/questions/1697588/what-is-the-difference-between-a-function-and-a-curve
+ *
  * @author Alexey
  */
 public interface ICurve {
@@ -18,47 +27,34 @@ public interface ICurve {
     /**
      *
      * @param u in the range [0, 1] representing the location on the curve.
-     * @return The velocity element tangent to the given location on the curve.
-     * @deprecated Not used for profiling and therefor not that important. Implementation may be omitted.
-     */
-    @Deprecated
-    double getLinearVelocity(double u);
-
-    /**
-     *
-     * @param u in the range [0, 1] representing the location on the curve.
-     * @return the rotational velocity of the curve at this location.
-     * @deprecated Not used for profiling and therefor not that important. Implementation may be omitted.
-     */
-    @Deprecated
-    double getAngularVelocity(double u);
-
-    /**
-     *
-     * pre the curve approximates an arc
-     * @param u in the range [0, 1] representing the location on the curve.
      * @return the length of the arc up to the given point
      */
     double getLength(double u);
 
     /**
-     *
      * @param u in the range [0, 1] representing the location on the curve.
      * @return the angle of the tangent line to the given point on the curve
      */
     double getAngle(double u);
 
     /**
+     * Some curvature value representing the general curvature of the curve. Could be a sample on an
+     * average.
      *
-     * pre the curve approximates an arc
+     * See:
+     * https://en.wikipedia.org/wiki/Curvature
+     *
      * @return The curve of the curve at that point
      */
     double getCurvature();
 
     /**
      *
+     * See:
+     * https://en.wikipedia.org/wiki/Curvature
+     *
      * @param u in the range [0, 1] representing the location on the curve.
-     * @return The curve of the curve at that point
+     * @return The curvature of the curve at that point
      */
     double getCurvature(double u);
 
