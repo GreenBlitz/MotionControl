@@ -4,14 +4,14 @@ import org.greenblitz.motion.base.Point;
 
 /**
  * Represents a curve. values given to it's function must be between 0 and 1.
- * The curve is on the form:
+ * The curve is on the form:<br>
  * <math>\gamma (t) : [0, 1] \to \mathbb{R}^2</math>
- *
- * Helpful pages:
- * https://en.wikipedia.org/wiki/Curve
- * https://en.wikipedia.org/wiki/Curvature
- * https://en.wikipedia.org/wiki/Parametric_equation
- * https://math.stackexchange.com/questions/1697588/what-is-the-difference-between-a-function-and-a-curve
+ * <br><br>
+ * Helpful pages:<br>
+ * https://en.wikipedia.org/wiki/Curve<br>
+ * https://en.wikipedia.org/wiki/Curvature<br>
+ * https://en.wikipedia.org/wiki/Parametric_equation<br>
+ * https://math.stackexchange.com/questions/1697588/what-is-the-difference-between-a-function-and-a-curve<br>
  *
  * @author Alexey
  */
