@@ -37,15 +37,22 @@ public class ChassisProfiler2D {
                 d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, SMOOTHING_TAIL_SIZE);
     }
 
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
+                                                  double tForCurve, int smoothingTail){
+        return generateProfile(locations, jump, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, smoothingTail);
+    }
+
+
     /**
      * @param locations path with points
-     * @param jump
+     * @param jump the jump in "polynomial time" between 0 and 1. should be around 0.001
      * @param maxLinearVel maximal linear velocity
      * @param maxAngularVel maximal angular velocity
      * @param maxLinearAcc maximal linear acceleration
      * @param maxAngularAcc maximal angular acceleration
-     * @param tStart
-     * @param tForCurve
+     * @param tStart the start time of the profile
+     * @param tForCurve the time range for the polynomials
      * @param smoothingTail the bigger the smoother the velocity graph will be, but a little slower
      * @return
      */

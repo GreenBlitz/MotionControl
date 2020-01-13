@@ -2,10 +2,20 @@ package org.greenblitz.motion.profiling;
 
 import java.util.Objects;
 
+/**
+ * @author alexey
+ */
 public class ProfilingData {
 
     protected double maxLinearVelocity, maxLinearAccel, maxAngularVelocity, maxAngularAccel;
 
+    /**
+     *
+     * @param maxLinearVelocity
+     * @param maxLinearAccel
+     * @param maxAngularVelocity
+     * @param maxAngularAccel
+     */
     public ProfilingData(double maxLinearVelocity, double maxLinearAccel, double maxAngularVelocity, double maxAngularAccel) {
         this.maxLinearVelocity = maxLinearVelocity;
         this.maxLinearAccel = maxLinearAccel;

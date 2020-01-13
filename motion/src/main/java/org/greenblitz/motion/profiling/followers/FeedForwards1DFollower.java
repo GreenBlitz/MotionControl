@@ -2,6 +2,10 @@ package org.greenblitz.motion.profiling.followers;
 
 import org.greenblitz.motion.profiling.MotionProfile1D;
 
+/**
+ * Don't use this. This should be treated as a simple example.
+ * @author alexey
+ */
 public class FeedForwards1DFollower {
 
     protected MotionProfile1D profile;

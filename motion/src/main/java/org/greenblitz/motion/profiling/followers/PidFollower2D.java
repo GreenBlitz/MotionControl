@@ -7,6 +7,14 @@ import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 
+/**
+ *
+ * To use this, call init before each run.
+ *
+ * @see PidFollower2D#init()
+ *
+ * @author alexey
+ */
 public class PidFollower2D {
 
     protected long startTime;
@@ -22,10 +30,26 @@ public class PidFollower2D {
     protected RemoteCSVTarget globalTarget;
     protected boolean sendData = false;
 
-    public PidFollower2D(double kVl, double kAl, double kVr, double kAr, double wheelDist, MotionProfile2D profile) {
-        this(kVl, kAl, kVr, kAr, new PIDObject(0), 0, 0, new PIDObject(0), 0, wheelDist, profile);
-    }
-
+    /**
+     *
+     * coef = coefficient
+     * ff    = feed forward
+     * vel   = velocity
+     * acc   = acceleration
+     * ang   = angle\angular
+     *
+     * @param kVl coef for linear vel ff
+     * @param kAl coef for linear acc ff
+     * @param kVr coef for angular vel ff
+     * @param kAr coef for angular acc ff
+     * @param vals values for the PID controller on the wheel velocities
+     * @param collapseVals The threshold of error at which the I value of the wheel vel PID resets
+     * @param pidLimit The maximum output of the PID controllers (for each one)
+     * @param angVals The coefs for the PID controller on the angular velocity
+     * @param angCollapse The threshold of error at which the I value of the angular vel PID resets
+     * @param wheelDist The distance between the right side of the chassis and the left (meters)
+     * @param profile The motion profile to follow
+     */
     public PidFollower2D(double kVl, double kAl, double kVr, double kAr,
                          PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double angCollapse, double wheelDist,
                          MotionProfile2D profile) {
@@ -41,6 +65,9 @@ public class PidFollower2D {
         PIDLimit = pidLimit;
     }
 
+    /**
+     * Resets all relevant data, call before every run.
+     */
     public void init(){
         startTime = System.currentTimeMillis();
         leftController.configure(0,0,-PIDLimit,PIDLimit,0);
@@ -55,11 +82,41 @@ public class PidFollower2D {
         }
     }
 
+    /**
+     *
+     * For this function, the time is the time since the last call to init().
+     * @see PidFollower2D#init()
+     *
+     * @param left The left wheel velocity
+     * @param right The right wheel velocity
+     * @param angularVel The angular velocity
+     * @return A vector of power to each motor in the format (left, right)
+     */
     public Vector2D run(double left, double right, double angularVel){
         return run(left, right, angularVel, System.currentTimeMillis());
     }
 
-    public Vector2D run(double leftCurr, double rightCurr, double angularVel, double curTime){
+    /**
+     *
+     * @param left The left wheel velocity
+     * @param right The right wheel velocity
+     * @param angularVel The angular velocity
+     * @param currTime The curent time since the start of the profile <b>in seconds</b>
+     * @return A vector of power to each motor in the format (left, right)
+     */
+    public Vector2D run(double left, double right, double angularVel, double currTime){
+        return run(left, right, angularVel, (long)(currTime*1000.0));
+    }
+
+    /**
+     *
+     * @param leftCurr The left wheel velocity
+     * @param rightCurr The right wheel velocity
+     * @param angularVel The angular velocity
+     * @param curTime The curent time since the start of the profile <b>in miliseconds</b>
+     * @return A vector of power to each motor in the format (left, right)
+     */
+    public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime){
 
         double timeNow = (curTime - startTime)/1000.0;
 
@@ -94,10 +151,23 @@ public class PidFollower2D {
 
     }
 
+    /**
+     *
+     * @return true if the profile finished running, false otherwise
+     */
     public boolean isFinished(){
         return profile.isOver((System.currentTimeMillis() - startTime)/1000.0);
     }
 
+    /**
+     *
+     * If this is true, data will be sent to CSVLogger about the profile following performance. If this is false
+     * no data will be sent. By default, this is false.
+     *
+     * NOTE: Don't call this function after calling init()!
+     *
+     * @param val whether to send data or not
+     */
     public void setSendData(boolean val){
         sendData = val;
     }

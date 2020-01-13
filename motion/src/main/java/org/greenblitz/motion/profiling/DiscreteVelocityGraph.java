@@ -6,7 +6,11 @@ import org.greenblitz.utils.CSVWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscreteVelocityGraph {
+/**
+ * Package protected on purpose.
+ * @author alexey
+ */
+class DiscreteVelocityGraph {
 
     protected List<VelocitySegment> segments;
 
