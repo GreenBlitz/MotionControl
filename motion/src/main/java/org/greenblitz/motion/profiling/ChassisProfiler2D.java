@@ -1,12 +1,8 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.profiling.curve.CurveList;
-import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
-import org.greenblitz.motion.profiling.curve.spline.CubicSplineGenerator;
 import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
 
 import java.util.ArrayList;
@@ -141,12 +137,6 @@ public class ChassisProfiler2D {
 
         returnList.add(source.getSubCurve(tPrev, 1));
         return returnList;
-    }
-
-    @Deprecated
-    private static VelocityGraph getVelocityGraph(List<ICurve> track, double maxLinearVel,
-                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
-        return new VelocityGraph(track, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
     }
 
 

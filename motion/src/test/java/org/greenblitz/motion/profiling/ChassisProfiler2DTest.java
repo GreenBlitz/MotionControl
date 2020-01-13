@@ -1,10 +1,6 @@
 package org.greenblitz.motion.profiling;
 
-import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.profiling.VelocityGraph.VelocityGraphRange;
-import org.greenblitz.motion.profiling.VelocityGraph.VelocityGraphRange.VelocitySegment;
-import org.greenblitz.motion.profiling.curve.ICurve;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

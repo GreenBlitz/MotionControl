@@ -1,6 +1,5 @@
 package org.greenblitz.motion.profiling.curve.spline;
 
-import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
 
 import java.util.Stack;
@@ -48,7 +47,7 @@ public class QuinticSplineGenerator {
      * @param end The end position of the polynomial
      * @param t The "time" of the polynomial. If the polynomial is
      *          it is <math>\gamma : [0, t] \to \mathbb{R}^2</math> then this variable is t.
-     * @return
+     * @return An ICurve of the polynomial
      */
     public static PolynomialCurve generateSpline(State start, State end, double t){
         double angS = start.getAngle();

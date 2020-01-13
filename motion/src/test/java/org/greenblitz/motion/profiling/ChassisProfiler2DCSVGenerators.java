@@ -1,18 +1,10 @@
 package org.greenblitz.motion.profiling;
 
-import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pathing.Path;
-import org.greenblitz.motion.profiling.curve.bazier.BezierCurve;
-import org.greenblitz.motion.profiling.curve.ICurve;
-import org.greenblitz.motion.profiling.curve.spline.CubicSplineGenerator;
-import org.greenblitz.motion.profiling.curve.spline.PolynomialCurve;
-import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
-import org.greenblitz.motion.profiling.curve.spline.ThirdDegreePolynomialCurve;
 import org.greenblitz.utils.CSVWrapper;
-import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
