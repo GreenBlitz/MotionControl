@@ -12,6 +12,7 @@ import java.util.Stack;
 public class QuinticSplineGenerator {
 
     /**
+     * @see QuinticSplineGenerator#generateSpline(State, State, double) 
      * @param start
      * @param end
      * @return
@@ -43,13 +44,15 @@ public class QuinticSplineGenerator {
      * Similar calculation with y results:
      * y'' = -K*sin(a)
      *
-     * @param start
-     * @param end
-     * @param t
+     * @param start The starting position of the quintic polynomial
+     * @param end The end position of the polynomial
+     * @param t The "time" of the polynomial. If the polynomial is
+     *          it is <math>\gamma : [0, t] \to \mathbb{R}^2</math> then this variable is t.
      * @return
      */
     public static PolynomialCurve generateSpline(State start, State end, double t){
         double angS = start.getAngle();
+
         double angE = end.getAngle();
         double kS, kE;
         if (start.getLinearVelocity() == 0){
@@ -69,70 +72,19 @@ public class QuinticSplineGenerator {
         );
     }
 
-    public static PolynomialCurve generateSplineDervApprox(State start, State end, State bStart, State aftEnd, double t){
-        double angS = start.getAngle();
-        double angE = end.getAngle();
-        double dx2s = (Math.sin(bStart.getAngle()) - Math.sin(angE)) / Point.dist(end, bStart);
-        double dx2e = (Math.sin(angS) - Math.sin(aftEnd.getAngle())) / Point.dist(start, aftEnd);
-        double dy2s = (Math.cos(bStart.getAngle()) - Math.cos(angE)) / Point.dist(end, bStart);
-        double dy2e = (Math.cos(angS) - Math.cos(aftEnd.getAngle())) / Point.dist(start, aftEnd);
-
-        PolynomialCurve ret = new PolynomialCurve(5,
-                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), dx2s, dx2e, t),
-                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), dy2s, dy2e, t), 0, 1, t
-        );
-//        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
-//            throw new RuntimeException("What");
-//        }
-        return ret;
-    }
-
-    public static PolynomialCurve generateSplineForStartOrEnd(State start, State end, State other, double t, boolean forStart){
-        double angS, angE, dx2s, dx2e, dy2s, dy2e;
-
-        if (forStart) {
-            angS = start.getAngle();
-            angE = end.getAngle();
-            dx2s = 0;
-            dx2e = (Math.sin(angS) - Math.sin(other.getAngle())) / Point.dist(start, other);
-            dy2s = 0;
-            dy2e = (Math.cos(angS) - Math.cos(other.getAngle())) / Point.dist(start, other);
-        } else {
-            angS = start.getAngle();
-            angE = end.getAngle();
-            dx2s = (Math.sin(other.getAngle()) - Math.sin(angE)) / Point.dist(end, other);
-            dx2e = 0;
-            dy2s = (Math.cos(other.getAngle()) - Math.cos(angE)) / Point.dist(end, other);
-            dy2e = 0;
-        }
-
-        PolynomialCurve ret = new PolynomialCurve(5,
-                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), dx2s, dx2e, t),
-                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), dy2s, dy2e, t), 0, 1, t
-        );
-//        if(Point.subtract(ret.getLocation(1), end).norm() > 0.01){
-//            throw new RuntimeException("What");
-//        }
-        return ret;
-    }
-
-    public static PolynomialCurve generateForStartAndEnd(State start, State end, double t){
-        double angS = start.getAngle();
-        double angE = end.getAngle();
-        return new PolynomialCurve(5,
-                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), 0, 0, t),
-                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), 0, 0, t), 0, 1, t
-        );
-    }
-
     /**
-     * See
-     *
+     * See:
      * https://matrixcalc.org/en/slu.html#solve-using-Gaussian-elimination%28%7B%7B0,0,0,0,0,1,x_0%7D,%7Bt%5E5,t%5E4,t%5E3,t%5E2,t,1,x_1%7D,%7B0,0,0,0,1,0,d_0%7D,%7B5%2At%5E4,4%2At%5E3,3%2At%5E2,2%2At,1,0,d_1%7D,%7B0,0,0,2,0,0,D_0%7D,%7B20%2At%5E3,12%2At%5E2,6%2At,2,0,0,D_1%7D%7D%29
      *
-     * @param dervS
-     * @param dervE
-     * @return
+     * @param dStart The x of the first point
+     * @param dEnd The x of the last point
+     * @param dervS The first derivative of the first point
+     * @param dervE The first derivative of the last point
+     * @param derv2S The second derivative of the first point
+     * @param derv2E The second derivative of the last point
+     * @param t The [0, t] range definition
+     * @return Coefficients for a fifth degree polynomial in the form [a, b, c, d, e, f]
+     *          such that the polynomial is  a + b*x + c*x^2 + d*x^3 + e*x^4 + f*x^5
      */
     protected static double[] getParams(double dStart, double dEnd, double dervS, double dervE, double derv2S,double derv2E, double t){
         double dx = dEnd - dStart;
