@@ -133,6 +133,10 @@ public class PidFollower2D {
         angularVelocityController.setGoal(velocity.getY());
         double angularPIDOut = angularVelocityController.calculatePID(angularVel);
 
+        if (Double.isNaN(angularPIDOut)){
+            throw new RuntimeException("Ang PID output is NaN");
+        }
+
         /*
         See:
         https://matrixcalc.org/en/slu.html#solve-using-Cramer%27s-rule%28%7B%7B1/2,1/2,0,0,v%7D,%7B1/d,-1/d,0,0,o%7D%7D%29
@@ -155,8 +159,15 @@ public class PidFollower2D {
         leftController.setGoal(leftMotorV);
         rightController.setGoal(rightMotorV);
 
-        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftController.calculatePID(leftCurr) + angularPIDOut,
-                rightMotorV * kVr + rightMotorA * kAr + rightController.calculatePID(rightCurr) - angularPIDOut);
+        double leftPID = leftController.calculatePID(leftCurr);
+        double rightPID = rightController.calculatePID(rightCurr);
+
+        if (Double.isNaN(leftPID + rightPID)) {
+            throw new RuntimeException("LeftPID or RightPID are NaN");
+        }
+
+        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID + angularPIDOut,
+                rightMotorV * kVr + rightMotorA * kAr + rightPID - angularPIDOut);
 
     }
 
