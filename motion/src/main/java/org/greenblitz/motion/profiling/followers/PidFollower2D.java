@@ -7,6 +7,8 @@ import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 
+import javax.management.relation.RoleInfoNotFoundException;
+
 /**
  *
  * To use this, call init before each run.
@@ -139,6 +141,10 @@ public class PidFollower2D {
         double leftMotorA = (wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
         double rightMotorV = (-wheelDist*velocity.getY() + 2*velocity.getX())/2.0;
         double rightMotorA = (-wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
+
+        if (Double.isNaN(leftMotorV + leftMotorA + rightMotorA + rightMotorV)){
+            throw new RuntimeException("One of the motor ff vals are NaN");
+        }
 
         if (sendData){
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
