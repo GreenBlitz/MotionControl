@@ -90,8 +90,8 @@ public class ChassisProfiler2D {
             curr.setAccel(Math.abs(curr.accel * curvature) *
                             Math.signum(curr.startVelocity - angularProfile.getVelocity(angularProfile.getTEnd())));
 
-            linearProfile.unsafeAddSegment(tempSegment);
-            angularProfile.unsafeAddSegment(curr);
+            linearProfile.unsafeAddSegment(curr);
+            angularProfile.unsafeAddSegment(tempSegment);
 
         }
 
