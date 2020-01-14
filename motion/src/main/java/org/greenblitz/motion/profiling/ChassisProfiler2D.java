@@ -84,14 +84,14 @@ public class ChassisProfiler2D {
 
             curr = tempSegment.clone();
 
-            curr.setStartVelocity(linearProfile.getVelocity(linearProfile.getTEnd()));
-            curr.setStartLocation(angularProfile.getLocation(angularProfile.getTEnd()));
+            curr.setStartVelocity(curvature * linearProfile.getVelocity(linearProfile.getTEnd()));
+            curr.setStartLocation(curvature * angularProfile.getLocation(angularProfile.getTEnd()));
 
             curr.setAccel(Math.abs(curr.accel * curvature) *
                             Math.signum(curr.startVelocity - angularProfile.getVelocity(angularProfile.getTEnd())));
 
-            linearProfile.unsafeAddSegment(curr);
-            angularProfile.unsafeAddSegment(tempSegment);
+            linearProfile.unsafeAddSegment(tempSegment);
+            angularProfile.unsafeAddSegment(curr);
 
         }
 

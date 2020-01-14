@@ -5,6 +5,7 @@ import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pathing.Path;
 import org.greenblitz.utils.CSVWrapper;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,23 +23,17 @@ public class ChassisProfiler2DCSVGenerators {
         return ret;
     }
 
+    @Test
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
 
         states.add(new State(0, 0, 0, 0, 0));
-        states.add(new State(1, 2,Math.PI/2, 0, 0));
-        states.add(new State(2, 4,0, 0, 0));
-        states.add(new State(4, 5, 0, 0, 0));
-        states.add(new State(0, 2,Math.PI/2, 0, 0));
-        states.add(new State(8, 7,0, 0, 0));
-        states.add(new State(0, 9, 0, 0, 0));
-        states.add(new State(2, 12,Math.PI/2, 0, 0));
-        states.add(new State(-1, 10,0, 0, 0));
+        states.add(new State(0, 2,0, 0, 0));
 
         MotionProfile2D brofile = null;
         long time = System.currentTimeMillis();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 2; i++) {
             brofile = ChassisProfiler2D.generateProfile(
                     states//pathToState(Paths.get("LTurn", true))
                     , .0001, 3,
