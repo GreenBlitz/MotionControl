@@ -63,6 +63,9 @@ public class PidFollower2D {
         rightController = new CollapsingPIDController(vals, collapseVals);
         angularVelocityController = new CollapsingPIDController(angVals, angCollapse);
         PIDLimit = pidLimit;
+        if (Double.isNaN(kVl + kAl + kVr + kAr + wheelDist + pidLimit + collapseVals + angCollapse)){
+            throw new RuntimeException("Something is NaN");
+        }
     }
 
     /**
