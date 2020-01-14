@@ -91,7 +91,9 @@ public class PIDController {
         m_integral += err * dt;
         var i = m_obj.getKi() * m_integral;
 
-        var d = m_obj.getKd() * (err - m_previousError) / dt;
+        var d = 0.0;
+        if (Math.abs(dt) >= 0.000001)
+            d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
         double calc = clamp(p + i + d + m_obj.getKf());
