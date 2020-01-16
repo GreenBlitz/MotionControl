@@ -70,6 +70,8 @@ public class /*united*/State extends Position {
         this(point, 0);
     }
 
+    public State(Position pos) { this(pos.getX(), pos.getY(), pos.getAngle()); }
+
     public State(double x, double y, Vector2D velocity){
         super(x, y, Math.atan2(x, y));
         this.linearVelocity = velocity.norm();
