@@ -20,19 +20,11 @@ public class Localizer {
     private double prevDistanceLeft;
     private double prevDistanceRight;
     private double zeroDistanceLeft, zeroDistanceRight;
-    private long wakeTime;
-    private boolean awake;
 
     private final Object LOCK = new Object();
-    private final Object SLEEP_LOCK = new Object();
-
-    private final long timeOffset;
 
     private Localizer() {
-        timeOffset = System.currentTimeMillis();
         angle0 = 0;
-        awake = false;
-        wakeTime = System.currentTimeMillis();
     }
 
     private static final Localizer instance = new Localizer();
@@ -42,14 +34,8 @@ public class Localizer {
     }
 
     /**
-     * <p>Get the org.greenblitz.example.robot location. This is the system: </p>
-     * ^<br>
-     * |<br>
-     * |<br>
-     * R
-     * <br> <br> Where 'R' is the org.greenblitz.example.robot, up is the y coord and left is the x coord
-     *
-     * @return
+     * @return The calculated location of the robot such that positive y is forwards, positive x is left. The 0 angle is
+     * facing positive y and increasing counter-clockwise.
      */
     public Position getLocation() {
         synchronized (LOCK) {
@@ -57,13 +43,23 @@ public class Localizer {
         }
     }
 
-
-    public void configure(double wheelDistance, int leftTicks, int rightTicks) {
+    /**
+     *
+     * @param wheelDistance The distance between the left and right wheel set
+     * @param leftDist The meters counted on the left encoder
+     * @param rightDist The meters counter on the right encoder
+     */
+    public void configure(double wheelDistance, double leftDist, double rightDist) {
         m_wheelDistance = wheelDistance;
-        reset(leftTicks, rightTicks);
+        reset(leftDist, rightDist);
     }
 
-
+    /**
+     *
+     * @param currentLeftDistance The meters counted on the left encoder
+     * @param currentRightDistance The meters counter on the right encoder
+     * @param newPos The new position to set the localizer to
+     */
     public void reset(double currentLeftDistance, double currentRightDistance, Position newPos) {
         synchronized (LOCK) {
             prevDistanceLeft = currentLeftDistance;
@@ -75,12 +71,25 @@ public class Localizer {
         }
     }
 
-
+    /**
+     *
+     * This keeps the same location as before, only resetting encoders. Use this when
+     * you reset your own encoders to avoid localizer jumps.
+     *
+     * @param currLeft The meters counted on the left encoder
+     * @param currRight The meters counter on the right encoder
+     */
     public void resetEncoders(double currLeft, double currRight) {
         reset(currLeft, currRight, getLocation());
     }
 
-
+    /**
+     *
+     * rests the encoders and set the location to 0, 0, 0
+     *
+     * @param currentLeftDistance The meters counted on the left encoder
+     * @param currentRightDistance The meters counter on the right encoder
+     */
     public void reset(double currentLeftDistance, double currentRightDistance) {
         reset(currentLeftDistance, currentRightDistance, new Position(0, 0, 0));
     }
@@ -99,77 +108,31 @@ public class Localizer {
         return new Point(dx, dy).rotate(robotAng);
     }
 
-    double sleepSpeedL;
-    double sleepSpeedR;
-    double sleepTime;
-
-    public void setSleep(long milis, double leftSpeed, double rightSpeed) {
-        synchronized (SLEEP_LOCK) {
-            if (!awake) return;
-
-            awake = false;
-            wakeTime = System.currentTimeMillis() + milis;
-        }
-        sleepTime = milis / 1000.0;
-        sleepSpeedL = leftSpeed;
-        sleepSpeedR = rightSpeed;
-    }
-
     /**
-     * Don't use, this can fuck up the location
+     *
+     * Angle is calculated using the encoders.
+     *
+     * @param currentLeftDistance Current left wheel distance
+     * @param currentRightDistance Current right wheel distance
      */
-    @Deprecated
-    public void wakeUp() {
-        synchronized (SLEEP_LOCK) {
-            wakeTime = System.currentTimeMillis();
-        }
-    }
-
     public void update(double currentLeftDistance, double currentRightDistance) {
         double ang = (((currentRightDistance - zeroDistanceRight)
                 - (currentLeftDistance - zeroDistanceLeft)) / m_wheelDistance);
-        synchronized (SLEEP_LOCK) {
-            double dt = (System.currentTimeMillis() - wakeTime) / 1000.0;
-            if (dt < 0) return;
-            else if (!awake) {
-                dt += sleepTime;
-                ang = ((sleepSpeedR - sleepSpeedL) * dt / m_wheelDistance);
-            }
-        }
+
         update(currentLeftDistance, currentRightDistance, ang);
     }
 
+    /**
+     *
+     * @param currentLeftDistance Current left wheel distance
+     * @param currentRightDistance Current right wheel distance
+     * @param angle The current angle of the robot in radians, in the same coordinate system as specified in getLocation
+     */
     public void update(double currentLeftDistance, double currentRightDistance, double angle) {
         double rDist, lDist;
         synchronized (LOCK){
             rDist = currentRightDistance - prevDistanceRight;
             lDist = currentLeftDistance - prevDistanceLeft;
-        }
-
-        synchronized (SLEEP_LOCK) {
-            double dt = (System.currentTimeMillis() - wakeTime) / 1000.0;
-            if (dt < 0) return;
-            else if (!awake) {
-                dt += sleepTime;
-                sleepTime = 0;
-                awake = true;
-                resetEncoders(currentLeftDistance, currentRightDistance);
-
-                Point keepUp = calculateMovement(
-                        sleepSpeedR * dt,
-                        sleepSpeedL * dt,
-                        m_wheelDistance,
-                        m_location.getAngle()
-                );
-                synchronized (LOCK) {
-                    m_location.translate(keepUp);
-                    m_location.setAngle(angle + angle0);
-                }
-                angle0 = m_location.getAngle();
-
-                return;
-
-            }
         }
 
         Point dXdY = calculateMovement(
@@ -185,15 +148,4 @@ public class Localizer {
 
     }
 
-    /**
-     * @param location             current orientation
-     * @param currentLeftDistance  current distance as measured in left encoder
-     * @param currentRightDistance current distance as measured in right encoder
-     * @see Localizer#reset(double, double, Position)
-     * @deprecated Use reset instead
-     */
-    @Deprecated
-    public void forceSetLocation(Position location, double currentLeftDistance, double currentRightDistance) {
-        reset(currentLeftDistance, currentRightDistance, location);
-    }
 }

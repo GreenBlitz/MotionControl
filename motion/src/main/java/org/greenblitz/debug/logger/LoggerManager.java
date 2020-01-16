@@ -2,7 +2,6 @@ package org.greenblitz.debug.logger;
 
 import edu.wpi.first.networktables.NetworkTable;
 import org.greenblitz.debug.DebugTables;
-import org.greenblitz.debug.RemoteCSVTarget;
 
 import java.util.HashMap;
 import java.util.Map;
