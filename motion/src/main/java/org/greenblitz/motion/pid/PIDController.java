@@ -97,7 +97,7 @@ public class PIDController {
 
         m_previousError = err;
         double calc = clamp(p + i + d + m_obj.getKf());
-        return Math.max(Math.abs(calc), m_absoluteMinimumOut) * Math.signum(calc);
+        return Math.copySign(Math.max(Math.abs(calc), m_absoluteMinimumOut), calc);
     }
 
     public PIDObject getPidObject() {
