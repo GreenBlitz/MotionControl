@@ -1,7 +1,6 @@
 package org.greenblitz.motion.pid;
 
 import org.greenblitz.motion.tolerance.ITolerance;
-import org.opencv.core.Mat;
 
 public class PIDController {
 
