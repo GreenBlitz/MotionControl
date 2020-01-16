@@ -32,7 +32,7 @@ on its on (note that this may be less accurate).
 The localizer has been tested thoroughly and was shown to be accurate enough for the _APPC_ to work.
 Non the less it is still recommended to use an angle value from an external sensor such as a gyro. 
 
-As with all of out features, the localizer is in essence just a collection of commands, and the use
+As with all of our features, the localizer is in essence just a collection of commands, and the use
 of those command in the robot code is left as a decision for the user.
 #### Paths
 The paths supplied to the _APPC_ are simple lists of `Point` objects. It is recommended to generate the paths
@@ -72,7 +72,7 @@ needed for some discrete profiles.
 are saved, you can have as little as 3 segments (each is an object with 5 doubles) for the whole profile. Despite the small
 amount of saved information, the data saved within it is more accurate then any discrete
 set of points.
-### 2D Continuous Motion Profile Generation For Tank Drive - WIP
+### 2D Continuous Motion Profile Generation For Tank Drive
 TODO
 ## Contributing
 TODO
