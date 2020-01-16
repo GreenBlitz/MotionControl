@@ -1,7 +1,7 @@
 package org.greenblitz.motion.pid;
 
+import org.greenblitz.motion.exceptions.UninitializedPIDException;
 import org.greenblitz.motion.tolerance.ITolerance;
-import org.opencv.core.Mat;
 
 public class CollapsingPIDController extends PIDController {
 
@@ -27,7 +27,7 @@ public class CollapsingPIDController extends PIDController {
     @Override
     public double calculatePID(double current) {
         if (!configured)
-            throw new RuntimeException("PID - " + this + " - not configured");
+            throw new UninitializedPIDException("PID - " + this + " - not configured");
 
         if (isFinished(current))
             return 0;
