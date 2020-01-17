@@ -1,10 +1,18 @@
-package org.greenblitz.motion.app;
+package org.greenblitz.motion;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
 /**
- * runs in a seperate thread calculating the org.greenblitz.example.robot position
+ * A tool in order to calculate robot position using encoders (and optionally a gyro). Recommended to run in a different
+ * thread, at about one execution per 10 ms.<br><br>
+ *
+ * Example 1:<br>
+ *     https://github.com/GreenBlitz/Deep-Space-Robot/blob/detroit/src/main/java/edu/greenblitz/knockdown/data/LocalizerRunner.java
+ * <br><br>
+ * Example 2 (private until 2020 season competitions):<br>
+ *     https://github.com/GreenBlitz/Infinite-Reee-2020/blob/a1bfc27b303ceaa40902aed94c376bb87e000269/src/main/java/edu/greenblitz/bigRodika/commands/chassis/LocalizerCommand.java
+ * <br><br>
  *
  * @author Udi    ~ MudiAtalon
  * @author Alexey ~ savioor

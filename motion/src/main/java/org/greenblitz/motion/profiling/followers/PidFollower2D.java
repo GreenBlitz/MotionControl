@@ -7,8 +7,6 @@ import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 
-import javax.management.relation.RoleInfoNotFoundException;
-
 /**
  *
  * To use this, call init before each run.
@@ -34,7 +32,7 @@ public class PidFollower2D {
 
     /**
      *
-     * coef = coefficient
+     * coef  = coefficient
      * ff    = feed forward
      * vel   = velocity
      * acc   = acceleration

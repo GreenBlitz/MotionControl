@@ -4,6 +4,7 @@ import java.util.Objects;
 
 /**
  * @author Alexey
+ * @author Udi
  */
 public class /*united*/State extends Position {
 

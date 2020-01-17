@@ -50,7 +50,7 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
     }
 
     /**
-     * finds the goal point (the point to witch the robot drives) according to the motion algorithm
+     * finds the goal point (the point to which the robot drives) according to the motion algorithm
      *
      * @param robotLoc  the robot location
      * @param lookAhead look ahead distance
