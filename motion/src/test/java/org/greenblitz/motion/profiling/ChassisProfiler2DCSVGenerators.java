@@ -23,7 +23,6 @@ public class ChassisProfiler2DCSVGenerators {
         return ret;
     }
 
-    @Test
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
 

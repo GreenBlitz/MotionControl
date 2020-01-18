@@ -1,15 +1,7 @@
-package org.greenblitz.motion;
+package org.greenblitz.motion.base;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.Position;
+
 import org.junit.jupiter.api.Test;
-import org.opencv.core.Mat;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,25 +65,7 @@ public class PointTest {
         Point res = new Point(fs.getX() + 0.3*(st.getX()-fs.getX()), fs.getY() + 0.3*(st.getY()-fs.getY()));
         assertTrue(Point.fuzzyEquals(Point.bezierSample(0.3, Point.bezierSample(0.3, first, second), Point.bezierSample(0.3, second, third)), res, fuzz));
         assertTrue(Point.fuzzyEquals(Point.bezierSample(0.3, first, second, third), res, fuzz));
-        Point forth = new Point(0, 10);
 
-        try {
-            first = new Point(0,0);
-            second = new Point(0,1);
-            third = new Point(-1, 1);
-            forth = new Point(0, 1);
-            File f = new File("filename.csv");
-            CSVPrinter p = CSVFormat.EXCEL.withHeader("x", "y").print(f, Charset.defaultCharset());
-            Point print;
-            for(double i = 0; i<=1+1E-5; i+=0.02){
-                print = Point.bezierSample(i, first, second, third, forth);
-                p.printRecord(print.getX(), print.getY());
-                System.out.println(print);
-            }
-            p.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

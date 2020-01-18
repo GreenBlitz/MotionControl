@@ -45,7 +45,7 @@ public class CollapsingPIDController extends PIDController {
         }
 
         var d = 0.0;
-        if (Math.abs(dt) >= 0.000001)
+        if (Math.abs(dt) >= 1)
             d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
