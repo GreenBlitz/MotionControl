@@ -1,5 +1,6 @@
 package org.greenblitz.motion;
 
+import javafx.geometry.Pos;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
@@ -49,6 +50,16 @@ public class Localizer {
         synchronized (LOCK) {
             return m_location.clone();
         }
+    }
+
+    /**
+     * @return The calculated location of the robot such that positive y is forwards, positive x is right. The 0 angle is
+     * facing positive y and increasing counter-clockwise.
+     */
+    public Position getMathematicalLocation(){
+        Position pos = getLocation();
+        pos.setX(-pos.getX());
+        return pos;
     }
 
     /**
