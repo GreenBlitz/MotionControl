@@ -1,6 +1,5 @@
 package org.greenblitz.motion;
 
-import javafx.geometry.Pos;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 
@@ -46,7 +45,7 @@ public class Localizer {
      * @return The calculated location of the robot such that positive y is forwards, positive x is left. The 0 angle is
      * facing positive y and increasing counter-clockwise.
      */
-    public Position getLocation() {
+    public Position getLocationRaw() {
         synchronized (LOCK) {
             return m_location.clone();
         }
@@ -56,8 +55,8 @@ public class Localizer {
      * @return The calculated location of the robot such that positive y is forwards, positive x is right. The 0 angle is
      * facing positive y and increasing counter-clockwise.
      */
-    public Position getMathematicalLocation(){
-        Position pos = getLocation();
+    public Position getLocation(){
+        Position pos = getLocationRaw();
         pos.setX(-pos.getX());
         return pos;
     }
@@ -99,7 +98,7 @@ public class Localizer {
      * @param currRight The meters counter on the right encoder
      */
     public void resetEncoders(double currLeft, double currRight) {
-        reset(currLeft, currRight, getLocation());
+        reset(currLeft, currRight, getLocationRaw());
     }
 
     /**
