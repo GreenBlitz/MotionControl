@@ -35,8 +35,10 @@ class DiscreteVelocityGraph {
 
 
         int segCount = segments.size();
+        latestFilterTail = tailSize;
         for (int i = 1; i < segCount - 1; i++){
             segments.get(i).filter(segments, i, tailSize);
+            latestFilterIndex = i;
         }
 
         segments.get(0).developForwardsFirst(segments.get(1), 0);
@@ -75,6 +77,10 @@ class DiscreteVelocityGraph {
             range.insertToCSV(file);
         file.flush();
     }
+
+    private int latestFilterIndex = -1;
+    private double latestFilterValue = 0;
+    private int latestFilterTail;
 
     class VelocitySegment {
 
@@ -183,10 +189,24 @@ class DiscreteVelocityGraph {
         public void filter(List<VelocitySegment> segs, int subject, int tailSize) {
             int start =  Math.max(subject - tailSize, 0);
             int end = Math.min(subject + tailSize, segs.size() - 1);
-            double val = 0;
-            for (int i = start; i <= end; i++) {
-                val += segs.get(i).velocityMax;
+            double val;
+            if (latestFilterIndex != -1 && latestFilterTail == tailSize){
+
+                val = latestFilterValue;
+                if (start != 0)
+                    val -= segs.get(start - 1).velocityMax;
+                if (subject + tailSize <= segs.size() - 1)
+                    val += segs.get(end).velocityMax;
+
+            } else {
+
+                val = 0.0;
+                for (int i = start; i <= end; i++) {
+                    val += segs.get(i).velocityMax;
+                }
+
             }
+            latestFilterValue = val;
             this.velocityMaxSmoothed = Math.min(val / (end - start + 1), this.velocityMax);
         }
 
