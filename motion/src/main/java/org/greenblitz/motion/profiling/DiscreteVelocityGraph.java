@@ -13,8 +13,9 @@ import java.util.List;
 class DiscreteVelocityGraph {
 
     protected List<VelocitySegment> segments;
+    protected boolean finishAsap;
 
-    public DiscreteVelocityGraph(List<ICurve> track, double maxLinearVel,
+    public DiscreteVelocityGraph(List<ICurve> track, double vStart, double vEnd, double maxLinearVel,
                          double maxAngularVel, double maxLinearAcc, double maxAngularAcc, int tailSize) {
 
         double tmpLength = 0;
@@ -41,8 +42,15 @@ class DiscreteVelocityGraph {
             latestFilterIndex = i;
         }
 
-        segments.get(0).developForwardsFirst(segments.get(1), 0);
-        segments.get(segCount - 1).developBackwardsLast(segments.get(segCount - 2), 0);
+        if (vEnd == Double.POSITIVE_INFINITY){
+            vEnd = 0;
+            finishAsap = true;
+        } else {
+            finishAsap = false;
+        }
+
+        segments.get(0).developForwardsFirst(segments.get(1), vStart);
+        segments.get(segCount - 1).developBackwardsLast(segments.get(segCount - 2), vEnd);
 
         for (int i = 1; i < segCount - 1; i++){
             segments.get(i).developForwards(segments.get(i - 1), segments.get(i + 1));
@@ -211,10 +219,14 @@ class DiscreteVelocityGraph {
         }
 
         public double getStartVelocity(){
+            if (finishAsap)
+                return velocityStartForwards;
             return Math.min(velocityStartForwards, velocityStartBackwards);
         }
 
         public double getEndVelocity(){
+            if (finishAsap)
+                return velocityEndForwards;
             return Math.min(velocityEndForwards, velocityEndBackwards);
         }
 

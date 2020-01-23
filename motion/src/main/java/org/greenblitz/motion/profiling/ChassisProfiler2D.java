@@ -22,24 +22,24 @@ public class ChassisProfiler2D {
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData data, double tStart) {
-        return generateProfile(locations, jump, data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
+        return generateProfile(locations, jump, 0, 0, data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
                 data.getMaxLinearAccel(), data.getMaxAngularAccel(), tStart, 1.0, SMOOTHING_TAIL_SIZE);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
-        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, 1.0, SMOOTHING_TAIL_SIZE);
+        return generateProfile(locations, jump, 0, 0, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, 1.0, SMOOTHING_TAIL_SIZE);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
                                                   double tForCurve){
-        return generateProfile(locations, jump, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+        return generateProfile(locations, jump, 0, 0, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
                 d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, SMOOTHING_TAIL_SIZE);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
                                                   double tForCurve, int smoothingTail){
-        return generateProfile(locations, jump, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+        return generateProfile(locations, jump, 0, 0, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
                 d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, smoothingTail);
     }
 
@@ -47,6 +47,8 @@ public class ChassisProfiler2D {
     /**
      * @param locations path with points
      * @param jump the jump in "polynomial time" between 0 and 1. should be around 0.001
+     * @param velocityStart the start velocity of the robot
+     * @param velocityEnd the end velocity. Double.POSITIVE_INFINITY to end moving as fast as possible.
      * @param maxLinearVel maximal linear velocity
      * @param maxAngularVel maximal angular velocity
      * @param maxLinearAcc maximal linear acceleration
@@ -56,14 +58,19 @@ public class ChassisProfiler2D {
      * @param smoothingTail the bigger the smoother the velocity graph will be, but a little slower
      * @return
      */
-    public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
-                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart,
-                                                  double tForCurve, int smoothingTail) {
+    public static MotionProfile2D generateProfile(List<State> locations,
+                                                  double jump,
+                                                  double velocityStart, double velocityEnd,
+                                                  double maxLinearVel, double maxAngularVel, double maxLinearAcc, double maxAngularAcc,
+                                                  double tStart,
+                                                  double tForCurve,
+                                                  int smoothingTail) {
         int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
         MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D.Segment tempSegment;
         MotionProfile1D.Segment curr;
+
         DiscreteVelocityGraph velByLoc;
 
         double t0 = tStart;
@@ -72,7 +79,7 @@ public class ChassisProfiler2D {
          */
         List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
 
-        velByLoc = new DiscreteVelocityGraph(subCurves, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
+        velByLoc = new DiscreteVelocityGraph(subCurves, velocityStart, velocityEnd, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
         double curvature;
 
         for (int j = 0; j < subCurves.size(); j++) {
