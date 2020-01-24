@@ -68,8 +68,8 @@ public class ChassisProfiler2D {
         int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
         MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
         MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
-        MotionProfile1D.Segment tempSegment;
-        MotionProfile1D.Segment curr;
+        MotionProfile1D.Segment linearSegment = new MotionProfile1D.Segment(0,1,0,0,0);
+        MotionProfile1D.Segment angularSegment, prevAngularSegment = new MotionProfile1D.Segment(0,1,0,0,0);
 
         DiscreteVelocityGraph velByLoc;
 
@@ -80,29 +80,31 @@ public class ChassisProfiler2D {
         List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
 
         velByLoc = new DiscreteVelocityGraph(subCurves, velocityStart, velocityEnd, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
-        double curvature;
+        double curvature = 0;
 
         for (int j = 0; j < subCurves.size(); j++) {
 
             curvature = subCurves.get(j).getCurvature();
-            tempSegment = velByLoc.generateSegment(j, t0);
+            linearSegment = velByLoc.generateSegment(j, t0);
 
-            t0 = tempSegment.getTEnd();
+            t0 = linearSegment.getTEnd();
 
-            curr = tempSegment.clone();
+            angularSegment = linearSegment.clone();
 
-            curr.setStartVelocity(curvature * linearProfile.getVelocity(linearProfile.getTEnd()));
-            curr.setStartLocation(curvature * angularProfile.getLocation(angularProfile.getTEnd()));
+            angularSegment.setStartVelocity(curvature * linearProfile.getVelocity(linearProfile.getTEnd()));
+            angularSegment.setStartLocation(curvature * angularProfile.getLocation(angularProfile.getTEnd()));
 
-            curr.setAccel(
-                    Math.copySign(curr.accel * curvature,
-                            curr.startVelocity - angularProfile.getVelocity(angularProfile.getTEnd()))
-            );
+            prevAngularSegment.setAccel((angularSegment.getStartVelocity() - prevAngularSegment.getStartVelocity())
+                    / (prevAngularSegment.getTEnd() - prevAngularSegment.getTStart()));
 
-            linearProfile.unsafeAddSegment(tempSegment);
-            angularProfile.unsafeAddSegment(curr);
+            linearProfile.unsafeAddSegment(linearSegment);
+            angularProfile.unsafeAddSegment(angularSegment);
+
+            prevAngularSegment = angularSegment;
 
         }
+
+        prevAngularSegment.setAccel(curvature * linearSegment.accel);
 
         return new MotionProfile2D(linearProfile, angularProfile);
     }
