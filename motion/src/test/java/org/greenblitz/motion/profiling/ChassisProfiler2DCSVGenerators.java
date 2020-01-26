@@ -28,7 +28,7 @@ public class ChassisProfiler2DCSVGenerators {
         List<State> states = new ArrayList<>();
 
         states.add(new State(0, 0, 0, 0, 0));
-        states.add(new State(2, 2,Math.PI/2, 0, 0));
+        states.add(new State(1, 1,Math.PI/2, 0, 0));
 
         MotionProfile2D brofile = null;
         long time = System.currentTimeMillis();
@@ -49,7 +49,7 @@ public class ChassisProfiler2DCSVGenerators {
         System.out.println("Tend " + brofile.getTEnd());
 
         Position loc = null;
-        final double jmp = 0.0005;
+        final double jmp = 0.00005;
         Vector2D vel, acc;
         for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)

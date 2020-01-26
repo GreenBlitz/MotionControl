@@ -5,6 +5,7 @@ import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.CollapsingPIDController;
 import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
+import org.greenblitz.motion.profiling.MotionProfile1D;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 
 /**
@@ -29,6 +30,15 @@ public class PidFollower2D {
     protected RemoteCSVTarget wheelTarget;
     protected RemoteCSVTarget globalTarget;
     protected boolean sendData = false;
+
+    /**
+     * Use with EXTREME CAUTION. this is used for dynamic motion profiling and is
+     * generally not that safe.
+     * @param profile
+     */
+    public void setProfile(MotionProfile2D profile){
+        this.profile = profile;
+    }
 
     /**
      *

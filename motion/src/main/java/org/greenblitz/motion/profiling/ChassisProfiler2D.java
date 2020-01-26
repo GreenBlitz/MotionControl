@@ -43,6 +43,17 @@ public class ChassisProfiler2D {
                 d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, smoothingTail);
     }
 
+    public static MotionProfile2D generateProfile(List<State> locations,
+                                                  double jump,
+                                                  double velocityStart, double velocityEnd,
+                                                  ProfilingData d,
+                                                  double tStart,
+                                                  double tForCurve,
+                                                  int smoothingTail) {
+        return generateProfile(locations, jump, velocityStart, velocityEnd,
+                d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, smoothingTail);
+    }
 
     /**
      * @param locations path with points
