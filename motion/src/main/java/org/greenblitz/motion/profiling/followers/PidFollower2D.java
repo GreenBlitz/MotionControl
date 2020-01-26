@@ -130,9 +130,10 @@ public class PidFollower2D {
      * @return A vector of power to each motor in the format (left, right)
      */
     public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime){
+        return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime)/1000.0);
+    }
 
-        double timeNow = (curTime - startTime)/1000.0;
-
+    public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow){
         if (profile.isOver(timeNow)) return new Vector2D(0, 0);
 
         Vector2D velocity = profile.getVelocity(timeNow);
@@ -176,7 +177,6 @@ public class PidFollower2D {
 
         return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID + angularPIDOut,
                 rightMotorV * kVr + rightMotorA * kAr + rightPID - angularPIDOut);
-
     }
 
     /**
