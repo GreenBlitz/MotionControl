@@ -2,6 +2,10 @@ package org.greenblitz.motion.pid;
 
 import org.greenblitz.motion.tolerance.ITolerance;
 
+/**
+ * @deprecated untested and unreliable
+ */
+@Deprecated
 public class MultivariablePIDController {
     private PIDController[] m_controllers;
 
@@ -17,8 +21,9 @@ public class MultivariablePIDController {
         m_controllers[index] = new PIDController(obj, tol);
     }
 
+    @Deprecated
     public void configurePID(int index, double curr, double value, double limLower, double limUpper, double absLimit){
-        m_controllers[index].initialize(curr, value, limLower, limUpper, absLimit);
+//        m_controllers[index].initialize(curr, value, limLower, limUpper, absLimit);
     }
 
     public PIDController get(int index) {

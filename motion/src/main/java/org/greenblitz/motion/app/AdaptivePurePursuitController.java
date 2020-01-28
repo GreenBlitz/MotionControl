@@ -5,6 +5,16 @@ import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.pathing.Path;
 
 /**
+ *
+ * This code was written before the 2019 season, and used during the 2019 season. Sadly, we didn't document it well.
+ * Non the less, THIS WORKS WELL. It was tried and tested and can achieve nice results.<br>
+ * For example see the auto here: https://www.thebluealliance.com/match/2019tes_qm108 <br><br>
+ *
+ * If you wish to use this function yourself, you can see this link:<br>
+ * https://github.com/GreenBlitz/Deep-Space-Robot/blob/detroit/src/main/java/edu/greenblitz/knockdown/commands/simple/chassis/motion/APPCCommand.java<br>
+ * as a reference.<br>
+ * - Alexey <br>
+ *
  * @author Udi ~ MudiAtalon
  */
 public final class AdaptivePurePursuitController extends AbstractPositionPursuitController<Position> {

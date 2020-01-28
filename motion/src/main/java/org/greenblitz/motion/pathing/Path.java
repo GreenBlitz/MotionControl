@@ -1,6 +1,5 @@
 package org.greenblitz.motion.pathing;
 
-import jaci.pathfinder.Trajectory;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.greenblitz.debug.RemoteCSVTarget;
@@ -32,15 +31,6 @@ public class Path<T extends Point> implements Iterable<T> {
 
     public Path(T... points) {
         m_path = Arrays.asList(points);
-    }
-
-    @Deprecated
-    public static Path<Position> pathfinderPathToGBPath(Trajectory traj) {
-        ArrayList<Position> ret = new ArrayList<>();
-        for (Trajectory.Segment seg : traj.segments) {
-            ret.add(new Position(seg.x, seg.y, seg.heading));
-        }
-        return new Path<>(ret);
     }
 
     public T getLast() {

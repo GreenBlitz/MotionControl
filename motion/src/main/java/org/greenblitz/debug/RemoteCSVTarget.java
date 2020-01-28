@@ -2,7 +2,6 @@ package org.greenblitz.debug;
 
 import edu.wpi.first.networktables.NetworkTable;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -6,6 +6,9 @@ import org.greenblitz.motion.base.Position;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Alexey
+ */
 public class PolynomialInterpolator {
 
     /**

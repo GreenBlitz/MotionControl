@@ -1,92 +1,141 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
-import org.greenblitz.motion.profiling.curve.BezierCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
-import org.greenblitz.utils.CSVWrapper;
+import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Alexey
+ * @author Udi
+ */
 public class ChassisProfiler2D {
 
-    public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
-                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart, double epsilon){
-        VelocityGraph.setDefaultEpsilon(epsilon);
-        return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart);
-    }
+    public static final int SMOOTHING_TAIL_SIZE = 200;
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
         return generateProfile(locations, jump, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, 0);
     }
 
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData data, double tStart) {
+        return generateProfile(locations, jump, 0, 0, data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
+                data.getMaxLinearAccel(), data.getMaxAngularAccel(), tStart, 1.0, SMOOTHING_TAIL_SIZE);
+    }
+
     public static MotionProfile2D generateProfile(List<State> locations, double jump, double maxLinearVel,
                                                   double maxAngularVel, double maxLinearAcc, double maxAngularAcc, double tStart) {
+        return generateProfile(locations, jump, 0, 0, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, 1.0, SMOOTHING_TAIL_SIZE);
+    }
 
-        MotionProfile1D linearProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
-        MotionProfile1D angularProfile = new MotionProfile1D(new MotionProfile1D.Segment(0, 0,0,0, 0));
-        MotionProfile1D tempProfile;
-        State first, second;
-        ICurve curve;
-        List<ICurve> subCurves = new ArrayList<>(); // All sub-curves with kinda equal curve
-        ArrayList<ActuatorLocation> path = new ArrayList<>();
-        List<MotionProfile1D.Segment> rotationSegs;
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
+                                                  double tForCurve){
+        return generateProfile(locations, jump, 0, 0, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, SMOOTHING_TAIL_SIZE);
+    }
+
+    public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
+                                                  double tForCurve, int smoothingTail){
+        return generateProfile(locations, jump, 0, 0, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, smoothingTail);
+    }
+
+    public static MotionProfile2D generateProfile(List<State> locations,
+                                                  double jump,
+                                                  double velocityStart, double velocityEnd,
+                                                  ProfilingData d,
+                                                  double tStart,
+                                                  double tForCurve,
+                                                  int smoothingTail) {
+        return generateProfile(locations, jump, velocityStart, velocityEnd,
+                d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
+                d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, smoothingTail);
+    }
+
+    /**
+     * @param locations path with points
+     * @param jump the jump in "polynomial time" between 0 and 1. should be around 0.001
+     * @param velocityStart the start velocity of the robot
+     * @param velocityEnd the end velocity. Double.POSITIVE_INFINITY to end moving as fast as possible.
+     * @param maxLinearVel maximal linear velocity
+     * @param maxAngularVel maximal angular velocity
+     * @param maxLinearAcc maximal linear acceleration
+     * @param maxAngularAcc maximal angular acceleration
+     * @param tStart the start time of the profile
+     * @param tForCurve the time range for the polynomials
+     * @param smoothingTail the bigger the smoother the velocity graph will be, but a little slower
+     * @return
+     */
+    public static MotionProfile2D generateProfile(List<State> locations,
+                                                  double jump,
+                                                  double velocityStart, double velocityEnd,
+                                                  double maxLinearVel, double maxAngularVel, double maxLinearAcc, double maxAngularAcc,
+                                                  double tStart,
+                                                  double tForCurve,
+                                                  int smoothingTail) {
+        int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
+        MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
+        MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
+        MotionProfile1D.Segment linearSegment = new MotionProfile1D.Segment(0,1,0,0,0);
+        MotionProfile1D.Segment angularSegment, prevAngularSegment = new MotionProfile1D.Segment(0,1,0,0,0);
+
+        DiscreteVelocityGraph velByLoc;
 
         double t0 = tStart;
+        /*
+         * divides the path All sub-curves with kinda equal curve
+         */
+        List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
+
+        velByLoc = new DiscreteVelocityGraph(subCurves, velocityStart, velocityEnd, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
+        double curvature = 0;
+
+        for (int j = 0; j < subCurves.size(); j++) {
+
+            curvature = subCurves.get(j).getCurvature();
+            linearSegment = velByLoc.generateSegment(j, t0);
+
+            t0 = linearSegment.getTEnd();
+
+            angularSegment = linearSegment.clone();
+
+            angularSegment.setStartVelocity(curvature * linearProfile.getVelocity(linearProfile.getTEnd()));
+            angularSegment.setStartLocation(curvature * angularProfile.getLocation(angularProfile.getTEnd()));
+
+            prevAngularSegment.setAccel((angularSegment.getStartVelocity() - prevAngularSegment.getStartVelocity())
+                    / (prevAngularSegment.getTEnd() - prevAngularSegment.getTStart()));
+
+            linearProfile.unsafeAddSegment(linearSegment);
+            angularProfile.unsafeAddSegment(angularSegment);
+
+            prevAngularSegment = angularSegment;
+
+        }
+
+        prevAngularSegment.setAccel(curvature * linearSegment.accel);
+
+        return new MotionProfile2D(linearProfile, angularProfile);
+    }
+
+    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity){
+        List<ICurve> subCurves = new ArrayList<>(capacity);
+        State first, second;
         for (int i = 0; i < locations.size() - 1; i++) {
 
             first = locations.get(i);
             second = locations.get(i + 1);
+            // This is arbitrary, but empirical evidence suggests this works well
+            double tToUse = tForCurve * Point.dist(first, second);
 
-            curve = new BezierCurve(first, second);
+            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
+                    tToUse
+            ), jump);
 
-            subCurves.clear();
-            divideToEqualCurvatureSubcurves(subCurves, curve, jump);
-
-            VelocityGraph velByLoc = getVelocityGraph(subCurves, maxLinearVel, maxAngularVel,
-                    maxLinearAcc, maxAngularAcc);
-//            velByLoc.generateCSV("velocityByDistance.csv");
-
-            double curvature;
-            path.clear();
-            path.add(new ActuatorLocation(0, 0));
-            path.add(new ActuatorLocation(0, 0));
-
-            long t0profiling = System.currentTimeMillis();
-
-            for (int j = 0; j < subCurves.size(); j++) {
-                ICurve subCur = subCurves.get(j);
-                curvature = subCur.getCurvature();
-                long tDab = System.currentTimeMillis();
-                tempProfile = velByLoc.generateProfile(j, t0);
-                long dTDab = System.currentTimeMillis() - tDab;
-                if(dTDab != 0) System.out.println(dTDab);
-                t0 = tempProfile.getTEnd();
-
-                linearProfile.unsafeAdd(tempProfile);
-
-                rotationSegs = new ArrayList<>();
-                MotionProfile1D.Segment curr, prev;
-                for (int k = 0; k < tempProfile.segments.size(); k++) {
-                    curr = tempProfile.segments.get(k).clone();
-                    if(k != 0)
-                        prev = tempProfile.segments.get(k - 1);
-                    else
-                        prev = null;
-                    curr.setAccel(curr.getAccel() * curvature);
-                    curr.setStartVelocity((k == 0 ? linearProfile.getVelocity(linearProfile.getTEnd()) : prev.getVelocity(prev.getTEnd()))*curvature);
-                    curr.setStartLocation(k == 0 ? angularProfile.getLocation(angularProfile.getTEnd()) : prev.getLocation(prev.getTEnd()));
-                    rotationSegs.add(curr);
-                }
-                angularProfile.unsafeAdd(new MotionProfile1D(rotationSegs));
-            }
-
-            System.out.println("Profiling");
-            System.out.println(System.currentTimeMillis() - t0profiling);
         }
-
-        return new MotionProfile2D(linearProfile, angularProfile);
+        return subCurves;
     }
 
     public static double getMaxVelocity(double maxLinearVel, double maxAngularVel, double curvature) {
@@ -98,7 +147,6 @@ public class ChassisProfiler2D {
     }
 
     /**
-     * FIX THIS NOT WORK!
      * This function takes one curve, and stores it's subcurves in a list,
      * such as each subcurve continues the previous one and each subcurve will have
      * roughly equal curve.
@@ -110,31 +158,14 @@ public class ChassisProfiler2D {
      * @return returnList
      */
     private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump) {
-        long time = System.currentTimeMillis();
         double t0, tPrev = 0;
-        for (t0 = getJump(source, 0, jump); t0 < 1.0; tPrev = t0, t0 += getJump(source, t0, jump)) {
 
-            if(t0 > 1)
-                throw new RuntimeException("how you do this");
+        for (t0 = jump; t0 < 1.0; tPrev = t0, t0 += jump) {
             returnList.add(source.getSubCurve(tPrev, t0));
-
         }
+
         returnList.add(source.getSubCurve(tPrev, 1));
-        System.out.println("curve division");
-        System.out.println(System.currentTimeMillis()-time);
         return returnList;
-    }
-
-    private static double getJump(ICurve curve, double location, double jump){
-//        double vel = curve.getLinearVelocity(location);
-//        double ret = vel > jump ? jump/vel : 0.01;
-//        return ret;
-        return jump;
-    }
-
-    private static VelocityGraph getVelocityGraph(List<ICurve> track, double maxLinearVel,
-                                                  double maxAngularVel, double maxLinearAcc, double maxAngularAcc) {
-        return new VelocityGraph(track, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc);
     }
 
 

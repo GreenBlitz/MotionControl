@@ -9,8 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Alexey
+ * @author Udi
+ */
 public class MotionProfile1D {
 
     /**
@@ -18,27 +23,36 @@ public class MotionProfile1D {
      */
     protected List<Segment> segments;
 
+    // Note, I didn't forget access modifiers, it's package protected on purpose. - Alexey
 
-    public MotionProfile1D(List<Segment> segs) {
+    MotionProfile1D(List<Segment> segs) {
         segments = segs;
     }
 
-    public MotionProfile1D(Segment... segs) {
+    MotionProfile1D(Segment... segs) {
         this();
-        for (Segment s : segs)
-            segments.add(s);
+        segments.addAll(Arrays.asList(segs));
     }
 
-    public MotionProfile1D() {
+    MotionProfile1D() {
         this(new ArrayList<>());
+    }
+
+    MotionProfile1D(int capacity, Segment... segs) {
+        this(capacity);
+        segments.addAll(Arrays.asList(segs));
+    }
+
+    MotionProfile1D(int capacity) {
+        this(new ArrayList<>(capacity));
     }
 
     @Override
     public String toString() {
-        String ret = "MotionProfile1D{";
+        StringBuilder ret = new StringBuilder("MotionProfile1D{");
         for(Segment s: segments)
-            ret += "\n\t" + s;
-        return ret;
+            ret.append("\n\t").append(s);
+        return ret.toString();
     }
 
     /**
@@ -56,6 +70,7 @@ public class MotionProfile1D {
     /**
      * Adds the given profile to this one, and if needed generates a in-between profile to bridge a potential gap.
      *
+     * @see MotionProfile1D#safeAdd(MotionProfile1D)
      * @param second
      * @param maxV
      * @param maxA
@@ -73,7 +88,11 @@ public class MotionProfile1D {
         safeAdd(second);
     }
 
-
+    /**
+     * Adds a profile to the end of this one, preforming needed checks and changing the times to adapt
+     * @throws ProfilingException When the end of this profile is not the same as the start of the next one.
+     * @param second
+     */
     public void safeAdd(MotionProfile1D second) {
         MotionProfile1D first = this;
         if (!Point.isFuzzyEqual(first.getLocation(first.getTEnd()), second.getLocation(0))) {
@@ -101,15 +120,28 @@ public class MotionProfile1D {
         segments.addAll(second.getSegments());
     }
 
+    /**
+     * Directly adds the given segment to the profile. Use with care.
+     * @param seg
+     */
+    public void unsafeAddSegment(MotionProfile1D.Segment seg){
+        segments.add(seg);
+    }
+
     private int previous = 0;
 
     /**
      * The idea of this function is that you will never go back in time, therefore
      * after you used some time segment, you won't use all segments before it.
-     * In addition because the controller tuns decently fast, you are most likely to find
+     * In addition because the controller runs decently fast, you are most likely to find
      * the desired segment right after the previous you used.
      *
+     * Therefore, this is O(1) average time.
+     *
+     * @see MotionProfile1D#getSegmentRandom(double)
+     *
      * @param t point in time (in seconds)
+     * @throws IndexOutOfBoundsException if the current time doesn't apply to any segment.
      * @return The segment matching that point of time
      */
     public Segment quickGetSegment(double t) {
@@ -122,14 +154,17 @@ public class MotionProfile1D {
         throw new IndexOutOfBoundsException("No segment with time " + t);
     }
 
-
     /**
-     * Uses binary searching
+     * Uses binary searching. before using this,
+     * @see MotionProfile1D#quickGetSegment(double)
+     *
+     * This runs in average time of O(n log n)
      *
      * @param t point in time (in seconds)
+     * @throws IndexOutOfBoundsException if the current time doesn't apply to any segment.
      * @return The segment matching that point of time
      */
-    public Segment getSegment(double t) {
+    public Segment getSegmentRandom(double t) {
         int lower = 0;
         int upper = segments.size() - 1;
         int testing;
@@ -214,7 +249,7 @@ public class MotionProfile1D {
      *
      * @param name name of the file
      * @param dt   time in between points
-     * @return True for success and False for failure
+     * @return true for success and false for failure
      */
     public boolean generateCSV(String name, double dt) {
         CSVPrinter printer;
@@ -243,6 +278,12 @@ public class MotionProfile1D {
         return true;
     }
 
+    /**
+     * @see MotionProfile1D#generateCSV(String, double)
+     * @param name
+     * @param samplesPerSecond
+     * @return
+     */
     public boolean generateCSV(String name, int samplesPerSecond) {
         return generateCSV(name, 1.0 / samplesPerSecond);
     }
@@ -264,26 +305,47 @@ public class MotionProfile1D {
             this.startLocation = startLocation;
         }
 
+        @Override
         public Segment clone() {
             return new Segment(getTStart(), getTEnd(), getAccel(), getStartVelocity(), getStartLocation());
         }
 
+        /**
+         *
+         * @param t time in seconds
+         * @return whether this time stamp is part of this segment or not
+         */
         public boolean isTimePartOfSegment(double t) {
             return t - tStart >= -EPSILON && t - tEnd <= EPSILON;
         }
 
+        /**
+         * @throws IndexOutOfBoundsException when the time isn't part of the segment
+         * @param t the time in seconds
+         * @return the calculated acceleration of the segment at the given time
+         */
         public double getAcceleration(double t) {
             if (!isTimePartOfSegment(t))
                 throw new IndexOutOfBoundsException("Time not in this segment");
             return accel;
         }
 
+        /**
+         * @throws IndexOutOfBoundsException when the time isn't part of the segment
+         * @param t the time in seconds
+         * @return the calculated velocity of the segment at the given time
+         */
         public double getVelocity(double t) {
             if (!isTimePartOfSegment(t))
                 throw new IndexOutOfBoundsException("Time not in this segment");
             return startVelocity + (t - tStart) * accel;
         }
 
+        /**
+         * @throws IndexOutOfBoundsException when the time isn't part of the segment
+         * @param t the time in seconds
+         * @return the calculated location of the segment at the given time
+         */
         public double getLocation(double t) {
             if (!isTimePartOfSegment(t))
                 throw new IndexOutOfBoundsException("Time not in this segment");

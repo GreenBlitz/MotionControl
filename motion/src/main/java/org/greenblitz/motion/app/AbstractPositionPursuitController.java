@@ -6,6 +6,8 @@ import org.greenblitz.motion.pathing.Path;
 
 /**
  * This represents any controller that goes after a Path using lookahead and curve driving
+ *
+ * @author - Alexey
  */
 public abstract class AbstractPositionPursuitController<T extends Position> {
 
@@ -48,7 +50,7 @@ public abstract class AbstractPositionPursuitController<T extends Position> {
     }
 
     /**
-     * finds the goal point (the point to witch the robot drives) according to the motion algorithm
+     * finds the goal point (the point to which the robot drives) according to the motion algorithm
      *
      * @param robotLoc  the robot location
      * @param lookAhead look ahead distance

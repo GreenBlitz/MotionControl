@@ -4,15 +4,21 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.Vector2D;
 
-import java.util.function.Function;
-
+/**
+ * @author Alexey
+ */
 public class MotionProfile2D {
 
     private MotionProfile1D firstProfile, secondProfile;
 
-    public MotionProfile2D(MotionProfile1D firstProfile, MotionProfile1D secondProfile) {
+    /**
+     * This is package protected on purpose.
+     * @param firstProfile
+     * @param secondProfile
+     */
+    MotionProfile2D(MotionProfile1D firstProfile, MotionProfile1D secondProfile) {
         if (!Point.isFuzzyEqual(firstProfile.getTEnd(), secondProfile.getTEnd(), 1E-3))
-            throw new IllegalArgumentException("T end of first end second profile un-equal");
+            throw new IllegalArgumentException("T end of first and second profile un-equal");
         this.firstProfile = firstProfile;
         this.secondProfile = secondProfile;
     }
@@ -56,11 +62,27 @@ public class MotionProfile2D {
         return new Vector2D(firstProfile.getLocation(t), secondProfile.getLocation(t));
     }
 
-    public Position getActualLocation(double t, double epsilon){
+    /**
+     * For testing purposes only! Don't use otherwise
+     * Package protected in purpose.
+     * @param t
+     * @param epsilon
+     * @return
+     */
+    Position getActualLocation(double t, double epsilon){
         return getActualLocation(t, new Position(0,0,0), 0, epsilon);
     }
 
-    public Position getActualLocation(double t, Position prev, double prevT, double epsilon){
+    /**
+     * For testing purposes only! Don't use otherwise
+     * Package protected in purpose.
+     * @param t
+     * @param prev
+     * @param prevT
+     * @param epsilon
+     * @return
+     */
+    Position getActualLocation(double t, Position prev, double prevT, double epsilon){
         if(prevT>t)
             throw new UnsupportedOperationException();
         Position ret = prev;

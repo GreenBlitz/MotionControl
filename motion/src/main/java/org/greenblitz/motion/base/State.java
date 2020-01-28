@@ -2,6 +2,10 @@ package org.greenblitz.motion.base;
 
 import java.util.Objects;
 
+/**
+ * @author Alexey
+ * @author Udi
+ */
 public class /*united*/State extends Position {
 
     protected double linearVelocity /* meter/sec */, angularVelocity /* radians/sec */;
@@ -66,6 +70,8 @@ public class /*united*/State extends Position {
     public State(Point point) {
         this(point, 0);
     }
+
+    public State(Position pos) { this(pos.getX(), pos.getY(), pos.getAngle()); }
 
     public State(double x, double y, Vector2D velocity){
         super(x, y, Math.atan2(x, y));
