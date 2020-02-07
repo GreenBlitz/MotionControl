@@ -76,7 +76,7 @@ public class PidFollower2D {
         rightController = new CollapsingPIDController(vals, collapseVals);
         angularVelocityController = new CollapsingPIDController(angVals, angCollapse);
         PIDLimit = pidLimit;
-        if (Double.isNaN(kVl + kAl + kVr + kAr + wheelDist + pidLimit + collapseVals + angCollapse)){
+        if (Double.isNaN(kVl + kAl + kVr + kAr + wheelDist + collapseVals + angCollapse)){
             throw new RuntimeException("Something is NaN");
         }
     }
@@ -95,8 +95,8 @@ public class PidFollower2D {
         }
 
         startTime = System.currentTimeMillis();
-        leftController.configure(0,0,-PIDLimit,PIDLimit,0);
-        rightController.configure(0,0,-PIDLimit,PIDLimit,0);
+        leftController.configure(0,0,-PIDLimit,PIDLimit,Double.NaN);
+        rightController.configure(0,0,-PIDLimit,PIDLimit,Double.NaN);
         angularVelocityController.configure(0, 0, -PIDLimit, PIDLimit, 0);
 
         if (sendData) {
