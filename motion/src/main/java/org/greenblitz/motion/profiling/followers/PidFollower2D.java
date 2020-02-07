@@ -107,9 +107,9 @@ public class PidFollower2D {
             globalTarget = RemoteCSVTarget.initTarget("ProfileData", "time", "DesiredLinVel",
                     "ActualLinVel", "DesiredAngVel", "ActualAngVel");
             leftOutputTarget = RemoteCSVTarget.initTarget("LeftPower",
-                    "kv", "ka", "pid", "angular pid");
+                    "time", "kv", "ka", "pid", "angular pid");
             rightOutputTarget = RemoteCSVTarget.initTarget("RightPower",
-                    "kv", "ka", "pid", "angular pid");
+                    "time", "kv", "ka", "pid", "angular pid");
         }
     }
 
@@ -194,9 +194,9 @@ public class PidFollower2D {
 
         if (sendData){
 
-            leftOutputTarget.report(leftMotorV * kVl, leftMotorA * kAl,
+            leftOutputTarget.report(timeNow, leftMotorV * kVl, leftMotorA * kAl,
                     leftPID, angularPIDOut);
-            rightOutputTarget.report(rightMotorV * kVr, rightMotorA * kAr,
+            rightOutputTarget.report(timeNow, rightMotorV * kVr, rightMotorA * kAr,
                     rightPID, -angularPIDOut);
 
         }
