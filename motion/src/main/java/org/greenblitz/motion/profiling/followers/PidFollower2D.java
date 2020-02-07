@@ -32,6 +32,8 @@ public class PidFollower2D {
 
     protected RemoteCSVTarget wheelTarget;
     protected RemoteCSVTarget globalTarget;
+    protected RemoteCSVTarget leftOutputTarget;
+    protected RemoteCSVTarget rightOutputTarget;
     protected boolean sendData = false;
 
     /**
@@ -104,6 +106,10 @@ public class PidFollower2D {
                     "DesiredRight", "ActualRight");
             globalTarget = RemoteCSVTarget.initTarget("ProfileData", "time", "DesiredLinVel",
                     "ActualLinVel", "DesiredAngVel", "ActualAngVel");
+            leftOutputTarget = RemoteCSVTarget.initTarget("LeftPower",
+                    "kv", "ka", "pid", "angular pid");
+            rightOutputTarget = RemoteCSVTarget.initTarget("RightPower",
+                    "kv", "ka", "pid", "angular pid");
         }
     }
 
@@ -184,6 +190,15 @@ public class PidFollower2D {
 
         if (Double.isNaN(leftPID + rightPID)) {
             throw new RuntimeException("LeftPID or RightPID are NaN");
+        }
+
+        if (sendData){
+
+            leftOutputTarget.report(leftMotorV * kVl, leftMotorA * kAl,
+                    leftPID, angularPIDOut);
+            rightOutputTarget.report(rightMotorV * kVr, rightMotorA * kAr,
+                    rightPID, -angularPIDOut);
+
         }
 
         return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID + angularPIDOut,
