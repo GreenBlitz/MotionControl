@@ -83,7 +83,7 @@ public class PIDController {
         if (isFinished(current))
             return 0;
 
-        var err = m_goal - current;
+        var err = (m_goal - current) * m_obj.getInverted();
         var dt = updateTime();
 
         var p = m_obj.getKp() * err;
