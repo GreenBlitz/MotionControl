@@ -96,7 +96,14 @@ public class PIDController {
             d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
-        double calc = clamp(p + i + d + m_obj.getKf());
+        return clampFully(p + i + d + m_obj.getKf());
+    }
+
+    public double clampFully(double value){
+        double calc = clamp(value);
+        if (Double.isNaN(m_absoluteMinimumOut)){
+            return calc;
+        }
         return Math.copySign(Math.max(Math.abs(calc), m_absoluteMinimumOut), calc);
     }
 
@@ -136,6 +143,9 @@ public class PIDController {
     }
 
     protected double clamp(double value) {
+        if (Double.isNaN(m_maximumOutput + m_minimumOutput)){
+            return value;
+        }
         return Math.min(Math.max(value, m_minimumOutput), m_maximumOutput);
     }
 
