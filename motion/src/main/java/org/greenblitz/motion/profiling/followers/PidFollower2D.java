@@ -7,6 +7,8 @@ import org.greenblitz.motion.pid.PIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile1D;
 import org.greenblitz.motion.profiling.MotionProfile2D;
+import org.greenblitz.motion.profiling.kinematics.IConverter;
+import org.greenblitz.motion.profiling.kinematics.ReverseLocalizerConverter;
 
 /**
  *
@@ -26,6 +28,7 @@ public class PidFollower2D {
     protected CollapsingPIDController leftController, rightController;
     protected PIDController angularVelocityController;
     protected double wheelDist;
+    protected IConverter converter;
 
     protected RemoteCSVTarget wheelTarget;
     protected RemoteCSVTarget globalTarget;
@@ -78,10 +81,19 @@ public class PidFollower2D {
         }
     }
 
+    public void setConverter(IConverter c){
+        converter = c;
+    }
+
     /**
      * Resets all relevant data, call before every run.
      */
     public void init(){
+
+        if (converter == null){
+            converter = new ReverseLocalizerConverter(wheelDist);
+        }
+
         startTime = System.currentTimeMillis();
         leftController.configure(0,0,-PIDLimit,PIDLimit,0);
         rightController.configure(0,0,-PIDLimit,PIDLimit,0);
@@ -146,14 +158,13 @@ public class PidFollower2D {
             throw new RuntimeException("Ang PID output is NaN");
         }
 
-        /*
-        See:
-        https://matrixcalc.org/en/slu.html#solve-using-Cramer%27s-rule%28%7B%7B1/2,1/2,0,0,v%7D,%7B1/d,-1/d,0,0,o%7D%7D%29
-         */
-        double leftMotorV = (wheelDist*velocity.getY() + 2*velocity.getX())/2.0;
-        double leftMotorA = (wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
-        double rightMotorV = (-wheelDist*velocity.getY() + 2*velocity.getX())/2.0;
-        double rightMotorA = (-wheelDist*acceleration.getY() + 2*acceleration.getX())/2.0;
+        Vector2D velocities = converter.convert(velocity);
+        Vector2D accels = converter.convert(acceleration);
+
+        double leftMotorV = velocities.getX();
+        double leftMotorA = accels.getX();
+        double rightMotorV = velocities.getY();
+        double rightMotorA = accels.getY();
 
         if (Double.isNaN(leftMotorV + leftMotorA + rightMotorA + rightMotorV)){
             throw new RuntimeException("One of the motor ff vals are NaN");
