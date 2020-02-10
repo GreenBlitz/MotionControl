@@ -18,7 +18,7 @@ public class ChassisProfiler2DCSVGenerators {
         List<State> ret = new ArrayList<>();
         for (int i = 0; i <= 50; i++){
             double percent = i/50.0;
-            ret.add(new State(Math.cos(percent*Math.PI/2), Math.sin(percent*Math.PI/2), -i*Math.PI/2, -1, 1));
+            ret.add(new State(Math.cos(percent*Math.PI/2), Math.sin(percent*Math.PI/2), -i*Math.PI/2, 4, 5));
         }
         return ret;
     }
@@ -28,7 +28,7 @@ public class ChassisProfiler2DCSVGenerators {
         List<State> states = new ArrayList<>();
 
         states.add(new State(0, 0, 0, 0, 0));
-        states.add(new State(1, 1,Math.PI/2, 0, 0));
+        states.add(new State(1, 1,Math.PI/2, 100, 4));
 
         MotionProfile2D brofile = null;
         long time = System.currentTimeMillis();

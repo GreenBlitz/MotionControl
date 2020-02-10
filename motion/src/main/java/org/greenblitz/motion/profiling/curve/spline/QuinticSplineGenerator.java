@@ -1,6 +1,10 @@
 package org.greenblitz.motion.profiling.curve.spline;
 
 import org.greenblitz.motion.base.State;
+import org.greenblitz.motion.base.TwoTuple;
+import org.greenblitz.motion.base.Vector2D;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author peleg
@@ -49,24 +53,58 @@ public class QuinticSplineGenerator {
      */
     public static PolynomialCurve generateSpline(State start, State end, double t){
         double angS = start.getAngle();
-
         double angE = end.getAngle();
-        double kS, kE;
-        if (start.getLinearVelocity() == 0){
-            kS = start.getAngularVelocity() / 0.00001;
-        } else {
-            kS = start.getAngularVelocity() / start.getLinearVelocity();
+
+        double sinAngS = Math.sin(angS);
+        double cosAngS = Math.cos(angS);
+        Vector2D startDoubleDerv = new Vector2D(0, 0);
+
+        if (start.getLinearVelocity() != 0) {
+            startDoubleDerv = getDoubleDerv(new Vector2D(sinAngS, cosAngS),
+                    start.getAngularVelocity() / start.getLinearVelocity());
         }
-        if (end.getLinearVelocity() == 0){
-            kE = end.getAngularVelocity() / 0.00001;
-        } else {
-            kE = end.getAngularVelocity() / end.getLinearVelocity();
+
+        double sinAngE = Math.sin(angE);
+        double cosAngE = Math.cos(angE);
+        Vector2D endDoubleDerv = new Vector2D(0, 0);
+
+        if (end.getLinearVelocity() != 0) {
+            endDoubleDerv = getDoubleDerv(new Vector2D(sinAngE, cosAngE),
+                    end.getAngularVelocity() / end.getLinearVelocity());
         }
 
         return new PolynomialCurve(5,
-                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), kS*Math.cos(angS),kE*Math.cos(angE), t),
-                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), -kS*Math.sin(angS),-kE*Math.sin(angE), t), 0, 1, t
+                getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), startDoubleDerv.getX(),endDoubleDerv.getX(), t),
+                getParams(start.getY(), end.getY(), Math.cos(angS), Math.cos(angE), startDoubleDerv.getY(),endDoubleDerv.getY(), t), 0, 1, t
         );
+    }
+
+    private static Vector2D getDoubleDerv(Vector2D firstDerv, double curvature){
+
+        if (firstDerv.getX() == 0  && firstDerv.getY() == 0){
+            return new Vector2D(0, 0); // This shouldn't happen
+        }
+
+        Vector2D ret = new Vector2D(0, 0);
+
+        if (firstDerv.getX() + firstDerv.getY() == 0) {
+            if (firstDerv.getX() == 0) {
+                ret.setX(curvature * Math.signum(firstDerv.getY()));
+            } else if (firstDerv.getY() == 0) {
+                ret.setY(curvature * Math.signum(firstDerv.getX()));
+            } else {
+//            double lambda = curvature * firstDerv.norm()/2.0;
+                double lambda = curvature / 2.0;
+
+                ret.setX(lambda / firstDerv.getY());
+                ret.setY(lambda / firstDerv.getX());
+            }
+        } else {
+            ret.setX(curvature/(firstDerv.getX() + firstDerv.getY()));
+            ret.setY(ret.getX());
+        }
+
+        return ret;
     }
 
     /**
