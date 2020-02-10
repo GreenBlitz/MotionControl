@@ -22,8 +22,8 @@ import org.greenblitz.motion.base.Vector2D;
  * When the linear velocity is 0, the radius is 0, then we get a ration of -1. because of this the equation breaks
  * as you get the expression 0/0.
  *
- * When the slower motor moves at 0 speed (i.e. radius = 0.5d) the ratio between wheel velocities is not defined, thus
- * this algo can't be used.
+ * When the slower motor moves at non positive speed (i.e. radius <= 0.5d) the ratio between wheel velocities is
+ * not defined (negative ratio is meaningless). thus, this algo can't be used.
  *
  * Whenever an expetion occures, we opt to using ReverseLocalizerConverter which should be accurate in all of those
  * simple private cases.
@@ -52,11 +52,12 @@ public class CurvatureConverter implements IConverter {
             return emergencyConverter.convert(byLinAng);
         }
 
-        double radius = byLinAng.getX() / byLinAng.getY();
+        double radius = Math.abs(byLinAng.getX() / byLinAng.getY());
 
-        if (radius - halfWheelDist == 0){
+        if (radius - halfWheelDist <= 0){ // This conversion only works when both motors go forwards!
             return emergencyConverter.convert(byLinAng);
         }
+
         double ratio = (radius + halfWheelDist) / (radius - halfWheelDist);
 
         double slowerMotor = 2*byLinAng.getX() / (ratio + 1);
