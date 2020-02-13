@@ -27,8 +27,8 @@ public class ChassisProfiler2DCSVGenerators {
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
 
-        states.add(new State(0, 0, 0, 0, 0));
-        states.add(new State(1, 1,Math.PI/2, 100, 4));
+        states.add(new State(0, 0, Math.PI, 0, 0));
+        states.add(new State(0, -1, Math.PI, 0, 0));
 
         MotionProfile2D brofile = null;
         long time = System.currentTimeMillis();
@@ -36,9 +36,9 @@ public class ChassisProfiler2DCSVGenerators {
         for (int i = 0; i < 1; i++) {
             brofile = ChassisProfiler2D.generateProfile(
                     states,
-                    .0001, 0, 0,
-                    3, 8, 4.5, 13,
-                    0, 1.0, 800);
+                    .001, 0, 0,
+                    new ProfilingData(1.6, 6, 3, 12.5),
+                    0, 1.0, 400);
         }
 
         System.out.println("Full Generation");
