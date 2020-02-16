@@ -17,7 +17,7 @@ public class /*united*/State extends Position {
         super(x, y, angle);
         this.linearVelocity = linearVelocity;
         this.angularVelocity = angularVelocity;
-        velocity = new Vector2D(linearVelocity*Math.sin(angle), linearVelocity*Math.cos(angle));
+        velocity = new Vector2D(linearVelocity * Math.sin(angle), linearVelocity * Math.cos(angle));
     }
 
     public State(double x, double y, double linearVelocity, double angularVelocity) {
@@ -56,7 +56,7 @@ public class /*united*/State extends Position {
     }
 
     public State(double x, double y, double angle) {
-        this(x, y, angle, 0,0, 0 ,0);
+        this(x, y, angle, 0, 0, 0, 0);
     }
 
     public State(double x, double y) {
@@ -71,19 +71,20 @@ public class /*united*/State extends Position {
         this(point, 0);
     }
 
-    public State(Position pos) { this(pos.getX(), pos.getY(), pos.getAngle()); }
+    public State(Position pos) {
+        this(pos.getX(), pos.getY(), pos.getAngle());
+    }
 
-    public State(double x, double y, Vector2D velocity){
+    public State(double x, double y, Vector2D velocity) {
         super(x, y, Math.atan2(x, y));
         this.linearVelocity = velocity.norm();
         this.velocity = velocity;
     }
 
-    public State(Point loc, Point vel){
+    public State(Point loc, Point vel) {
         this(loc.x, loc.y, new Vector2D(vel));
     }
     //</editor-fold>
-
 
 
     /**
@@ -95,15 +96,15 @@ public class /*united*/State extends Position {
     }
 
     @Override
-    public State localizerToMathCoords(){
-        return new State(-x,y,angle+Math.PI/2,
+    public State localizerToMathCoords() {
+        return new State(-x, y, angle + Math.PI / 2,
                 linearVelocity, angularVelocity,
                 linearAccel, angularAccel);
     }
 
     @Override
-    public State mathToFrcCoords(){
-        return new State(-x,y,angle-Math.PI/2,
+    public State mathToFrcCoords() {
+        return new State(-x, y, angle - Math.PI / 2,
                 linearVelocity, angularVelocity,
                 linearAccel, angularAccel);
     }
@@ -143,7 +144,7 @@ public class /*united*/State extends Position {
     }
 
     public void setLinearVelocity(double linearVelocity) {
-        this.velocity = this.velocity.scale(linearVelocity/this.linearVelocity);
+        this.velocity = this.velocity.scale(linearVelocity / this.linearVelocity);
         this.linearVelocity = linearVelocity;
     }
 
@@ -151,19 +152,23 @@ public class /*united*/State extends Position {
         return angularVelocity;
     }
 
-    public void setAngularVelocity(double angularVelocity) { this.angularVelocity = angularVelocity; }
+    public void setAngularVelocity(double angularVelocity) {
+        this.angularVelocity = angularVelocity;
+    }
 
-    public Vector2D getVelocity(){return velocity.clone();}
+    public Vector2D getVelocity() {
+        return velocity.clone();
+    }
 
-    public void setVelocity(double x, double y){
+    public void setVelocity(double x, double y) {
         this.velocity = new Vector2D(x, y);
         this.linearVelocity = velocity.norm();
         this.angle = Math.atan2(x, y);
     }
 
     @Override
-    public void setAngle(double angle){
-        velocity = new Vector2D(linearVelocity*Math.sin(angle), linearVelocity*Math.cos(angle));
+    public void setAngle(double angle) {
+        velocity = new Vector2D(linearVelocity * Math.sin(angle), linearVelocity * Math.cos(angle));
         super.setAngle(angle);
     }
 

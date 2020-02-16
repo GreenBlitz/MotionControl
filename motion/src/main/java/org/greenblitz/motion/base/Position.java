@@ -36,7 +36,7 @@ public class Position extends Point {
 
     public Position weightedAvg(Position b, double bWeight) {
         return new Position((1 - bWeight) * x + bWeight * b.x, (1 - bWeight) * y + bWeight * b.y,
-                (1 - bWeight)*angle + bWeight*b.getAngle());
+                (1 - bWeight) * angle + bWeight * b.getAngle());
     }
 
     public static double normalizeAngle(double angle) {
@@ -63,7 +63,7 @@ public class Position extends Point {
         return this;
     }
 
-    public Position rotateWithAngle(double angle){
+    public Position rotateWithAngle(double angle) {
         return (Position) changeAngleBy(angle).rotate(angle);
     }
 
@@ -80,30 +80,30 @@ public class Position extends Point {
         this.angle = normalizeAngle(angle);
     }
 
-    public Position translate(Position p){
-        return new Position(x+p.x, y+p.y, angle+p.angle);
+    public Position translate(Position p) {
+        return new Position(x + p.x, y + p.y, angle + p.angle);
     }
 
-    public Position moveBy(double linearV, double angularV, double t){
-        if(t==0 || (linearV==0 && angularV==0))
+    public Position moveBy(double linearV, double angularV, double t) {
+        if (t == 0 || (linearV == 0 && angularV == 0))
             return clone();
-        if(linearV==0)
-            return clone().changeAngleBy(angularV*t);
-        if(angularV==0)
-            return new Position(clone().rotate(-angle).translate(0, linearV*t).rotate(angle), angle);
+        if (linearV == 0)
+            return clone().changeAngleBy(angularV * t);
+        if (angularV == 0)
+            return new Position(clone().rotate(-angle).translate(0, linearV * t).rotate(angle), angle);
 
-        double curvature = angularV/linearV;
-        return clone().rotateWithAngle(-angle).translate(new Position((1-Math.cos(angularV*t))/curvature,Math.sin(angularV*t)/curvature, angularV*t)).rotateWithAngle(angle);
+        double curvature = angularV / linearV;
+        return clone().rotateWithAngle(-angle).translate(new Position((1 - Math.cos(angularV * t)) / curvature, Math.sin(angularV * t) / curvature, angularV * t)).rotateWithAngle(angle);
     }
 
     @Override
-    public Position localizerToMathCoords(){
-        return new Position(-x,y,angle+Math.PI/2);
+    public Position localizerToMathCoords() {
+        return new Position(-x, y, angle + Math.PI / 2);
     }
 
     @Override
     public Position weaverToLocalizerCoords() {
-        return new Position(-x, -y, angle - Math.PI/2);
+        return new Position(-x, -y, angle - Math.PI / 2);
     }
 
     @Override
@@ -112,8 +112,8 @@ public class Position extends Point {
     }
 
     @Override
-    public Position mathToFrcCoords(){
-        return new Position(-x,y,angle-Math.PI/2);
+    public Position mathToFrcCoords() {
+        return new Position(-x, y, angle - Math.PI / 2);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class Position extends Point {
         return "Position{" +
                 "x=" + x +
                 ", y=" + y +
-                ", angle=" + angle*180/Math.PI +
+                ", angle=" + angle * 180 / Math.PI +
                 '}';
     }
 }

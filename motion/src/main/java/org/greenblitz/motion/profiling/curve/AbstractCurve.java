@@ -3,51 +3,57 @@ package org.greenblitz.motion.profiling.curve;
 import org.greenblitz.motion.base.Point;
 
 /**
- *
  * Provides a general framework in order to easily implement getSubCurve.
  * Just create a new curve, with the same params, and pass new uStart and uEnd to fit.
  * In order to allow scaling then you might need to do something similar to PolynomialCurve.
+ *
  * @author alexey
  */
 public abstract class AbstractCurve implements ICurve {
 
     /**
      * Don't call non internal functions from internal functions, it would ruin things.
-     * @see ICurve#getLocation(double)
+     *
      * @param u
      * @return
+     * @see ICurve#getLocation(double)
      */
     protected abstract Point getLocationInternal(double u);
+
     /**
      * Don't call non internal functions from internal functions, it would ruin things.
-     * @see ICurve#getLength(double)
+     *
      * @param u
      * @return
+     * @see ICurve#getLength(double)
      */
     protected abstract double getLengthInternal(double u);
+
     /**
      * Don't call non internal functions from internal functions, it would ruin things.
-     * @see ICurve#getAngle(double)
+     *
      * @param u
      * @return
+     * @see ICurve#getAngle(double)
      */
     protected abstract double getAngleInternal(double u);
+
     /**
      * Don't call non internal functions from internal functions, it would ruin things.
-     * @see ICurve#getCurvature(double)
+     *
      * @param u
      * @return
+     * @see ICurve#getCurvature(double)
      */
     protected abstract double getCurvatureInternal(double u);
 
     protected double uStart, uEnd;
 
     /**
-     *
      * @param u number in [0, 1]
      * @return the equiv number in [uStart, uEnd]
      */
-    public double clamp(double u){
+    public double clamp(double u) {
         return u * (uEnd - uStart) + uStart;
     }
 

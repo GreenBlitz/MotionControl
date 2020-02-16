@@ -10,7 +10,6 @@ public class ProfilingData {
     protected double maxLinearVelocity, maxLinearAccel, maxAngularVelocity, maxAngularAccel;
 
     /**
-     *
      * @param maxLinearVelocity
      * @param maxLinearAccel
      * @param maxAngularVelocity

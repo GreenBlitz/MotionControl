@@ -2,8 +2,8 @@ package org.greenblitz.motion.profiling.curve.spline;
 
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Vector2D;
-import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.profiling.curve.AbstractCurve;
+import org.greenblitz.motion.profiling.curve.ICurve;
 
 /**
  * @author peleg
@@ -28,17 +28,16 @@ public class PolynomialCurve extends AbstractCurve {
     /**
      * Highest degree with non-zero coef. Must be 0 or bigger.
      * e.g. a polynomial of degree 0 is a constant.
-     *      of degree 2 is a parabola.
+     * of degree 2 is a parabola.
      */
     private int rank;
 
     /**
-     *
-     * @param rank Highest degree with non-zero coef. Must be 0 or bigger.
-     * @param xArr The array of x coefs
-     * @param yArr The array of y coefs
-     * @param uStart The start of the range
-     * @param uEnd The end of the range
+     * @param rank     Highest degree with non-zero coef. Must be 0 or bigger.
+     * @param xArr     The array of x coefs
+     * @param yArr     The array of y coefs
+     * @param uStart   The start of the range
+     * @param uEnd     The end of the range
      * @param tScaling The scaling of the range to get a new range
      */
     public PolynomialCurve(int rank, double[] xArr, double[] yArr, double uStart, double uEnd, double tScaling) {
@@ -57,10 +56,10 @@ public class PolynomialCurve extends AbstractCurve {
     }
 
     /**
-     * @see PolynomialCurve#PolynomialCurve(int, double[], double[], double, double, double)
      * @param rank
      * @param xArr
      * @param yArr
+     * @see PolynomialCurve#PolynomialCurve(int, double[], double[], double, double, double)
      */
     public PolynomialCurve(int rank, double[] xArr, double[] yArr) {
         this(rank, xArr, yArr, 0, 1, 1);
@@ -78,7 +77,6 @@ public class PolynomialCurve extends AbstractCurve {
     }
 
     /**
-     *
      * @param u the "time" param
      * @return the vector of partial derivatives at that point
      */
@@ -93,7 +91,6 @@ public class PolynomialCurve extends AbstractCurve {
     }
 
     /**
-     *
      * @param u the "time" param
      * @return the vector of second partial derivative
      */
@@ -133,10 +130,10 @@ public class PolynomialCurve extends AbstractCurve {
 
     /**
      * See https://www.wikipedia.org/wiki/Curvature
-     * @see AbstractCurve#getCurvatureInternal(double)
      *
      * @param u
      * @return
+     * @see AbstractCurve#getCurvatureInternal(double)
      */
     @Override
     protected double getCurvatureInternal(double u) {

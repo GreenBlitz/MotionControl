@@ -6,14 +6,14 @@ public class FuzzyValue {
     private IMemFunc inMemFunc;
     private IMemFunc outMemFunc;
 
-    public FuzzyValue(String name, IMemFunc inMemFunc, IMemFunc outMemFunc){
+    public FuzzyValue(String name, IMemFunc inMemFunc, IMemFunc outMemFunc) {
         this.name = name;
         this.inMemFunc = inMemFunc;
         this.outMemFunc = outMemFunc;
     }
 
-    public FuzzyValue(String name, IMemFunc MemFunc){
-        this(name,MemFunc,null);
+    public FuzzyValue(String name, IMemFunc MemFunc) {
+        this(name, MemFunc, null);
     }
 
     public String getName() {

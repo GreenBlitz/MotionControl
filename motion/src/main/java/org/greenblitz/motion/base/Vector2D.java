@@ -2,6 +2,7 @@ package org.greenblitz.motion.base;
 
 /**
  * This just represents a different thing.
+ *
  * @author Alexey
  */
 public class Vector2D extends Point {
@@ -10,7 +11,7 @@ public class Vector2D extends Point {
         super(x, y);
     }
 
-    public Vector2D(Point p){
+    public Vector2D(Point p) {
         this(p.x, p.y);
     }
 
@@ -31,7 +32,7 @@ public class Vector2D extends Point {
     }
 
     @Override
-    public Vector2D scale(double scale){
-        return new Vector2D(scale*x, scale*y);
+    public Vector2D scale(double scale) {
+        return new Vector2D(scale * x, scale * y);
     }
 }

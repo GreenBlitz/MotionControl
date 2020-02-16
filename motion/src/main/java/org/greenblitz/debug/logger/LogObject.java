@@ -24,10 +24,19 @@ public class LogObject {
         relevantEntry.addListener(this::updateValues, EntryListenerFlags.kUpdate);
     }
 
-    public void disable(){synchronized (LOCK){enabled = false;}}
-    public void enable(){synchronized (LOCK){enabled = true;}}
+    public void disable() {
+        synchronized (LOCK) {
+            enabled = false;
+        }
+    }
 
-    public void addLog(String message){
+    public void enable() {
+        synchronized (LOCK) {
+            enabled = true;
+        }
+    }
+
+    public void addLog(String message) {
         synchronized (LOCK) {
             if (!enabled) return;
         }
@@ -35,9 +44,9 @@ public class LogObject {
         toSend.add(logNumber++ + " - " + new Date().toString() + " - " + message);
     }
 
-    private void updateValues(EntryNotification value){
+    private void updateValues(EntryNotification value) {
         String str = value.getEntry().getString("");
-        if (str.equals("") && toSend.size() > 0){
+        if (str.equals("") && toSend.size() > 0) {
             value.getEntry().setString(toSend.remove());
         }
     }

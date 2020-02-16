@@ -13,21 +13,20 @@ public class CSVWrapper {
     private int len;
 
     /**
-     *
-     * @param name The new file location and name
-     * @param len How many elements per row? (0 for dynamic number)
+     * @param name    The new file location and name
+     * @param len     How many elements per row? (0 for dynamic number)
      * @param headers The headers for each row (must be same as length as len unless len is 0)
      * @return csv writer with given headers in given file
      */
-    public static CSVWrapper generateWrapper(String name, int len, String... headers){
+    public static CSVWrapper generateWrapper(String name, int len, String... headers) {
         CSVWrapper newW;
         if (len != 0 && headers.length != len) {
             System.err.println("Len doesn't match headers");
             return null;
         }
-        try{
+        try {
             newW = new CSVWrapper(name, len, headers);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -40,21 +39,21 @@ public class CSVWrapper {
         this.len = len;
     }
 
-    public boolean flush(){
+    public boolean flush() {
         try {
             printer.flush();
-        } catch (IOException e){
+        } catch (IOException e) {
             return false;
         }
         return true;
     }
 
-    public boolean addValues(Object... values){
+    public boolean addValues(Object... values) {
         if (len != 0 && values.length != len)
             return false;
-        try{
+        try {
             printer.printRecord(values);
-        }catch (IOException e){
+        } catch (IOException e) {
             return false;
         }
         return true;

@@ -17,7 +17,7 @@ public class PolynomialInterpolator {
      *
      * @param samples The number of new point to autocompleteAdd between each old pair
      */
-    public static Path<Position> interpolatePoints(Path<Position> original, int samples){
+    public static Path<Position> interpolatePoints(Path<Position> original, int samples) {
         List<Position> newPath = new ArrayList<>();
         List<Position> m_path = original.getPath();
         if (m_path.size() == 0) {
@@ -40,7 +40,7 @@ public class PolynomialInterpolator {
             addAngle = -first.getAngle();
             v1 = 0;
             v2 = Math.tan(last.getAngle() - first.getAngle());
-            if (v2 > 1000){
+            if (v2 > 1000) {
                 v2 = -1;
                 v1 = 1;
                 deltaVec.rotate(Math.PI / 4);
@@ -60,7 +60,7 @@ public class PolynomialInterpolator {
             b = (2 * v1 * x2 + v2 * x2 - 3 * y2) / -Math.pow(x2, 2);
 
             c = v1;
-            
+
             // d = 0;
 
             for (double j = 1; j <= samples; j++) {
