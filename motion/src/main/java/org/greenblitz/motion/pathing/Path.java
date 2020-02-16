@@ -4,7 +4,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.base.Point;
-import org.greenblitz.motion.base.Position;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,11 +36,11 @@ public class Path<T extends Point> implements Iterable<T> {
         return m_path.get(m_path.size() - 1);
     }
 
-    public T get(int ind){
+    public T get(int ind) {
         return m_path.get(ind);
     }
 
-    public int size(){
+    public int size() {
         return m_path.size();
     }
 
@@ -54,27 +53,27 @@ public class Path<T extends Point> implements Iterable<T> {
         }
     }
 
-    public void saveAsCSV(String fileName){
+    public void saveAsCSV(String fileName) {
         try {
             CSVPrinter printer = CSVFormat.EXCEL.withHeader(
                     "x",
                     "y"
             ).print(new File(fileName), Charset.defaultCharset());
 
-            for (Point p : m_path){
+            for (Point p : m_path) {
                 printer.printRecord(p.getX(), p.getY());
             }
 
             printer.flush();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public List<T> getPath() {
         List<T> toSend = new ArrayList<>();
-        for (T p:m_path){
-            toSend.add((T)p.clone());
+        for (T p : m_path) {
+            toSend.add((T) p.clone());
         }
         return toSend;
     }
@@ -125,7 +124,7 @@ public class Path<T extends Point> implements Iterable<T> {
             return segStart;
         if (lineMinValue > 1)
             return segEnd;
-        return (T)segStart.weightedAvg(segEnd, lineMinValue);
+        return (T) segStart.weightedAvg(segEnd, lineMinValue);
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.greenblitz.motion.profiling.MotionProfile1D;
 
 /**
  * Don't use this. This should be treated as a simple example.
+ *
  * @author alexey
  */
 public class FeedForwards1DFollower {
@@ -13,29 +14,29 @@ public class FeedForwards1DFollower {
     protected boolean logVelocity;
     protected double kV, kA;
 
-    public FeedForwards1DFollower(MotionProfile1D profile, double kV, double kA, boolean l){
+    public FeedForwards1DFollower(MotionProfile1D profile, double kV, double kA, boolean l) {
         this.profile = profile;
         this.kV = kV;
         this.kA = kA;
         this.logVelocity = l;
     }
 
-    public FeedForwards1DFollower(MotionProfile1D profile, double kV, double kA){
+    public FeedForwards1DFollower(MotionProfile1D profile, double kV, double kA) {
         this(profile, kV, kA, false);
     }
 
-    public void init(){
+    public void init() {
         startTime = System.currentTimeMillis();
     }
 
-    public double run(){
-        double timeNow = (System.currentTimeMillis() - startTime)/1000.0;
+    public double run() {
+        double timeNow = (System.currentTimeMillis() - startTime) / 1000.0;
         if (profile.isOver(timeNow)) return 0;
-        return profile.getVelocity(timeNow)*kV + profile.getAcceleration(timeNow)*kA;
+        return profile.getVelocity(timeNow) * kV + profile.getAcceleration(timeNow) * kA;
     }
 
-    public boolean isFinished(){
-        return profile.isOver((System.currentTimeMillis() - startTime)/1000.0);
+    public boolean isFinished() {
+        return profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
     }
 
     public double getkV() {

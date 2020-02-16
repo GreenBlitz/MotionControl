@@ -95,8 +95,8 @@ public class Point {
         return new Point(-x, -y);
     }
 
-    public Point scale(double scale){
-        return new Point(scale*x, scale*y);
+    public Point scale(double scale) {
+        return new Point(scale * x, scale * y);
     }
 
     public Point rotate(double radians) {
@@ -144,7 +144,9 @@ public class Point {
         return Math.hypot(point.x, point.y);
     }
 
-    public double norm(){return norm(this);}
+    public double norm() {
+        return norm(this);
+    }
 
     public static double distSqared(Point a, Point b) {
         return normSquared(subtract(a, b));
@@ -175,7 +177,7 @@ public class Point {
     }
 
     public static Point bezierSample(double locInCurve, Point... corners) {
-        if(locInCurve == 0) return corners[0];
+        if (locInCurve == 0) return corners[0];
         int degree = corners.length - 1;
         double factor = Math.pow(locInCurve, degree);
         double factorFactor = 1 / locInCurve - 1;
@@ -183,8 +185,8 @@ public class Point {
         double sumX = 0, sumY = 0;
 
         for (int ind = 0; ind < corners.length; ind++) {
-            sumX += binomial * factor * corners[degree-ind].getX();
-            sumY += binomial * factor * corners[degree-ind].getY();
+            sumX += binomial * factor * corners[degree - ind].getX();
+            sumY += binomial * factor * corners[degree - ind].getY();
             if (ind == degree)
                 break;
             binomial *= (degree - ind);

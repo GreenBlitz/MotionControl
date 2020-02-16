@@ -22,7 +22,7 @@ public class MultivariablePIDController {
     }
 
     @Deprecated
-    public void configurePID(int index, double curr, double value, double limLower, double limUpper, double absLimit){
+    public void configurePID(int index, double curr, double value, double limLower, double limUpper, double absLimit) {
 //        m_controllers[index].initialize(curr, value, limLower, limUpper, absLimit);
     }
 

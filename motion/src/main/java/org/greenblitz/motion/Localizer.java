@@ -6,12 +6,12 @@ import org.greenblitz.motion.base.Position;
 /**
  * A tool in order to calculate robot position using encoders (and optionally a gyro). Recommended to run in a different
  * thread, at about one execution per 10 ms.<br><br>
- *
+ * <p>
  * Example 1:<br>
- *     https://github.com/GreenBlitz/Deep-Space-Robot/blob/detroit/src/main/java/edu/greenblitz/knockdown/data/LocalizerRunner.java
+ * https://github.com/GreenBlitz/Deep-Space-Robot/blob/detroit/src/main/java/edu/greenblitz/knockdown/data/LocalizerRunner.java
  * <br><br>
  * Example 2 (private until 2020 season competitions):<br>
- *     https://github.com/GreenBlitz/Infinite-Reee-2020/blob/a1bfc27b303ceaa40902aed94c376bb87e000269/src/main/java/edu/greenblitz/bigRodika/commands/chassis/LocalizerCommand.java
+ * https://github.com/GreenBlitz/Infinite-Reee-2020/blob/a1bfc27b303ceaa40902aed94c376bb87e000269/src/main/java/edu/greenblitz/bigRodika/commands/chassis/LocalizerCommand.java
  * <br><br>
  *
  * @author Udi    ~ MudiAtalon
@@ -55,17 +55,16 @@ public class Localizer {
      * @return The calculated location of the robot such that positive y is forwards, positive x is right. The 0 angle is
      * facing positive y and increasing counter-clockwise.
      */
-    public Position getLocation(){
+    public Position getLocation() {
         Position pos = getLocationRaw();
         pos.setX(-pos.getX());
         return pos;
     }
 
     /**
-     *
      * @param wheelDistance The distance between the left and right wheel set
-     * @param leftDist The meters counted on the left encoder
-     * @param rightDist The meters counter on the right encoder
+     * @param leftDist      The meters counted on the left encoder
+     * @param rightDist     The meters counter on the right encoder
      */
     public void configure(double wheelDistance, double leftDist, double rightDist) {
         m_wheelDistance = wheelDistance;
@@ -73,10 +72,9 @@ public class Localizer {
     }
 
     /**
-     *
-     * @param currentLeftDistance The meters counted on the left encoder
+     * @param currentLeftDistance  The meters counted on the left encoder
      * @param currentRightDistance The meters counter on the right encoder
-     * @param newPos The new position to set the localizer to
+     * @param newPos               The new position to set the localizer to
      */
     public void reset(double currentLeftDistance, double currentRightDistance, Position newPos) {
         synchronized (LOCK) {
@@ -90,11 +88,10 @@ public class Localizer {
     }
 
     /**
-     *
      * This keeps the same location as before, only resetting encoders. Use this when
      * you reset your own encoders to avoid localizer jumps.
      *
-     * @param currLeft The meters counted on the left encoder
+     * @param currLeft  The meters counted on the left encoder
      * @param currRight The meters counter on the right encoder
      */
     public void resetEncoders(double currLeft, double currRight) {
@@ -102,10 +99,9 @@ public class Localizer {
     }
 
     /**
-     *
      * rests the encoders and set the location to 0, 0, 0
      *
-     * @param currentLeftDistance The meters counted on the left encoder
+     * @param currentLeftDistance  The meters counted on the left encoder
      * @param currentRightDistance The meters counter on the right encoder
      */
     public void reset(double currentLeftDistance, double currentRightDistance) {
@@ -127,10 +123,9 @@ public class Localizer {
     }
 
     /**
-     *
      * Angle is calculated using the encoders.
      *
-     * @param currentLeftDistance Current left wheel distance
+     * @param currentLeftDistance  Current left wheel distance
      * @param currentRightDistance Current right wheel distance
      */
     public void update(double currentLeftDistance, double currentRightDistance) {
@@ -141,14 +136,13 @@ public class Localizer {
     }
 
     /**
-     *
-     * @param currentLeftDistance Current left wheel distance
+     * @param currentLeftDistance  Current left wheel distance
      * @param currentRightDistance Current right wheel distance
-     * @param angle The current angle of the robot in radians, in the same coordinate system as specified in getLocation
+     * @param angle                The current angle of the robot in radians, in the same coordinate system as specified in getLocation
      */
     public void update(double currentLeftDistance, double currentRightDistance, double angle) {
         double rDist, lDist;
-        synchronized (LOCK){
+        synchronized (LOCK) {
             rDist = currentRightDistance - prevDistanceRight;
             lDist = currentLeftDistance - prevDistanceLeft;
         }

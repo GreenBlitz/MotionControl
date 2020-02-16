@@ -12,7 +12,7 @@ public class PIDObject {
                 ", kd=" + m_kd +
                 ", ki=" + m_ki +
                 ", kf=" + m_kf +
-                ", inv=" + inverted +"}";
+                ", inv=" + inverted + "}";
     }
 
     public PIDObject(double kp, double ki, double kd, double kf, int inv) {
@@ -23,45 +23,45 @@ public class PIDObject {
         setInverted(inv);
     }
 
-    public void invert(){
+    public void invert() {
         inverted *= -1;
     }
 
-    public void setInverted(int value){
+    public void setInverted(int value) {
         inverted = value >= 0 ? 1 : -1;
     }
 
-    public int getInverted(){
+    public int getInverted() {
         return inverted;
     }
 
-    public PIDObject(double kp, double ki, double kd){
+    public PIDObject(double kp, double ki, double kd) {
         this(kp, ki, kd, 0.0);
     }
 
-    public PIDObject(double kp, double ki){
+    public PIDObject(double kp, double ki) {
         this(kp, ki, 0.0);
     }
 
-    public PIDObject(double kp){
+    public PIDObject(double kp) {
         this(kp, 0.0);
     }
 
     // -----
 
-    public PIDObject(double kp, double ki, double kd, double kf){
+    public PIDObject(double kp, double ki, double kd, double kf) {
         this(kp, ki, kd, kf, 1);
     }
 
-    public PIDObject(double kp, double ki, double kd, int inv){
+    public PIDObject(double kp, double ki, double kd, int inv) {
         this(kp, ki, kd, 0.0, inv);
     }
 
-    public PIDObject(double kp, double ki, int inv){
+    public PIDObject(double kp, double ki, int inv) {
         this(kp, ki, 0.0, inv);
     }
 
-    public PIDObject(double kp, int inv){
+    public PIDObject(double kp, int inv) {
         this(kp, 0.0, inv);
     }
 

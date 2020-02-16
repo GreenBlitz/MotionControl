@@ -1,7 +1,6 @@
 package org.greenblitz.motion.pathing;
 
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.pathing.Path;
 
 import java.util.List;
 

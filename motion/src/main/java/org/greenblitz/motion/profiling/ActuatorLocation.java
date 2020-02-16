@@ -2,6 +2,7 @@ package org.greenblitz.motion.profiling;
 
 /**
  * Represents a position of an actuator, for example the position of an elevator (height and velocity.
+ *
  * @author Alexey
  */
 public class ActuatorLocation {

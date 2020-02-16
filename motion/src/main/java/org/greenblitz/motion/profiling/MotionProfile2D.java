@@ -13,6 +13,7 @@ public class MotionProfile2D {
 
     /**
      * This is package protected on purpose.
+     *
      * @param firstProfile
      * @param secondProfile
      */
@@ -65,29 +66,31 @@ public class MotionProfile2D {
     /**
      * For testing purposes only! Don't use otherwise
      * Package protected in purpose.
+     *
      * @param t
      * @param epsilon
      * @return
      */
-    Position getActualLocation(double t, double epsilon){
-        return getActualLocation(t, new Position(0,0,0), 0, epsilon);
+    Position getActualLocation(double t, double epsilon) {
+        return getActualLocation(t, new Position(0, 0, 0), 0, epsilon);
     }
 
     /**
      * For testing purposes only! Don't use otherwise
      * Package protected in purpose.
+     *
      * @param t
      * @param prev
      * @param prevT
      * @param epsilon
      * @return
      */
-    Position getActualLocation(double t, Position prev, double prevT, double epsilon){
-        if(prevT>t)
+    Position getActualLocation(double t, Position prev, double prevT, double epsilon) {
+        if (prevT > t)
             throw new UnsupportedOperationException();
         Position ret = prev;
         final double dt = epsilon;
-        for(double t2=prevT; t2<t; t2+=dt){
+        for (double t2 = prevT; t2 < t; t2 += dt) {
             ret = ret.moveBy(firstProfile.getVelocity(t), secondProfile.getVelocity(t), dt);
         }
         return ret;
@@ -95,6 +98,7 @@ public class MotionProfile2D {
 
     /**
      * Removes all segments with time length less then a milisecond.
+     *
      * @see MotionProfile1D#removeBugSegments()
      */
     public void removeBugSegments() {

@@ -32,13 +32,13 @@ public class ChassisProfiler2D {
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
-                                                  double tForCurve){
+                                                  double tForCurve) {
         return generateProfile(locations, jump, 0, 0, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
                 d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, SMOOTHING_TAIL_SIZE);
     }
 
     public static MotionProfile2D generateProfile(List<State> locations, double jump, ProfilingData d, double tStart,
-                                                  double tForCurve, int smoothingTail){
+                                                  double tForCurve, int smoothingTail) {
         return generateProfile(locations, jump, 0, 0, d.getMaxLinearVelocity(), d.getMaxAngularVelocity(),
                 d.getMaxLinearAccel(), d.getMaxAngularAccel(), tStart, tForCurve, smoothingTail);
     }
@@ -56,16 +56,16 @@ public class ChassisProfiler2D {
     }
 
     /**
-     * @param locations path with points
-     * @param jump the jump in "polynomial time" between 0 and 1. should be around 0.001
+     * @param locations     path with points
+     * @param jump          the jump in "polynomial time" between 0 and 1. should be around 0.001
      * @param velocityStart the start velocity of the robot
-     * @param velocityEnd the end velocity. Double.POSITIVE_INFINITY to end moving as fast as possible.
-     * @param maxLinearVel maximal linear velocity
+     * @param velocityEnd   the end velocity. Double.POSITIVE_INFINITY to end moving as fast as possible.
+     * @param maxLinearVel  maximal linear velocity
      * @param maxAngularVel maximal angular velocity
-     * @param maxLinearAcc maximal linear acceleration
+     * @param maxLinearAcc  maximal linear acceleration
      * @param maxAngularAcc maximal angular acceleration
-     * @param tStart the start time of the profile
-     * @param tForCurve the time range for the polynomials
+     * @param tStart        the start time of the profile
+     * @param tForCurve     the time range for the polynomials
      * @param smoothingTail the bigger the smoother the velocity graph will be, but a little slower
      * @return
      */
@@ -77,10 +77,10 @@ public class ChassisProfiler2D {
                                                   double tForCurve,
                                                   int smoothingTail) {
         int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
-        MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
-        MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0,0,0, 0));
-        MotionProfile1D.Segment linearSegment = new MotionProfile1D.Segment(0,1,0,0,0);
-        MotionProfile1D.Segment angularSegment, prevAngularSegment = new MotionProfile1D.Segment(0,1,0,0,0);
+        MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0, 0, 0, 0));
+        MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0, 0, 0, 0));
+        MotionProfile1D.Segment linearSegment = new MotionProfile1D.Segment(0, 1, 0, 0, 0);
+        MotionProfile1D.Segment angularSegment, prevAngularSegment = new MotionProfile1D.Segment(0, 1, 0, 0, 0);
 
         DiscreteVelocityGraph velByLoc;
 
@@ -120,7 +120,7 @@ public class ChassisProfiler2D {
         return new MotionProfile2D(linearProfile, angularProfile);
     }
 
-    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity){
+    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity) {
         List<ICurve> subCurves = new ArrayList<>(capacity);
         State first, second;
         for (int i = 0; i < locations.size() - 1; i++) {
@@ -151,10 +151,10 @@ public class ChassisProfiler2D {
      * such as each subcurve continues the previous one and each subcurve will have
      * roughly equal curve.
      *
-     * @param returnList         The list to which the subcurves will be added
-     * @param source             The main curve to be divided
-     * @param jump               Jump intervals, when sampling the curve the function will sample
-     *                           every 'jump' units.
+     * @param returnList The list to which the subcurves will be added
+     * @param source     The main curve to be divided
+     * @param jump       Jump intervals, when sampling the curve the function will sample
+     *                   every 'jump' units.
      * @return returnList
      */
     private static List<ICurve> divideToEqualCurvatureSubcurves(List<ICurve> returnList, ICurve source, double jump) {

@@ -29,7 +29,7 @@ public class FuzzyRuleSet {
         this(inputNum, types, types);
     }
 
-    public double  calculate (double[] normalizedValues, List<Rule> rules){
+    public double calculate(double[] normalizedValues, List<Rule> rules) {
         if (normalizedValues.length != inputNum)
             throw new RuntimeException("you are dumb as hell, you inserted the wrong amount of values to the function") {
             };
@@ -42,12 +42,12 @@ public class FuzzyRuleSet {
             allMemFuncOut[i] = memFuncOut;
         }
 
-        double[] outVals  = new double[output.size()];
-        for(Rule rule: rules){
+        double[] outVals = new double[output.size()];
+        for (Rule rule : rules) {
             double value = 1;
             FuzzyValue[] fVals = rule.getConditions();
-            for(int i = 0; i < inputNum; i ++){
-                value = AND(value,allMemFuncOut[i].get(input[i].lastIndexOf(fVals[i])));
+            for (int i = 0; i < inputNum; i++) {
+                value = AND(value, allMemFuncOut[i].get(input[i].lastIndexOf(fVals[i])));
             }
             outVals[output.lastIndexOf(rule.getResult())] = value;
         }
@@ -55,34 +55,34 @@ public class FuzzyRuleSet {
         return defuzz(outVals);
     }
 
-    private double defuzz(double[] outVals){
+    private double defuzz(double[] outVals) {
         double epsilon = 0.01;
         double[] areas = new double[outVals.length];
-        for(int i = 0; i < areas.length; i ++){
+        for (int i = 0; i < areas.length; i++) {
             double sum = 0;
-            if(outVals[i] != 0){
-                for(double x = 0; x < 1; x += epsilon ){
-                    sum += epsilon * Math.min(outVals[i],output.get(i).getOutMemFunc().membershipFunction(x));
+            if (outVals[i] != 0) {
+                for (double x = 0; x < 1; x += epsilon) {
+                    sum += epsilon * Math.min(outVals[i], output.get(i).getOutMemFunc().membershipFunction(x));
                 }
             }
-            areas[i] =  sum;
+            areas[i] = sum;
         }
 
         double upperSum = 0;
-        for(int i = 0; i < areas.length; i ++){
-            if(outVals[i] != 0){
-                double sum = 0,x = 0;
-                for(; x < 1 && sum < 0.5*areas[i]; x += epsilon ){
-                    sum += epsilon * Math.min(outVals[i],output.get(i).getOutMemFunc().membershipFunction(x));
+        for (int i = 0; i < areas.length; i++) {
+            if (outVals[i] != 0) {
+                double sum = 0, x = 0;
+                for (; x < 1 && sum < 0.5 * areas[i]; x += epsilon) {
+                    sum += epsilon * Math.min(outVals[i], output.get(i).getOutMemFunc().membershipFunction(x));
                 }
-                upperSum += x*areas[i];
+                upperSum += x * areas[i];
             }
         }
 
         double lowerSum = 0;
-        for(double area: areas) lowerSum += area;
+        for (double area : areas) lowerSum += area;
 
-        return upperSum/lowerSum;
+        return upperSum / lowerSum;
     }
 
     public double AND(double a, double b) {

@@ -19,13 +19,13 @@ public interface ICurve {
 
     /**
      * Gives the location of the curve in space
+     *
      * @param u in the range [0, 1] representing the location on the curve.
      * @return location of the curve at parameter u
      */
     Point getLocation(double u);
 
     /**
-     *
      * @param u in the range [0, 1] representing the location on the curve.
      * @return the length of the arc up to the given point
      */
@@ -40,7 +40,7 @@ public interface ICurve {
     /**
      * Some curvature value representing the general curvature of the curve. Could be a sample on an
      * average.
-     *
+     * <p>
      * See:
      * https://en.wikipedia.org/wiki/Curvature
      *
@@ -49,7 +49,6 @@ public interface ICurve {
     double getCurvature();
 
     /**
-     *
      * See:
      * https://en.wikipedia.org/wiki/Curvature
      *
@@ -59,9 +58,8 @@ public interface ICurve {
     double getCurvature(double u);
 
     /**
-     *
      * @param uStart in the range [0, 1) representing the start location on the curve.
-     * @param uEnd in the range (0, 1] representing the end location on the curve. uEnd bigger than uStart.
+     * @param uEnd   in the range (0, 1] representing the end location on the curve. uEnd bigger than uStart.
      * @return A new curve object, where the values at u=0 are the same as u=uStart in this curve and at u=1 the
      * same as u=uEnd on this curve.
      */

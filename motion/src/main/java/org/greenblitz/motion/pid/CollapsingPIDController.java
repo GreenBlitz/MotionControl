@@ -1,6 +1,5 @@
 package org.greenblitz.motion.pid;
 
-import org.greenblitz.motion.exceptions.UninitializedPIDException;
 import org.greenblitz.motion.tolerance.ITolerance;
 
 public class CollapsingPIDController extends PIDController {
@@ -26,7 +25,7 @@ public class CollapsingPIDController extends PIDController {
 
     @Override
     public double calculatePID(double current) {
-        if (Math.abs(m_goal - current) < ICollapseThreshold){
+        if (Math.abs(m_goal - current) < ICollapseThreshold) {
             m_integral = 0;
         }
 

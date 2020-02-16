@@ -32,7 +32,7 @@ public class Profiler1D {
         return Profiler1D.generateProfile(waypoints, maxV, maxAcc, minAcc, 0);
     }
 
-    public static MotionProfile1D generateProfile(double maxV, double maxA, double minA, double tStart, ActuatorLocation... waypoints){
+    public static MotionProfile1D generateProfile(double maxV, double maxA, double minA, double tStart, ActuatorLocation... waypoints) {
         return generateProfile(Arrays.asList(waypoints), maxV, maxA, minA, tStart);
     }
 
@@ -77,8 +77,8 @@ public class Profiler1D {
             if (Math.abs(v2) > Math.abs(maxV))
                 throw new ProfilingException("Can't accelerate past +-" + maxV + "m/s. " + v2 + "m/s was given on point " + (i + 1));
 
-            double minTime = (v2-v1)/(v2 >= v1 ? a1 : a2);
-            double minDistPass = minTime * v1 + 0.5 * (v2>=v1 ? a1 : a2) * minTime * minTime;
+            double minTime = (v2 - v1) / (v2 >= v1 ? a1 : a2);
+            double minDistPass = minTime * v1 + 0.5 * (v2 >= v1 ? a1 : a2) * minTime * minTime;
             if (Math.abs(minDistPass) - Math.abs(S) > 0.001 && Math.signum(minDistPass) == Math.signum(S)) {
                 throw new NotEnoughAcceleratingSpace("Not enough space to accelerate, minimum "
                         + minDistPass + "m required, " + S + "m used. Occurred when profiling between point " + i + " and point " + (i + 1) + "."

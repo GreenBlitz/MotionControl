@@ -46,7 +46,7 @@ public class PIDController {
         m_goal = goal;
     }
 
-    public void configure(double curr, double goal, double limitLower, double limitUpper, double absoluteMinimumOut){
+    public void configure(double curr, double goal, double limitLower, double limitUpper, double absoluteMinimumOut) {
         setGoal(goal);
         m_previousError = goal - curr;
         resetIntegralZone(0);
@@ -99,9 +99,9 @@ public class PIDController {
         return clampFully(p + i + d + m_obj.getKf());
     }
 
-    public double clampFully(double value){
+    public double clampFully(double value) {
         double calc = clamp(value);
-        if (Double.isNaN(m_absoluteMinimumOut)){
+        if (Double.isNaN(m_absoluteMinimumOut)) {
             return calc;
         }
         return Math.copySign(Math.max(Math.abs(calc), m_absoluteMinimumOut), calc);
@@ -143,7 +143,7 @@ public class PIDController {
     }
 
     protected double clamp(double value) {
-        if (Double.isNaN(m_maximumOutput + m_minimumOutput)){
+        if (Double.isNaN(m_maximumOutput + m_minimumOutput)) {
             return value;
         }
         return Math.min(Math.max(value, m_minimumOutput), m_maximumOutput);
