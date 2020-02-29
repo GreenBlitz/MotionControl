@@ -41,7 +41,11 @@ public class Dataset {
             }
             index += 1;
         }
-        data.set(index, new TwoTuple<>(x, y));
+        if (index != data.size()) {
+            data.set(index, new TwoTuple<>(x, y));
+        } else {
+            data.add(new TwoTuple<>(x, y));
+        }
     }
 
     public TwoTuple<TwoTuple<Double, double[]>, TwoTuple<Double, double[]>> getAdjesent(double x) {
