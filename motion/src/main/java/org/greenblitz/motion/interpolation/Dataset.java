@@ -46,8 +46,6 @@ public class Dataset {
     }
 
     private void addAt(int index, TwoTuple<Double, double[]> newData){
-        System.out.println(index);
-        System.out.println(data.size());
         if (index == data.size()){
             data.add(newData);
             return;
@@ -78,7 +76,7 @@ public class Dataset {
         TwoTuple<TwoTuple<Double, double[]>, TwoTuple<Double, double[]>> data = getAdjesent(x);
         double weight = (x - data.getFirst().getFirst()) / (data.getSecond().getFirst() - data.getFirst().getFirst());
         double[] ret = new double[dimension];
-        for (int i = 0; i < dimension; i++){
+        for (int i = 0; i < dimension - 1; i++){
             ret[i] = data.getFirst().getSecond()[i] +
                     (data.getSecond().getSecond()[i] - data.getFirst().getSecond()[i]) * weight;
         }
