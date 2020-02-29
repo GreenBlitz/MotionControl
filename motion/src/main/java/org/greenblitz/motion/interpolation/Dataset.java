@@ -5,22 +5,41 @@ import org.greenblitz.motion.base.TwoTuple;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents a function from R to R^n. You can supply any number of known points and then later
+ * use linear interpolation to get any point of the desired graph.
+ * @author alexey
+ */
 public class Dataset {
 
+    /**
+     * The function is from R to R^n, then the dimension is n + 1. This is because a function as described is a n+1
+     * dimensional curve.
+     */
     private int dimension;
+    /**
+     * The data, ordered by x the function input. The second element in the tuple is the function output.
+     */
     private List<TwoTuple<Double, double[]>> data;
 
+    /**
+     *
+     * @param dim The dimension of the function. (output size + 1)
+     */
     public Dataset(int dim){
         dimension = dim;
         data = new ArrayList<>();
     }
 
-    public void addDatapoints(Iterable<TwoTuple<Double, double[]>> points) {
-        for (TwoTuple<Double, double[]> p : points) {
-            addDatapoint(p.getFirst(), p.getSecond());
-        }
-    }
-
+    /**
+     *
+     * Adds a new datapoint to the list of known points of the function. If a point of the same x exists
+     * in the dataset it updates it.
+     *
+     * @param x The function input
+     * @param y The function output
+     * @throws RuntimeException if the output size isn't equal (dimension - 1)
+     */
     public void addDatapoint(double x, double[] y) {
         if (y.length != dimension - 1){
             throw new RuntimeException("The dimension of this dataset is " + dimension + " but " + (y.length + 1)
@@ -55,6 +74,12 @@ public class Dataset {
         addAt(index + 1, wasAtIndex);
     }
 
+    /**
+     *
+     * @param x An input for the function
+     * @return A tuple where the first element is the largest point who's x is smaller than the input x
+     * adn the second element is the smallest point who's x is larger than the input x
+     */
     public TwoTuple<TwoTuple<Double, double[]>, TwoTuple<Double, double[]>> getAdjesent(double x) {
         if (data.size() < 2 || x < data.get(0).getFirst() || x > data.get(data.size() - 1).getFirst()) {
             throw new RuntimeException("point given now within range of dataset, or data set is smaller than 2 points");
@@ -72,6 +97,13 @@ public class Dataset {
         return new TwoTuple<>(data.get(index - 1), data.get(index));
     }
 
+    /**
+     *
+     * @param x A function input
+     * @return The output of the function, calculated using linear interpolation.
+     * @throws RuntimeException If the given input is smaller than the smallest known sample or larger than the largest
+     * known sample.
+     */
     public double[] linearlyInterpolate(double x){
         TwoTuple<TwoTuple<Double, double[]>, TwoTuple<Double, double[]>> data = getAdjesent(x);
         double weight = (x - data.getFirst().getFirst()) / (data.getSecond().getFirst() - data.getFirst().getFirst());
