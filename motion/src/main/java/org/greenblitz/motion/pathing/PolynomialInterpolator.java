@@ -21,7 +21,7 @@ public class PolynomialInterpolator {
         List<Position> newPath = new ArrayList<>();
         List<Position> m_path = original.getPath();
         if (m_path.size() == 0) {
-            return new Path();
+            return new Path<>();
         }
         newPath.add(m_path.get(0));
 
