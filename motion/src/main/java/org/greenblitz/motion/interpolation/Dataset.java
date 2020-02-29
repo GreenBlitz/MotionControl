@@ -41,11 +41,17 @@ public class Dataset {
             }
             index += 1;
         }
-        if (index != data.size()) {
-            data.set(index, new TwoTuple<>(x, y));
-        } else {
-            data.add(new TwoTuple<>(x, y));
+
+        addAt(index, new TwoTuple<>(x, y));
+    }
+
+    private void addAt(int index, TwoTuple<Double, double[]> newData){
+        if (index == data.size()){
+            data.add(newData);
         }
+        TwoTuple<Double, double[]> wasAtIndex = data.get(index);
+        data.set(index, newData);
+        addAt(index + 1, wasAtIndex);
     }
 
     public TwoTuple<TwoTuple<Double, double[]>, TwoTuple<Double, double[]>> getAdjesent(double x) {
@@ -74,5 +80,18 @@ public class Dataset {
                     (data.getSecond().getSecond()[i] - data.getFirst().getSecond()[i]) * weight;
         }
         return ret;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder ret = new StringBuilder("Dateset = \n");
+        for (TwoTuple<Double, double[]> val : data){
+            ret.append("(").append(val.getFirst()).append(", ");
+            for (double d : val.getSecond()){
+                ret.append(d).append(", ");
+            }
+            ret.append(")\n");
+        }
+        return ret.toString();
     }
 }
