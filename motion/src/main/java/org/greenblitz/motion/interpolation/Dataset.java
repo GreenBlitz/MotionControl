@@ -46,6 +46,8 @@ public class Dataset {
     }
 
     private void addAt(int index, TwoTuple<Double, double[]> newData){
+        System.out.println(index);
+        System.out.println(data.size());
         if (index == data.size()){
             data.add(newData);
             return;
