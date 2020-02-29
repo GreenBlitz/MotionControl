@@ -50,7 +50,9 @@ public class Dataset {
             data.add(newData);
         }
         TwoTuple<Double, double[]> wasAtIndex = data.get(index);
+        System.out.println(data.size());
         data.set(index, newData);
+        System.out.println(data.size());
         addAt(index + 1, wasAtIndex);
     }
 
