@@ -120,6 +120,34 @@ public class ChassisProfiler2D {
         return new MotionProfile2D(linearProfile, angularProfile);
     }
 
+    /**
+     * Generated a profile such that the X profile is the left wheel and the Y profile is the right wheel
+     * @param locations
+     * @param jump
+     * @param velocityStart
+     * @param velocityEnd
+     * @param maxVel
+     * @param maxAcc
+     * @param wheelBase
+     * @param tForCurve
+     * @param tailSize
+     * @return A profile such that the X profile is the left wheel and the Y profile is the right wheel
+     */
+    public static MotionProfile2D generateProfileByWheel(List<State> locations,
+                                                  double jump,
+                                                  double velocityStart, double velocityEnd,
+                                                  double maxVel, double maxAcc, double wheelBase,
+                                                  double tForCurve, int tailSize) {
+
+        int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
+
+        List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
+
+        WheelBasedVelocityGraph velByLoc = new WheelBasedVelocityGraph(subCurves, velocityStart, velocityEnd, maxVel, maxAcc, wheelBase, tailSize);
+
+        return velByLoc.generateProfile();
+    }
+
     private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity) {
         List<ICurve> subCurves = new ArrayList<>(capacity);
         State first, second;

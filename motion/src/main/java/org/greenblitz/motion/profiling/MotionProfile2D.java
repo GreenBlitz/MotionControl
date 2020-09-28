@@ -91,7 +91,8 @@ public class MotionProfile2D {
         Position ret = prev;
         final double dt = epsilon;
         for (double t2 = prevT; t2 < t; t2 += dt) {
-            ret = ret.moveBy(firstProfile.getVelocity(t), secondProfile.getVelocity(t), dt);
+            ret = ret.moveBy((firstProfile.getVelocity(t) + secondProfile.getVelocity(t))*0.5,
+                    (secondProfile.getVelocity(t) - firstProfile.getVelocity(t))/0.55, dt);
         }
         return ret;
     }

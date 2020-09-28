@@ -27,29 +27,30 @@ public class ChassisProfiler2DCSVGenerators {
     void generate2DProfile() {
         List<State> states = new ArrayList<>();
 
-        states.add(new State(0, 0, Math.PI, 0, 0));
-        states.add(new State(0, -1, Math.PI, 0, 0));
+        states.add(new State(1.3857142857142857, 2.757142857142857, 1.5707963267948966, 0, 0));
+        states.add(new State(4.67, 1.6599999999999997, 1.5707963267948966, 1,  -0.16739736946990794));
+        states.add(new State(6.994285714285715,  2.9514285714285715, 0, 1, 0.03762142101481675));
+
 
         MotionProfile2D brofile = null;
         long time = System.currentTimeMillis();
 
         for (int i = 0; i < 1; i++) {
-            brofile = ChassisProfiler2D.generateProfile(
+            brofile = ChassisProfiler2D.generateProfileByWheel(
                     states,
                     .001, 0, 0,
-                    new ProfilingData(1.6, 6, 3, 12.5),
-                    0, 1.0, 400);
+                    4, 5.5, 0.55, 1.0, 400);
         }
 
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
-        CSVWrapper broFile = CSVWrapper.generateWrapper("profile.csv", 0, "t", "x", "y", "linearV", "angularV", "linearA", "angularA");
+        CSVWrapper broFile = CSVWrapper.generateWrapper("profile.csv", 5, "t", "leftV", "rightV", "leftA", "rightA");
 
         System.out.println("Tend " + brofile.getTEnd());
 
         Position loc = null;
-        final double jmp = 0.00005;
+        final double jmp = 0.001;
         Vector2D vel, acc;
         for (double t = 0; t < brofile.getTEnd(); t += jmp) {
             if (t == 0)
@@ -57,9 +58,10 @@ public class ChassisProfiler2DCSVGenerators {
             else
                 loc = brofile.getActualLocation(t, loc, t - jmp, EPSILON);
 //            System.out.println(loc);
+
             vel = brofile.getVelocity(t);
             acc = brofile.getAcceleration(t);
-            broFile.addValues(t, loc.getX(), loc.getY(), vel.getX(), vel.getY(), acc.getX(), acc.getY());
+            broFile.addValues(t, vel.getX(), vel.getY(), acc.getX(), acc.getY());
         }
         broFile.flush();
 
@@ -73,6 +75,7 @@ public class ChassisProfiler2DCSVGenerators {
 //            System.out.println(loc);
         }
         locFile.flush();
+
 //        PolynomialCurve curve = QuinticSplineGenerator.generateSpline(states.get(0), states.get(1), 1);
 //        for (double u = 0; u <= 1; u += 0.05) {
 //
