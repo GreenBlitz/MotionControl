@@ -203,24 +203,26 @@ class WheelBasedVelocityGraph {
             velocityStartForwards = velocityStart;
 
             // a_m = maximum acceleration
-            // Calculated by assuming curvature is constant for simplicity.
-            // Concept is similar to finding the max velocity. We use here:
-            // a_r / a_l = (v_e - v_s) / (u_e - u_s)
-            // Where:
-            // a_r, a_l = acc for right and left wheel
-            // v_e, v_s = end and start vel for right wheel
-            // u_e, u_s = end and start vel for left wheel
-            double a_m = Math.min(psi.getRealMaxAccel(velocityStartForwards, maxVBar, maxABar),
-                    Math.abs(
-                            psi.getRealMaxAccel(velocityStartForwards * phi(curvatureStartBar), maxVBar, maxABar) / phi(curvatureBar)));
+            double a_m = psi.getRealMaxAccel(velocityStartForwards, maxVBar, maxABar);
 
             // dx_r = distance passed by right wheel.
             // Calculated assuming path is arch. Just draw it and calculate with definitions it's simple
-            double dx_r = dx * (1 + 0.5 * curvature * wheelBaseLength);
+            double dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
 
             // Calculated end velocity by distance. just develop the kinematics it's pretty easy.
             velocityEndForwards = Math.min(Math.min(vMax, velocityEndMax),
                     Math.sqrt(velocityStartForwards*velocityStartForwards + 2 * a_m * dx_r));
+
+            // Calculate the same thing exactly from the perspective of the left wheel.
+            // Needed to make a_m accurate for both wheels.
+            double u_s = velocityStartForwards * phi(curvatureStartBar);
+            double a_lm =
+                    psi.getRealMaxAccel(u_s, maxVBar, maxABar);
+            double dx_l = dx * (1 - curvatureBar);
+
+            velocityEndForwards = Math.min(velocityEndForwards,
+                    Math.sqrt(u_s*u_s + 2 * a_lm * dx_l)/phi(curvatureEndBar));
+
         }
 
         // Note that start and end are by time.
@@ -231,13 +233,19 @@ class WheelBasedVelocityGraph {
 
             // Step 1: find a_m
             // a_m is decided by an approximation (assumes curvature is constant)
-            double a_m = Math.min(psi.getRealMaxAccel(-velocityEndBackwards, maxVBar, maxABar),
-                    Math.abs(
-                            psi.getRealMaxAccel(-velocityEndBackwards * phi(curvatureEndBar), maxVBar, maxABar) / phi(curvatureBar)));
+            double a_m = psi.getRealMaxAccel(-velocityEndBackwards, maxVBar, maxABar);
             // Step 2: v_e
-            double dx_r = dx * (1 + 0.5 * curvature * wheelBaseLength);
+            double dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
             velocityStartBackwards = Math.min(Math.min(vMax, velocityStartMax),
                     Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2 * a_m * dx_r));
+
+            // calc the same thing from left wheel prespective
+            double u_e = velocityEndBackwards * phi(curvatureEndBar);
+            double a_lm = psi.getRealMaxAccel(u_e, maxVBar, maxABar);
+            double dx_l = dx * (1 - curvatureBar);
+
+            velocityStartBackwards = Math.min(velocityStartBackwards,
+                    Math.sqrt(u_e*u_e + 2 * a_lm * dx_l)/phi(curvatureStartBar));
 
         }
 
@@ -277,6 +285,7 @@ class WheelBasedVelocityGraph {
             double velEndL = velEndR * phi(curvatureEndBar);
             // For dt, '0.25 * (velStartR + velStartL + velEndR + velEndL)' is the linear velocity (check it).
             double dt = dx / (0.25 * (velStartR + velStartL + velEndR + velEndL));
+
             MotionProfile1D.Segment right = new MotionProfile1D.Segment(
                     tStart,
                     tStart + dt,
