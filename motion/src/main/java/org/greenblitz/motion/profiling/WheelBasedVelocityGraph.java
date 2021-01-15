@@ -35,7 +35,7 @@ class WheelBasedVelocityGraph {
      * @param tailSize
      */
     public WheelBasedVelocityGraph(List<ICurve> track, double vStart, double vEnd, double maxVel,
-                                 double maxAcc, double wheelBaseL, int tailSize) {
+                                   double maxAcc, double wheelBaseL, int tailSize) {
 
         maxVBar = maxVel;
         maxABar = maxAcc;
