@@ -103,7 +103,7 @@ public class ChassisProfiler2D {
             angularSegment = linearSegment.clone();
 
             angularSegment.setStartVelocity(curvature * linearProfile.getVelocity(linearProfile.getTEnd()));
-            angularSegment.setStartLocation(curvature * angularProfile.getLocation(angularProfile.getTEnd()));
+            angularSegment.setStartLocation(angularProfile.getLocation(angularProfile.getTEnd()));
 
             prevAngularSegment.setAccel((angularSegment.getStartVelocity() - prevAngularSegment.getStartVelocity())
                     / (prevAngularSegment.getTEnd() - prevAngularSegment.getTStart()));
