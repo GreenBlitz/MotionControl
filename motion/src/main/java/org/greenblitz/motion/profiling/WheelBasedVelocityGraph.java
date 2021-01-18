@@ -67,8 +67,8 @@ class WheelBasedVelocityGraph {
 //            latestFilterIndex = i;
 //        }
 
-        segments.get(0).developForwards(vStart, maxVBar);
-        segments.get(segCount - 1).developBackwards(maxVBar, vEnd);
+        segments.get(0).developForwards(vStart, segments.get(1).vMax);
+        segments.get(segCount - 1).developBackwards(segments.get(segCount-1).vMax, vEnd);
 
         for (int i = 1; i < segCount - 1; i++) {
             segments.get(i)
@@ -78,8 +78,8 @@ class WheelBasedVelocityGraph {
                     .developBackwards(segments.get(segCount - 2 - i).vMax, segments.get(segCount - i).velocityStartBackwards);
         }
 
-        segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards, vEnd);
-        segments.get(0).developBackwards(vStart, segments.get(1).velocityStartBackwards);
+        segments.get(segCount - 1).developForwards(maxVBar, vEnd);
+        segments.get(0).developBackwards(vStart,maxVBar);
 
     }
 
@@ -168,7 +168,7 @@ class WheelBasedVelocityGraph {
          * @param x some normalized curvature
          * @return The ration between the left and right wheel velocities (l / r)
          */
-        public double velRatioLR(double x) {
+        public double phi(double x) {
             return (1 - x) / (1 + x);
         }
 
@@ -192,8 +192,8 @@ class WheelBasedVelocityGraph {
             distanceEnd = end;
             dx = distanceEnd - distanceStart;
             vMax = Math.min(
-                    curvatureStart >= 0 ? maximumVel : maximumVel / velRatioLR(curvatureStartBar),
-                    curvatureEnd >= 0 ? maximumVel : maximumVel / velRatioLR(curvatureEndBar)
+                    curvatureStart >= 0 ? maximumVel : maximumVel / phi(curvatureStartBar),
+                    curvatureEnd >= 0 ? maximumVel : maximumVel / phi(curvatureEndBar)
             ); // Either the right wheel is faster (then vMax = maximumVel) or the left wheel is faster (then vMax = maximumVel / phi(curvatureEndBar))
             vMaxRaw = vMax;
 
@@ -215,13 +215,13 @@ class WheelBasedVelocityGraph {
 
             // Calculate the same thing exactly from the perspective of the left wheel.
             // Needed to make a_m accurate for both wheels.
-            double u_s = velocityStartForwards * velRatioLR(curvatureStartBar);
+            double u_s = velocityStartForwards * phi(curvatureStartBar);
             double a_lm =
                     psi.getRealMaxAccel(u_s, maxVBar, maxABar);
             double dx_l = dx * (1 - curvatureBar);
 
             velocityEndForwards = Math.min(velocityEndForwards,
-                    Math.sqrt(u_s*u_s + 2 * a_lm * dx_l)/ velRatioLR(curvatureEndBar));
+                    Math.sqrt(u_s*u_s + 2 * a_lm * dx_l)/ phi(curvatureEndBar));
 
         }
 
@@ -240,12 +240,12 @@ class WheelBasedVelocityGraph {
                     Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2 * a_m * dx_r));
 
             // calc the same thing from left wheel prespective
-            double u_e = velocityEndBackwards * velRatioLR(curvatureEndBar);
+            double u_e = velocityEndBackwards * phi(curvatureEndBar);
             double a_lm = psi.getRealMaxAccel(u_e, maxVBar, maxABar);
             double dx_l = dx * (1 - curvatureBar);
 
             velocityStartBackwards = Math.min(velocityStartBackwards,
-                    Math.sqrt(u_e*u_e + 2 * a_lm * dx_l)/ velRatioLR(curvatureStartBar));
+                    Math.sqrt(u_e*u_e + 2 * a_lm * dx_l)/ phi(curvatureStartBar));
 
         }
 
@@ -280,9 +280,9 @@ class WheelBasedVelocityGraph {
          */
         public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart) {
             double velStartR = Math.min(velocityStartForwards, velocityStartBackwards);
-            double velEndR = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
-            double velStartL = velStartR * velRatioLR(curvatureStartBar);
-            double velEndL = velEndR * velRatioLR(curvatureEndBar);
+            double velEndR = Math.min(velocityEndForwards, velocityEndBackwards);
+            double velStartL = velStartR * phi(curvatureStartBar);
+            double velEndL = velEndR * phi(curvatureEndBar);
             // For dt, '0.25 * (velStartR + velStartL + velEndR + velEndL)' is the linear velocity (check it).
             double dt = dx / (0.25 * (velStartR + velStartL + velEndR + velEndL));
 
