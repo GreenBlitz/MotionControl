@@ -1,8 +1,10 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.Main;
 import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.ICurve;
+import org.greenblitz.motion.profiling.curve.spline.PolynomialCurve;
 import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
 
 import java.util.ArrayList;
@@ -88,11 +90,14 @@ public class ChassisProfiler2D {
         /*
          * divides the path All sub-curves with kinda equal curve
          */
+//        long dividePathToSubCurvesStartTime = System.currentTimeMillis();
         List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
-
+//        Main.times.add("\nsubcurves time: "+(System.currentTimeMillis() - dividePathToSubCurvesStartTime));
+//        long velByLocStartTime = System.currentTimeMillis();
         velByLoc = new DiscreteVelocityGraph(subCurves, velocityStart, velocityEnd, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
+//        Main.times.add("\nvelbyloc time: "+(System.currentTimeMillis()-velByLocStartTime));
         double curvature = 0;
-
+//        long velbylocToVelByTimeStartTime = System.currentTimeMillis();
         for (int j = 0; j < subCurves.size(); j++) {
 
             curvature = subCurves.get(j).getCurvature();
@@ -114,6 +119,7 @@ public class ChassisProfiler2D {
             prevAngularSegment = angularSegment;
 
         }
+//        Main.times.add("\nVelByLoc To VelByTime Time: " + (System.currentTimeMillis() - velbylocToVelByTimeStartTime));
 
         prevAngularSegment.setAccel(curvature * linearSegment.accel);
 
@@ -157,11 +163,12 @@ public class ChassisProfiler2D {
             second = locations.get(i + 1);
             // This is arbitrary, but empirical evidence suggests this works well
             double tToUse = tForCurve * Point.dist(first, second);
-
-            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
-                    tToUse
-            ), jump);
-
+//            long singleCurveStartTime = System.currentTimeMillis();
+            PolynomialCurve curve = QuinticSplineGenerator.generateSpline(first, second, tToUse);
+          /*  Main.times.add("\nsingle curve time: "+(System.currentTimeMillis()-singleCurveStartTime));
+            long equalCurvatureSubcurvesStartTime = System.currentTimeMillis();*/
+            divideToEqualCurvatureSubcurves(subCurves, curve, jump);
+//            Main.times.add("\nequalCurvatureSubcurves Time: " + (System.currentTimeMillis() - equalCurvatureSubcurvesStartTime));
         }
         return subCurves;
     }

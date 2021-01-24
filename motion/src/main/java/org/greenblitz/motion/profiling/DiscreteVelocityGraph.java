@@ -35,7 +35,6 @@ class DiscreteVelocityGraph {
             tmpLength += curveLen;
         }
 
-
         int segCount = segments.size();
         latestFilterTail = tailSize;
         for (int i = 1; i < segCount - 1; i++) {
@@ -60,7 +59,6 @@ class DiscreteVelocityGraph {
 
         segments.get(segCount - 1).developForwardsLast(segments.get(segCount - 2));
         segments.get(0).developBackwardsFirst(segments.get(1));
-
     }
 
 
