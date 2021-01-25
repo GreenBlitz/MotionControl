@@ -77,8 +77,7 @@ public class ChassisProfiler2D {
                                                   double tForCurve,
                                                   int smoothingTail) {
         int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
-        MotionProfile1D linearProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0, 0, 0, 0));
-        MotionProfile1D angularProfile = new MotionProfile1D(capacity, new MotionProfile1D.Segment(0, 0, 0, 0, 0));
+        MotionProfile2D profile = new MotionProfile2D(capacity);
         MotionProfile1D.Segment linearSegment = new MotionProfile1D.Segment(0, 1, 0, 0, 0);
         MotionProfile1D.Segment angularSegment, prevAngularSegment = new MotionProfile1D.Segment(0, 1, 0, 0, 0);
 
@@ -102,14 +101,16 @@ public class ChassisProfiler2D {
 
             angularSegment = linearSegment.clone();
 
-            angularSegment.setStartVelocity(curvature * linearProfile.getVelocity(linearProfile.getTEnd()));
-            angularSegment.setStartLocation(angularProfile.getLocation(angularProfile.getTEnd()));
+            angularSegment.setStartVelocity(curvature * profile.getVelocity(profile.getTEnd()).getX());
+            angularSegment.setStartLocation(profile.getLocation(profile.getTEnd()).getY());
 
             prevAngularSegment.setAccel((angularSegment.getStartVelocity() - prevAngularSegment.getStartVelocity())
                     / (prevAngularSegment.getTEnd() - prevAngularSegment.getTStart()));
 
-            linearProfile.unsafeAddSegment(linearSegment);
-            angularProfile.unsafeAddSegment(angularSegment);
+            State startLocation = new State(subCurves.get(j).getLocation(0), profile.getLocation(profile.getTEnd()).getY(),
+                    profile.getVelocity(profile.getTEnd()).getX(), profile.getVelocity(profile.getTEnd()).getX());
+
+            profile.unsafeAddSegment(new MotionProfile2D.Segment2D(linearSegment, angularSegment, startLocation));
 
             prevAngularSegment = angularSegment;
 
@@ -117,7 +118,7 @@ public class ChassisProfiler2D {
 
         prevAngularSegment.setAccel(curvature * linearSegment.accel);
 
-        return new MotionProfile2D(linearProfile, angularProfile);
+        return profile;
     }
 
     /**

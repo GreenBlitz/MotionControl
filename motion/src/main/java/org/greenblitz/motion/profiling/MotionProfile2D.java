@@ -23,6 +23,15 @@ public class MotionProfile2D {
         this.segments = segments;
     }
 
+    MotionProfile2D(int capacity){this.segments = new ArrayList<Segment2D>(capacity);}
+
+    MotionProfile2D(MotionProfile1D first, MotionProfile1D second){
+        this.segments = new ArrayList<>();
+        for (int i = 0; i < first.segments.size(); i++) {
+            this.segments.add(new Segment2D(first.segments.get(i), second.segments.get(i), null));
+        }
+    }
+
     /**
      * @return The time in which the profile finishes
      */
@@ -89,9 +98,55 @@ public class MotionProfile2D {
      * @param index an index of a segment
      * @return startLocation at segment index
      */
-    public State getLocation(int index) {
+    public Position getActualLocation(int index) {
         return segments.get(index).getLocation();
     }
+
+
+    /**
+     * For testing purposes only! Don't use otherwise
+     * Package protected in purpose.
+     *
+     * @param t
+     * @param epsilon
+     * @return
+     */
+    Position getActualLocation(double t, double epsilon) {
+        return getActualLocation(t, new Position(0, 0, 0), 0, epsilon);
+    }
+
+    /**
+     * For testing purposes only! Don't use otherwise
+     * Package protected in purpose.
+     *
+     * @param t
+     * @param prev
+     * @param prevT
+     * @param epsilon
+     * @return
+     */
+    Position getActualLocation(double t, Position prev, double prevT, double epsilon) {
+        if (prevT > t)
+            throw new UnsupportedOperationException();
+        Position ret = prev;
+        final double dt = epsilon;
+        for (double t2 = prevT; t2 < t; t2 += dt) {
+            ret = ret.moveBy(quickGetSegment(t).firstSegment.getVelocity(t), quickGetSegment(t).secondSegment.getVelocity(t), dt);
+        }
+        return ret;
+    }
+
+    public Vector2D getLocation(double t){
+        MotionProfile1D.Segment first = quickGetSegment(t).firstSegment;
+        MotionProfile1D.Segment second = quickGetSegment(t).secondSegment;
+        return new Vector2D(first.getLocation(t), second.getLocation(t));
+    }
+
+    /**
+     * adds segment to end without check
+     * @param seg segment to add
+     */
+    public void unsafeAddSegment(Segment2D seg){segments.add(seg);}
 
     /**
      * Removes all segments with time length less then a milisecond.
@@ -129,8 +184,14 @@ public class MotionProfile2D {
 
     public static class Segment2D{
         private MotionProfile1D.Segment firstSegment, secondSegment;
-        private State startLocation;
+        private Position startLocation;
         private final static double EPSILON = 1E-8;
+
+        public Segment2D(MotionProfile1D.Segment first, MotionProfile1D.Segment second, State startLocation){
+            this.firstSegment = first;
+            this.secondSegment = second;
+            this.startLocation = startLocation;
+        }
 
         public double getTStart(){return firstSegment.getTStart();}
 
@@ -153,7 +214,7 @@ public class MotionProfile2D {
 
         public double getVelocitySecond(double t){return secondSegment.getVelocity(t);}
 
-        public State getLocation() {return startLocation;}
+        public Position getLocation() {return startLocation;}
 
 
         //might not be important
