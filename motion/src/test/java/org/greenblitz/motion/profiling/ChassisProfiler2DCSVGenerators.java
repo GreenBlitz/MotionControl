@@ -56,7 +56,7 @@ public class ChassisProfiler2DCSVGenerators {
             if (t == 0)
                 loc = new Position(0, 0, 0);
             else
-                loc = brofile.getActualLocation(t, loc, t - jmp, EPSILON);
+                loc = brofile.getLocation(t);
 //            System.out.println(loc);
 
             vel = brofile.getVelocity(t);
@@ -70,7 +70,7 @@ public class ChassisProfiler2DCSVGenerators {
             if (t == 0)
                 loc = new Position(0, 0, 0);
             else
-                loc = brofile.getActualLocation(t, loc, t - jmp, EPSILON);
+                loc = brofile.getLocation(t);
             locFile.addValues(loc.getX(), loc.getY());
 //            System.out.println(loc);
         }
