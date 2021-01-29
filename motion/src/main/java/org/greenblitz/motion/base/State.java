@@ -31,6 +31,10 @@ public class /*united*/State extends Position {
         this(point.x, point.y, angle, linearVelocity, angularVelocity);
     }
 
+    public State(Position position, double linearVelocity, double angularVelocity){
+        this(position.x, position.y, position.angle, linearVelocity, angularVelocity);
+    }
+
     public State(Point point, double linearVelocity, double angularVelocity) {
         this(point.x, point.y, linearVelocity, angularVelocity);
     }
