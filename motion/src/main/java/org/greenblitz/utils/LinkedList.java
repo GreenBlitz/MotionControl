@@ -14,6 +14,42 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
     transient LinkedList.Node<E> last;
     private static final long serialVersionUID = 876323262645176354L;
 
+    // our code for optimal time complexity
+
+    public void addAll(LinkedList<E> list){
+        this.size += list.size();
+        list.first.prev =this.last;
+        this.last.next = list.first;
+        this.last = list.last;
+    }
+
+    public Node<E> getNodeFirst(){
+        LinkedList.Node<E> f = this.first;
+        if (f == null) {
+            throw new NoSuchElementException();
+        } else {
+            return f;
+        }
+    }
+
+    public Node<E> getNodeLast(){
+        LinkedList.Node<E> f = this.last;
+        if (f == null) {
+            throw new NoSuchElementException();
+        } else {
+            return f;
+        }
+    }
+
+    public void merge(LinkedList<E> mergedList, int startIndexOfMergedList, Node<E> startNodeOfMergedList){
+        this.last.next = startNodeOfMergedList;
+        startNodeOfMergedList.prev = this.last;
+        this.size = this.size + mergedList.size - startIndexOfMergedList;
+        this.last = mergedList.last;
+    }
+
+    //original code
+
     public LinkedList() {
         this.size = 0;
     }
@@ -132,16 +168,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         }
     }
 
-    public Node<E> getNodeFirst(){
-        LinkedList.Node<E> f = this.first;
-        if (f == null) {
-            throw new NoSuchElementException();
-        } else {
-            return f;
-        }
-    }
-
-
     public E getLast() {
         LinkedList.Node<E> l = this.last;
         if (l == null) {
@@ -150,16 +176,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
             return l.item;
         }
     }
-
-    public Node<E> getNodeLast(){
-        LinkedList.Node<E> f = this.last;
-        if (f == null) {
-            throw new NoSuchElementException();
-        } else {
-            return f;
-        }
-    }
-
 
     public E removeFirst() {
         LinkedList.Node<E> f = this.first;
@@ -269,14 +285,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
             return true;
         }
     }
-
-    public void addAll(LinkedList<E> list){
-        this.size += list.size();
-        list.first.prev =this.last;
-        this.last.next = list.first;
-        this.last = list.last;
-    }
-
 
     public void clear() {
         LinkedList.Node next;
@@ -527,16 +535,6 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         return clone;
     }
 
-    public LinkedList<E> sublist(Node<E> startNode, Node<E> endNode, int start, int end){
-        LinkedList<E> ret = (LinkedList<E>) this.clone();
-        ret.size = end-start;
-        ret.first = startNode;
-        ret.last = endNode;
-        ret.first.prev = null;
-        ret.last.next = null;
-        ret.modCount = 0;
-        return ret;
-    }
 
     public Object[] toArray() {
         Object[] result = new Object[this.size];
@@ -729,6 +727,10 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         }
     }
 
+
+    /*
+     *turned public and added getters and setters
+     */
     public static class Node<E> {
         private E item;
         private LinkedList.Node<E> next;
