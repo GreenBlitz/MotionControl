@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * @author Alexey
+ * @author Asaf
+ * @author Peleg
  */
 public class MotionProfile2D {
 
@@ -61,6 +63,7 @@ public class MotionProfile2D {
 
     private LinkedList.Node<Segment2D> previous;
     private int index;
+    private double accumulatedOffset = 0;
     /**
      * copied from MotionProfile1D
      *
@@ -76,12 +79,12 @@ public class MotionProfile2D {
      * @throws IndexOutOfBoundsException if the current time doesn't apply to any segment.
      */
 
-
     public LinkedList.Node<Segment2D> quickGetNode(double t) {
         if (segments.isEmpty()){throw new IndexOutOfBoundsException("List empty");}
         for (int i = 0; i < segments.size(); i++) {
             if (previous == null){previous = segments.getNodeFirst();}
-            if (previous.getItem().isTimePartOfSegment(t)) {
+            accumulatedOffset += previous.getItem().profileOffset;
+            if (previous.getItem().isTimePartOfSegment(t + accumulatedOffset)) {
                 return previous;
             }
             previous = previous.getNext();
