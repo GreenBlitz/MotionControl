@@ -33,7 +33,7 @@ public class MotionProfile2D {
         }
     }
 
-    public List<Segment2D> getSegments() {
+    public LinkedList<Segment2D> getSegments() {
         return segments;
     }
 
@@ -71,12 +71,12 @@ public class MotionProfile2D {
      */
 
 
-    public Segment2D quickGetSegment(double t) {
+    public LinkedList.Node<Segment2D> quickGetNode(double t) {
         if (segments.isEmpty()){throw new IndexOutOfBoundsException("List empty");}
         for (int i = 0; i < segments.size(); i++) {
             if (previous == null){previous = segments.getNodeFirst();}
             if (previous.getItem().isTimePartOfSegment(t)) {
-                return previous.getItem();
+                return previous;
             }
             previous = previous.getNext();
             index = (index+1)%segments.size();
@@ -84,17 +84,11 @@ public class MotionProfile2D {
         throw new IndexOutOfBoundsException("No segment with time " + t);
     }
 
+    public Segment2D quickGetSegment(double t){return quickGetNode(t).getItem();}
+
     public int quickGetIndex(double t) {
-        if (segments.isEmpty()){throw new IndexOutOfBoundsException("List empty");}
-        for (int i = 0; i < segments.size(); i++) {
-            if (previous == null){previous = segments.getNodeFirst();}
-            if (previous.getItem().isTimePartOfSegment(t)) {
-                return index;
-            }
-            previous = previous.getNext();
-            index = (index+1)%segments.size();
-        }
-        throw new IndexOutOfBoundsException("No segment with time " + t);
+        quickGetNode(t);
+        return index;
     }
 
     /**
