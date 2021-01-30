@@ -18,7 +18,7 @@ public class ReturnProfiler2D {
         MotionProfile2D returnProfile = ChassisProfiler2D.generateProfile(locations, jump, velocityStart, velocityEnd,
                 maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart, tForCurve, smoothingTail);
 
-        returnProfile.getSegments().merge(mainProfile.getSegments(), indexOfMergeSegment, mergeSegmentNode);
+        returnProfile.merge(mainProfile, indexOfMergeSegment, mergeSegmentNode);
         return returnProfile;
     }
 }
