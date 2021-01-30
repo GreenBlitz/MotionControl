@@ -77,7 +77,7 @@ public class ChassisProfiler2D {
                                                   double tForCurve,
                                                   int smoothingTail) {
         int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
-        MotionProfile2D profile = new MotionProfile2D(capacity);
+        MotionProfile2D profile = new MotionProfile2D();
         MotionProfile1D.Segment linearSegment = new MotionProfile1D.Segment(0, 1, 0, 0, 0);
         MotionProfile1D.Segment angularSegment, prevAngularSegment = new MotionProfile1D.Segment(0, 1, 0, 0, 0);
 
