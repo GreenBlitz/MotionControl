@@ -14,6 +14,7 @@ import java.util.List;
 public class MotionProfile2D {
 
     private LinkedList<Segment2D> segments;
+    private double tEnd;
 
     /**
      * This is package protected on purpose.
@@ -22,6 +23,7 @@ public class MotionProfile2D {
      */
     MotionProfile2D(List<Segment2D> segments) {
         this.segments = new LinkedList<>(segments);
+        this.tEnd = segments.get(segments.size()-1).getTEnd();
     }
 
     MotionProfile2D(){this.segments = new LinkedList<Segment2D>();}
@@ -31,17 +33,21 @@ public class MotionProfile2D {
         for (int i = 0; i < first.segments.size(); i++) {
             this.segments.add(new Segment2D(first.segments.get(i), second.segments.get(i), null));
         }
+        this.tEnd = segments.getLast().getTEnd();
     }
 
     public LinkedList<Segment2D> getSegments() {
         return segments;
     }
 
+    public void updateTEnd(){
+        tEnd = segments.getLast().getTEnd();
+    }
     /**
      * @return The time in which the profile finishes
      */
     public double getTEnd() {
-        return segments.getLast().getTEnd();
+        return tEnd;
     }
 
     /**
@@ -206,6 +212,14 @@ public class MotionProfile2D {
 
     public void unsafeAddSegments(List<Segment2D> segments){this.segments.addAll(segments);}
 
+    public void merge(MotionProfile2D mergedProfile, int startIndexOfMergedProfile, LinkedList.Node<Segment2D> startNodeOfMergedList){
+        double offset = startNodeOfMergedList.getItem().getTStart() - this.getTEnd();
+        startNodeOfMergedList.getItem().setOffset(offset);
+        this.segments.merge(mergedProfile.segments, startIndexOfMergedProfile, startNodeOfMergedList);
+        this.tEnd = this.tEnd-offset;
+
+    }
+
     /**
      * Removes all segments with time length less then a milisecond.
      *
@@ -250,6 +264,7 @@ public class MotionProfile2D {
             this.firstSegment = first;
             this.secondSegment = second;
             this.startLocation = startLocation;
+            this.profileOffset = 0;
         }
 
         public double getTStart(){return firstSegment.getTStart();}

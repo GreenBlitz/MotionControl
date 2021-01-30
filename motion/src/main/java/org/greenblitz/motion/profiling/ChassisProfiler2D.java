@@ -118,6 +118,7 @@ public class ChassisProfiler2D {
 
         prevAngularSegment.setAccel(curvature * linearSegment.accel);
 
+        profile.updateTEnd();
         return profile;
     }
 
