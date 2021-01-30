@@ -3,6 +3,7 @@ package org.greenblitz.motion.profiling;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
+import org.greenblitz.utils.LinkedList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public class MotionProfile2D {
 
-    private List<Segment2D> segments;
+    private LinkedList<Segment2D> segments;
 
     /**
      * This is package protected on purpose.
@@ -20,23 +21,27 @@ public class MotionProfile2D {
      * @param segments
      */
     MotionProfile2D(List<Segment2D> segments) {
-        this.segments = segments;
+        this.segments = new LinkedList<>(segments);
     }
 
-    MotionProfile2D(int capacity){this.segments = new ArrayList<Segment2D>(capacity);}
+    MotionProfile2D(){this.segments = new LinkedList<Segment2D>();}
 
     MotionProfile2D(MotionProfile1D first, MotionProfile1D second){
-        this.segments = new ArrayList<>();
+        this.segments = new LinkedList<>();
         for (int i = 0; i < first.segments.size(); i++) {
             this.segments.add(new Segment2D(first.segments.get(i), second.segments.get(i), null));
         }
+    }
+
+    public List<Segment2D> getSegments() {
+        return segments;
     }
 
     /**
      * @return The time in which the profile finishes
      */
     public double getTEnd() {
-        return segments.get(segments.size()-1).getTEnd();
+        return segments.getLast().getTEnd();
     }
 
     /**
@@ -48,7 +53,8 @@ public class MotionProfile2D {
     }
 
 
-    private int previous = 0;
+    private LinkedList.Node<Segment2D> previous;
+    private int index;
     /**
      * copied from MotionProfile1D
      *
@@ -66,13 +72,62 @@ public class MotionProfile2D {
 
 
     public Segment2D quickGetSegment(double t) {
+        if (segments.isEmpty()){throw new IndexOutOfBoundsException("List empty");}
         for (int i = 0; i < segments.size(); i++) {
-            if (segments.get((previous + i) % segments.size()).isTimePartOfSegment(t)) {
-                previous = (i + previous) % segments.size();
-                return segments.get(previous);
+            if (previous == null){previous = segments.getNodeFirst();}
+            if (previous.getItem().isTimePartOfSegment(t)) {
+                return previous.getItem();
             }
+            previous = previous.getNext();
+            index = (index+1)%segments.size();
         }
         throw new IndexOutOfBoundsException("No segment with time " + t);
+    }
+
+    public int quickGetIndex(double t) {
+        if (segments.isEmpty()){throw new IndexOutOfBoundsException("List empty");}
+        for (int i = 0; i < segments.size(); i++) {
+            if (previous == null){previous = segments.getNodeFirst();}
+            if (previous.getItem().isTimePartOfSegment(t)) {
+                return index;
+            }
+            previous = previous.getNext();
+            index = (index+1)%segments.size();
+        }
+        throw new IndexOutOfBoundsException("No segment with time " + t);
+    }
+
+    /**
+     * since motionProfile2D is now LinkedList this is not useful
+     *
+     * Uses binary searching. before using this,
+     *
+     * @param t point in time (in seconds)
+     * @return The segment matching that point of time
+     * @throws IndexOutOfBoundsException if the current time doesn't apply to any segment.
+     * @see MotionProfile2D#quickGetSegment(double)
+     * <p>
+     * This runs in average time of O(n log n)
+     */
+    public Segment2D getSegmentRandom(double t) {
+        int lower = 0;
+        int upper = segments.size() - 1;
+        int testing;
+        while (true) {
+            if (lower == upper)
+                if (segments.get(lower).isTimePartOfSegment(t))
+                    return segments.get(lower);
+                else
+                    throw new IndexOutOfBoundsException("No segment with such time");
+
+            testing = (lower + upper) / 2;
+            if (segments.get(testing).isTimePartOfSegment(t))
+                return segments.get(testing);
+            if (segments.get(testing).getTStart() > t)
+                upper = testing - 1;
+            else
+                lower = testing + 1;
+        }
     }
 
 
@@ -93,13 +148,19 @@ public class MotionProfile2D {
     }
 
 
+
+    public double getStartTime(double t){
+        return quickGetSegment(t).firstSegment.getTStart();
+    }
+
+
     /**
      *
-     * @param index an index of a segment
+     * @param t time in a segment
      * @return startLocation at segment index
      */
-    public Position getActualLocation(int index) {
-        return segments.get(index).getLocation();
+    public Position getActualLocationAtStart(double t) {
+        return quickGetSegment(t).getLocation();
     }
 
 
@@ -114,6 +175,7 @@ public class MotionProfile2D {
     Position getActualLocation(double t, double epsilon) {
         return getActualLocation(t, new Position(0, 0, 0), 0, epsilon);
     }
+
 
     /**
      * For testing purposes only! Don't use otherwise
@@ -148,6 +210,8 @@ public class MotionProfile2D {
      */
     public void unsafeAddSegment(Segment2D seg){segments.add(seg);}
 
+    public void unsafeAddSegments(List<Segment2D> segments){this.segments.addAll(segments);}
+
     /**
      * Removes all segments with time length less then a milisecond.
      *
@@ -155,15 +219,15 @@ public class MotionProfile2D {
      */
     public void removeBugSegments() {
         double tStart = segments.get(0).getTStart();
-        List<Segment2D> goodSegments = new ArrayList<>();
+        LinkedList<Segment2D> goodSegments = new LinkedList<>();
         for (Segment2D s : segments) {
             if (Math.abs(s.getTEnd() - s.getTStart()) > 0)
                 goodSegments.add(s);
         }
         if (goodSegments.size() != 0) {
             goodSegments.get(0).setTStart(tStart);
-            for (int i = 1; i < goodSegments.size(); i++)
-                goodSegments.get(i).setTStart(goodSegments.get(i - 1).getTEnd());
+            for (LinkedList.Node<Segment2D> curr = goodSegments.getNodeFirst(); curr != null; curr = curr.getNext())
+                curr.getItem().setTStart(curr.getPrev().getItem().getTEnd());
         }
         segments = goodSegments;
     }
@@ -186,6 +250,7 @@ public class MotionProfile2D {
         private MotionProfile1D.Segment firstSegment, secondSegment;
         private Position startLocation;
         private final static double EPSILON = 1E-8;
+        private double profileOffset;
 
         public Segment2D(MotionProfile1D.Segment first, MotionProfile1D.Segment second, State startLocation){
             this.firstSegment = first;
@@ -199,6 +264,8 @@ public class MotionProfile2D {
             firstSegment.setTStart(t);
             secondSegment.setTStart(t);
         }
+
+        public void setOffset(double offset){this.profileOffset = offset;}
 
         public double getTEnd(){return firstSegment.getTEnd();}
 
@@ -215,6 +282,10 @@ public class MotionProfile2D {
         public double getVelocitySecond(double t){return secondSegment.getVelocity(t);}
 
         public Position getLocation() {return startLocation;}
+
+        public State getStateLocation(){
+            return (new State(getLocation(), getVelocityFirst(getTStart()), getVelocitySecond(getTStart())));
+        }
 
 
         //might not be important
