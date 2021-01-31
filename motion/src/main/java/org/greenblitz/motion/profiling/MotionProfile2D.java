@@ -18,6 +18,7 @@ public class MotionProfile2D {
     private LinkedList<Segment2D> segments;
     private double tEnd;
 
+
     /**
      * This is package protected on purpose.
      *
