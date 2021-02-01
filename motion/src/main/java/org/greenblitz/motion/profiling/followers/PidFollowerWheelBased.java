@@ -156,13 +156,14 @@ public class PidFollowerWheelBased {
         if (Double.isNaN(leftMotorV + leftMotorA + rightMotorA + rightMotorV)) {
             throw new RuntimeException("One of the motor ff vals are NaN");
         }
-
-// TODO: Debuggin stuff, deal on debugging time
-//        if (sendData) {
-//            wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
-//            globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
-//                    (leftCurr - rightCurr) / wheelDist);
-//        }
+/*
+ TODO: Debuggin stuff, deal on debugging time
+        if (sendData) {
+            wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
+            globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
+                    (leftCurr - rightCurr) / wheelDist);
+        }
+*/
 
         leftController.setGoal(leftMotorV);
         rightController.setGoal(rightMotorV);
@@ -174,19 +175,21 @@ public class PidFollowerWheelBased {
             throw new RuntimeException("LeftPID or RightPID are NaN");
         }
 
-// TODO: Debuggin stuff, deal on debugging time
-//        if (sendData) {
-//
-//            leftOutputTarget.report(timeNow, leftMotorV * kVl, leftMotorA * kAl,
-//                    leftPID, angularPIDOut);
-//            rightOutputTarget.report(timeNow, rightMotorV * kVr, rightMotorA * kAr,
-//                    rightPID, -angularPIDOut);
-//
-//        }
+/*
+ TODO: Debuggin stuff, deal on debugging time
+        if (sendData) {
+
+            leftOutputTarget.report(timeNow, leftMotorV * kVl, leftMotorA * kAl,
+                    leftPID, angularPIDOut);
+            rightOutputTarget.report(timeNow, rightMotorV * kVr, rightMotorA * kAr,
+                    rightPID, -angularPIDOut);
+
+        }
+*/
 
         //Motor equation V*K_v + A*K_a in a format of <left, right>
-        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl ,
-                rightMotorV * kVr + rightMotorA * kAr);
+        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID,
+                rightMotorV * kVr + rightMotorA * kAr + rightPID);
     }
 
     /**
