@@ -15,9 +15,8 @@ import org.greenblitz.motion.profiling.kinematics.ReverseLocalizerConverter;
  * @author alexey
  * @see PidFollower2D#init()
  */
-public class PidFollower2D {
+public class PidFollower2D extends AbstractFollower2D {
 
-    protected long startTime;
     protected double kVl, kAl;
     protected double kVr, kAr;
     protected MotionProfile2D profile;
@@ -87,6 +86,7 @@ public class PidFollower2D {
     /**
      * Resets all relevant data, call before every run.
      */
+    @Override
     public void init() {
 
         if (converter == null) {
@@ -110,41 +110,8 @@ public class PidFollower2D {
         }
     }
 
-    /**
-     * For this function, the time is the time since the last call to init().
-     *
-     * @param left       The left wheel velocity
-     * @param right      The right wheel velocity
-     * @param angularVel The angular velocity
-     * @return A vector of power to each motor in the format (left, right)
-     * @see PidFollower2D#init()
-     */
-    public Vector2D run(double left, double right, double angularVel) {
-        return run(left, right, angularVel, System.currentTimeMillis());
-    }
 
-    /**
-     * @param left       The left wheel velocity
-     * @param right      The right wheel velocity
-     * @param angularVel The angular velocity
-     * @param currTime   The curent time since the start of the profile <b>in seconds</b>
-     * @return A vector of power to each motor in the format (left, right)
-     */
-    public Vector2D run(double left, double right, double angularVel, double currTime) {
-        return run(left, right, angularVel, (long) (currTime * 1000.0));
-    }
-
-    /**
-     * @param leftCurr   The left wheel velocity
-     * @param rightCurr  The right wheel velocity
-     * @param angularVel The angular velocity
-     * @param curTime    The curent time since the start of the profile <b>in miliseconds</b>
-     * @return A vector of power to each motor in the format (left, right)
-     */
-    public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
-        return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);
-    }
-
+    @Override
     public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow) {
         if (profile.isOver(timeNow)) return new Vector2D(0, 0);
 
@@ -202,6 +169,7 @@ public class PidFollower2D {
     /**
      * @return true if the profile finished running, false otherwise
      */
+    @Override
     public boolean isFinished() {
         return profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
     }
@@ -214,6 +182,7 @@ public class PidFollower2D {
      *
      * @param val whether to send data or not
      */
+    @Override
     public void setSendData(boolean val) {
         sendData = val;
     }
