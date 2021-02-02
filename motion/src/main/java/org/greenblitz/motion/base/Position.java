@@ -72,6 +72,11 @@ public class Position extends Point {
         return new Position(x, y, angle);
     }
 
+    @Override
+    public Position negate(){
+        return new Position(super.negate(), -angle);
+    }
+
     public double getAngle() {
         return angle;
     }

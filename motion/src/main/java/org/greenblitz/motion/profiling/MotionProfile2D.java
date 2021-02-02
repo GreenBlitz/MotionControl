@@ -1,11 +1,11 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.utils.LinkedList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +17,7 @@ public class MotionProfile2D {
 
     private LinkedList<Segment2D> segments;
     private double tEnd;
+    private Position jahanaRelation;
 
 
     /**
@@ -45,6 +46,13 @@ public class MotionProfile2D {
 
     public void updateTEnd(){
         tEnd = segments.getLast().getTEnd();
+    }
+
+    public void updateJahana(){
+        if (jahanaRelation == null) {
+            Localizer localizer = Localizer.getInstance();
+            jahanaRelation = localizer.getLocation().translate(segments.getFirst().getLocation().negate());
+        }
     }
     /**
      * @return The time in which the profile finishes
@@ -160,13 +168,22 @@ public class MotionProfile2D {
         return quickGetSegment(t).firstSegment.getTStart();
     }
 
+    /**
+     *
+     * @param t time
+     * @return position using localizer
+     */
+
+    public Position getActualLocation(double t){
+        return getRelativeLocation(t).translate(jahanaRelation.negate());
+    }
 
     /**
      *
      * @param t time in a segment
-     * @return startLocation at segment index
+     * @return startLocation at segment index relative to path
      */
-    public Position getActualLocationAtStart(double t) {
+    public Position getRelativeLocation(double t) { //TODO make location available in all times
         return quickGetSegment(t).getLocation();
     }
 
@@ -179,8 +196,8 @@ public class MotionProfile2D {
      * @param epsilon
      * @return
      */
-    Position getActualLocation(double t, double epsilon) {
-        return getActualLocation(t, new Position(0, 0, 0), 0, epsilon);
+    Position debugGetActualLocation(double t, double epsilon) {
+        return debugGetActualLocation(t, new Position(0, 0, 0), 0, epsilon);
     }
 
 
@@ -194,7 +211,7 @@ public class MotionProfile2D {
      * @param epsilon
      * @return
      */
-    Position getActualLocation(double t, Position prev, double prevT, double epsilon) {
+    Position debugGetActualLocation(double t, Position prev, double prevT, double epsilon) {
         if (prevT > t)
             throw new UnsupportedOperationException();
         Position ret = prev;
@@ -205,9 +222,15 @@ public class MotionProfile2D {
         return ret;
     }
 
-    public Vector2D getLocation(double t){
-        MotionProfile1D.Segment first = quickGetSegment(t).firstSegment;
-        MotionProfile1D.Segment second = quickGetSegment(t).secondSegment;
+    /**
+     * @param t time
+     * @return location in 1d profile of linear and angular profiles
+     */
+
+    public Vector2D getLocation1D(double t){
+        Segment2D segment = quickGetSegment(t);
+        MotionProfile1D.Segment first = segment.firstSegment;
+        MotionProfile1D.Segment second = segment.secondSegment;
         return new Vector2D(first.getLocation(t), second.getLocation(t));
     }
 

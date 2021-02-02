@@ -101,13 +101,13 @@ public class ChassisProfiler2D {
 
             angularSegment = linearSegment.clone();
 
-            angularSegment.setStartVelocity(curvature * profile.getVelocity(profile.getTEnd()).getX());
-            angularSegment.setStartLocation(profile.getLocation(profile.getTEnd()).getY());
+            angularSegment.setStartVelocity(curvature * profile.getVelocity(profile.getTEnd()).getX()); //TODO swap get tend so it works
+            angularSegment.setStartLocation(profile.getLocation1D(profile.getTEnd()).getY());
 
             prevAngularSegment.setAccel((angularSegment.getStartVelocity() - prevAngularSegment.getStartVelocity())
                     / (prevAngularSegment.getTEnd() - prevAngularSegment.getTStart()));
 
-            State startLocation = new State(subCurves.get(j).getLocation(0), profile.getLocation(profile.getTEnd()).getY(),
+            State startLocation = new State(subCurves.get(j).getLocation(0), profile.getLocation1D(profile.getTEnd()).getY(),
                     profile.getVelocity(profile.getTEnd()).getX(), profile.getVelocity(profile.getTEnd()).getY());
 
             profile.unsafeAddSegment(new MotionProfile2D.Segment2D(linearSegment, angularSegment, startLocation));
