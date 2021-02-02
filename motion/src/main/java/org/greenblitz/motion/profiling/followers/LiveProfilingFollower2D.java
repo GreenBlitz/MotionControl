@@ -45,10 +45,10 @@ public class LiveProfilingFollower2D {
         double currY = state.getY();
         double currAngle = state.getAngle();
 
-        MotionProfile2D.Segment2D currSegment = profile.quickGetSegment(currT);
-        double targetX = currSegment.getStateLocation().getX();
-        double targetY = currSegment.getStateLocation().getY();
-        double targetAngle = currSegment.getStateLocation().getAngle();
+        Position currPosition = profile.getActualLocation(currT);
+        double targetX = currPosition.getX();
+        double targetY = currPosition.getY();
+        double targetAngle = currPosition.getAngle();
 
         return kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle);
     }
@@ -60,8 +60,8 @@ public class LiveProfilingFollower2D {
         int indexOfMergeSegment = profile.quickGetIndex(t+destinationTimeOffset);
         LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(t+destinationTimeOffset);
         return ReturnProfiler2D.generateProfile(
-                profile, new State(getLocation(), linearVelocity, angularVelocity) , indexOfMergeSegment,
-                mergeSegmentNode, 0.01, System.currentTimeMillis(), maxLinearVel, maxAngularVel,
+                profile, new State(getLocation().translate(profile.getJahanaRelation()), linearVelocity, angularVelocity)
+                , indexOfMergeSegment, mergeSegmentNode, 0.01, System.currentTimeMillis(), maxLinearVel, maxAngularVel,
                 maxLinearAcc, maxAngularAcc, tForCurve, 4);
     }
 

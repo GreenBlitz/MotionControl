@@ -17,6 +17,11 @@ public class MotionProfile2D {
 
     private LinkedList<Segment2D> segments;
     private double tEnd;
+
+    public Position getJahanaRelation() {
+        return jahanaRelation;
+    }
+
     private Position jahanaRelation;
 
 
@@ -320,9 +325,14 @@ public class MotionProfile2D {
 
         public double getVelocitySecond(double t){return secondSegment.getVelocity(t);}
 
-        public Position getLocation() {return startLocation;}
+        private Position getLocation() {return startLocation;}
 
-        public State getStateLocation(){
+        /**
+         * location is relative use carefully
+         * @return state of start of segment relative to profile
+         */
+          //TODO make private
+        State getStateLocation(){
             return (new State(getLocation(), getVelocityFirst(getTStart()), getVelocitySecond(getTStart())));
         }
 
