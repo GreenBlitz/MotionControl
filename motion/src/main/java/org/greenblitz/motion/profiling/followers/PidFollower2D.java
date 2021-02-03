@@ -17,30 +17,15 @@ import org.greenblitz.motion.profiling.kinematics.ReverseLocalizerConverter;
  */
 public class PidFollower2D extends AbstractFollower2D {
 
-    protected double kVl, kAl;
-    protected double kVr, kAr;
-    protected MotionProfile2D profile;
     protected double PIDLimit;
     protected CollapsingPIDController leftController, rightController;
     protected PIDController angularVelocityController;
     protected double wheelDist;
     protected IConverter converter;
 
-    protected RemoteCSVTarget wheelTarget;
-    protected RemoteCSVTarget globalTarget;
-    protected RemoteCSVTarget leftOutputTarget;
-    protected RemoteCSVTarget rightOutputTarget;
-    protected boolean sendData = false;
 
-    /**
-     * Use with EXTREME CAUTION. this is used for dynamic motion profiling and is
-     * generally not that safe.
-     *
-     * @param profile
-     */
-    public void setProfile(MotionProfile2D profile) {
-        this.profile = profile;
-    }
+
+
 
     /**
      * coef  = coefficient
@@ -164,27 +149,6 @@ public class PidFollower2D extends AbstractFollower2D {
 
         return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID + angularPIDOut,
                 rightMotorV * kVr + rightMotorA * kAr + rightPID - angularPIDOut);
-    }
-
-    /**
-     * @return true if the profile finished running, false otherwise
-     */
-    @Override
-    public boolean isFinished() {
-        return profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
-    }
-
-    /**
-     * If this is true, data will be sent to CSVLogger about the profile following performance. If this is false
-     * no data will be sent. By default, this is false.
-     * <p>
-     * NOTE: Don't call this function after calling init()!
-     *
-     * @param val whether to send data or not
-     */
-    @Override
-    public void setSendData(boolean val) {
-        sendData = val;
     }
 
 }
