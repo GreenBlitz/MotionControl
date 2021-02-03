@@ -43,7 +43,7 @@ class WheelBasedVelocityGraph {
 
         double tmpLength = 0;
 
-        segments = new ArrayList<>();
+        segments = new ArrayList<>(track.size());
         double curveLen;
         double curvatureStart;
         double curvatureEnd;
