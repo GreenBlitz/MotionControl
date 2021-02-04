@@ -4,8 +4,10 @@ import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
+import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 import org.greenblitz.motion.profiling.ReturnProfiler2D;
+import org.greenblitz.motion.profiling.ThreadedReturnProfiler;
 import org.greenblitz.utils.LinkedList;
 
 public class LiveProfilingFollower2D extends AbstractFollower2D {
@@ -18,13 +20,19 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double maxAngularVel;
     private double maxLinearAcc;
     private double maxAngularAcc;
+    private double tForCurve;
     private MotionProfile2D profile;
-    private PidFollower2D follower;
+    private AbstractFollower2D follower;
     private long startTime;
+    private ThreadedReturnProfiler calculateProfile;
+    private long lastUpdate;
+
+    private static final long updateDelay = 500;
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle, double maxLinearVel, double maxAngularVel,
-                                   double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset){
+                                   double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, double kVl, double kAl, double kVr, double kAr,
+                                   PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double angCollapse, double wheelDist){
         this.profile = profile;
         this.epsilon = epsilon;
         this.kX = kX;
@@ -35,32 +43,47 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         this.maxLinearAcc = maxLinearAcc;
         this.maxAngularAcc = maxAngularAcc;
         this.destinationTimeOffset = destinationTimeOffset;
+        this.tForCurve = tForCurve;
+
+        this.follower = new PidFollower2D(kVl,  kAl,  kVr,  kAr, vals,  collapseVals,  pidLimit,  angVals,  angCollapse,  wheelDist, profile);
     }
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle, double maxLinearVel, double maxAngularVel,
-                                   double maxLinearAcc, double maxAngularAcc){
-        this(profile,epsilon,kX,kY,kAngle,2000,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc);
+                                   double maxLinearAcc, double maxAngularAcc, double tForCurve, double kVl, double kAl, double kVr, double kAr,
+                                   PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double angCollapse, double wheelDist){
+        this(profile,epsilon,kX,kY,kAngle,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc, 2000, tForCurve,  kVl,  kAl,  kVr,  kAr,
+         vals,  collapseVals,  pidLimit,  angVals,  angCollapse,  wheelDist);
     }
 
 
     @Override
     public void init() {
         startTime = System.currentTimeMillis();
+        lastUpdate = startTime;
+        calculateProfile = new ThreadedReturnProfiler(profile, startTime, destinationTimeOffset, maxLinearVel,
+                maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve);
+        follower.init();
+
     }
 
     @Override
     public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow) {
-        return null;
+        updateProfile((leftCurr + rightCurr)/2, angularVel);
+        Vector2D motorPowers = follower.forceRun(leftCurr, rightCurr, angularVel, timeNow);
+        profile = calculateProfile.getProfile();
+        return motorPowers;
     }
 
 
 
 
 
-    public void updateProfile(double tForCurve, double linearVelocity, double angularVelocity){
-        if(this.calcError(linearVelocity, angularVelocity) > epsilon){
-            profile = generateNewProfile(tForCurve,linearVelocity,angularVelocity);
+    public void updateProfile(double linearVelocity, double angularVelocity){
+        if(System.currentTimeMillis() - lastUpdate > updateDelay && !calculateProfile.isAlive() && this.calcError(linearVelocity, angularVelocity) > epsilon){
+             lastUpdate = System.currentTimeMillis();
+             calculateProfile.update(linearVelocity, angularVelocity);
+             calculateProfile.start();
         }
     }
 
@@ -78,19 +101,9 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         return kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle);
     }
 
-    private MotionProfile2D generateNewProfile(double tForCurve, double linearVelocity, double angularVelocity){
-        int t = (int) (System.currentTimeMillis() - startTime);
-        int indexOfMergeSegment = profile.quickGetIndex(t+destinationTimeOffset);
-        LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(t+destinationTimeOffset);
-        return ReturnProfiler2D.generateProfile(
-                profile, new State(getLocation().translate(profile.getJahanaRelation().negate()), linearVelocity, angularVelocity) //TODO test if negate needed
-                , indexOfMergeSegment, mergeSegmentNode, 0.01, System.currentTimeMillis(), maxLinearVel, maxAngularVel,
-                maxLinearAcc, maxAngularAcc, tForCurve, 4);
-    }
 
     private static Position getLocation(){
-        Localizer localizer = Localizer.getInstance();
-        return localizer.getLocation(); //TODO check if getLocation() or getLocationRaw()
+        return Localizer.getInstance().getLocation(); //TODO check if getLocation() or getLocationRaw()
     }
 
 
