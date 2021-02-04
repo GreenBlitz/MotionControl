@@ -13,29 +13,36 @@ public class LiveProfilingFollower2D {
     private double kX;
     private double kY;
     private double kAngle;
+    private double maxLinearVel;
+    private double maxAngularVel;
+    private double maxLinearAcc;
+    private double maxAngularAcc;
     private MotionProfile2D profile;
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle, double destinationTimeOffset){
+                                   double kAngle, double maxLinearVel, double maxAngularVel,
+                                   double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset){
         this.profile = profile;
         this.epsilon = epsilon;
         this.kX = kX;
         this.kY = kY;
         this.kAngle = kAngle;
+        this.maxLinearVel = maxLinearVel;
+        this.maxAngularVel = maxAngularVel;
+        this.maxLinearAcc = maxLinearAcc;
+        this.maxAngularAcc = maxAngularAcc;
         this.destinationTimeOffset = destinationTimeOffset;
     }
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle){
-        this(profile,epsilon,kX,kY,kAngle,2000);
+                                   double kAngle, double maxLinearVel, double maxAngularVel,
+                                   double maxLinearAcc, double maxAngularAcc){
+        this(profile,epsilon,kX,kY,kAngle,2000,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc);
     }
 
-    public void updateProfile(double currT, double maxLinearVel, double maxAngularVel,
-                              double maxLinearAcc, double maxAngularAcc, double tForCurve,
-                              double linearVelocity, double angularVelocity){
+    public void updateProfile(double currT, double tForCurve, double linearVelocity, double angularVelocity){
         if(this.calcError(currT, linearVelocity, angularVelocity) > epsilon){
-            profile = generateNewProfile(maxLinearVel,maxAngularVel, maxLinearAcc,
-                    maxAngularAcc, tForCurve,linearVelocity,angularVelocity);
+            profile = generateNewProfile(tForCurve,linearVelocity,angularVelocity);
         }
     }
 
@@ -53,9 +60,7 @@ public class LiveProfilingFollower2D {
         return kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle);
     }
 
-    private MotionProfile2D generateNewProfile(double maxLinearVel, double maxAngularVel, double maxLinearAcc,
-                                               double maxAngularAcc, double tForCurve, double linearVelocity,
-                                               double angularVelocity){
+    private MotionProfile2D generateNewProfile(double tForCurve, double linearVelocity, double angularVelocity){
         long t = System.currentTimeMillis();
         int indexOfMergeSegment = profile.quickGetIndex(t+destinationTimeOffset);
         LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(t+destinationTimeOffset);
