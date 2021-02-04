@@ -180,7 +180,7 @@ public class MotionProfile2D {
      */
 
     public Position getActualLocation(double t){
-        return getRelativeLocation(t).translate(jahanaRelation.negate());
+        return getRelativeLocation(t).translate(jahanaRelation); //TODO test if negate or not
     }
 
     /**

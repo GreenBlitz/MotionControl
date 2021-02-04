@@ -60,7 +60,7 @@ public class LiveProfilingFollower2D {
         int indexOfMergeSegment = profile.quickGetIndex(t+destinationTimeOffset);
         LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(t+destinationTimeOffset);
         return ReturnProfiler2D.generateProfile(
-                profile, new State(getLocation().translate(profile.getJahanaRelation()), linearVelocity, angularVelocity)
+                profile, new State(getLocation().translate(profile.getJahanaRelation().negate()), linearVelocity, angularVelocity) //TODO test if negate needed
                 , indexOfMergeSegment, mergeSegmentNode, 0.01, System.currentTimeMillis(), maxLinearVel, maxAngularVel,
                 maxLinearAcc, maxAngularAcc, tForCurve, 4);
     }
