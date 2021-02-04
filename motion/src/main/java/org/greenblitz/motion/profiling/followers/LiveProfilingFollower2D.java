@@ -3,11 +3,12 @@ package org.greenblitz.motion.profiling.followers;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
+import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 import org.greenblitz.motion.profiling.ReturnProfiler2D;
 import org.greenblitz.utils.LinkedList;
 
-public class LiveProfilingFollower2D {
+public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double destinationTimeOffset;
     private double epsilon;
     private double kX;
@@ -18,6 +19,8 @@ public class LiveProfilingFollower2D {
     private double maxLinearAcc;
     private double maxAngularAcc;
     private MotionProfile2D profile;
+    private PidFollower2D follower;
+    private long startTime;
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle, double maxLinearVel, double maxAngularVel,
@@ -40,19 +43,34 @@ public class LiveProfilingFollower2D {
         this(profile,epsilon,kX,kY,kAngle,2000,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc);
     }
 
-    public void updateProfile(double currT, double tForCurve, double linearVelocity, double angularVelocity){
-        if(this.calcError(currT, linearVelocity, angularVelocity) > epsilon){
+
+    @Override
+    public void init() {
+        startTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow) {
+        return null;
+    }
+
+
+
+
+
+    public void updateProfile(double tForCurve, double linearVelocity, double angularVelocity){
+        if(this.calcError(linearVelocity, angularVelocity) > epsilon){
             profile = generateNewProfile(tForCurve,linearVelocity,angularVelocity);
         }
     }
 
-    private double calcError(double currT, double linearVelocity, double angularVelocity){
+    private double calcError(double linearVelocity, double angularVelocity){
         State state = new State(getLocation(), linearVelocity, angularVelocity);
         double currX = state.getX();
         double currY = state.getY();
         double currAngle = state.getAngle();
 
-        Position currPosition = profile.getActualLocation(currT);
+        Position currPosition = profile.getActualLocation(System.currentTimeMillis()-startTime);
         double targetX = currPosition.getX();
         double targetY = currPosition.getY();
         double targetAngle = currPosition.getAngle();
@@ -61,7 +79,7 @@ public class LiveProfilingFollower2D {
     }
 
     private MotionProfile2D generateNewProfile(double tForCurve, double linearVelocity, double angularVelocity){
-        long t = System.currentTimeMillis();
+        int t = (int) (System.currentTimeMillis() - startTime);
         int indexOfMergeSegment = profile.quickGetIndex(t+destinationTimeOffset);
         LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(t+destinationTimeOffset);
         return ReturnProfiler2D.generateProfile(
@@ -74,4 +92,6 @@ public class LiveProfilingFollower2D {
         Localizer localizer = Localizer.getInstance();
         return localizer.getLocation(); //TODO check if getLocation() or getLocationRaw()
     }
+
+
 }
