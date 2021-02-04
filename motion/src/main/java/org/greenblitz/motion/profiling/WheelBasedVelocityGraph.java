@@ -191,6 +191,7 @@ class WheelBasedVelocityGraph {
             distanceStart = start;
             distanceEnd = end;
             dx = distanceEnd - distanceStart;
+
             vMax = Math.min(
                     curvatureStart >= 0 ? maximumVel : maximumVel / phi(curvatureStartBar),
                     curvatureEnd >= 0 ? maximumVel : maximumVel / phi(curvatureEndBar)
@@ -240,7 +241,7 @@ class WheelBasedVelocityGraph {
                     Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2 * a_m * dx_r));
 
             // calc the same thing from left wheel prespective
-            double u_e = velocityEndBackwards * phi(curvatureEndBar);
+            double u_e = -velocityEndBackwards * phi(curvatureEndBar);
             double a_lm = psi.getRealMaxAccel(u_e, maxVBar, maxABar);
             double dx_l = dx * (1 - curvatureBar);
 
