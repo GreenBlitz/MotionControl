@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
@@ -107,8 +108,7 @@ public class ChassisProfiler2D {
             prevAngularSegment.setAccel((angularSegment.getStartVelocity() - prevAngularSegment.getStartVelocity())
                     / (prevAngularSegment.getTEnd() - prevAngularSegment.getTStart()));
 
-            State startLocation = new State(subCurves.get(j).getLocation(0), profile.getLocation1D(profile.getTEnd()).getY(),
-                    profile.getVelocity(profile.getTEnd()).getX(), profile.getVelocity(profile.getTEnd()).getY());
+            Position startLocation = new Position(subCurves.get(j).getLocation(0), profile.getLocation1D(profile.getTEnd()).getY());
 
             profile.unsafeAddSegment(new MotionProfile2D.Segment2D(linearSegment, angularSegment, startLocation));
             profile.updateTEnd();

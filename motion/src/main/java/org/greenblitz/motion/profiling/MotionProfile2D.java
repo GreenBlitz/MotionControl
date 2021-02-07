@@ -294,7 +294,7 @@ public class MotionProfile2D {
         private final static double EPSILON = 1E-8;
         private double profileOffset;
 
-        public Segment2D(MotionProfile1D.Segment first, MotionProfile1D.Segment second, State startLocation){
+        public Segment2D(MotionProfile1D.Segment first, MotionProfile1D.Segment second, Position startLocation){
             this.firstSegment = first;
             this.secondSegment = second;
             this.startLocation = startLocation;
