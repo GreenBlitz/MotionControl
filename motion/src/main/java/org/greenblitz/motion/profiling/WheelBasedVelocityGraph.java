@@ -231,7 +231,7 @@ class WheelBasedVelocityGraph {
 
             velocityEndBackwards = velocityEnd; // v_e is here
 
-            // Step 1: find a_m
+            // Step 1:   find a_m
             // a_m is decided by an approximation (assumes curvature is constant)
             double a_m = psi.getRealMaxAccel(-velocityEndBackwards, maxVBar, maxABar);
             // Step 2: v_e
