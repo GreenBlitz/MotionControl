@@ -55,8 +55,7 @@ public class MotionProfile2D {
 
     public void updateJahana(){
         if (jahanaRelation == null) {
-            Localizer localizer = Localizer.getInstance();
-            jahanaRelation = localizer.getLocation().translate(segments.getFirst().getLocation().negate());
+            jahanaRelation = Localizer.getInstance().getLocation().translate(segments.getFirst().getLocation().negate());
         }
     }
     /**

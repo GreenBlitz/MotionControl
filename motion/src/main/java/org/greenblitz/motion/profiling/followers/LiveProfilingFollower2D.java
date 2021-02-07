@@ -60,10 +60,11 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     @Override
     public void init() {
         startTime = System.currentTimeMillis();
+        follower.init();
+        follower.setStartTime(startTime);
         lastUpdate = startTime;
         calculateProfile = new ThreadedReturnProfiler(profile, startTime, destinationTimeOffset, maxLinearVel,
                 maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve);
-        follower.init();
 
     }
 

@@ -41,10 +41,10 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         }
     }
 
-    public void merge(LinkedList<E> mergedList, int startIndexOfMergedList, Node<E> startNodeOfMergedList){
-        this.last.next = startNodeOfMergedList;
-        startNodeOfMergedList.prev = this.last;
-        this.size = this.size + mergedList.size - startIndexOfMergedList;
+    public void merge(LinkedList<E> mergedList, int mergeIndexOfMergedList, Node<E> mergeNodeOfMergedList){
+        this.last.next = mergeNodeOfMergedList;
+        mergeNodeOfMergedList.prev = this.last;
+        this.size = this.size + mergedList.size - mergeIndexOfMergedList;
         this.last = mergedList.last;
     }
 

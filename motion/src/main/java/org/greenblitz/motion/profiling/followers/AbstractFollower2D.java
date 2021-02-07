@@ -7,6 +7,8 @@ import org.greenblitz.motion.profiling.MotionProfile2D;
 
 public abstract class AbstractFollower2D {
 
+
+
     protected long startTime;
     protected double kVl, kAl;
     protected double kVr, kAr;
@@ -27,6 +29,15 @@ public abstract class AbstractFollower2D {
      */
     public void setProfile(MotionProfile2D profile) {
         this.profile = profile;
+    }
+
+    /**
+     *  used to synchronise two followers
+     * @param startTime
+     */
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
 
 
