@@ -276,16 +276,7 @@ public class MotionProfile2D {
 
     @Override
     public String toString() {
-        StringBuilder firstProfile = new StringBuilder("MotionProfile1D{");
-        StringBuilder secondProfile = new StringBuilder("MotionProfile1D{");
-        for (Segment2D s : segments) {
-            firstProfile.append("\n\t").append(s.firstSegment);
-            secondProfile.append("\n\t").append(s.secondSegment);
-        }
-        return "MotionProfile2D{" +
-                "firstProfile=" + firstProfile +
-                "\n, secondProfile=" + secondProfile +
-                '}';
+        return "MotionProfile2D:\n" + segments;
     }
 
     public static class Segment2D{
@@ -335,6 +326,13 @@ public class MotionProfile2D {
             return (new State(getLocation(), getVelocityFirst(getTStart()), getVelocitySecond(getTStart())));
         }
 
+        @Override
+        public String toString(){
+            return "Linear: " + firstSegment.toString() +
+                    "Angular: " + secondSegment.toString() +
+                    "Position: " + startLocation +
+                    "Offset: " + profileOffset;
+        }
 
         //might not be important
         /*public State getLocation(double t){
