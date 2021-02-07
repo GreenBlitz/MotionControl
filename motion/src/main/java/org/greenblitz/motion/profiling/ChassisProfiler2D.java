@@ -111,6 +111,7 @@ public class ChassisProfiler2D {
                     profile.getVelocity(profile.getTEnd()).getX(), profile.getVelocity(profile.getTEnd()).getY());
 
             profile.unsafeAddSegment(new MotionProfile2D.Segment2D(linearSegment, angularSegment, startLocation));
+            profile.updateTEnd();
 
             prevAngularSegment = angularSegment;
 
