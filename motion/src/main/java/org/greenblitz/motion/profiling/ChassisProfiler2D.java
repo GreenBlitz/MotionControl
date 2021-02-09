@@ -91,6 +91,11 @@ public class ChassisProfiler2D {
         List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
 
         velByLoc = new DiscreteVelocityGraph(subCurves, velocityStart, velocityEnd, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, smoothingTail);
+
+        profile.unsafeAddSegment(new MotionProfile2D.Segment2D(new MotionProfile1D.Segment(0, 0, 0,0 ,0 ),
+                new MotionProfile1D.Segment(0, 0, 0, 0, locations.get(0).getAngle()),
+                new Position(subCurves.get(0).getLocation(0), locations.get(0).getAngle())));
+
         double curvature = 0;
 
         for (int j = 0; j < subCurves.size(); j++) {
@@ -102,7 +107,7 @@ public class ChassisProfiler2D {
 
             angularSegment = linearSegment.clone();
 
-            angularSegment.setStartVelocity(curvature * profile.getVelocity(profile.getTEnd()).getX()); //TODO swap get tend so it works
+            angularSegment.setStartVelocity(curvature * profile.getVelocity(profile.getTEnd()).getX());
             angularSegment.setStartLocation(profile.getLocation1D(profile.getTEnd()).getY());
 
             prevAngularSegment.setAccel((angularSegment.getStartVelocity() - prevAngularSegment.getStartVelocity())

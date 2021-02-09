@@ -330,8 +330,8 @@ public class MotionProfile2D {
         public String toString(){
             return "Linear: " + firstSegment.toString() +
                     "Angular: " + secondSegment.toString() +
-                    "Position: " + startLocation +
-                    "Offset: " + profileOffset;
+                    "Position: " + startLocation.toStringRadians() +
+                    "Offset: " + profileOffset + "\n";
         }
 
         //might not be important

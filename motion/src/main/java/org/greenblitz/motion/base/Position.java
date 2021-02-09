@@ -129,4 +129,11 @@ public class Position extends Point {
                 ", angle=" + angle * 180 / Math.PI +
                 '}';
     }
+
+    public String toStringRadians() {
+        return "Position{" +
+                "x=" + x +
+                ", y=" + y +
+                ", angle=" + angle + '}';
+    }
 }
