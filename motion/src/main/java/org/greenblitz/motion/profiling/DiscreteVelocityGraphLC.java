@@ -1,7 +1,15 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.motion.base.TwoTuple;
+import org.greenblitz.motion.profiling.curve.ICurve;
+
+import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * @author Orel & Ittai, inspired by Alexey's code
+ */
 public class DiscreteVelocityGraphLC {
 
     protected List<Segment> segments;
@@ -11,7 +19,67 @@ public class DiscreteVelocityGraphLC {
     private int latestFilterTail;
     private double latestFilterValue = 0;
 
+    //TODO: decide if we want to use the same bar to all segments when we develop.
+    public double maxVBar;
+    public double maxABar;
 
+    public DiscreteVelocityGraphLC(List<ICurve> track, double vStart, double vEnd, double maxVel,
+                                   double maxAcc, int tailSize) {
+
+        maxVBar = maxVel;
+        maxABar = maxAcc;
+
+        double tmpLength = 0;
+
+        segments = new ArrayList<>();
+        double curveLen;
+        double curvatureStart;
+        double curvatureEnd;
+
+        for (ICurve curve : track) {
+            curveLen = curve.getLength(1);
+            curvatureStart = curve.getCurvature(0);
+            curvatureEnd = curve.getCurvature(1);
+            segments.add(new DiscreteVelocityGraphLC.Segment(tmpLength, tmpLength + curveLen,
+                    curvatureStart, curvatureEnd, maxVel)
+            );
+            tmpLength += curveLen;
+        }
+
+        int segCount = segments.size();
+
+
+
+        segments.get(0).developForwards(vStart, maxVBar);
+        segments.get(segCount - 1).developBackwards(maxVBar, vEnd);
+
+        for (int i = 1; i < segCount - 1; i++) {
+            segments.get(i)
+                    .developForwards(segments.get(i - 1).velocityEndForwards, segments.get(i + 1).vMax);
+
+            segments.get(segCount - 1 - i)
+                    .developBackwards(segments.get(segCount - 2 - i).vMax, segments.get(segCount - i).velocityStartBackwards);
+        }
+
+        segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards, vEnd);
+        segments.get(0).developBackwards(vStart, segments.get(1).velocityStartBackwards);
+    }
+
+    public MotionProfile2D generateProfile() {
+
+        double t = 0;
+        MotionProfile1D angular = new MotionProfile1D();
+        MotionProfile1D linear = new MotionProfile1D();
+        TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> segs;
+
+        for (DiscreteVelocityGraphLC.Segment s : segments) {
+            segs = s.toSegment(t);
+            t = segs.getFirst().tEnd;
+            angular.unsafeAddSegment(segs.getFirst());
+            linear.unsafeAddSegment(segs.getSecond());
+        }
+        return new MotionProfile2D(angular, linear);
+    }
 
     class Segment{
 
@@ -32,8 +100,6 @@ public class DiscreteVelocityGraphLC {
         public double vMax;
         public double vMaxRaw;
 
-        public double acceleration;
-
         public double curvatureStart;
         public double curvatureEnd;
         //public double curvatureStartBar;
@@ -52,10 +118,9 @@ public class DiscreteVelocityGraphLC {
          * @param curvatureStart the curvature at the start point of the segment.
          * @param curvatureEnd the curvature at the end point of the segment.
          * @param vMax the maximum linear velocity available at the whole segment considering the curvature.
-         * @param acceleration the acceleration
          */
-        public Segment(double distanceStart, double distanceEnd, double curvatureStart, double curvatureEnd, double vMax
-                , double acceleration) {
+        public Segment(double distanceStart, double distanceEnd, double curvatureStart, double curvatureEnd,
+                       double vMax) {
 
             this.curvatureStart = curvatureStart;
             this.curvatureEnd = curvatureEnd;
@@ -69,7 +134,6 @@ public class DiscreteVelocityGraphLC {
             this.vMax = vMax;
             ; // Either the right wheel is faster (then vMax = maximumVel) or the left wheel is faster (then vMax = maximumVel / phi(curvatureEndBar))
             vMaxRaw = this.vMax;
-            this.acceleration = acceleration;
         }
 
         /**
@@ -80,7 +144,7 @@ public class DiscreteVelocityGraphLC {
             velocityStartForwards = startV;
 
 
-            double withTheGrainAccel = linearInterpolator.getRealMaxAccel(velocityStartForwards, vMax, acceleration);
+            double withTheGrainAccel = linearInterpolator.getRealMaxAccel(velocityStartForwards, maxVBar, maxABar);
 
             velocityEndForwards = Math.min(vMax,
                     Math.sqrt(velocityStartForwards * velocityStartForwards + 2 * (distanceEnd - distanceStart) * withTheGrainAccel));
@@ -95,7 +159,7 @@ public class DiscreteVelocityGraphLC {
         public void developBackwards(double startVMax, double endV) {
             velocityEndBackwards = endV;
 
-            double actAcc = linearInterpolator.getRealMaxAccel(-velocityEndBackwards, vMax, acceleration);
+            double actAcc = linearInterpolator.getRealMaxAccel(-velocityEndBackwards, maxVBar, maxABar);
 
             velocityStartBackwards = Math.min(vMax,
                     Math.sqrt(velocityEndBackwards * velocityEndBackwards + 2 * (distanceEnd - distanceStart) * actAcc));
@@ -126,6 +190,28 @@ public class DiscreteVelocityGraphLC {
             }
             latestFilterValue = val;
             this.vMax = Math.min(val / (end - start + 1), this.vMaxRaw);
+        }
+
+        public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart) {
+            double startV = Math.min(velocityStartForwards, velocityStartBackwards);
+            double endV = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
+            double startW = curvature * startV;
+            double endW = curvature * endV;
+            double dt = dx / (0.5 * (startV + endV));
+
+            MotionProfile1D.Segment linear = new MotionProfile1D.Segment(
+                    tStart,
+                    tStart + dt,
+                    (endV - startV) / dt,
+                    startV,
+                    endV);
+            MotionProfile1D.Segment angular = new MotionProfile1D.Segment(
+                    tStart,
+                    tStart + dt,
+                    (endW - startW) / dt,
+                    startW,
+                    endW);
+            return new TwoTuple<>(angular, linear); // TODO: check in what order we should return
         }
     }
 }
