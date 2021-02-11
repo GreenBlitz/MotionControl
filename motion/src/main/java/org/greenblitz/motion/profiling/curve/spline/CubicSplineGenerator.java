@@ -25,8 +25,8 @@ public class CubicSplineGenerator {
      * @return An ICurve of the polynomial
      */
     public static PolynomialCurve generateSpline(State start, State end, double t) {
-        double angS = start.getAngle();
-        double angE = end.getAngle();
+        double angS = start.getAngle()*-1;    // spline worked on opposite angle to rest of code
+        double angE = end.getAngle()*-1;
 
         return new PolynomialCurve(3,
                 getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), t),
