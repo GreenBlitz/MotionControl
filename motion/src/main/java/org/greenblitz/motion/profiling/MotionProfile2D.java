@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.Localizer;
+import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
@@ -55,7 +56,7 @@ public class MotionProfile2D {
 
     public void updateJahana(){
         if (jahanaRelation == null) {
-            jahanaRelation = Localizer.getInstance().getLocation().translate(segments.getFirst().getLocation().negate());
+            jahanaRelation = Localizer.getInstance().getLocation().translate(segments.getFirst().getStartLocation().negate());
         }
     }
     /**
@@ -188,7 +189,7 @@ public class MotionProfile2D {
      * @return startLocation at segment index relative to path
      */
     public Position getRelativeLocation(double t) { //TODO make location available in all times
-        return quickGetSegment(t).getLocation();
+        return quickGetSegment(t).getStartLocation();
     }
 
 
@@ -315,15 +316,21 @@ public class MotionProfile2D {
 
         public double getVelocitySecond(double t){return secondSegment.getVelocity(t);}
 
-        private Position getLocation() {return startLocation;}
+        private Position getStartLocation() {return startLocation;}
 
         /**
          * location is relative use carefully
          * @return state of start of segment relative to profile
          */
-          //TODO make private
-        State getStateLocation(){
-            return (new State(getLocation(), getVelocityFirst(getTStart()), getVelocitySecond(getTStart())));
+         State getStateLocation(double t){
+             double dt = t-getTStart();
+             Point startPoint = startLocation;
+             double angS = startLocation.getAngle();
+             double angE = angS + getVelocitySecond(getTStart())*(dt) + 0.5*getAccelerationSecond()*(dt)*(dt);
+             double avgAng = (angE+angS)/2;
+             double dist = dt*getVelocityFirst(getTStart())*dt + 0.5*getAccelerationFirst()*(dt)*(dt);
+             return new State(startPoint.translate(dist*Math.cos(avgAng), dist*Math.sin(avgAng)), angE, getVelocityFirst(t), getVelocitySecond(t));
+
         }
 
         @Override
