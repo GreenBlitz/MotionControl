@@ -43,8 +43,8 @@ public class ChassisProfiler2DTest {
     void ChassisProfiler2DTest() {
         List<State> lst = new ArrayList<>();
         lst.add(new State(0, 0, 0, 0, 0));
-        lst.add(new State(3, 5, 0, 0, 0));
-        ChassisProfiler2D.generateProfile(lst, 0.01, 5, 4, 3, 2);
+        lst.add(new State(3, 5, Math.PI/2, 0, 0));
+        System.out.println(ChassisProfiler2D.generateProfile(lst, 0.001, 5, 4, 3, 2));
     }
 
 }

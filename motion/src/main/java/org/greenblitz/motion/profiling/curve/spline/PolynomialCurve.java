@@ -5,6 +5,8 @@ import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.curve.AbstractCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
 
+import java.util.Arrays;
+
 /**
  * @author peleg
  */
@@ -157,6 +159,18 @@ public class PolynomialCurve extends AbstractCurve {
 
     public int getRank() {
         return rank;
+    }
+
+    public String toString(){
+        StringBuilder x = new StringBuilder("x: ");
+        StringBuilder y = new StringBuilder("y: ");
+        for (int i = rank; i > 0; i--) {
+            x.append(this.x[i]).append(" * x^").append(i).append(" + ");
+            y.append(this.y[i]).append(" * x^").append(i).append(" + ");
+        }
+        x.append(this.x[0]).append(" * x^").append(0);
+        y.append(this.y[0]).append(" * x^").append(0);
+        return (x.append("\n").append(y).toString());
     }
 
 }
