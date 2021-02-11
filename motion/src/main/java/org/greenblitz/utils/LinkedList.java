@@ -761,6 +761,10 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
             return prev;
         }
 
+        public String toString(){
+            return (this.item.toString());
+        }
+
     }
 
     private class ListItr implements ListIterator<E> {
@@ -872,6 +876,8 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
                 throw new ConcurrentModificationException();
             }
         }
+
+
     }
 }
 
