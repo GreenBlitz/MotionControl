@@ -81,11 +81,16 @@ public class DiscreteVelocityGraphLC {
         MotionProfile1D linear = new MotionProfile1D();
         TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> segs;
 
+        double startAngle = 0;
+        int i = 0;
+
         for (DiscreteVelocityGraphLC.Segment s : segments) {
-            segs = s.toSegment(t);
+            segs = s.toSegment(t, startAngle);
             t = segs.getFirst().tEnd;
             angular.unsafeAddSegment(segs.getFirst());
             linear.unsafeAddSegment(segs.getSecond());
+
+            startAngle += segs.getFirst().getStartLocation();   
         }
         return new MotionProfile2D(angular, linear);
     }
@@ -204,7 +209,7 @@ public class DiscreteVelocityGraphLC {
             this.vMax = Math.min(val / (end - start + 1), this.vMaxRaw);
         }
 
-        public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart) {
+        public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart, double startAngle) {
             double startV = Math.min(velocityStartForwards, velocityStartBackwards);
             double endV = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
             double startW = curvature * startV;
@@ -218,13 +223,13 @@ public class DiscreteVelocityGraphLC {
                     tStart + dt,
                     (endV - startV) / dt,
                     startV,
-                    endV);
+                    distanceStart);
             MotionProfile1D.Segment angular = new MotionProfile1D.Segment(
                     tStart,
                     tStart + dt,
                     (endW - startW) / dt,
                     startW,
-                    endW);
+                    startAngle);
             return new TwoTuple<>(angular, linear); // TODO: check in what order we should return
         }
     }
