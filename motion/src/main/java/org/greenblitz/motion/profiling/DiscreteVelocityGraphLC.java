@@ -63,10 +63,12 @@ public class DiscreteVelocityGraphLC {
 
         segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards, vEnd);
         segments.get(0).developBackwards(vStart, segments.get(1).velocityStartBackwards);
+
+        //TODO: use filter
     }
 
     public MotionProfile2D generateProfile() {
-
+        //TODO: check that all stuff happen in ChassisProfiler2D generateProfile are happening here somewhere
         double t = 0;
         MotionProfile1D angular = new MotionProfile1D();
         MotionProfile1D linear = new MotionProfile1D();
@@ -136,6 +138,8 @@ public class DiscreteVelocityGraphLC {
             vMaxRaw = this.vMax;
         }
 
+        //TODO: no maxVBar diamond graph
+
         /**
          * @param startV the velocity this segment should start from = the velocity that the previous segment was ended at
          * @param endVMax the max velocity we can reach considering the max velocity of the next segment
@@ -167,7 +171,7 @@ public class DiscreteVelocityGraphLC {
 
         }
 
-        //go to line 9
+        //go to line 17
         public void filter(List<WheelBasedVelocityGraph.Segment> segs, int subject, int tailSize) {
             int start = Math.max(subject - tailSize, 0);
             int end = Math.min(subject + tailSize, segs.size() - 1);
@@ -199,6 +203,8 @@ public class DiscreteVelocityGraphLC {
             double endW = curvature * endV;
             double dt = dx / (0.5 * (startV + endV));
 
+
+            //TODO: check the MotionProfile1D.Segment constructor
             MotionProfile1D.Segment linear = new MotionProfile1D.Segment(
                     tStart,
                     tStart + dt,
