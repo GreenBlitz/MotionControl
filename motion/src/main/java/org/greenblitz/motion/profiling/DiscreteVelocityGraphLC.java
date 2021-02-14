@@ -20,14 +20,17 @@ public class DiscreteVelocityGraphLC {
     private double latestFilterValue = 0;
 
     //TODO: decide if we want to use the same bar to all segments when we develop.
-    public double maxVBar;
-    public double maxABar;
+    public double maxVBar, maxWBar;
+    public double maxAVBar, maxAWBar;
 
-    public DiscreteVelocityGraphLC(List<ICurve> track, double vStart, double vEnd, double maxVel,
-                                   double maxAcc, int tailSize) {
+    public DiscreteVelocityGraphLC(List<ICurve> track, double vStart, double vEnd, double maxV, double maxW,
+                                   double maxAccVel, double maxAccWel, int tailSize) {
 
-        maxVBar = maxVel;
-        maxABar = maxAcc;
+        maxVBar = maxV;
+        maxWBar = maxW;
+        maxAVBar = maxAccVel;
+        maxAWBar = maxAccWel;
+
 
         double tmpLength = 0;
 
@@ -35,13 +38,17 @@ public class DiscreteVelocityGraphLC {
         double curveLen;
         double curvatureStart;
         double curvatureEnd;
+        double curvature;
 
         for (ICurve curve : track) {
             curveLen = curve.getLength(1);
             curvatureStart = curve.getCurvature(0);
             curvatureEnd = curve.getCurvature(1);
+            curvature = curve.getCurvature();
             segments.add(new DiscreteVelocityGraphLC.Segment(tmpLength, tmpLength + curveLen,
-                    curvatureStart, curvatureEnd, maxVel)
+                    curvatureStart, curvatureEnd,
+                    ChassisProfiler2D.getMaxVelocity(maxVBar, maxWBar, curvature),
+                    ChassisProfiler2D.getMaxAcceleration(maxAVBar, maxAWBar, curvature))
             );
             tmpLength += curveLen;
         }
@@ -101,6 +108,7 @@ public class DiscreteVelocityGraphLC {
 
         public double vMax;
         public double vMaxRaw;
+        public double aMax;
 
         public double curvatureStart;
         public double curvatureEnd;
@@ -122,7 +130,7 @@ public class DiscreteVelocityGraphLC {
          * @param vMax the maximum linear velocity available at the whole segment considering the curvature.
          */
         public Segment(double distanceStart, double distanceEnd, double curvatureStart, double curvatureEnd,
-                       double vMax) {
+                       double vMax, double aMax) {
 
             this.curvatureStart = curvatureStart;
             this.curvatureEnd = curvatureEnd;
@@ -148,7 +156,7 @@ public class DiscreteVelocityGraphLC {
             velocityStartForwards = startV;
 
 
-            double withTheGrainAccel = linearInterpolator.getRealMaxAccel(velocityStartForwards, maxVBar, maxABar);
+            double withTheGrainAccel = linearInterpolator.getRealMaxAccel(velocityStartForwards, vMaxRaw, aMax);
 
             velocityEndForwards = Math.min(vMax,
                     Math.sqrt(velocityStartForwards * velocityStartForwards + 2 * (distanceEnd - distanceStart) * withTheGrainAccel));
@@ -163,7 +171,7 @@ public class DiscreteVelocityGraphLC {
         public void developBackwards(double startVMax, double endV) {
             velocityEndBackwards = endV;
 
-            double actAcc = linearInterpolator.getRealMaxAccel(-velocityEndBackwards, maxVBar, maxABar);
+            double actAcc = linearInterpolator.getRealMaxAccel(-velocityEndBackwards, vMaxRaw, aMax);
 
             velocityStartBackwards = Math.min(vMax,
                     Math.sqrt(velocityEndBackwards * velocityEndBackwards + 2 * (distanceEnd - distanceStart) * actAcc));
