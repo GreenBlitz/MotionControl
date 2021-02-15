@@ -6,6 +6,7 @@ import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
+import org.greenblitz.motion.profiling.ProfilingData;
 import org.greenblitz.motion.profiling.ReturnProfiler2D;
 import org.greenblitz.motion.profiling.ThreadedReturnProfiler;
 import org.greenblitz.utils.LinkedList;
@@ -50,6 +51,12 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
                                    double kAngle, double maxLinearVel, double maxAngularVel,
                                    double maxLinearAcc, double maxAngularAcc, double tForCurve, AbstractFollower2D follower){
         this(profile,epsilon,kX,kY,kAngle,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc, 2000, tForCurve,  follower);
+    }
+
+    public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
+                                   double kAngle, ProfilingData data, double tForCurve, AbstractFollower2D follower){
+        this(profile,epsilon,kX,kY,kAngle,data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
+                data.getMaxLinearAccel(), data.getMaxAngularAccel(), 2000, tForCurve,  follower);
     }
 
 
