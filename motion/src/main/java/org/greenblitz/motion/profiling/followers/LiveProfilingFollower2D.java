@@ -31,8 +31,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle, double maxLinearVel, double maxAngularVel,
-                                   double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, double kVl, double kAl, double kVr, double kAr,
-                                   PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double angCollapse, double wheelDist){
+                                   double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, AbstractFollower2D follower) {
         this.profile = profile;
         this.epsilon = epsilon;
         this.kX = kX;
@@ -44,16 +43,13 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         this.maxAngularAcc = maxAngularAcc;
         this.destinationTimeOffset = destinationTimeOffset;
         this.tForCurve = tForCurve;
-
-        this.follower = new PidFollower2D(kVl,  kAl,  kVr,  kAr, vals,  collapseVals,  pidLimit,  angVals,  angCollapse,  wheelDist, profile);
+        this.follower = follower;
     }
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle, double maxLinearVel, double maxAngularVel,
-                                   double maxLinearAcc, double maxAngularAcc, double tForCurve, double kVl, double kAl, double kVr, double kAr,
-                                   PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double angCollapse, double wheelDist){
-        this(profile,epsilon,kX,kY,kAngle,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc, 2000, tForCurve,  kVl,  kAl,  kVr,  kAr,
-         vals,  collapseVals,  pidLimit,  angVals,  angCollapse,  wheelDist);
+                                   double maxLinearAcc, double maxAngularAcc, double tForCurve, AbstractFollower2D follower){
+        this(profile,epsilon,kX,kY,kAngle,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc, 2000, tForCurve,  follower);
     }
 
 
