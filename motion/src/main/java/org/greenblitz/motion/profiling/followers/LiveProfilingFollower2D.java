@@ -80,9 +80,9 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
 
     @Override
     public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow) {
-        //updateProfile((leftCurr + rightCurr)/2, angularVel, timeNow);
+        updateProfile((leftCurr + rightCurr)/2, angularVel, timeNow);
         Vector2D motorPowers = follower.forceRun(leftCurr, rightCurr, angularVel, timeNow);
-        //profile = calculateProfile.getProfile();
+        profile = calculateProfile.getProfile();
         return motorPowers;
     }
 
