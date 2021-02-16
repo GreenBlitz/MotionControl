@@ -31,11 +31,12 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private ThreadedReturnProfiler calculateProfile;
     private long lastUpdate;
 
-    private static final long updateDelay = 500;
+    private double updateDelay;
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle, double kLinVel, double kAngVel, double maxLinearVel, double maxAngularVel,
-                                   double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, AbstractFollower2D follower) {
+                                   double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, AbstractFollower2D follower,
+                                   double updateDelay) {
         this.profile = profile;
         this.epsilon = epsilon;
         this.kX = kX;
@@ -50,19 +51,18 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         this.destinationTimeOffset = destinationTimeOffset;
         this.tForCurve = tForCurve;
         this.follower = follower;
+        this.updateDelay = updateDelay;
     }
 
-    public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle, double kLinVel, double kAngVel, double maxLinearVel, double maxAngularVel,
-                                   double maxLinearAcc, double maxAngularAcc, double tForCurve, AbstractFollower2D follower){
-        this(profile,epsilon,kX,kY,kAngle,kLinVel,kAngVel,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc, 2000, tForCurve,  follower);
-    }
+
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle,double kLinVel,double kAngVel, ProfilingData data, double tForCurve, AbstractFollower2D follower){
+                                   double kAngle,double kLinVel,double kAngVel, ProfilingData data, double destinationTimeOffset,
+                                   double tForCurve, AbstractFollower2D follower, double updateDelay){
         this(profile,epsilon,kX,kY,kAngle,kLinVel,kAngVel,data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
-                data.getMaxLinearAccel(), data.getMaxAngularAccel(), 2000, tForCurve,  follower);
+                data.getMaxLinearAccel(), data.getMaxAngularAccel(), destinationTimeOffset, tForCurve,  follower, updateDelay);
     }
+
 
 
     @Override
