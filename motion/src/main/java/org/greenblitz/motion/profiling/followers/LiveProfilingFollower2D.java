@@ -25,7 +25,6 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double maxLinearAcc;
     private double maxAngularAcc;
     private double tForCurve;
-    private MotionProfile2D profile;
     private AbstractFollower2D follower;
     private long startTime;
     private ThreadedReturnProfiler calculateProfile;
