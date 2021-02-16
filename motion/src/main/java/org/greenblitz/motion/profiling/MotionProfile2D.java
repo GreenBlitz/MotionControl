@@ -192,6 +192,11 @@ public class MotionProfile2D {
         return quickGetSegment(t).getStartLocation();
     }
 
+    public State getStateLocation(double t) {
+        State relative = quickGetSegment(t).getStateLocation(t);
+        return new State(relative.translate(jahanaRelation), relative.getLinearVelocity(), relative.getAngularVelocity());
+    }
+
 
     /**
      * For testing purposes only! Don't use otherwise

@@ -18,6 +18,8 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double kX;
     private double kY;
     private double kAngle;
+    private double kLinVel;
+    private double kAngVel;
     private double maxLinearVel;
     private double maxAngularVel;
     private double maxLinearAcc;
@@ -32,13 +34,15 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private static final long updateDelay = 500;
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle, double maxLinearVel, double maxAngularVel,
+                                   double kAngle, double kLinVel, double kAngVel, double maxLinearVel, double maxAngularVel,
                                    double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, AbstractFollower2D follower) {
         this.profile = profile;
         this.epsilon = epsilon;
         this.kX = kX;
         this.kY = kY;
         this.kAngle = kAngle;
+        this.kLinVel = kLinVel;
+        this.kAngVel = kAngVel;
         this.maxLinearVel = maxLinearVel;
         this.maxAngularVel = maxAngularVel;
         this.maxLinearAcc = maxLinearAcc;
@@ -49,14 +53,14 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     }
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle, double maxLinearVel, double maxAngularVel,
+                                   double kAngle, double kLinVel, double kAngVel, double maxLinearVel, double maxAngularVel,
                                    double maxLinearAcc, double maxAngularAcc, double tForCurve, AbstractFollower2D follower){
-        this(profile,epsilon,kX,kY,kAngle,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc, 2000, tForCurve,  follower);
+        this(profile,epsilon,kX,kY,kAngle,kLinVel,kAngVel,maxLinearVel,maxAngularVel,maxLinearAcc,maxAngularAcc, 2000, tForCurve,  follower);
     }
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle, ProfilingData data, double tForCurve, AbstractFollower2D follower){
-        this(profile,epsilon,kX,kY,kAngle,data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
+                                   double kAngle,double kLinVel,double kAngVel, ProfilingData data, double tForCurve, AbstractFollower2D follower){
+        this(profile,epsilon,kX,kY,kAngle,kLinVel,kAngVel,data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
                 data.getMaxLinearAccel(), data.getMaxAngularAccel(), 2000, tForCurve,  follower);
     }
 
@@ -70,7 +74,8 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         calculateProfile = new ThreadedReturnProfiler(profile, startTime, destinationTimeOffset, maxLinearVel,
                 maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve);
         if(sendData){
-            globalTarget = RemoteCSVTarget.initTarget("errorTarget","time", "error");
+            globalTarget = RemoteCSVTarget.initTarget("errorTarget","time", "error", "currX", "currY",
+                    "currAngle", "currLinVel", "currAngVel", "targetX", "targetY", "targetAngle", "targetLinVel", "targetAngVel");
         }
 
     }
@@ -91,9 +96,8 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         double error = 0;
         if(sendData) {
             error = this.calcError(linearVelocity, angularVelocity, time);
-            globalTarget.report(time, error);
         }
-        if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&((sendData && error < epsilon) || this.calcError(linearVelocity, angularVelocity, time) > epsilon)){
+        if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&(true ||((sendData && error < epsilon) || this.calcError(linearVelocity, angularVelocity, time) > epsilon))){
              lastUpdate = System.currentTimeMillis();
              calculateProfile.update(linearVelocity, angularVelocity);
              calculateProfile.start();
@@ -105,13 +109,21 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         double currX = state.getX();
         double currY = state.getY();
         double currAngle = state.getAngle();
+        double currLinVel = state.getLinearVelocity();
+        double currAngVel = state.getAngularVelocity();
 
-        Position currPosition = profile.getActualLocation(time-startTime);
+        State currPosition = profile.getStateLocation(time-startTime);
         double targetX = currPosition.getX();
         double targetY = currPosition.getY();
         double targetAngle = currPosition.getAngle();
+        double targetLinVel = currPosition.getLinearVelocity();
+        double targetAngVel = currPosition.getAngularVelocity();
 
-        double error = kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle);
+        double error = kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle) + kLinVel *
+                (targetLinVel - currLinVel) + kAngVel * (targetAngVel - currAngVel);
+        if(sendData){
+            globalTarget.report(time, error, currX, currY, currAngle, currLinVel, currAngVel, targetX, targetY, targetAngle, targetLinVel, targetLinVel);
+        }
         return error;
     }
 
