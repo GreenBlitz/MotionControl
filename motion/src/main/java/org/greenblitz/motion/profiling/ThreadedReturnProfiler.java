@@ -45,9 +45,16 @@ public class ThreadedReturnProfiler extends Thread {
     }
 
     private MotionProfile2D generateNewProfile(){
+        double tEnd = profile.getTEnd();
         int t = (int) (System.currentTimeMillis() - startTime);
-        int indexOfMergeSegment = profile.quickGetIndex(t+destinationTimeOffset);
-        LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(t+destinationTimeOffset);
+        double tMerge;
+        if(t + destinationTimeOffset > tEnd){
+            tMerge = tEnd;
+        }else{
+            tMerge = t + destinationTimeOffset;
+        }
+        int indexOfMergeSegment = profile.quickGetIndex(tMerge);
+        LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(tMerge);
         return ReturnProfiler2D.generateProfile(
                 profile, new org.greenblitz.motion.base.State(Localizer.getInstance().getLocation().translate(profile.getJahanaRelation().negate()), linearVelocity, angularVelocity) //TODO test if negate needed
                 , indexOfMergeSegment, mergeSegmentNode, 0.01, System.currentTimeMillis()-startTime, maxLinearVel, maxAngularVel,
