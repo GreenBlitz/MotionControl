@@ -1,5 +1,6 @@
 package org.greenblitz.motion.profiling.followers;
 
+import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
@@ -68,12 +69,15 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         lastUpdate = startTime;
         calculateProfile = new ThreadedReturnProfiler(profile, startTime, destinationTimeOffset, maxLinearVel,
                 maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve);
+        if(sendData){
+            globalTarget = RemoteCSVTarget.initTarget("errorTarget","time", "error");
+        }
 
     }
 
     @Override
     public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow) {
-        updateProfile((leftCurr + rightCurr)/2, angularVel);
+        updateProfile((leftCurr + rightCurr)/2, angularVel, timeNow);
         Vector2D motorPowers = follower.forceRun(leftCurr, rightCurr, angularVel, timeNow);
         profile = calculateProfile.getProfile();
         return motorPowers;
@@ -83,26 +87,32 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
 
 
 
-    public void updateProfile(double linearVelocity, double angularVelocity){
-        if(System.currentTimeMillis() - lastUpdate > updateDelay && !calculateProfile.isAlive() && this.calcError(linearVelocity, angularVelocity) > epsilon){
+    public void updateProfile(double linearVelocity, double angularVelocity, double time){
+        double error = 0;
+        if(sendData) {
+            error = this.calcError(linearVelocity, angularVelocity, time);
+            globalTarget.report(time, error);
+        }
+        if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&((sendData && error < epsilon) || this.calcError(linearVelocity, angularVelocity, time) > epsilon)){
              lastUpdate = System.currentTimeMillis();
              calculateProfile.update(linearVelocity, angularVelocity);
              calculateProfile.start();
         }
     }
 
-    private double calcError(double linearVelocity, double angularVelocity){
+    private double calcError(double linearVelocity, double angularVelocity, double time){
         State state = new State(getLocation(), linearVelocity, angularVelocity);
         double currX = state.getX();
         double currY = state.getY();
         double currAngle = state.getAngle();
 
-        Position currPosition = profile.getActualLocation(System.currentTimeMillis()-startTime);
+        Position currPosition = profile.getActualLocation(time-startTime);
         double targetX = currPosition.getX();
         double targetY = currPosition.getY();
         double targetAngle = currPosition.getAngle();
 
-        return kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle);
+        double error = kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle);
+        return error;
     }
 
 
