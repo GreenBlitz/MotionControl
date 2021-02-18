@@ -57,8 +57,8 @@ public class DiscreteVelocityGraphLC {
 
 
 
-        segments.get(0).developForwards(vStart, maxVBar);
-        segments.get(segCount - 1).developBackwards(maxVBar, vEnd);
+        segments.get(0).developForwards(vStart, segments.get(1).vMax);
+        segments.get(segCount - 1).developBackwards(segments.get(segCount - 2).vMax, vEnd);
 
         for (int i = 1; i < segCount - 1; i++) {
             segments.get(i)
