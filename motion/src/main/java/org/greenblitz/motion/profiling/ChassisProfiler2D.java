@@ -148,6 +148,7 @@ public class ChassisProfiler2D {
         return velByLoc.generateProfile();
     }
 
+
     public static MotionProfile2D generateProfileLCv1(List<State> locations,
                                                       double jump, double velocityStart, double velocityEnd,
                                                       double maxV, double maxW, double maxAccVel, double maxAccWel,
@@ -206,5 +207,10 @@ public class ChassisProfiler2D {
         return returnList;
     }
 
+
+    public static void main(String[] args) {
+        //TODO: Add tests for the generateProfile2D
+
+    }
 
 }

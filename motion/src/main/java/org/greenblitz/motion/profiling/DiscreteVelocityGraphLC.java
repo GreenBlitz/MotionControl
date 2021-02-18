@@ -81,17 +81,25 @@ public class DiscreteVelocityGraphLC {
         MotionProfile1D linear = new MotionProfile1D();
         TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> segs;
 
-        double startAngle = 0;
+        double nextStart = 0;
         int i = 0;
 
         for (DiscreteVelocityGraphLC.Segment s : segments) {
-            segs = s.toSegment(t, startAngle);
+            segs = s.toSegment(t, nextStart);
             t = segs.getFirst().tEnd;
             angular.unsafeAddSegment(segs.getFirst());
             linear.unsafeAddSegment(segs.getSecond());
 
-            startAngle += segs.getFirst().getStartLocation();   
+            MotionProfile1D.Segment ang = segs.getFirst();
+            double dt = ang.getTEnd() - ang.getTStart();
+
+            nextStart += ang.getStartLocation() + dt*ang.getStartVelocity() + dt*dt*ang.getAccel()*0.5; // x = x0 + v0t + 0.5att
         }
+
+
+        System.out.println("Angular\n" + angular.toString());
+        System.out.println("Linear\n" + linear.toString());
+
         return new MotionProfile2D(angular, linear);
     }
 
