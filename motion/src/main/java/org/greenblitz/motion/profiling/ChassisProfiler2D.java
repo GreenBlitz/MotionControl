@@ -148,6 +148,16 @@ public class ChassisProfiler2D {
         return velByLoc.generateProfile();
     }
 
+    public static MotionProfile2D generateProfileLCv1(List<State> locations,
+                                                      double jump, double velocityStart, double velocityEnd,
+                                                      double maxV, double maxW, double maxAccVel, double maxAccWel,
+                                                      double tForCurve, int tailSize ){
+        int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
+        List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
+        DiscreteVelocityGraphLC orelIsStupid = new DiscreteVelocityGraphLC(subCurves, velocityStart, velocityEnd, maxV, maxW, maxAccVel, maxAccWel, tailSize);
+        return orelIsStupid.generateProfile();
+    }
+
     private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity) {
         List<ICurve> subCurves = new ArrayList<>(capacity);
         State first, second;
@@ -165,7 +175,7 @@ public class ChassisProfiler2D {
         }
         return subCurves;
     }
-
+    
     public static double getMaxVelocity(double maxLinearVel, double maxAngularVel, double curvature) {
         return 1.0 / (1.0 / maxLinearVel + Math.abs(curvature) / maxAngularVel);
     }
