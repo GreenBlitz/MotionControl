@@ -321,7 +321,7 @@ public class MotionProfile2D {
 
         public double getVelocitySecond(double t){return secondSegment.getVelocity(t);}
 
-        private Position getStartLocation() {return startLocation;}
+        Position getStartLocation() {return startLocation;}
 
         /**
          * location is relative use carefully

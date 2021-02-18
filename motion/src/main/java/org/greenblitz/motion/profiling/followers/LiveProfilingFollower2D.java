@@ -5,12 +5,9 @@ import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
-import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 import org.greenblitz.motion.profiling.ProfilingData;
-import org.greenblitz.motion.profiling.ReturnProfiler2D;
 import org.greenblitz.motion.profiling.ThreadedReturnProfiler;
-import org.greenblitz.utils.LinkedList;
 
 public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double destinationTimeOffset;
@@ -32,10 +29,12 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
 
     private double updateDelay;
 
+    private double stateSampling;
+
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle, double kLinVel, double kAngVel, double maxLinearVel, double maxAngularVel,
                                    double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, AbstractFollower2D follower,
-                                   double updateDelay) {
+                                   double updateDelay, int stateSampling) {
         this.profile = profile;
         this.epsilon = epsilon;
         this.kX = kX;
@@ -51,15 +50,16 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         this.tForCurve = tForCurve;
         this.follower = follower;
         this.updateDelay = updateDelay;
+        this.stateSampling = stateSampling;
     }
 
 
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
                                    double kAngle,double kLinVel,double kAngVel, ProfilingData data, double destinationTimeOffset,
-                                   double tForCurve, AbstractFollower2D follower, double updateDelay){
+                                   double tForCurve, AbstractFollower2D follower, double updateDelay, int stateSampling){
         this(profile,epsilon,kX,kY,kAngle,kLinVel,kAngVel,data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
-                data.getMaxLinearAccel(), data.getMaxAngularAccel(), destinationTimeOffset, tForCurve,  follower, updateDelay);
+                data.getMaxLinearAccel(), data.getMaxAngularAccel(), destinationTimeOffset, tForCurve,  follower, updateDelay, stateSampling);
     }
 
 
@@ -71,7 +71,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         follower.setStartTime(startTime);
         lastUpdate = startTime;
         calculateProfile = new ThreadedReturnProfiler(profile, startTime, destinationTimeOffset, maxLinearVel,
-                maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve);
+                maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve, stateSampling);
         if(sendData){
             globalTarget = RemoteCSVTarget.initTarget("errorTarget","time", "error", "currX", "currY",
                     "currAngle", "currLinVel", "currAngVel", "targetX", "targetY", "targetAngle", "targetLinVel", "targetAngVel");
@@ -125,7 +125,6 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         }
         return error;
     }
-
 
     private static Position getLocation(){
         return Localizer.getInstance().getLocation(); //TODO check if getLocation() or getLocationRaw()
