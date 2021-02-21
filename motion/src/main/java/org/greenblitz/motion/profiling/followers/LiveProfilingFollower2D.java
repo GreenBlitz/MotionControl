@@ -69,6 +69,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         follower.init();
         follower.setStartTime(startTime);
         lastUpdate = startTime;
+        profile.updateJahana();
         calculateProfile = new ThreadedReturnProfiler(profile, startTime, destinationTimeOffset, maxLinearVel,
                 maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve);
         if(sendData){
