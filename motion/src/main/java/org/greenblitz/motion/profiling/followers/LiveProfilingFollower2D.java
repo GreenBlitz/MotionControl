@@ -97,7 +97,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
             error = this.calcError(time, state);
         }
         if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&(true ||((sendData && error < epsilon) || this.calcError(time, state) > epsilon))){
-             lastUpdate = System.currentTimeMillis();
+             lastUpdate = System.currentTimeMillis()/1000;
              calculateProfile.update(state);
              calculateProfile.start();
         }
@@ -110,7 +110,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         double currLinVel = state.getLinearVelocity();
         double currAngVel = state.getAngularVelocity();
 
-        State currPosition = profile.getStateLocation(time-startTime);
+        State currPosition = profile.getStateLocation(time- (double) startTime/1000);
         double targetX = currPosition.getX();
         double targetY = currPosition.getY();
         double targetAngle = currPosition.getAngle();
