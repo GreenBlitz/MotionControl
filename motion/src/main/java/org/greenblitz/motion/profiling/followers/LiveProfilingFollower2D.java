@@ -2,8 +2,8 @@ package org.greenblitz.motion.profiling.followers;
 
 import org.greenblitz.debug.RemoteCSVTarget;
 import org.greenblitz.motion.Localizer;
+import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
-import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 import org.greenblitz.motion.profiling.ProfilingData;
@@ -15,8 +15,6 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double kX;
     private double kY;
     private double kAngle;
-    private double kLinVel;
-    private double kAngVel;
     private double maxLinearVel;
     private double maxAngularVel;
     private double maxLinearAcc;
@@ -32,7 +30,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double stateSampling;
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle, double kLinVel, double kAngVel, double maxLinearVel, double maxAngularVel,
+                                   double kAngle, double maxLinearVel, double maxAngularVel,
                                    double maxLinearAcc, double maxAngularAcc, double destinationTimeOffset, double tForCurve, AbstractFollower2D follower,
                                    double updateDelay, int stateSampling) {
         this.profile = profile;
@@ -40,8 +38,6 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         this.kX = kX;
         this.kY = kY;
         this.kAngle = kAngle;
-        this.kLinVel = kLinVel;
-        this.kAngVel = kAngVel;
         this.maxLinearVel = maxLinearVel;
         this.maxAngularVel = maxAngularVel;
         this.maxLinearAcc = maxLinearAcc;
@@ -56,9 +52,9 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
 
 
     public LiveProfilingFollower2D(MotionProfile2D profile, double epsilon, double kX, double kY,
-                                   double kAngle,double kLinVel,double kAngVel, ProfilingData data, double destinationTimeOffset,
+                                   double kAngle, ProfilingData data, double destinationTimeOffset,
                                    double tForCurve, AbstractFollower2D follower, double updateDelay, int stateSampling){
-        this(profile,epsilon,kX,kY,kAngle,kLinVel,kAngVel,data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
+        this(profile,epsilon,kX,kY,kAngle,data.getMaxLinearVelocity(), data.getMaxAngularVelocity(),
                 data.getMaxLinearAccel(), data.getMaxAngularAccel(), destinationTimeOffset, tForCurve,  follower, updateDelay, stateSampling);
     }
 
@@ -94,37 +90,37 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     public void updateProfile(double linearVelocity, double angularVelocity, double time){
         double error = 0;
         if(sendData) {
-            error = this.calcError(linearVelocity, angularVelocity, time);
+            error = this.calcError(time);
         }
-        if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&(true ||((sendData && error < epsilon) || this.calcError(linearVelocity, angularVelocity, time) > epsilon))){
+        if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&(true ||((sendData && error < epsilon) || this.calcError(time) > epsilon))){
              lastUpdate = System.currentTimeMillis();
              calculateProfile.update(linearVelocity, angularVelocity);
              calculateProfile.start();
         }
     }
 
-    private double calcError(double linearVelocity, double angularVelocity, double time){
-        State state = new State(getLocation(), linearVelocity, angularVelocity);
-        double currX = state.getX();
-        double currY = state.getY();
-        double currAngle = state.getAngle();
-        double currLinVel = state.getLinearVelocity();
-        double currAngVel = state.getAngularVelocity();
+    private double calcError(double time){
+        Position position = new Position(getLocation());
+        double currX = position.getX();
+        double currY = position.getY();
+        double currAngle = position.getAngle();
 
-        State currPosition = profile.getStateLocation(time-startTime);
-        double targetX = currPosition.getX();
-        double targetY = currPosition.getY();
-        double targetAngle = currPosition.getAngle();
-        double targetLinVel = currPosition.getLinearVelocity();
-        double targetAngVel = currPosition.getAngularVelocity();
+        Position targetPosition = profile.getStateLocation(time-startTime);
+        double targetX = targetPosition.getX();
+        double targetY = targetPosition.getY();
+        double targetAngle = targetPosition.getAngle();
 
-        double error = kX * (targetX - currX) + kY * (targetY - currY) + kAngle * (targetAngle - currAngle) + kLinVel *
-                (targetLinVel - currLinVel) + kAngVel * (targetAngVel - currAngVel);
+        Point targetLast = profile.getStateLocation(profile.getTEnd());
+        Point actualLast = targetLast.translate(targetX-2*currX, targetY-2*currY).rotate(targetAngle-currAngle).translate(currX, currY);
+
+        double error = kX*(targetLast.getX()-actualLast.getX()) + kY*(targetLast.getY()-actualLast.getY()) + kAngle * (targetAngle-currAngle);
         if(sendData){
-            globalTarget.report(time, error, currX, currY, currAngle, currLinVel, currAngVel, targetX, targetY, targetAngle, targetLinVel, targetLinVel);
+            globalTarget.report(time, error, currX, currY, currAngle, targetX, targetY, targetAngle);
         }
         return error;
     }
+
+
 
     private static Position getLocation(){
         return Localizer.getInstance().getLocation(); //TODO check if getLocation() or getLocationRaw()
