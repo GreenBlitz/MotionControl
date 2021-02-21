@@ -110,7 +110,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         double currLinVel = state.getLinearVelocity();
         double currAngVel = state.getAngularVelocity();
 
-        State currPosition = profile.getStateLocation(time- (double) startTime/1000);
+        State currPosition = profile.getStateLocation(time);
         double targetX = currPosition.getX();
         double targetY = currPosition.getY();
         double targetAngle = currPosition.getAngle();
