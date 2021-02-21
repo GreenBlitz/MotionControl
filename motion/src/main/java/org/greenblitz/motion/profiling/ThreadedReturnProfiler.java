@@ -1,6 +1,5 @@
 package org.greenblitz.motion.profiling;
 
-import org.greenblitz.motion.Localizer;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.utils.LinkedList;
 
@@ -16,6 +15,7 @@ public class ThreadedReturnProfiler extends Thread {
     private double maxLinearAcc;
     private double maxAngularAcc;
     private double tForCurve;
+    private org.greenblitz.motion.base.State currState;
 
 
     public MotionProfile2D getProfile() {
@@ -34,9 +34,10 @@ public class ThreadedReturnProfiler extends Thread {
         this.tForCurve = tForCurve;
     }
 
-    public void update(double linearVelocity, double angularVelocity){
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
+    public void update(org.greenblitz.motion.base.State currState){
+        this.currState = currState;
+        this.linearVelocity = currState.getLinearVelocity();
+        this.angularVelocity = currState.getAngularVelocity();
     }
 
     @Override
@@ -56,7 +57,7 @@ public class ThreadedReturnProfiler extends Thread {
         int indexOfMergeSegment = profile.quickGetIndex(tMerge);
         LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(tMerge);
         return ReturnProfiler2D.generateProfile(
-                profile, new org.greenblitz.motion.base.State(Localizer.getInstance().getLocation().translate(profile.getJahanaRelation().negate()), linearVelocity, angularVelocity) //TODO test if negate needed
+                profile, new org.greenblitz.motion.base.State(currState.translate(profile.getJahanaRelation().negate()), linearVelocity, angularVelocity) //TODO test if negate needed
                 , indexOfMergeSegment, mergeSegmentNode, 0.01, System.currentTimeMillis()-startTime, maxLinearVel, maxAngularVel,
                 maxLinearAcc, maxAngularAcc, tForCurve, 4);
     }
