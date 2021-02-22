@@ -103,6 +103,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&(true ||((sendData && error < epsilon) || this.calcError(time, state) > epsilon))){
              lastUpdate = (System.currentTimeMillis()-startTime)/1000;
              calculateProfile.update(state);
+             System.out.println("Switched profile");
              calculateProfile.start();
         }
     }
@@ -130,7 +131,6 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         if(sendData){
             globalTarget.report(time, error, currX, currY, currAngle, currLinVel, currAngVel, targetX, targetY, targetAngle, targetLinVel, targetLinVel);
         }
-        System.out.println(error);
         return error;
     }
 
