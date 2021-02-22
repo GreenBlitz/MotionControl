@@ -43,6 +43,7 @@ public class ThreadedReturnProfiler extends Thread {
     @Override
     public void run() {
         profile = generateNewProfile();
+        System.out.println(profile);
     }
 
     private MotionProfile2D generateNewProfile(){
