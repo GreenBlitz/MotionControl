@@ -1,7 +1,10 @@
 package org.greenblitz.motion.profiling;
 
+import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.utils.LinkedList;
+
+import java.io.PipedOutputStream;
 
 public class ThreadedReturnProfiler extends Thread {
     private  MotionProfile2D profile;

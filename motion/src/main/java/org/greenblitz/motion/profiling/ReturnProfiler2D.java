@@ -19,6 +19,7 @@ public class ReturnProfiler2D {
                 tForCurve, smoothingTail);
 
         returnProfile.merge(mainProfile, indexOfMergeSegment, mergeSegmentNode);
+        returnProfile.setJahanaRelation(mainProfile.getJahanaRelation());
         return returnProfile;
     }
 }

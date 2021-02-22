@@ -60,6 +60,11 @@ public class MotionProfile2D {
             jahanaRelation = Localizer.getInstance().getLocation().translate(segments.getFirst().getStartLocation().negate());
         }
     }
+
+    public void setJahanaRelation(Position jahanaRelation){
+        this.jahanaRelation = jahanaRelation;
+    }
+
     /**
      * @return The time in which the profile finishes
      */
