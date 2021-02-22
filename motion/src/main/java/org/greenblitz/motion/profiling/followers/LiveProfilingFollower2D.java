@@ -68,7 +68,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         startTime = System.currentTimeMillis();
         follower.init();
         follower.setStartTime(startTime);
-        lastUpdate = startTime;
+        lastUpdate = 0;
         profile.updateJahana();
         if(profile.getJahanaRelation() == null){
             System.out.println("JahanaRelation is null in init");
