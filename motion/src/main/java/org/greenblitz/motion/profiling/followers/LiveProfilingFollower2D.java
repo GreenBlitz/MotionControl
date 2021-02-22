@@ -101,7 +101,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
             error = this.calcError(time, state);
         }
         if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&(true ||((sendData && error < epsilon) || this.calcError(time, state) > epsilon))){
-             lastUpdate = System.currentTimeMillis()/1000;
+             lastUpdate = (System.currentTimeMillis()-startTime)/1000;
              calculateProfile.update(state);
              calculateProfile.start();
         }
