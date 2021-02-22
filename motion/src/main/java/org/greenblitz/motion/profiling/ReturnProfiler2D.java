@@ -13,7 +13,7 @@ public class ReturnProfiler2D {
                                                    double maxAngularAcc, double tStart, double tForCurve, int smoothingTail){
         ArrayList<State> locations = new ArrayList<State>(2);
         locations.add(startLocation);
-        locations.add(mergeSegmentNode.getItem().getStateLocation(0));
+        locations.add(mergeSegmentNode.getItem().getStateLocation(mergeSegmentNode.getItem().getTStart()));
         MotionProfile2D returnProfile = ChassisProfiler2D.generateProfile(locations, jump, locations.get(0).getLinearVelocity(),
                 locations.get(1).getLinearVelocity(), maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, tStart,
                 tForCurve, smoothingTail);
