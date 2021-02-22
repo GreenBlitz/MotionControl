@@ -130,6 +130,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         if(sendData){
             globalTarget.report(time, error, currX, currY, currAngle, currLinVel, currAngVel, targetX, targetY, targetAngle, targetLinVel, targetLinVel);
         }
+        System.out.println(error);
         return error;
     }
 
