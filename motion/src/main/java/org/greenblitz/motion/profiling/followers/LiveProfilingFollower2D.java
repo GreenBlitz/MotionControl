@@ -27,7 +27,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     private double tForCurve;
     private AbstractFollower2D follower;
     private ThreadedReturnProfiler calculateProfile;
-    private long lastUpdate;
+    private double lastUpdate;
 
     private double updateDelay;
 
@@ -102,7 +102,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         }
         System.out.println(time - lastUpdate > updateDelay);
         if(time - lastUpdate > updateDelay && !calculateProfile.isAlive() &&(true ||((sendData && error < epsilon) || this.calcError(time, state) > epsilon))){
-             lastUpdate = (System.currentTimeMillis()-startTime)/1000;
+             lastUpdate = time;
              calculateProfile.update(state);
              System.out.println("Switched profile");
              calculateProfile.start();
