@@ -113,6 +113,7 @@ public class MotionProfile2D {
             previous = previous.getNext();
             index = (index+1)%segments.size();
         }
+        System.out.println(this);
         throw new IndexOutOfBoundsException("No segment with time " + t);
     }
 
