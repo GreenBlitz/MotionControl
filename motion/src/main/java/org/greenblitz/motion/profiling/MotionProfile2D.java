@@ -56,7 +56,7 @@ public class MotionProfile2D {
 
     public void updateJahana(){
         if (jahanaRelation == null) {
-            jahanaRelation = Localizer.getInstance().getLocation().translate(segments.getFirst().getStartLocation().negate());
+            jahanaRelation = Localizer.getInstance().getLocation(); //.translate(segments.getFirst().getStartLocation().negate())
         }
     }
     /**
@@ -192,9 +192,12 @@ public class MotionProfile2D {
         return quickGetSegment(t).getStartLocation();
     }
 
-    public State getStateLocation(double t) {
+    public State getStateLocation(double t){
         State relative = quickGetSegment(t).getStateLocation(t);
-        return new State(relative/*.translate(jahanaRelation)*/, relative.getLinearVelocity(), relative.getAngularVelocity());
+        if(jahanaRelation == null){
+            System.out.println("jahanaRelation is null in getStateLocation");
+        }
+        return new State(relative.translate(jahanaRelation), relative.getLinearVelocity(), relative.getAngularVelocity());
     }
 
 

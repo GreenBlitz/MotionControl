@@ -70,6 +70,9 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         follower.setStartTime(startTime);
         lastUpdate = startTime;
         profile.updateJahana();
+        if(profile.getJahanaRelation() == null){
+            System.out.println("JahanaRelation is null in init");
+        }
         calculateProfile = new ThreadedReturnProfiler(profile, startTime, destinationTimeOffset, maxLinearVel,
                 maxAngularVel, maxLinearAcc, maxAngularAcc, tForCurve);
         if(sendData){
@@ -110,6 +113,10 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         double currAngle = state.getAngle();
         double currLinVel = state.getLinearVelocity();
         double currAngVel = state.getAngularVelocity();
+
+        if(profile.getJahanaRelation() == null){
+            System.out.println("jahanaRelation is null in calcError");
+        }
 
         State currPosition = profile.getStateLocation(time);
         double targetX = currPosition.getX();
