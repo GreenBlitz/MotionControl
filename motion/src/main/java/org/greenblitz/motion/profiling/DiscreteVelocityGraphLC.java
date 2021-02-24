@@ -20,26 +20,37 @@ public class DiscreteVelocityGraphLC {
     private double latestFilterValue = 0;
 
     //TODO: decide if we want to use the same bar to all segments when we develop.
-    public double maxVBar, maxWBar;
-    public double maxAVBar, maxAWBar;
+    public double AbsoluteMaXV, AbsoluteMaXW;
+    public double AbsoluteMaXLinA, AbsoluteMaXAngA;
 
+    /**
+     *Constructor
+     * @param track The list of the curves we would like to drive on.
+     * @param vStart the velocity that the whole route starts from = the vStart of the first segment.
+     * @param vEnd the velocity that the whole route ends at = the vEnd of the last segment.
+     * @param maxV the maximum linear velocity the robot can reach ignoring the curvature.
+     * @param maxW the maximum angular velocity the robot can reach ignoring the linear velocity.
+     * @param maxAccLin the maximum linear acceleration the robot can reach ignoring the curvature.
+     * @param maxAccAng the maximum angular acceleration the robot can reach ignoring the linear velocity.
+     * @param tailSize I don't know yet what is the meaning of this variable, sorry :(
+     */
     public DiscreteVelocityGraphLC(List<ICurve> track, double vStart, double vEnd, double maxV, double maxW,
-                                   double maxAccVel, double maxAccWel, int tailSize) {
+                                   double maxAccLin, double maxAccAng, int tailSize) {
 
-        maxVBar = maxV;
-        maxWBar = maxW;
-        maxAVBar = maxAccVel;
-        maxAWBar = maxAccWel;
+        AbsoluteMaXV = maxV;
+        AbsoluteMaXW = maxW;
+        AbsoluteMaXLinA = maxAccLin;
+        AbsoluteMaXAngA = maxAccAng;
 
-
-        double tmpLength = 0;
+        double tmpLength = 0; //The distance from the beginning to the current segment
 
         segments = new ArrayList<>();
-        double curveLen;
+        double curveLen; //The length of the current curve
         double curvatureStart;
         double curvatureEnd;
         double curvature;
 
+        //creating the segments for all the curves in the track.
         for (ICurve curve : track) {
             curveLen = curve.getLength(1);
             curvatureStart = curve.getCurvature(0);
@@ -47,19 +58,26 @@ public class DiscreteVelocityGraphLC {
             curvature = curve.getCurvature();
             segments.add(new DiscreteVelocityGraphLC.Segment(tmpLength, tmpLength + curveLen,
                     curvatureStart, curvatureEnd,
-                    ChassisProfiler2D.getMaxVelocity(maxVBar, maxWBar, curvature),
-                    ChassisProfiler2D.getMaxAcceleration(maxAVBar, maxAWBar, curvature))
+                    ChassisProfiler2D.getMaxVelocity(AbsoluteMaXV, AbsoluteMaXW, curvature),
+                    ChassisProfiler2D.getMaxAcceleration(AbsoluteMaXLinA, AbsoluteMaXAngA, curvature))
             );
             tmpLength += curveLen;
         }
 
+        //filtering
         int segCount = segments.size();
+        latestFilterTail = tailSize;
+        for (int i = 1; i < segCount - 1; i++) {
+            segments.get(i).filter(segments, i, tailSize);
+            latestFilterIndex = i;
+        }
 
 
-
+        //developing the first segment forwards and the last backwards.
         segments.get(0).developForwards(vStart, segments.get(1).vMax);
         segments.get(segCount - 1).developBackwards(segments.get(segCount - 2).vMax, vEnd);
 
+        //developing all of the segments from the second segment to the one before the last.
         for (int i = 1; i < segCount - 1; i++) {
             segments.get(i)
                     .developForwards(segments.get(i - 1).velocityEndForwards, segments.get(i + 1).vMax);
@@ -68,24 +86,31 @@ public class DiscreteVelocityGraphLC {
                     .developBackwards(segments.get(segCount - 2 - i).vMax, segments.get(segCount - i).velocityStartBackwards);
         }
 
-        segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards, vEnd);
-        segments.get(0).developBackwards(vStart, segments.get(1).velocityStartBackwards);
+        //setting the missing start and end variables for the first and the last segments.
+        segments.get(segCount - 1).velocityStartForwards = segments.get(segCount - 2).velocityEndForwards;
+        segments.get(0).velocityEndBackwards = segments.get(1).velocityStartBackwards;
 
-        //TODO: use filter
+
+        //segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards, vEnd);
+        //segments.get(0).developBackwards(vStart, segments.get(1).velocityStartBackwards);
+
+
     }
 
+    /**
+     * @return a MotionProfile2D of the graph in a format of < angular, linear >.
+     */
     public MotionProfile2D generateProfile() {
-        //TODO: check that all stuff happen in ChassisProfiler2D generateProfile are happening here somewhere
-        double t = 0;
+        double t = 0; //the time
         MotionProfile1D angular = new MotionProfile1D();
         MotionProfile1D linear = new MotionProfile1D();
         TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> segs;
 
-        double nextStart = 0;
-        int i = 0;
+        double startAngle = 0;
 
+        //runs over the graph and creates the profile
         for (DiscreteVelocityGraphLC.Segment s : segments) {
-            segs = s.toSegment(t, nextStart);
+            segs = s.toSegment(t, startAngle);
             t = segs.getFirst().tEnd;
             angular.unsafeAddSegment(segs.getFirst());
             linear.unsafeAddSegment(segs.getSecond());
@@ -93,7 +118,8 @@ public class DiscreteVelocityGraphLC {
             MotionProfile1D.Segment ang = segs.getFirst();
             double dt = ang.getTEnd() - ang.getTStart();
 
-            nextStart += ang.getStartLocation() + dt*ang.getStartVelocity() + dt*dt*ang.getAccel()*0.5; // x = x0 + v0t + 0.5att
+            startAngle += ang.getStartLocation() + dt*ang.getStartVelocity() + dt*dt*ang.getAccel()*0.5;
+            // x = x0 + v0t + 0.5at^2
         }
 
 
@@ -103,11 +129,12 @@ public class DiscreteVelocityGraphLC {
         return new MotionProfile2D(angular, linear);
     }
 
+
     class Segment{
 
         /**
          * The interpolator converting current velocity to maximum acceleration.
-         * linear isn't the best possible conversion, but it's pretty good.
+         * Linear isn't the best possible conversion, but it's pretty good.
          */
         public final AccelerationInterpolator linearInterpolator =
                 (currentVelocity, maximumAsymptoticVelocity, maximumInitialAccel)
@@ -133,6 +160,7 @@ public class DiscreteVelocityGraphLC {
 
         public double distanceStart, distanceEnd;
         public double dx; // the distance between start and end.
+
 
         /**
          * Constructor
@@ -192,32 +220,47 @@ public class DiscreteVelocityGraphLC {
 
         }
 
-        //go to line 17
-        public void filter(List<WheelBasedVelocityGraph.Segment> segs, int subject, int tailSize) {
-            int start = Math.max(subject - tailSize, 0);
-            int end = Math.min(subject + tailSize, segs.size() - 1);
-            double val;
-            if (latestFilterIndex != -1 && latestFilterTail == tailSize) {
+        /**
+         * If the maxV of the current segment is above average in the range of the tail size, it makes it the average.
+         * @param segs the list of the segments.
+         * @param currentIndex the index of the segment we are filtering around.
+         * @param tailSize the range of the segments we would like to filter.
+         */
+        public void filter(List<DiscreteVelocityGraphLC.Segment> segs, int currentIndex, int tailSize) {
+            //calculating the index of the start and the end segments.
+            int start = Math.max(currentIndex - tailSize, 0);
+            int end = Math.min(currentIndex + tailSize, segs.size() - 1);
+            double sum; //sum of maxVs.
+            if (latestFilterIndex != -1 && latestFilterTail == tailSize) { //if you had already filtered and hadn't
+                // changed the tailSize, it means that the sum is the same as last time, minus the maxV of the segment
+                // that is now out of range plus the maxV of the segment that is now in range.
 
-                val = latestFilterValue;
+                sum = latestFilterValue;
                 if (start != 0)
-                    val -= segs.get(start - 1).vMaxRaw;
-                if (subject + tailSize <= segs.size() - 1)
-                    val += segs.get(end).vMaxRaw;
+                    sum -= segs.get(start - 1).vMaxRaw;
+                if (currentIndex + tailSize <= segs.size() - 1)
+                    sum += segs.get(end).vMaxRaw;
 
-            } else {
+            } else { //in  general case, it sums up all the max velocities.
 
-                val = 0.0;
+                sum = 0.0;
                 for (int i = start; i <= end; i++) {
-                    val += segs.get(i).vMaxRaw;
+                    sum += segs.get(i).vMaxRaw;
                 }
 
             }
-            latestFilterValue = val;
-            this.vMax = Math.min(val / (end - start + 1), this.vMaxRaw);
+            latestFilterValue = sum;
+            this.vMax = Math.min(sum / (end - start + 1), this.vMaxRaw); // calculate the average.
         }
 
+        /**
+         * takes the information from the segment and puts it in MotionProfile1D.Segment
+         * @param tStart the time the segment starts at.
+         * @param startAngle the angle that the segment starts at.
+         * @return
+         */
         public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart, double startAngle) {
+            //calculations for the the angular segment because we are deriving the angular segment *from* the linear one.
             double startV = Math.min(velocityStartForwards, velocityStartBackwards);
             double endV = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
             double startW = curvature * startV;
@@ -225,7 +268,6 @@ public class DiscreteVelocityGraphLC {
             double dt = dx / (0.5 * (startV + endV));
 
 
-            //TODO: check the MotionProfile1D.Segment constructor
             MotionProfile1D.Segment linear = new MotionProfile1D.Segment(
                     tStart,
                     tStart + dt,
@@ -238,7 +280,7 @@ public class DiscreteVelocityGraphLC {
                     (endW - startW) / dt,
                     startW,
                     startAngle);
-            return new TwoTuple<>(angular, linear); // TODO: check in what order we should return
+            return new TwoTuple<>(angular, linear);
         }
     }
 }
