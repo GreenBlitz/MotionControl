@@ -142,7 +142,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
 
 
     @Override
-    public void end(){
+    public void atEnd(){
         System.out.println(profile);
     }
 
