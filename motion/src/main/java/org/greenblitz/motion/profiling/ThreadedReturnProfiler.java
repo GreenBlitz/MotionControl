@@ -6,9 +6,10 @@ import org.greenblitz.utils.LinkedList;
 
 import java.io.PipedOutputStream;
 
-public class ThreadedReturnProfiler extends Thread {
+public class ThreadedReturnProfiler implements Runnable {
     private  MotionProfile2D profile;
 
+    private Thread thread;
     private long startTime;
     private double destinationTimeOffset;
     private double linearVelocity;
@@ -63,5 +64,14 @@ public class ThreadedReturnProfiler extends Thread {
                 profile, new org.greenblitz.motion.base.State(currState.translate(profile.getJahanaRelation().negate()), linearVelocity, angularVelocity) //TODO test if negate needed
                 , indexOfMergeSegment, mergeSegmentNode, 0.01, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc,
                 (System.currentTimeMillis()-startTime)/1000.0, tForCurve, 4);
+    }
+
+    public void start(){
+        thread = new Thread(this);
+        thread.start();
+    }
+
+    public boolean isAlive(){
+        return thread.isAlive();
     }
 }
