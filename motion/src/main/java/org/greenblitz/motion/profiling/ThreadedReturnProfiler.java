@@ -74,6 +74,9 @@ public class ThreadedReturnProfiler implements Runnable {
     }
 
     public boolean isAlive(){
+        if (thread == null){
+            return false;
+        }
         return thread.isAlive();
     }
 }
