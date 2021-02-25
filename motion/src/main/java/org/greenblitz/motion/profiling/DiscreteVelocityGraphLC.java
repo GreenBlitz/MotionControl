@@ -58,7 +58,8 @@ public class DiscreteVelocityGraphLC {
             curvature = curve.getCurvature();
             segments.add(new DiscreteVelocityGraphLC.Segment(tmpLength, tmpLength + curveLen,
                     curvatureStart, curvatureEnd,
-                    ChassisProfiler2D.getMaxVelocity(AbsoluteMaXV, AbsoluteMaXW, curvature),
+                    ChassisProfiler2D.getMaxVelocity(AbsoluteMaXV, AbsoluteMaXW, curvatureStart),
+                    ChassisProfiler2D.getMaxVelocity(AbsoluteMaXV, AbsoluteMaXW, curvatureEnd),
                     ChassisProfiler2D.getMaxAcceleration(AbsoluteMaXLinA, AbsoluteMaXAngA, curvature))
             );
             tmpLength += curveLen;
@@ -74,16 +75,16 @@ public class DiscreteVelocityGraphLC {
 
 
         //developing the first segment forwards and the last backwards.
-        segments.get(0).developForwards(vStart, segments.get(1).vMax);
-        segments.get(segCount - 1).developBackwards(segments.get(segCount - 2).vMax, vEnd);
+        segments.get(0).developForwards(vStart, segments.get(1).vMaxStart);
+        segments.get(segCount - 1).developBackwards(segments.get(segCount - 2).vMaxEnd, vEnd);
 
         //developing all of the segments from the second segment to the one before the last.
         for (int i = 1; i < segCount - 1; i++) {
             segments.get(i)
-                    .developForwards(segments.get(i - 1).velocityEndForwards, segments.get(i + 1).vMax);
+                    .developForwards(segments.get(i - 1).velocityEndForwards, segments.get(i + 1).vMaxStart);
 
             segments.get(segCount - 1 - i)
-                    .developBackwards(segments.get(segCount - 2 - i).vMax, segments.get(segCount - i).velocityStartBackwards);
+                    .developBackwards(segments.get(segCount - 2 - i).vMaxEnd, segments.get(segCount - i).velocityStartBackwards);
         }
 
         //setting the missing start and end variables for the first and the last segments.
@@ -146,17 +147,13 @@ public class DiscreteVelocityGraphLC {
         public double velocityStartBackwards;
         public double velocityEndBackwards;
 
-        public double vMax;
+        public double vMaxStart, vMaxEnd;
         public double vMaxRaw;
         public double aMax;
 
         public double curvatureStart;
         public double curvatureEnd;
-        //public double curvatureStartBar;
-        //public double curvatureEndBar;
         public double curvature;
-        //public double curvatureBar;
-        //we don't need the "bar" because curvature is the ratio.
 
         public double distanceStart, distanceEnd;
         public double dx; // the distance between start and end.
@@ -168,26 +165,22 @@ public class DiscreteVelocityGraphLC {
          * @param distanceEnd the distance of the segment's end point from the zero point.
          * @param curvatureStart the curvature at the start point of the segment.
          * @param curvatureEnd the curvature at the end point of the segment.
-         * @param vMax the maximum linear velocity available at the whole segment considering the curvature.
+         * @param vMaxStart the max velocity to start the graph (There is a difference because of the curvature difference)
+         * @param vMaxEnd the max velocity to end the graph (There is a difference because of the curvature difference)
          */
         public Segment(double distanceStart, double distanceEnd, double curvatureStart, double curvatureEnd,
-                       double vMax, double aMax) {
+                       double vMaxStart, double vMaxEnd, double aMax) {
 
             this.curvatureStart = curvatureStart;
             this.curvatureEnd = curvatureEnd;
-            //curvatureStartBar = convertKappa(curvatureStart);
-            //curvatureEndBar = convertKappa(curvatureEnd);
             curvature = (curvatureStart + curvatureEnd) * 0.5; // Rough approximation of the curvature of the whole segment
-            //curvatureBar = convertKappa(curvature);
             this.distanceStart = distanceStart;
             this.distanceEnd = distanceEnd;
             dx = distanceEnd - distanceStart;
-            this.vMax = vMax;
-            ; // Either the right wheel is faster (then vMax = maximumVel) or the left wheel is faster (then vMax = maximumVel / phi(curvatureEndBar))
-            vMaxRaw = this.vMax;
+            this.vMaxStart = vMaxStart;
+            this.vMaxEnd = vMaxEnd;
+            this.vMaxRaw = vMaxStart;
         }
-
-        //TODO: no maxVBar diamond graph
 
         /**
          * @param startV the velocity this segment should start from = the velocity that the previous segment was ended at
@@ -199,7 +192,7 @@ public class DiscreteVelocityGraphLC {
 
             double withTheGrainAccel = linearInterpolator.getRealMaxAccel(velocityStartForwards, vMaxRaw, aMax);
 
-            velocityEndForwards = Math.min(vMax,
+            velocityEndForwards = Math.min(vMaxStart, //TODO: check I did this right
                     Math.sqrt(velocityStartForwards * velocityStartForwards + 2 * (distanceEnd - distanceStart) * withTheGrainAccel));
 
             velocityEndForwards = Math.min(velocityEndForwards, endVMax);
@@ -214,7 +207,7 @@ public class DiscreteVelocityGraphLC {
 
             double actAcc = linearInterpolator.getRealMaxAccel(-velocityEndBackwards, vMaxRaw, aMax);
 
-            velocityStartBackwards = Math.min(vMax,
+            velocityStartBackwards = Math.min(vMaxEnd, //TODO: check I did this right
                     Math.sqrt(velocityEndBackwards * velocityEndBackwards + 2 * (distanceEnd - distanceStart) * actAcc));
             velocityStartBackwards = Math.min(velocityStartBackwards, startVMax);
 
@@ -250,7 +243,8 @@ public class DiscreteVelocityGraphLC {
 
             }
             latestFilterValue = sum;
-            this.vMax = Math.min(sum / (end - start + 1), this.vMaxRaw); // calculate the average.
+            //TODO: look what should we do here after adding 2 vMaxs and not 1.
+            this.vMaxStart = Math.min(sum / (end - start + 1), this.vMaxRaw); // calculate the average.
         }
 
         /**
@@ -263,8 +257,8 @@ public class DiscreteVelocityGraphLC {
             //calculations for the the angular segment because we are deriving the angular segment *from* the linear one.
             double startV = Math.min(velocityStartForwards, velocityStartBackwards);
             double endV = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
-            double startW = curvature * startV;
-            double endW = curvature * endV;
+            double startW = curvatureStart * startV;
+            double endW = curvatureEnd * endV;
             double dt = dx / (0.5 * (startV + endV));
 
 
