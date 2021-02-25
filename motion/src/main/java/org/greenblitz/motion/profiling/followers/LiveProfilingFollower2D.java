@@ -140,5 +140,17 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         return Localizer.getInstance().getLocation(); //TODO check if getLocation() or getLocationRaw()
     }
 
+    @Override
+    public boolean isFinished() {
+        if (super.isFinished()){
+            System.out.println(profile);
+        }
+        return super.isFinished();
+    }
+
+    public void end(){
+        System.out.println(profile);
+    }
+
 
 }
