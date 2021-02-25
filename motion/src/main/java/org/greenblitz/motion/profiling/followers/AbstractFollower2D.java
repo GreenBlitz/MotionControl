@@ -87,7 +87,11 @@ public abstract class AbstractFollower2D {
      * @return true if the profile finished running, false otherwise
      */
     public boolean isFinished() {
-        return profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
+        boolean isFinished = profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
+        if(isFinished){
+            end();
+        }
+        return isFinished;
     }
 
     /**
@@ -101,5 +105,7 @@ public abstract class AbstractFollower2D {
     public void setSendData(boolean val) {
         sendData = val;
     }
+
+    public abstract void end();
 
 }
