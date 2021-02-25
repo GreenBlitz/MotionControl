@@ -102,6 +102,6 @@ public abstract class AbstractFollower2D {
         sendData = val;
     }
 
-    public abstract void atEnd();
+    public void atEnd(){}
 
 }
