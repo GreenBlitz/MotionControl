@@ -50,7 +50,7 @@ public class ThreadedReturnProfiler extends Thread {
 
     private MotionProfile2D generateNewProfile(){
         double tEnd = profile.getTEnd();
-        int t = (int) (System.currentTimeMillis() - startTime);
+        double t = (double) (System.currentTimeMillis() - startTime)/1000;
         double tMerge;
         if(t + destinationTimeOffset > tEnd){
             tMerge = tEnd;
