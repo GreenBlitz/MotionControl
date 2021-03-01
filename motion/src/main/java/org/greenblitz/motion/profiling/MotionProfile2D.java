@@ -94,7 +94,8 @@ public class MotionProfile2D {
      * Therefore, this is O(1) average time.
      *
      * when combining two profiles the time of each segment is not matching and to save runtime we dont want to run through each segment
-     * instead we add a
+     * instead we add a field offset to the segments and add offset to the merge segment 
+     * @see #merge the offset is calculated so when going over the segments in this method the we add all of the offset that we have gone through and we get the correct time.
      * @param t point in time (in seconds)
      * @return The segment matching that point of time
      * @throws IndexOutOfBoundsException if the current time doesn't apply to any segment.
