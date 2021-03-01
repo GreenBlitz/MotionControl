@@ -1,5 +1,7 @@
 package org.greenblitz.utils;
 
+import org.greenblitz.motion.profiling.MotionProfile2D;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -41,6 +43,14 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         }
     }
 
+    /**
+     * merges another linked list to the end of this starting at a specific node used in
+     * @see MotionProfile2D#merge(MotionProfile2D, int, Node)
+     * method was added dou to add method being to slow because of generalization
+     * @param mergedList the list tp be added
+     * @param mergeIndexOfMergedList the index of the node you want to connect to
+     * @param mergeNodeOfMergedList the node to be connected to
+     */
     public void merge(LinkedList<E> mergedList, int mergeIndexOfMergedList, Node<E> mergeNodeOfMergedList){
         this.last.next = mergeNodeOfMergedList;
         mergeNodeOfMergedList.prev = this.last;

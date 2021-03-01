@@ -85,15 +85,16 @@ public class MotionProfile2D {
     private int index;
     private double accumulatedOffset = 0;
     /**
-     * copied from MotionProfile1D
      *
-     * The idea of this function is that you will never go back in time, therefore
+     * The idea of this function is that you are unlikely to go back in time, therefore
      * after you used some time segment, you won't use all segments before it.
      * In addition because the controller runs decently fast, you are most likely to find
      * the desired segment right after the previous you used.
      * <p>
      * Therefore, this is O(1) average time.
      *
+     * when combining two profiles the time of each segment is not matching and to save runtime we dont want to run through each segment
+     * instead we add a
      * @param t point in time (in seconds)
      * @return The segment matching that point of time
      * @throws IndexOutOfBoundsException if the current time doesn't apply to any segment.
@@ -262,11 +263,19 @@ public class MotionProfile2D {
 
     public void unsafeAddSegments(List<Segment2D> segments){this.segments.addAll(segments);}
 
+    /**
+     * adds an additional profile in the end of this profile starting in a specific segment of the added profile
+     * without disrupting the timings using offset
+     * @see #quickGetNode
+     * @param mergedProfile the new profile to be added
+     * @param startIndexOfMergedProfile the index at which you connect to the profile
+     * @param startNodeOfMergedList the linked list node that houses the segment you want to connect to, the node is given to reduce time
+     */
     public void merge(MotionProfile2D mergedProfile, int startIndexOfMergedProfile, LinkedList.Node<Segment2D> startNodeOfMergedList){
-        double offset = startNodeOfMergedList.getItem().getTStart() - this.getTEnd();
+        double offset = startNodeOfMergedList.getItem().getTStart() - this.tEnd;
         startNodeOfMergedList.getItem().setOffset(offset);
         this.segments.merge(mergedProfile.segments, startIndexOfMergedProfile, startNodeOfMergedList);
-        this.tEnd = this.tEnd-offset;
+        this.tEnd = mergedProfile.getTEnd()-offset;
 
     }
 
@@ -335,6 +344,7 @@ public class MotionProfile2D {
 
         /**
          * location is relative use carefully
+         * also ignores curvature change and uses avg angle
          * @return state of start of segment relative to profile
          */
          State getStateLocation(double t){
