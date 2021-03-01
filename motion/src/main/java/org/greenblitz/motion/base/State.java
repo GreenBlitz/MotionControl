@@ -191,4 +191,8 @@ public class /*united*/State extends Position {
     public void setAngularAccel(double angularAccel) {
         this.angularAccel = angularAccel;
     }
+
+    public State translate(State state){
+        return new State(this.translate(state), state.getLinearVelocity(), state.getAngularVelocity());
+    }
 }

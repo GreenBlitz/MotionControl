@@ -12,8 +12,6 @@ public class ThreadedReturnProfiler implements Runnable {
     private Thread thread;
     private long startTime;
     private double destinationTimeOffset;
-    private double linearVelocity;
-    private double angularVelocity;
     private double maxLinearVel;
     private double maxAngularVel;
     private double maxLinearAcc;
@@ -40,8 +38,6 @@ public class ThreadedReturnProfiler implements Runnable {
 
     public void update(org.greenblitz.motion.base.State currState){
         this.currState = currState;
-        this.linearVelocity = currState.getLinearVelocity();
-        this.angularVelocity = currState.getAngularVelocity();
     }
 
     @Override
@@ -61,9 +57,10 @@ public class ThreadedReturnProfiler implements Runnable {
         int indexOfMergeSegment = profile.quickGetIndex(tMerge);
         LinkedList.Node<MotionProfile2D.Segment2D> mergeSegmentNode = profile.quickGetNode(tMerge);
         MotionProfile2D newProfile = ReturnProfiler2D.generateProfile(
-                profile, new org.greenblitz.motion.base.State(currState.translate(profile.getJahanaRelation().negate()), linearVelocity, angularVelocity) //TODO test if negate needed
-                , indexOfMergeSegment, mergeSegmentNode, 0.05, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc,
-                (System.currentTimeMillis()-startTime)/1000.0, tForCurve, 4);
+                profile, currState.translate(new org.greenblitz.motion.base.State(profile.getJahanaRelation().negate(), //TODO test if negate needed
+                        0, 0)), indexOfMergeSegment, mergeSegmentNode,
+                0.05, maxLinearVel, maxAngularVel, maxLinearAcc, maxAngularAcc, (System.currentTimeMillis()-startTime)/1000.0,
+                tForCurve, 4);
         System.out.println("finished swapping");
         return newProfile;
     }
