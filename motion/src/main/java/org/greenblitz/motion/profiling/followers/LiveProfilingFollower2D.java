@@ -62,7 +62,9 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     }
 
 
-
+    /**
+     * Resets all relevant data, call before every run.
+     */
     @Override
     public void init() {
         startTime = System.currentTimeMillis();
@@ -82,6 +84,13 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
 
     }
 
+    /**
+     * @param leftCurr   The left wheel velocity
+     * @param rightCurr  The right wheel velocity
+     * @param angularVel The angular velocity
+     * @param timeNow    The current time in seconds
+     * @return A vector of power to each motor in the format (left, right)
+     */
     @Override
     public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow) {
         updateProfile((leftCurr + rightCurr)/2, angularVel, timeNow);
@@ -91,9 +100,12 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     }
 
 
-
-
-
+    /**
+     * checks if needs to update the profile, and starts calculating the new profile if needed
+     * @param linearVelocity  the current linear velocity
+     * @param angularVelocity the current angular velocity
+     * @param time            the current time in seconds
+     */
     public void updateProfile(double linearVelocity, double angularVelocity, double time){
         State state = new State(getLocation(), linearVelocity, angularVelocity);
         double error = 0;
@@ -136,6 +148,9 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     }
 
 
+    /**
+     * @return the current position (according to the localizer)
+     */
     private static Position getLocation(){
         return Localizer.getInstance().getLocation(); //TODO check if getLocation() or getLocationRaw()
     }
