@@ -110,13 +110,14 @@ public class MotionProfile2D {
             }
             accumulatedOffset += previous.getItem().profileOffset;
             if (previous.getItem().isTimePartOfSegment(t + accumulatedOffset)) {
+                accumulatedOffset -= previous.getItem().profileOffset;
                 return previous;
             }
             previous = previous.getNext();
             index = (index+1)%segments.size();
         }
         System.out.println(this);
-        throw new IndexOutOfBoundsException("No segment with time " + t);
+        throw new IndexOutOfBoundsException("No segment with time " + t + "and offset" + accumulatedOffset);
     }
 
     public Segment2D quickGetSegment(double t){return quickGetNode(t).getItem();}
