@@ -109,7 +109,7 @@ public class DiscreteVelocityGraphLC {
         //runs over the graph and creates the profile
         for (DiscreteVelocityGraphLC.Segment s : this.segments) {
             segs = s.toSegment(t, startAngle);
-            t = 5; //segs.getFirst().tEnd;
+            t = segs.getFirst().tEnd;
             angular.unsafeAddSegment(segs.getFirst());
             linear.unsafeAddSegment(segs.getSecond());
 
