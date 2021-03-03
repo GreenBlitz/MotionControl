@@ -34,6 +34,7 @@ public class DiscreteVelocityGraphLC {
      * @param maxAccAng the maximum angular acceleration the robot can reach ignoring the linear velocity.
      * @param tailSize I don't know yet what is the meaning of this variable, sorry :(
      */
+
     public DiscreteVelocityGraphLC(List<ICurve> track, double vStart, double vEnd, double maxV, double maxW,
                                    double maxAccLin, double maxAccAng, int tailSize) {
 
@@ -90,10 +91,6 @@ public class DiscreteVelocityGraphLC {
         //setting the missing start and end variables for the first and the last segments.
         segments.get(segCount - 1).velocityStartForwards = segments.get(segCount - 2).velocityEndForwards;
         segments.get(0).velocityEndBackwards = segments.get(1).velocityStartBackwards;
-
-
-        //segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards, vEnd);
-        //segments.get(0).developBackwards(vStart, segments.get(1).velocityStartBackwards);
 
 
     }
