@@ -66,7 +66,7 @@ public abstract class AbstractFollower2D {
      * @param curTime    The current time <b>in miliseconds</b>
      * @return A vector of power to each motor in the format (left, right)
      */
-     public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
+    public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
         return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractFollower2D {
      */
     public boolean isFinished() {
         boolean isFinished = profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
-        if(isFinished){
+        if (isFinished) {
             end();
         }
         return isFinished;
@@ -95,6 +95,7 @@ public abstract class AbstractFollower2D {
         sendData = val;
     }
 
-    public abstract void end();
+    public void end() {
+    }
 
 }
