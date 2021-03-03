@@ -103,7 +103,7 @@ public class MotionProfile2D {
 
     public LinkedList.Node<Segment2D> quickGetNode(double t) {
         if (segments.isEmpty()){throw new IndexOutOfBoundsException("List empty");}
-        for (int i = 0; i < segments.size(); i++) {
+        for (int i = 0; i <= segments.size(); i++) { //TODO: remove <= (should be <)
             if (previous == null){
                 previous = segments.getNodeFirst();
                 accumulatedOffset = 0;
@@ -117,6 +117,7 @@ public class MotionProfile2D {
             index = (index+1)%segments.size();
         }
         System.out.println(this);
+        System.out.println(accumulatedOffset);
         throw new IndexOutOfBoundsException("No segment with time " + t);
     }
 
@@ -270,13 +271,13 @@ public class MotionProfile2D {
      * without disrupting the timings using offset
      * @see #quickGetNode
      * @param mergedProfile the new profile to be added
-     * @param startIndexOfMergedProfile the index at which you connect to the profile
-     * @param startNodeOfMergedList the linked list node that houses the segment you want to connect to, the node is given to reduce time
+     * @param mergeNodeIndex the index at which you connect to the profile
+     * @param mergeNode the linked list node that houses the segment you want to connect to, the node is given to reduce time
      */
-    public void merge(MotionProfile2D mergedProfile, int startIndexOfMergedProfile, LinkedList.Node<Segment2D> startNodeOfMergedList){
-        double offset = startNodeOfMergedList.getItem().getTStart() - this.tEnd;
-        startNodeOfMergedList.getItem().setOffset(offset);
-        this.segments.merge(mergedProfile.segments, startIndexOfMergedProfile, startNodeOfMergedList);
+    public void merge(MotionProfile2D mergedProfile, int mergeNodeIndex, LinkedList.Node<Segment2D> mergeNode){
+        double offset = mergeNode.getItem().getTStart() - this.tEnd;
+        mergeNode.getItem().setOffset(offset);
+        this.segments.merge(mergedProfile.segments, mergeNodeIndex, mergeNode);
         this.tEnd = mergedProfile.getTEnd()-offset;
 
     }
