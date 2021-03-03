@@ -193,6 +193,6 @@ public class /*united*/State extends Position {
     }
 
     public State translate(State state){
-        return new State(this.translate(state), state.getLinearVelocity(), state.getAngularVelocity());
+        return new State(((Position)this).translate(state), state.getLinearVelocity(), state.getAngularVelocity());
     }
 }
