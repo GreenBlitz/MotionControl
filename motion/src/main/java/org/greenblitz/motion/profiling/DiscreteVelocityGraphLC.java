@@ -107,7 +107,7 @@ public class DiscreteVelocityGraphLC {
         double startAngle = 0;
 
         //runs over the graph and creates the profile
-        for (DiscreteVelocityGraphLC.Segment s : segments) {
+        for (DiscreteVelocityGraphLC.Segment s : this.segments) {
             segs = s.toSegment(t, startAngle);
             t = segs.getFirst().tEnd;
             angular.unsafeAddSegment(segs.getFirst());
@@ -256,8 +256,13 @@ public class DiscreteVelocityGraphLC {
             double endV = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
             double startW = curvatureStart * startV;
             double endW = curvatureEnd * endV;
-            double dt = dx / (0.5 * (startV + endV));
-
+            double dt; // = 2 * dx / (startV + endV);
+            if (startV == -endV){
+                dt = 2 * dx / (startV + endV + 0.000001);
+            }
+            else{
+                dt = 2 * dx / (startV + endV);
+            }
 
             MotionProfile1D.Segment linear = new MotionProfile1D.Segment(
                     tStart,
