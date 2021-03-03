@@ -117,7 +117,7 @@ public class MotionProfile2D {
             index = (index+1)%segments.size();
         }
         System.out.println(this);
-        throw new IndexOutOfBoundsException("No segment with time " + t + "and offset" + accumulatedOffset);
+        throw new IndexOutOfBoundsException("No segment with time " + t);
     }
 
     public Segment2D quickGetSegment(double t){return quickGetNode(t).getItem();}
