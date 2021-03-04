@@ -5,6 +5,7 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
+import org.greenblitz.utils.HowToCloneAGenericInJava101;
 import org.greenblitz.utils.LinkedList;
 
 import java.util.List;
@@ -275,9 +276,10 @@ public class MotionProfile2D {
      * @param mergeNode the linked list node that houses the segment you want to connect to, the node is given to reduce time
      */
     public void merge(MotionProfile2D mergedProfile, int mergeNodeIndex, LinkedList.Node<Segment2D> mergeNode){
-        double offset = mergeNode.getItem().getTStart() - this.tEnd;
-        mergeNode.getItem().setOffset(offset);
-        this.segments.merge(mergedProfile.segments, mergeNodeIndex, mergeNode);
+        LinkedList.Node<Segment2D> cloned = mergeNode.clone();
+        double offset = cloned.getItem().getTStart() - this.tEnd;
+        cloned.getItem().setOffset(offset);
+        this.segments.merge(mergedProfile.segments, mergeNodeIndex, cloned);
         this.tEnd = mergedProfile.getTEnd()-offset;
 
     }
@@ -307,7 +309,7 @@ public class MotionProfile2D {
         return "MotionProfile2D:\n" + segments;
     }
 
-    public static class Segment2D{
+    public static class Segment2D  extends HowToCloneAGenericInJava101 {
         private MotionProfile1D.Segment firstSegment, secondSegment;
         private Position startLocation;
         private final static double EPSILON = 1E-8;
@@ -318,6 +320,13 @@ public class MotionProfile2D {
             this.secondSegment = second;
             this.startLocation = startLocation;
             this.profileOffset = 0;
+        }
+
+        public Segment2D(MotionProfile1D.Segment first, MotionProfile1D.Segment second, Position startLocation, double offset){
+            this.firstSegment = first;
+            this.secondSegment = second;
+            this.startLocation = startLocation;
+            this.profileOffset = offset;
         }
 
         public double getTStart(){return firstSegment.getTStart();}
@@ -373,6 +382,11 @@ public class MotionProfile2D {
         /*public State getLocation(double t){
 
         }*/
+
+        @Override
+        public Segment2D clone(){
+            return new Segment2D(firstSegment.clone(), secondSegment.clone(), startLocation.clone(), profileOffset);
+        }
 
     }
 }

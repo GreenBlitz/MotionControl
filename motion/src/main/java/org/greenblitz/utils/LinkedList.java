@@ -1,5 +1,6 @@
 package org.greenblitz.utils;
 
+import org.greenblitz.motion.profiling.AccelerationInterpolator;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E>, Cloneable, Serializable {
+public class LinkedList<E extends HowToCloneAGenericInJava101> extends AbstractSequentialList<E> implements List<E>, Deque<E>, Cloneable, Serializable {
     transient int size;
     transient LinkedList.Node<E> first;
     transient LinkedList.Node<E> last;
@@ -273,7 +274,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 
             for(int var9 = 0; var9 < var8; ++var9) {
                 Object o = var7[var9];
-                LinkedList.Node<E> newNode = new LinkedList.Node(pred, o, (LinkedList.Node)null);
+                LinkedList.Node<E> newNode = new LinkedList.Node(pred, (HowToCloneAGenericInJava101) o, (LinkedList.Node)null);
                 if (pred == null) {
                     this.first = newNode;
                 } else {
@@ -600,7 +601,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         return new LinkedList.LLSpliterator(this, -1, 0);
     }
 
-    static final class LLSpliterator<E> implements Spliterator<E> {
+    static final class LLSpliterator<E extends HowToCloneAGenericInJava101> implements Spliterator<E> {
         static final int BATCH_UNIT = 1024;
         static final int MAX_BATCH = 33554432;
         final LinkedList<E> list;
@@ -741,7 +742,7 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
     /*
      *turned public and added getters and setters
      */
-    public static class Node<E> {
+    public static class Node<E extends HowToCloneAGenericInJava101> {
         private E item;
         private LinkedList.Node<E> next;
         private LinkedList.Node<E> prev;
@@ -773,6 +774,10 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
 
         public String toString(){
             return (this.item.toString());
+        }
+
+        public Node<E> clone(){
+            return new Node<E>(prev, (E) item.clone(), next);
         }
 
     }
