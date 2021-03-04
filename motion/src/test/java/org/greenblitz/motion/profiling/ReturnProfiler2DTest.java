@@ -24,7 +24,6 @@ public class ReturnProfiler2DTest {
             testProfile = (ReturnProfiler2D.generateProfile(profile, currentStart, profile.quickGetIndex(4), profile.quickGetNode(4), .02,
                     15, Math.PI * 15, 1, Math.PI, 0.15, 1.5, 4));
 
-
         }
         return testProfile;
     }

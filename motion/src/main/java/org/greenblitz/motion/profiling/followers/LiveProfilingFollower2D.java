@@ -95,7 +95,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
     public Vector2D forceRun(double leftCurr, double rightCurr, double angularVel, double timeNow) {
         updateProfile((leftCurr + rightCurr)/2, angularVel, timeNow);
         Vector2D motorPowers = follower.forceRun(leftCurr, rightCurr, angularVel, timeNow);
-        profile = calculateProfile.getProfile();
+        this.setProfile(calculateProfile.getProfile());
         return motorPowers;
     }
 
@@ -153,6 +153,12 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
      */
     private static Position getLocation(){
         return Localizer.getInstance().getLocation(); //TODO check if getLocation() or getLocationRaw()
+    }
+
+    @Override
+    public void setProfile(MotionProfile2D newProfile){
+        profile = newProfile;
+        follower.setProfile(newProfile);
     }
 
 
