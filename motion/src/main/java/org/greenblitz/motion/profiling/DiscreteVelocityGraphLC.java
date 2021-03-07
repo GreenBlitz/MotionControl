@@ -255,6 +255,7 @@ public class DiscreteVelocityGraphLC {
             //calculations for the the angular segment because we are deriving the angular segment *from* the linear one.
             double startV = Math.min(velocityStartForwards, velocityStartBackwards);
             double endV = Math.min(velocityEndForwards, velocityEndBackwards);
+            //this is a comment
             double startW = curvatureStart * startV;
             double endW = curvatureEnd * endV;
             double dt; // = 2 * dx / (startV + endV);
