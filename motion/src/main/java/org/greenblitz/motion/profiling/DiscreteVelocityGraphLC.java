@@ -121,8 +121,8 @@ public class DiscreteVelocityGraphLC {
         }
 
 
-        System.out.println("Angular\n" + angular.toString());
-        System.out.println("Linear\n" + linear.toString());
+        //System.out.println("Angular\n" + angular.toString());
+        //System.out.println("Linear\n" + linear.toString());
 
         return new MotionProfile2D(angular, linear);
     }
