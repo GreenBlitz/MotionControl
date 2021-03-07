@@ -214,7 +214,8 @@ public class DiscreteVelocityGraphLC {
          * If the maxV of the current segment is above average in the range of the tail size, it makes it the average.
          * @param segs the list of the segments.
          * @param currentIndex the index of the segment we are filtering around.
-         * @param tailSize the range of the segments we would like to filter.
+         * @param tailSize the range of the segments we would like to filter from each side Therfore the whole range
+         *                equals to tailSize*2 + 1.
          */
         public void filter(List<DiscreteVelocityGraphLC.Segment> segs, int currentIndex, int tailSize) {
             //calculating the index of the start and the end segments.
