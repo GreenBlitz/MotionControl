@@ -70,7 +70,7 @@ public class DiscreteVelocityGraphLC {
         int segCount = segments.size();
         latestFilterTail = tailSize;
         for (int i = 1; i < segCount - 1; i++) {
-            segments.get(i).filter(segments, i, tailSize);
+            //segments.get(i).filter(segments, i, tailSize);
             latestFilterIndex = i;
         }
 
@@ -104,7 +104,7 @@ public class DiscreteVelocityGraphLC {
         MotionProfile1D linear = new MotionProfile1D();
         TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> segs;
 
-        double startAngle = 0;
+        double startAngle = 0; //TODO: start angle is the start angle of the robot and not 0
 
         //runs over the graph and creates the profile
         for (DiscreteVelocityGraphLC.Segment s : this.segments) {
@@ -116,13 +116,13 @@ public class DiscreteVelocityGraphLC {
             MotionProfile1D.Segment ang = segs.getFirst();
             double dt = ang.getTEnd() - ang.getTStart();
 
-            startAngle += ang.getStartLocation() + dt*ang.getStartVelocity() + dt*dt*ang.getAccel()*0.5;
+            startAngle += dt*ang.getStartVelocity() + dt*dt*ang.getAccel()*0.5;
             // x = x0 + v0t + 0.5at^2
         }
 
 
-        //System.out.println("Angular\n" + angular.toString());
-        //System.out.println("Linear\n" + linear.toString());
+        System.out.println("Angular\n" + angular.toString());
+        System.out.println("Linear\n" + linear.toString());
 
         return new MotionProfile2D(angular, linear);
     }
