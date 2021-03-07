@@ -70,7 +70,7 @@ public class DiscreteVelocityGraphLC {
         int segCount = segments.size();
         latestFilterTail = tailSize;
         for (int i = 1; i < segCount - 1; i++) {
-            //segments.get(i).filter(segments, i, tailSize);
+            segments.get(i).filter(segments, i, tailSize);
             latestFilterIndex = i;
         }
 
