@@ -159,6 +159,21 @@ public class ChassisProfiler2D {
         return orelIsStupid.generateProfile();
     }
 
+    public static void main(String[] args){
+        ProfilingConfiguration config = new ProfilingConfiguration(
+                0.85, 1.0, .01,
+                0.8, 0.0, 2.0, .01,
+                0.5 * 0, 0, 0, .01, 500);
+
+        List<State> l1 = new ArrayList<>();
+        l1.add(new State(0, 0, 0, 0, 0));
+        l1.add(new State(0, 2, 0, 0, 0));
+
+        generateProfileLCv1(l1, 0.01, 0, 0, 1.93*1.2, 4.3, 4.6, 12.6, 1, 5);
+
+    }
+
+
     private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity) {
         List<ICurve> subCurves = new ArrayList<>(capacity);
         State first, second;
@@ -208,9 +223,9 @@ public class ChassisProfiler2D {
     }
 
 
-    public static void main(String[] args) {
-        //TODO: Add tests for the generateProfile2D
-
-    }
+//    public static void main(String[] args) {
+//        //TODO: Add tests for the generateProfile2D
+//
+//    }
 
 }

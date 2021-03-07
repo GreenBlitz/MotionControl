@@ -177,6 +177,7 @@ public class DiscreteVelocityGraphLC {
             this.vMaxStart = vMaxStart;
             this.vMaxEnd = vMaxEnd;
             this.vMaxRaw = vMaxStart;
+            this.aMax = aMax;
         }
 
         /**
@@ -185,7 +186,6 @@ public class DiscreteVelocityGraphLC {
          */
         public void developForwards(double startV, double endVMax) {
             velocityStartForwards = startV;
-
 
             double withTheGrainAccel = linearInterpolator.getRealMaxAccel(velocityStartForwards, vMaxRaw, aMax);
 
@@ -253,7 +253,7 @@ public class DiscreteVelocityGraphLC {
         public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart, double startAngle) {
             //calculations for the the angular segment because we are deriving the angular segment *from* the linear one.
             double startV = Math.min(velocityStartForwards, velocityStartBackwards);
-            double endV = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
+            double endV = Math.min(velocityEndForwards, velocityEndBackwards);
             double startW = curvatureStart * startV;
             double endW = curvatureEnd * endV;
             double dt; // = 2 * dx / (startV + endV);
