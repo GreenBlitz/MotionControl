@@ -152,7 +152,7 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
      * @return the current position (according to the localizer)
      */
     private static Position getLocation(){
-        return Localizer.getInstance().getLocation(); //TODO check if getLocation() or getLocationRaw()
+        return Localizer.getInstance().getLocationRaw(); //TODO check if getLocation() or getLocationRaw()
     }
 
     @Override
