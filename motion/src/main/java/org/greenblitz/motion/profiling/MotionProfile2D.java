@@ -309,6 +309,16 @@ public class MotionProfile2D {
         return "MotionProfile2D:\n" + segments;
     }
 
+    public MotionProfile2D clone(){
+        LinkedList<Segment2D> segments = new LinkedList<>();
+        for(int i = 0; i < this.getSegments().size(); i++){
+            segments.add(this.getSegments().get(i).clone());
+        }
+        MotionProfile2D cloned = new MotionProfile2D(segments);
+        cloned.setJahanaRelation(this.getJahanaRelation());
+        return cloned;
+    }
+
     public static class Segment2D  extends HowToCloneAGenericInJava101 {
         private MotionProfile1D.Segment firstSegment, secondSegment;
         private Position startLocation;
