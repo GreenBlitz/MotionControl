@@ -176,7 +176,7 @@ public class MotionProfile2D {
      * @return the velocity vector (first vel, second vel) at that time
      */
     public Vector2D getVelocity(double t) {
-        return new Vector2D(quickGetSegment(t).getVelocityFirst(t), quickGetSegment(t).getVelocitySecond(t));
+        return new Vector2D(quickGetSegment(t).getVelocityFirst(t + accumulatedOffset), quickGetSegment(t).getVelocitySecond(t + accumulatedOffset));
     }
 
 
@@ -205,7 +205,7 @@ public class MotionProfile2D {
     }
 
     public State getStateLocation(double t){
-        State relative = quickGetSegment(t).getStateLocation(t);
+        State relative = quickGetSegment(t).getStateLocation(t + accumulatedOffset);
         if(jahanaRelation == null){
             System.out.println("jahanaRelation is null in getStateLocation");
         }
@@ -242,7 +242,7 @@ public class MotionProfile2D {
         Position ret = prev;
         final double dt = epsilon;
         for (double t2 = prevT; t2 < t; t2 += dt) {
-            ret = ret.moveBy(quickGetSegment(t).firstSegment.getVelocity(t), quickGetSegment(t).secondSegment.getVelocity(t), dt);
+            ret = ret.moveBy(quickGetSegment(t).firstSegment.getVelocity(t + accumulatedOffset), quickGetSegment(t).secondSegment.getVelocity(t + accumulatedOffset), dt);
         }
         return ret;
     }
@@ -256,7 +256,7 @@ public class MotionProfile2D {
         Segment2D segment = quickGetSegment(t);
         MotionProfile1D.Segment first = segment.firstSegment;
         MotionProfile1D.Segment second = segment.secondSegment;
-        return new Vector2D(first.getLocation(t), second.getLocation(t));
+        return new Vector2D(first.getLocation(t + accumulatedOffset), second.getLocation(t + accumulatedOffset));
     }
 
     /**
