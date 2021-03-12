@@ -166,5 +166,12 @@ public class LiveProfilingFollower2D extends AbstractFollower2D {
         System.out.println(profile);
     }
 
+    @Override
+    public AbstractFollower2D clone() {
+        return new LiveProfilingFollower2D(this.profile.clone(),this.epsilon,this.kX,this.kY,this.kAngle,this.kLinVel,
+                this.kAngVel, this.maxLinearVel, this.maxAngularVel, this.maxLinearAcc, this.maxAngularAcc,
+                this.destinationTimeOffset, this.tForCurve, this.follower.clone(), this.updateDelay);
+    }
+
 
 }

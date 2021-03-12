@@ -311,8 +311,10 @@ public class MotionProfile2D {
 
     public MotionProfile2D clone(){
         LinkedList<Segment2D> segments = new LinkedList<>();
+        LinkedList.Node<Segment2D> curr = segments.getNodeFirst();
         for(int i = 0; i < this.getSegments().size(); i++){
-            segments.add(this.getSegments().get(i).clone());
+            segments.add(curr.getItem().clone());
+            curr = curr.getNext();
         }
         MotionProfile2D cloned = new MotionProfile2D(segments);
         cloned.setJahanaRelation(this.getJahanaRelation());

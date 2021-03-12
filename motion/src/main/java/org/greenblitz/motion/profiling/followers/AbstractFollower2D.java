@@ -104,4 +104,5 @@ public abstract class AbstractFollower2D {
 
     public void atEnd(){}
 
+    public abstract AbstractFollower2D clone();
 }

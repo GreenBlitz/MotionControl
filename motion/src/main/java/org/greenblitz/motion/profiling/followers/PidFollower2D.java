@@ -9,6 +9,8 @@ import org.greenblitz.motion.profiling.MotionProfile2D;
 import org.greenblitz.motion.profiling.kinematics.IConverter;
 import org.greenblitz.motion.profiling.kinematics.ReverseLocalizerConverter;
 
+import javax.naming.ldap.Control;
+
 /**
  * To use this, call init before each run.
  *
@@ -60,6 +62,25 @@ public class PidFollower2D extends AbstractFollower2D {
         angularVelocityController = new CollapsingPIDController(angVals, angCollapse);
         PIDLimit = pidLimit;
         if (Double.isNaN(kVl + kAl + kVr + kAr + wheelDist + collapseVals + angCollapse)) {
+            throw new RuntimeException("Something is NaN");
+        }
+    }
+
+    private PidFollower2D(double kVl, double kAl, double kVr, double kAr,
+                         CollapsingPIDController leftController, CollapsingPIDController rightController,
+                         PIDController angularVelocityController, double pidLimit, double wheelDist,
+                         MotionProfile2D profile){
+        this.kVl = kVl;
+        this.kAl = kAl;
+        this.kVr = kVr;
+        this.kAr = kAr;
+        this.profile = profile;
+        this.wheelDist = wheelDist;
+        this.leftController = leftController;
+        this.rightController = rightController;
+        this.angularVelocityController = angularVelocityController;
+        PIDLimit = pidLimit;
+        if (Double.isNaN(kVl + kAl + kVr + kAr + wheelDist)) {
             throw new RuntimeException("Something is NaN");
         }
     }
@@ -151,6 +172,11 @@ public class PidFollower2D extends AbstractFollower2D {
                 rightMotorV * kVr + rightMotorA * kAr + rightPID - angularPIDOut);
     }
 
+    @Override
+    public AbstractFollower2D clone() {
+        return new PidFollower2D(this.kVl,this.kAl,this.kVr,this.kAr,this.leftController,this.rightController,
+                this.angularVelocityController, this.PIDLimit, this.wheelDist, this.profile.clone());
+    }
 
 
 }
