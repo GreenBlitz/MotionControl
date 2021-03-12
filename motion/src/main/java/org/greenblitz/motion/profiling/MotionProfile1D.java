@@ -327,7 +327,7 @@ public class MotionProfile1D {
          */
         public double getAcceleration(double t) {
             if (!isTimePartOfSegment(t))
-                throw new IndexOutOfBoundsException("Time not in this segment");
+                throw new IndexOutOfBoundsException(t + "Time not in this segment");
             return accel;
         }
 
@@ -338,7 +338,7 @@ public class MotionProfile1D {
          */
         public double getVelocity(double t) {
             if (!isTimePartOfSegment(t))
-                throw new IndexOutOfBoundsException("Time not in this segment");
+                throw new IndexOutOfBoundsException(t + "Time not in this segment");
             return startVelocity + (t - tStart) * accel;
         }
 
@@ -349,7 +349,7 @@ public class MotionProfile1D {
          */
         public double getLocation(double t) {
             if (!isTimePartOfSegment(t))
-                throw new IndexOutOfBoundsException("Time not in this segment");
+                throw new IndexOutOfBoundsException(t + "Time not in this segment");
             double timePassed = (t - tStart);
             return startLocation + timePassed * startVelocity + 0.5 * timePassed * timePassed * accel;
         }

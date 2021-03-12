@@ -44,7 +44,7 @@ public class ThreadedReturnProfiler implements Runnable {
         double t = (System.currentTimeMillis() - startTime)/1000.0;
         double tMerge;
         if(t + destinationTimeOffset > tEnd){
-            return profile;//tMerge = tEnd;
+            return profile;//tMerge = tEnd;   TODO add error calculation to decide worth
         }else{
             tMerge = t + destinationTimeOffset;
         }
