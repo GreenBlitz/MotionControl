@@ -27,6 +27,10 @@ class DiscreteVelocityGraph {
 
         for (ICurve curve : track) {
             curveLen = curve.getLength(1);
+            if(curveLen == -1){
+                System.out.println(curve);
+                throw new RuntimeException("length * k / 2 > 1");
+            }
             curvature = curve.getCurvature();
             segments.add(new VelocitySegment(tmpLength, tmpLength + curveLen,
                     ChassisProfiler2D.getMaxVelocity(maxLinearVel, maxAngularVel, curvature),

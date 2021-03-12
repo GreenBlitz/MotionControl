@@ -120,7 +120,8 @@ public class PolynomialCurve extends AbstractCurve {
         if (Point.isFuzzyEqual(curvature, 0, 1E-3))
             return length;
         if (Math.abs(length * curvature / 2) > 1)
-            throw new RuntimeException("len * curve / 2 is too big");
+            return -1;
+            //throw new RuntimeException("len * curve / 2 is too big");
         return 2 / curvature * Math.asin(length * curvature / 2);
     }
 
