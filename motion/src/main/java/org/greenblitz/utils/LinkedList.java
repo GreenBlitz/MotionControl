@@ -540,7 +540,7 @@ public class LinkedList<E extends HowToCloneAGenericInJava101> extends AbstractS
         clone.modCount = 0;
 
         for(LinkedList.Node x = this.first; x != null; x = x.next) {
-            clone.add((E) x.item);
+            clone.add((E) x.item.clone());
         }
 
         return clone;
