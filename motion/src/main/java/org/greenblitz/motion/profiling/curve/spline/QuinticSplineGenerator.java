@@ -42,6 +42,9 @@ public class QuinticSplineGenerator {
      * Similar calculation with y results:
      * y'' = -K*sin(a)
      *
+     * after adjusting (the sign) to the formula to get K out to the graph
+     * we use x'' = -K*cos(a), y'' = K*sin(a) instead
+     *
      * @param start The starting position of the quintic polynomial
      * @param end   The end position of the polynomial
      * @param t     The "time" of the polynomial. If the polynomial is
@@ -57,7 +60,7 @@ public class QuinticSplineGenerator {
         Vector2D startDoubleDerv = new Vector2D(0, 0);
 
         if (start.getLinearVelocity() != 0) {
-            startDoubleDerv = getDoubleDerv(new Vector2D(sinAngS, cosAngS),
+            startDoubleDerv = getDoubleDerv(sinAngS, cosAngS,
                     start.getAngularVelocity() / start.getLinearVelocity());
         }
 
@@ -66,7 +69,7 @@ public class QuinticSplineGenerator {
         Vector2D endDoubleDerv = new Vector2D(0, 0);
 
         if (end.getLinearVelocity() != 0) {
-            endDoubleDerv = getDoubleDerv(new Vector2D(sinAngE, cosAngE),
+            endDoubleDerv = getDoubleDerv(sinAngE, cosAngE,
                     end.getAngularVelocity() / end.getLinearVelocity());
         }
 
@@ -76,31 +79,11 @@ public class QuinticSplineGenerator {
         );
     }
 
-    private static Vector2D getDoubleDerv(Vector2D firstDerv, double curvature) {
 
-        if (firstDerv.getX() == 0 && firstDerv.getY() == 0) {
-            return new Vector2D(0, 0); // This shouldn't happen
-        }
-
+    private static Vector2D getDoubleDerv(double sinAng, double cosAng, double curvature) {
         Vector2D ret = new Vector2D(0, 0);
-
-        if (firstDerv.getX() + firstDerv.getY() == 0) {
-            if (firstDerv.getX() == 0) {
-                ret.setX(curvature * Math.signum(firstDerv.getY()));
-            } else if (firstDerv.getY() == 0) {
-                ret.setY(curvature * Math.signum(firstDerv.getX()));
-            } else {
-//            double lambda = curvature * firstDerv.norm()/2.0;
-                double lambda = curvature / 2.0;
-
-                ret.setX(lambda / firstDerv.getY());
-                ret.setY(lambda / firstDerv.getX());
-            }
-        } else {
-            ret.setX(curvature / (firstDerv.getX() + firstDerv.getY()));
-            ret.setY(ret.getX());
-        }
-
+        ret.setX(-curvature * cosAng); //x'' = -K*cos(a)
+        ret.setY(curvature * sinAng); //y'' = K*sin(a)
         return ret;
     }
 

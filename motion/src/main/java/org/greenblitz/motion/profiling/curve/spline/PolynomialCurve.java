@@ -159,4 +159,19 @@ public class PolynomialCurve extends AbstractCurve {
         return rank;
     }
 
+    /**
+     * if you want to see the graph in desmos, copy paste
+     * @return
+     */
+    public String toString(){
+        String strX = "X(t) = ";
+        String strY = "Y(t) = ";
+        for (int i = rank; i > 0; i--){
+            if(Math.abs(x[i]) >= 0.0001)
+                strX+= x[i] + "t^" + i + " + ";
+            if(Math.abs(y[i]) >= 0.0001)
+                strY+= y[i] + "t^" + i + " + ";
+        }
+        return "(X(0),Y(0))\n(X(1),Y(1))\n(X(t),Y(t))\n" + strX + x[0] + "\n" + strY + y[0];
+    }
 }
