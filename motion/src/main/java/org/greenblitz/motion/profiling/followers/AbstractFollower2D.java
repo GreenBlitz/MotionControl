@@ -7,6 +7,8 @@ import org.greenblitz.motion.profiling.MotionProfile2D;
 
 public abstract class AbstractFollower2D {
 
+
+
     protected long startTime;
     protected double kVl, kAl;
     protected double kVr, kAr;
@@ -27,6 +29,15 @@ public abstract class AbstractFollower2D {
      */
     public void setProfile(MotionProfile2D profile) {
         this.profile = profile;
+    }
+
+    /**
+     *  used to synchronise two followers
+     * @param startTime
+     */
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
 
 
@@ -76,11 +87,7 @@ public abstract class AbstractFollower2D {
      * @return true if the profile finished running, false otherwise
      */
     public boolean isFinished() {
-        boolean isFinished = profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
-        if (isFinished) {
-            end();
-        }
-        return isFinished;
+        return profile.isOver((System.currentTimeMillis() - startTime) / 1000.0);
     }
 
     /**
@@ -95,7 +102,5 @@ public abstract class AbstractFollower2D {
         sendData = val;
     }
 
-    public void end() {
-    }
-
+    public void atEnd(){}
 }
