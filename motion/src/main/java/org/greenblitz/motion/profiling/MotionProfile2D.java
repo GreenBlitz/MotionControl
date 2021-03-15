@@ -104,7 +104,9 @@ public class MotionProfile2D {
 
     public LinkedList.Node<Segment2D> quickGetNode(double t) {
         if (segments.isEmpty()){throw new IndexOutOfBoundsException("List empty");}
-        accumulatedOffset -= previous.getItem().profileOffset;
+        if (previous != null) {
+            accumulatedOffset -= previous.getItem().profileOffset;
+        }
         for (int i = 0; i < segments.size(); i++) {
             if (previous == null){
                 previous = segments.getNodeFirst();
