@@ -77,7 +77,7 @@ public abstract class AbstractFollower2D {
      * @param curTime    The current time <b>in miliseconds</b>
      * @return A vector of power to each motor in the format (left, right)
      */
-     public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
+    public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
         return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);
     }
 
