@@ -4,6 +4,7 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.ICurve;
+import org.greenblitz.motion.profiling.curve.spline.PolynomialCurve;
 import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
 
 import java.util.ArrayList;
@@ -125,6 +126,7 @@ public class ChassisProfiler2D {
         prevAngularSegment.setAccel(curvature * linearSegment.accel);
 
         profile.updateTEnd();
+        System.out.println(profile);
         return profile;
     }
 
@@ -165,10 +167,9 @@ public class ChassisProfiler2D {
             second = locations.get(i + 1);
             // This is arbitrary, but empirical evidence suggests this works well
             double tToUse = tForCurve * Point.dist(first, second);
-
-            divideToEqualCurvatureSubcurves(subCurves, QuinticSplineGenerator.generateSpline(first, second,
-                    tToUse
-            ), jump);
+            PolynomialCurve curve = QuinticSplineGenerator.generateSpline(first, second, tToUse);
+            System.out.println(curve);
+            divideToEqualCurvatureSubcurves(subCurves, curve, jump);
 
         }
         return subCurves;

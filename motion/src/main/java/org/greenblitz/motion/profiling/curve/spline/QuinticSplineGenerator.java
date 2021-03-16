@@ -52,8 +52,8 @@ public class QuinticSplineGenerator {
      * @return An ICurve of the polynomial
      */
     public static PolynomialCurve generateSpline(State start, State end, double t) {
-        double angS = start.getAngle()*-1;    // spline worked on opposite angle to rest of code
-        double angE = end.getAngle()*-1;
+        double angS = -start.getAngle(); //in order to keep with the global standard
+        double angE = -end.getAngle();
 
         double sinAngS = Math.sin(angS);
         double cosAngS = Math.cos(angS);
