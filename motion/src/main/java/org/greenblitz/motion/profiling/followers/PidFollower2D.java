@@ -86,6 +86,7 @@ public class PidFollower2D extends AbstractFollower2D {
         if (sendData) {
             wheelTarget = RemoteCSVTarget.initTarget("WheelData", "time", "DesiredLeft", "ActualLeft",
                     "DesiredRight", "ActualRight");
+            errorTarget = RemoteCSVTarget.initTarget("ErrorData", "time", "ErrorLeft", "ErrorRight");
             globalTarget = RemoteCSVTarget.initTarget("ProfileData", "time", "DesiredLinVel",
                     "ActualLinVel", "DesiredAngVel", "ActualAngVel");
             leftOutputTarget = RemoteCSVTarget.initTarget("LeftPower",
@@ -124,6 +125,7 @@ public class PidFollower2D extends AbstractFollower2D {
 
         if (sendData) {
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
+            errorTarget.report(timeNow,leftMotorV - leftCurr, rightCurr - rightCurr);
             globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
                     (leftCurr - rightCurr) / wheelDist);
         }
@@ -139,7 +141,6 @@ public class PidFollower2D extends AbstractFollower2D {
         }
 
         if (sendData) {
-
             leftOutputTarget.report(timeNow, leftMotorV * kVl, leftMotorA * kAl,
                     leftPID, angularPIDOut);
             rightOutputTarget.report(timeNow, rightMotorV * kVr, rightMotorA * kAr,

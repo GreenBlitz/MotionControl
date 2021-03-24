@@ -16,6 +16,7 @@ public abstract class AbstractFollower2D {
 
 
     protected RemoteCSVTarget wheelTarget;
+    protected RemoteCSVTarget errorTarget;
     protected RemoteCSVTarget globalTarget;
     protected RemoteCSVTarget leftOutputTarget;
     protected RemoteCSVTarget rightOutputTarget;
