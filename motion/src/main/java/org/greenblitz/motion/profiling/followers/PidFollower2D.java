@@ -126,6 +126,7 @@ public class PidFollower2D extends AbstractFollower2D {
 
         if (sendData) {
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
+            System.out.println(timeNow+","+leftMotorV+","+leftCurr+","+rightMotorV+","+rightCurr);
             errorTarget.report(timeNow,leftCurr - leftMotorV, rightCurr - rightMotorV);
             globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
                     (leftCurr - rightCurr) / wheelDist);
