@@ -13,6 +13,7 @@ public abstract class AbstractFollower2D {
     protected double kVl, kAl;
     protected double kVr, kAr;
     protected MotionProfile2D profile;
+    protected boolean started;
 
 
     protected RemoteCSVTarget wheelTarget;
@@ -79,7 +80,7 @@ public abstract class AbstractFollower2D {
      * @return A vector of power to each motor in the format (left, right)
      */
     public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
-        if(startTime == 0){
+        if(!started){
             startTime = curTime;
         }
         return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);

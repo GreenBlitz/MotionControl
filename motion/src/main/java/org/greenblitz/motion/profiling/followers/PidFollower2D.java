@@ -78,7 +78,7 @@ public class PidFollower2D extends AbstractFollower2D {
             converter = new ReverseLocalizerConverter(wheelDist);
         }
 
-        startTime = 0;
+        started = false;
         leftController.configure(0, 0, -PIDLimit, PIDLimit, Double.NaN);
         rightController.configure(0, 0, -PIDLimit, PIDLimit, Double.NaN);
         angularVelocityController.configure(0, 0, -PIDLimit, PIDLimit, 0);
