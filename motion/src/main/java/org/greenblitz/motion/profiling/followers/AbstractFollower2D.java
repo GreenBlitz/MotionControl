@@ -82,6 +82,7 @@ public abstract class AbstractFollower2D {
     public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
         if(!started){
             startTime = curTime;
+            started = true;
         }
         return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);
     }
