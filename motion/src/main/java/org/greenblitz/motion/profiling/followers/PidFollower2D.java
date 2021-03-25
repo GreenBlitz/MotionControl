@@ -152,4 +152,16 @@ public class PidFollower2D extends AbstractFollower2D {
                 rightMotorV * kVr + rightMotorA * kAr + rightPID - angularPIDOut);
     }
 
+    public PIDController getLeftPidController(){
+        return this.leftController;
+    }
+
+    public PIDController getRightPidController(){
+        return this.rightController;
+    }
+
+    public PIDController getAngularVelocityControllerPidController(){
+        return this.angularVelocityController;
+    }
+
 }

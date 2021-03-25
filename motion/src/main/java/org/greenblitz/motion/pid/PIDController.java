@@ -149,4 +149,7 @@ public class PIDController {
         return Math.min(Math.max(value, m_minimumOutput), m_maximumOutput);
     }
 
+    public void setPidObject(PIDObject newPidObj){
+        this.m_obj = newPidObj;
+    }
 }
