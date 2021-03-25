@@ -79,6 +79,9 @@ public abstract class AbstractFollower2D {
      * @return A vector of power to each motor in the format (left, right)
      */
     public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
+        if(startTime == 0){
+            startTime = curTime;
+        }
         return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);
     }
 
