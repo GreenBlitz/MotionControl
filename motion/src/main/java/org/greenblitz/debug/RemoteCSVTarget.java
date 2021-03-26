@@ -26,7 +26,7 @@ public class RemoteCSVTarget {
     private static final NetworkTable VALUES = CSV_LOGGER.getSubTable("values");
 
     private final String m_remoteFileName;
-    private final String[] m_ntNames;
+    protected final String[] m_ntNames;
 
     private RemoteCSVTarget(String remoteFileName, String[] ntNames) {
         m_remoteFileName = remoteFileName;
