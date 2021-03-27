@@ -45,7 +45,7 @@ public class RemoteCSVTargetBuffer {
         for(int i=0; i<buffer.size(); i++){
             target.report(buffer.get(i));
             try {
-                Thread.sleep(50);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
