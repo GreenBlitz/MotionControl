@@ -31,7 +31,7 @@ public class RemoteCSVTargetBuffer {
                     double dT = buffer.get(l)[time] - buffer.get(i)[time];
                     for (int k = i+1; k < l; k++) {
                         double dt = buffer.get(k)[time] - buffer.get(i)[time];
-                        buffer.get(k)[j] = dV/dT*dt;
+                        buffer.get(k)[j] = dV/dT*dt + buffer.get(i)[j];
                     }
                 }
             }
