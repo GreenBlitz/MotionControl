@@ -74,7 +74,7 @@ public class PidFollower2D extends AbstractFollower2D {
      */
     @Override
     public void init() {
-
+        System.out.println("all up to date");
         if (converter == null) {
             converter = new ReverseLocalizerConverter(wheelDist);
         }
