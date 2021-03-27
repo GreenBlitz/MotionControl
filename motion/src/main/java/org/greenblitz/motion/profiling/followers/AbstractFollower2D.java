@@ -84,7 +84,6 @@ public abstract class AbstractFollower2D {
         if(!started){
             startTime = curTime - 1;
             started = true;
-            System.out.println("not started");
         }
         return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);
     }

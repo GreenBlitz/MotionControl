@@ -37,6 +37,7 @@ public class RemoteCSVTargetBuffer {
             }
         }
         for(int i=0; i<buffer.size(); i++){
+            if(buffer.get(i)[0] == 0.001) System.out.println("time is not recived in csv from buffer");
             target.report(buffer.get(i));
             try {
                 Thread.sleep(50);
