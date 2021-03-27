@@ -125,7 +125,7 @@ public class PidFollower2D extends AbstractFollower2D {
         }
 
         if (sendData) {
-            if(timeNow == 0.01) System.out.println("time is not received in CSV");
+            if(timeNow == 0.001) System.out.println("time is not received in CSV");
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
             errorTarget.report(timeNow,leftCurr - leftMotorV, rightCurr - rightMotorV);
             globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
