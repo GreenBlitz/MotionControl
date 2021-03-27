@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling.followers;
 
 import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.debug.RemoteCSVTargetBuffer;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.CollapsingPIDController;
 import org.greenblitz.motion.pid.PIDController;
@@ -85,14 +86,14 @@ public class PidFollower2D extends AbstractFollower2D {
         angularVelocityController.configure(0, 0, -PIDLimit, PIDLimit, 0);
 
         if (sendData) {
-            wheelTarget = RemoteCSVTarget.initTarget("WheelData", "time", "DesiredLeft", "ActualLeft",
+            wheelTarget = new RemoteCSVTargetBuffer("WheelData", "time", "DesiredLeft", "ActualLeft",
                     "DesiredRight", "ActualRight");
-            errorTarget = RemoteCSVTarget.initTarget("ErrorData", "time", "ErrorLeft", "ErrorRight");
-            globalTarget = RemoteCSVTarget.initTarget("ProfileData", "time", "DesiredLinVel",
+            errorTarget = new RemoteCSVTargetBuffer("ErrorData", "time", "ErrorLeft", "ErrorRight");
+            globalTarget = new RemoteCSVTargetBuffer("ProfileData", "time", "DesiredLinVel",
                     "ActualLinVel", "DesiredAngVel", "ActualAngVel");
-            leftOutputTarget = RemoteCSVTarget.initTarget("LeftPower",
+            leftOutputTarget = new RemoteCSVTargetBuffer("LeftPower",
                     "time", "kv", "ka", "pid", "angular pid");
-            rightOutputTarget = RemoteCSVTarget.initTarget("RightPower",
+            rightOutputTarget = new RemoteCSVTargetBuffer("RightPower",
                     "time", "kv", "ka", "pid", "angular pid");
         }
     }

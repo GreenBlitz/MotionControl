@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling.followers;
 
 import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.debug.RemoteCSVTargetBuffer;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.CollapsingPIDController;
 import org.greenblitz.motion.profiling.MotionProfile2D;
@@ -16,11 +17,11 @@ public abstract class AbstractFollower2D {
     protected boolean started;
 
 
-    protected RemoteCSVTarget wheelTarget;
-    protected RemoteCSVTarget errorTarget;
-    protected RemoteCSVTarget globalTarget;
-    protected RemoteCSVTarget leftOutputTarget;
-    protected RemoteCSVTarget rightOutputTarget;
+    protected RemoteCSVTargetBuffer wheelTarget;
+    protected RemoteCSVTargetBuffer errorTarget;
+    protected RemoteCSVTargetBuffer globalTarget;
+    protected RemoteCSVTargetBuffer leftOutputTarget;
+    protected RemoteCSVTargetBuffer rightOutputTarget;
     protected boolean sendData = false;
 
     /**
@@ -108,5 +109,13 @@ public abstract class AbstractFollower2D {
         sendData = val;
     }
 
-    public void atEnd(){}
+    public void atEnd(){
+        if(sendData) {
+            wheelTarget.passToCSV();
+            errorTarget.passToCSV();
+            globalTarget.passToCSV();
+            leftOutputTarget.passToCSV();
+            rightOutputTarget.passToCSV();
+        }
+    }
 }
