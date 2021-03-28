@@ -22,7 +22,7 @@ public abstract class AbstractFollower2D {
     protected RemoteCSVTargetBuffer globalTarget;
     protected RemoteCSVTargetBuffer leftOutputTarget;
     protected RemoteCSVTargetBuffer rightOutputTarget;
-    protected boolean sendData = false;
+    protected int dataDelay = 0;
 
     /**
      * Use with EXTREME CAUTION. this is used for dynamic motion profiling and is
@@ -106,11 +106,13 @@ public abstract class AbstractFollower2D {
      * @param val whether to send data or not
      */
     public void setSendData(boolean val) {
-        sendData = val;
+        dataDelay = val ? 50 : 0;
     }
 
+    public void setDataDelay(int val){dataDelay = val;}
+
     public void atEnd(){
-        if(sendData) {
+        if(dataDelay != 0) {
             wheelTarget.passToCSV();
             errorTarget.passToCSV();
             globalTarget.passToCSV();

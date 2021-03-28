@@ -5,10 +5,16 @@ import java.util.ArrayList;
 public class RemoteCSVTargetBuffer {
     RemoteCSVTarget target;
     ArrayList<double[]> buffer;
+    private long delay;
 
     public RemoteCSVTargetBuffer(String fileName, String... names){
+        this(fileName, 50, names);
+    }
+
+    public RemoteCSVTargetBuffer(String fileName, long delay, String... names){
         target = RemoteCSVTarget.initTarget(fileName, names);
         buffer = new ArrayList<double[]>();
+        this.delay = delay;
     }
 
     public void report(double... record){
@@ -17,6 +23,18 @@ public class RemoteCSVTargetBuffer {
     }
 
     public void passToCSV(){
+        target.report(buffer.get(0).clone());
+        for(int i=0; i<buffer.size(); i++){
+            target.report(buffer.get(i));
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void resolveDupes(){
         int time = 0;
         for (int i = 0; i < buffer.get(0).length; i++) {
             if(target.m_ntNames[i] == "time") time = i;
@@ -34,20 +52,6 @@ public class RemoteCSVTargetBuffer {
                         buffer.get(k)[j] = dV/dT*dt + buffer.get(i)[j];
                     }
                 }
-            }
-        }
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(buffer.size());
-        for(int i=0; i<buffer.size(); i++){
-            target.report(buffer.get(i));
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }

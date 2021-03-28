@@ -84,15 +84,15 @@ public class PidFollower2D extends AbstractFollower2D {
         rightController.configure(0, 0, -PIDLimit, PIDLimit, Double.NaN);
         angularVelocityController.configure(0, 0, -PIDLimit, PIDLimit, 0);
 
-        if (sendData) {
-            wheelTarget = new RemoteCSVTargetBuffer("WheelData", "time", "DesiredLeft", "ActualLeft",
+        if (dataDelay != 0) {
+            wheelTarget = new RemoteCSVTargetBuffer("WheelData", dataDelay, "time", "DesiredLeft", "ActualLeft",
                     "DesiredRight", "ActualRight");
-            errorTarget = new RemoteCSVTargetBuffer("ErrorData", "time", "ErrorLeft", "ErrorRight");
-            globalTarget = new RemoteCSVTargetBuffer("ProfileData", "time", "DesiredLinVel",
+            errorTarget = new RemoteCSVTargetBuffer("ErrorData", dataDelay,"time", "ErrorLeft", "ErrorRight");
+            globalTarget = new RemoteCSVTargetBuffer("ProfileData", dataDelay,"time", "DesiredLinVel",
                     "ActualLinVel", "DesiredAngVel", "ActualAngVel");
-            leftOutputTarget = new RemoteCSVTargetBuffer("LeftPower",
+            leftOutputTarget = new RemoteCSVTargetBuffer("LeftPower", dataDelay,
                     "time", "kv", "ka", "pid", "angular pid");
-            rightOutputTarget = new RemoteCSVTargetBuffer("RightPower",
+            rightOutputTarget = new RemoteCSVTargetBuffer("RightPower", dataDelay,
                     "time", "kv", "ka", "pid", "angular pid");
         }
     }
@@ -124,7 +124,7 @@ public class PidFollower2D extends AbstractFollower2D {
             throw new RuntimeException("One of the motor ff vals are NaN");
         }
 
-        if (sendData) {
+        if (dataDelay != 0) {
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
             errorTarget.report(timeNow,leftCurr - leftMotorV, rightCurr - rightMotorV);
             globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
@@ -141,7 +141,7 @@ public class PidFollower2D extends AbstractFollower2D {
             throw new RuntimeException("LeftPID or RightPID are NaN");
         }
 
-        if (sendData) {
+        if (dataDelay != 0) {
             leftOutputTarget.report(timeNow, leftMotorV * kVl, leftMotorA * kAl,
                     leftPID, angularPIDOut);
             rightOutputTarget.report(timeNow, rightMotorV * kVr, rightMotorA * kAr,
