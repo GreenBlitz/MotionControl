@@ -80,6 +80,11 @@ public class PidFollower2D extends AbstractFollower2D {
 
         started = false;
         startTime = System.currentTimeMillis();
+        if(dataDelay != 0){
+            leftController.setDataDelay(dataDelay, "leftPID");
+            angularVelocityController.setDataDelay(dataDelay, "angularPID");
+            rightController.setDataDelay(dataDelay, "rightPID");
+        }
         leftController.configure(0, 0, -PIDLimit, PIDLimit, Double.NaN);
         rightController.configure(0, 0, -PIDLimit, PIDLimit, Double.NaN);
         angularVelocityController.configure(0, 0, -PIDLimit, PIDLimit, 0);
@@ -91,9 +96,7 @@ public class PidFollower2D extends AbstractFollower2D {
             wheelTarget = new RemoteCSVTargetBuffer("WheelData", dataDelay, "time", "DesiredLeft", "ActualLeft",
                     "DesiredRight", "ActualRight");
 //            errorTarget = new RemoteCSVTargetBuffer("ErrorData", dataDelay,"time", "ErrorLeft", "ErrorRight");
-            leftController.setDataDelay(dataDelay, "leftPID");
-            angularVelocityController.setDataDelay(dataDelay, "angularPID");
-            rightController.setDataDelay(dataDelay, "rightPID");
+
 //            leftOutputTarget = new RemoteCSVTargetBuffer("LeftPower", dataDelay,
 //                    "time", "kv", "ka", "pid", "angular pid");
 //            rightOutputTarget = new RemoteCSVTargetBuffer("RightPower", dataDelay,
