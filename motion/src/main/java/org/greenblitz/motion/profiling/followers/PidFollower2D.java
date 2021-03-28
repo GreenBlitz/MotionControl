@@ -170,8 +170,8 @@ public class PidFollower2D extends AbstractFollower2D {
     }
 
     @Override
-    public void atEnd() {
-        super.atEnd();
+    public void sendCSV() {
+        super.sendCSV();
         leftController.atEnd();
         angularVelocityController.atEnd();
         rightController.atEnd();

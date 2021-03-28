@@ -111,7 +111,8 @@ public abstract class AbstractFollower2D {
 
     public void setDataDelay(int val){dataDelay = val;}
 
-    public void atEnd(){
+
+    public void sendCSV(){
         if(dataDelay != 0) {
             globalTarget.passToCSV(true);
             wheelTarget.passToCSV(true);
