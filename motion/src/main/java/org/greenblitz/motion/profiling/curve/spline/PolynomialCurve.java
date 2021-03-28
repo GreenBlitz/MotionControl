@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling.curve.spline;
 
 import org.greenblitz.motion.base.Point;
+import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.curve.AbstractCurve;
 import org.greenblitz.motion.profiling.curve.ICurve;
@@ -173,5 +174,13 @@ public class PolynomialCurve extends AbstractCurve {
                 strY+= y[i] + "t^" + i + " + ";
         }
         return "(X(0),Y(0))\n(X(1),Y(1))\n(X(t),Y(t))\n" + strX + x[0] + "\n" + strY + y[0];
+    }
+
+    public double[] getX(){
+        return x;
+    }
+
+    public double[] getY(){
+        return y;
     }
 }
