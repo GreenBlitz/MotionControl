@@ -22,7 +22,8 @@ public class RemoteCSVTargetBuffer {
         buffer.add(record);
     }
 
-    public void passToCSV(){
+    public void passToCSV(boolean resolveDupes){
+        if(resolveDupes) resolveDupes();
         target.report(buffer.get(0).clone());
         for(int i=0; i<buffer.size(); i++){
             target.report(buffer.get(i));

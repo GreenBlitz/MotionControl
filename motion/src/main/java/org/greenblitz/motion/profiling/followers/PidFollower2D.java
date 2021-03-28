@@ -85,15 +85,19 @@ public class PidFollower2D extends AbstractFollower2D {
         angularVelocityController.configure(0, 0, -PIDLimit, PIDLimit, 0);
 
         if (dataDelay != 0) {
-            wheelTarget = new RemoteCSVTargetBuffer("WheelData", dataDelay, "time", "DesiredLeft", "ActualLeft",
-                    "DesiredRight", "ActualRight");
-            errorTarget = new RemoteCSVTargetBuffer("ErrorData", dataDelay,"time", "ErrorLeft", "ErrorRight");
+
             globalTarget = new RemoteCSVTargetBuffer("ProfileData", dataDelay,"time", "DesiredLinVel",
                     "ActualLinVel", "DesiredAngVel", "ActualAngVel");
-            leftOutputTarget = new RemoteCSVTargetBuffer("LeftPower", dataDelay,
-                    "time", "kv", "ka", "pid", "angular pid");
-            rightOutputTarget = new RemoteCSVTargetBuffer("RightPower", dataDelay,
-                    "time", "kv", "ka", "pid", "angular pid");
+            wheelTarget = new RemoteCSVTargetBuffer("WheelData", dataDelay, "time", "DesiredLeft", "ActualLeft",
+                    "DesiredRight", "ActualRight");
+//            errorTarget = new RemoteCSVTargetBuffer("ErrorData", dataDelay,"time", "ErrorLeft", "ErrorRight");
+            leftController.setDataDelay(dataDelay, "leftPID");
+            angularVelocityController.setDataDelay(dataDelay, "angularPID");
+            rightController.setDataDelay(dataDelay, "rightPID");
+//            leftOutputTarget = new RemoteCSVTargetBuffer("LeftPower", dataDelay,
+//                    "time", "kv", "ka", "pid", "angular pid");
+//            rightOutputTarget = new RemoteCSVTargetBuffer("RightPower", dataDelay,
+//                    "time", "kv", "ka", "pid", "angular pid");
         }
     }
 
@@ -126,7 +130,7 @@ public class PidFollower2D extends AbstractFollower2D {
 
         if (dataDelay != 0) {
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
-            errorTarget.report(timeNow,leftCurr - leftMotorV, rightCurr - rightMotorV);
+//            errorTarget.report(timeNow,leftCurr - leftMotorV, rightCurr - rightMotorV);
             globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
                     (leftCurr - rightCurr) / wheelDist);
         }
@@ -140,14 +144,14 @@ public class PidFollower2D extends AbstractFollower2D {
         if (Double.isNaN(leftPID + rightPID)) {
             throw new RuntimeException("LeftPID or RightPID are NaN");
         }
-
-        if (dataDelay != 0) {
-            leftOutputTarget.report(timeNow, leftMotorV * kVl, leftMotorA * kAl,
-                    leftPID, angularPIDOut);
-            rightOutputTarget.report(timeNow, rightMotorV * kVr, rightMotorA * kAr,
-                    rightPID, -angularPIDOut);
-
-        }
+//
+//        if (dataDelay != 0) {
+//            leftOutputTarget.report(timeNow, leftMotorV * kVl, leftMotorA * kAl,
+//                    leftPID, angularPIDOut);
+//            rightOutputTarget.report(timeNow, rightMotorV * kVr, rightMotorA * kAr,
+//                    rightPID, -angularPIDOut);
+//
+//        }
 
         return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID + angularPIDOut,
                 rightMotorV * kVr + rightMotorA * kAr + rightPID - angularPIDOut);
@@ -165,4 +169,11 @@ public class PidFollower2D extends AbstractFollower2D {
         return this.angularVelocityController;
     }
 
+    @Override
+    public void atEnd() {
+        super.atEnd();
+        leftController.atEnd();
+        angularVelocityController.atEnd();
+        rightController.atEnd();
+    }
 }

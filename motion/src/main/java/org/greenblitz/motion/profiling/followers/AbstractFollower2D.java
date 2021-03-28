@@ -20,8 +20,8 @@ public abstract class AbstractFollower2D {
     protected RemoteCSVTargetBuffer wheelTarget;
     protected RemoteCSVTargetBuffer errorTarget;
     protected RemoteCSVTargetBuffer globalTarget;
-    protected RemoteCSVTargetBuffer leftOutputTarget;
-    protected RemoteCSVTargetBuffer rightOutputTarget;
+//    protected RemoteCSVTargetBuffer leftOutputTarget;
+//    protected RemoteCSVTargetBuffer rightOutputTarget;
     protected int dataDelay = 0;
 
     /**
@@ -113,11 +113,11 @@ public abstract class AbstractFollower2D {
 
     public void atEnd(){
         if(dataDelay != 0) {
-            wheelTarget.passToCSV();
-            errorTarget.passToCSV();
-            globalTarget.passToCSV();
-            leftOutputTarget.passToCSV();
-            rightOutputTarget.passToCSV();
+            globalTarget.passToCSV(true);
+            wheelTarget.passToCSV(true);
+//            errorTarget.passToCSV(true);
+//            leftOutputTarget.passToCSV(true);
+//            rightOutputTarget.passToCSV(true);
         }
     }
 }
