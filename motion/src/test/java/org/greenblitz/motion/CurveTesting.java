@@ -18,7 +18,34 @@ public class CurveTesting{
         redPathA.add(new State(inchToMeter(5), inchToMeter(2), -1.975, 3, 8));
         redPathA.add(new State(inchToMeter(6), inchToMeter(5), -1.77, 3.6, 9.5));
         redPathA.add(new State(inchToMeter(11), inchToMeter(4), -0.5*Math.PI, 0, 0));
-        printPath(redPathA);
+        //printPath(redPathA);
+
+        //BLUE Path A
+        ArrayList<State> bluePathA = new ArrayList<>();
+        bluePathA.add(new State(inchToMeter(1),inchToMeter(2),-1.33,0,0));
+        bluePathA.add(new State(inchToMeter(6),inchToMeter(1),-1.33,3.6,2));
+        bluePathA.add(new State(inchToMeter(7),inchToMeter(4),-1.9,3.6,2));
+        bluePathA.add(new State(inchToMeter(9),inchToMeter(3),-1.9,3.6,2));
+        bluePathA.add(new State(inchToMeter(11),inchToMeter(2),-1.9,0,0));
+        //printPath(bluePathA);
+
+        //RED Path B
+        ArrayList<State> redPathB = new ArrayList<>();
+        redPathB.add(new State(inchToMeter(1),inchToMeter(5.5),-2.5,0,0));
+        redPathB.add(new State(inchToMeter(3),inchToMeter(4),-2.52,3.6,7)); //-3.12
+        redPathB.add(new State(inchToMeter(5),inchToMeter(2),-1.55,3.6,9.5));
+        redPathB.add(new State(inchToMeter(7),inchToMeter(4),-1.15,3.6,9.5));
+        redPathB.add(new State(inchToMeter(11),inchToMeter(5),-1.15,0,0));
+        //printPath(redPathB);
+
+        //BLUE Path B
+        ArrayList<State> bluePathB = new ArrayList<>();
+        bluePathB.add(new State(inchToMeter(1),inchToMeter(2),-0.5*Math.PI,0,0));
+        bluePathB.add(new State(inchToMeter(6),inchToMeter(2),-1.55,3.6,9.5));
+        bluePathB.add(new State(inchToMeter(8),inchToMeter(4),-1.75,3.6,9.5));
+        bluePathB.add(new State(inchToMeter(10),inchToMeter(2),-1.85,3.6,6.5));
+        bluePathB.add(new State(inchToMeter(11),inchToMeter(2),-0.5*Math.PI,0,0));
+        //printPath(bluePathB);
     }
 
     public static void printPath(ArrayList<State> path){
