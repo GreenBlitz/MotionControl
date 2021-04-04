@@ -135,7 +135,7 @@ public class PidFollower2D extends AbstractFollower2D {
             wheelTarget.report(timeNow, leftMotorV, leftCurr, rightMotorV, rightCurr);
 //            errorTarget.report(timeNow,leftCurr - leftMotorV, rightCurr - rightMotorV);
             globalTarget.report(timeNow, velocity.getX(), (leftCurr + rightCurr) / 2.0, velocity.getY(),
-                    (leftCurr - rightCurr) / wheelDist);
+                    (rightCurr - leftCurr) / wheelDist);
         }
 
         leftController.setGoal(leftMotorV);
@@ -156,8 +156,8 @@ public class PidFollower2D extends AbstractFollower2D {
 //
 //        }
 
-        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID + angularPIDOut,
-                rightMotorV * kVr + rightMotorA * kAr + rightPID - angularPIDOut);
+        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID - angularPIDOut,
+                rightMotorV * kVr + rightMotorA * kAr + rightPID + angularPIDOut);
     }
 
     public PIDController getLeftPidController(){
