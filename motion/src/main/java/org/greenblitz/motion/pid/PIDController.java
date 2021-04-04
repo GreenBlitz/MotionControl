@@ -11,6 +11,7 @@ public class PIDController {
     protected double m_goal;
     protected double m_previousError;
     protected double m_integral;
+    protected long startTime;
 
     protected double m_minimumOutput;
     protected double m_maximumOutput;
@@ -58,6 +59,7 @@ public class PIDController {
         configureOutputLimits(limitLower, limitUpper);
         m_previousTime = System.currentTimeMillis();
         m_absoluteMinimumOut = absoluteMinimumOut;
+        startTime = System.currentTimeMillis();
         if(dataDelay != 0){
             PIDTarget = new RemoteCSVTargetBuffer(targetName, dataDelay, "time", "P", "I", "D", "kf", "PID");
         }
@@ -104,7 +106,7 @@ public class PIDController {
             d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
-        if(dataDelay != 0 ) PIDTarget.report(updateTime(), p, i, d, m_obj.getKf(), p + i + d + m_obj.getKf());
+        if(dataDelay != 0 ) PIDTarget.report((System.currentTimeMillis() - startTime)/1000.0, p, i, d, m_obj.getKf(), p + i + d + m_obj.getKf());
         return clampFully(p + i + d + m_obj.getKf());
     }
 
