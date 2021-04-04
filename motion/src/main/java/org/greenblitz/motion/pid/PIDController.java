@@ -59,7 +59,7 @@ public class PIDController {
         m_previousTime = System.currentTimeMillis();
         m_absoluteMinimumOut = absoluteMinimumOut;
         if(dataDelay != 0){
-            PIDTarget = new RemoteCSVTargetBuffer(targetName, dataDelay, "P", "I", "D", "kf", "PID");
+            PIDTarget = new RemoteCSVTargetBuffer(targetName, dataDelay, "time", "P", "I", "D", "kf", "PID");
         }
         configured = true;
     }
@@ -104,7 +104,7 @@ public class PIDController {
             d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
-        if(dataDelay != 0 ) PIDTarget.report(p, i, d, m_obj.getKf(), p + i + d + m_obj.getKf());
+        if(dataDelay != 0 ) PIDTarget.report(updateTime(), p, i, d, m_obj.getKf(), p + i + d + m_obj.getKf());
         return clampFully(p + i + d + m_obj.getKf());
     }
 
