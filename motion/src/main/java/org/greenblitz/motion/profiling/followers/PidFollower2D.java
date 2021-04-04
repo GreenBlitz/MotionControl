@@ -24,6 +24,10 @@ public class PidFollower2D extends AbstractFollower2D {
     protected double wheelDist;
     protected IConverter converter;
 
+    private double prevRight = -1;
+    private double prevLeft = -1;
+    private double prevAng = -1;
+    private double angularPIDOut = 0, rightPID = 0, leftPID = 0;
 
 
 
@@ -112,8 +116,11 @@ public class PidFollower2D extends AbstractFollower2D {
         Vector2D velocity = profile.getVelocity(timeNow);
         Vector2D acceleration = profile.getAcceleration(timeNow);
 
-        angularVelocityController.setGoal(velocity.getY());
-        double angularPIDOut = angularVelocityController.calculatePID(angularVel);
+        if (prevAng != angularVel) {
+            angularVelocityController.setGoal(velocity.getY());
+            angularPIDOut = angularVelocityController.calculatePID(angularVel);
+            prevAng = angularVel;
+        }
 
         if (Double.isNaN(angularPIDOut)) {
             throw new RuntimeException("Ang PID output is NaN");
@@ -138,11 +145,17 @@ public class PidFollower2D extends AbstractFollower2D {
                     (rightCurr - leftCurr) / wheelDist);
         }
 
-        leftController.setGoal(leftMotorV);
-        rightController.setGoal(rightMotorV);
+        if (prevLeft != leftCurr){
+            leftController.setGoal(leftMotorV);
+            leftPID = leftController.calculatePID(leftCurr);
+            prevLeft = leftCurr;
+        }
 
-        double leftPID = leftController.calculatePID(leftCurr);
-        double rightPID = rightController.calculatePID(rightCurr);
+        if(prevRight != rightCurr) {
+            rightController.setGoal(rightMotorV);
+            rightPID = rightController.calculatePID(rightCurr);
+            prevRight = rightCurr;
+        }
 
         if (Double.isNaN(leftPID + rightPID)) {
             throw new RuntimeException("LeftPID or RightPID are NaN");
