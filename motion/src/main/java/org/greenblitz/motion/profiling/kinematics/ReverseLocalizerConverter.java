@@ -28,8 +28,8 @@ public class ReverseLocalizerConverter implements IConverter {
         https://matrixcalc.org/en/slu.html#solve-using-Cramer%27s-rule%28%7B%7B1/2,1/2,0,0,v%7D,%7B1/d,-1/d,0,0,o%7D%7D%29
          */
 
-        double slowerMotor =  (-wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0;
-        double fasterMotor = (wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0;
+        double fasterMotor =  (-wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0; //TODO for some reason faster and slower were the wrong way did swap should try and understand cause
+        double slowerMotor = (wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0;
 
         if (byLinAng.getY() > 0 == regularDirections) {
             return new Vector2D(slowerMotor, fasterMotor);
