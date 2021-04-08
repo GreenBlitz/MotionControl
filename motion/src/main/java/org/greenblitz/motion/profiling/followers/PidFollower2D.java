@@ -127,7 +127,17 @@ public class PidFollower2D extends AbstractFollower2D {
         }
 
         Vector2D velocities = converter.convert(velocity);
+        if(velocities.getY() - velocities.getX() > 0 != velocity.getY() >0){
+            double right = velocities.getX();
+            velocities.setX(velocities.getY());
+            velocities.setY(right);
+        }
         Vector2D accels = converter.convert(acceleration);
+        if(accels.getY() - accels.getX() > 0 != acceleration.getY() >0){
+            double right = accels.getX();
+            accels.setX(accels.getY());
+            accels.setY(right);
+        }
 
         double leftMotorV = velocities.getX();
         double leftMotorA = accels.getX();
