@@ -1,5 +1,6 @@
 package org.greenblitz.motion.pid;
 
+import org.greenblitz.debug.RemoteCSVTargetBuffer;
 import org.greenblitz.motion.exceptions.UninitializedPIDException;
 import org.greenblitz.motion.tolerance.ITolerance;
 
@@ -10,6 +11,7 @@ public class PIDController {
     protected double m_goal;
     protected double m_previousError;
     protected double m_integral;
+    protected long startTime;
 
     protected double m_minimumOutput;
     protected double m_maximumOutput;
@@ -18,6 +20,10 @@ public class PIDController {
     protected boolean configured;
 
     protected ITolerance m_tolerance;
+
+    private RemoteCSVTargetBuffer PIDTarget;
+    private int dataDelay = 0;
+    private String targetName = "PIDTarget";
 
     public PIDController(PIDObject obj, ITolerance tolerance) {
         m_obj = obj;
@@ -53,6 +59,10 @@ public class PIDController {
         configureOutputLimits(limitLower, limitUpper);
         m_previousTime = System.currentTimeMillis();
         m_absoluteMinimumOut = absoluteMinimumOut;
+        startTime = System.currentTimeMillis();
+        if(dataDelay != 0){
+            PIDTarget = new RemoteCSVTargetBuffer(targetName, dataDelay, "time", "P", "I", "D", "kf", "PID");
+        }
         configured = true;
     }
 
@@ -96,6 +106,7 @@ public class PIDController {
             d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
+        if(dataDelay != 0 ) PIDTarget.report((System.currentTimeMillis() - startTime)/1000.0, p, i, d, m_obj.getKf(), p + i + d + m_obj.getKf());
         return clampFully(p + i + d + m_obj.getKf());
     }
 
@@ -151,5 +162,17 @@ public class PIDController {
 
     public void setPidObject(PIDObject newPidObj){
         this.m_obj = newPidObj;
+    }
+
+    public void atEnd(){
+        if(dataDelay != 0){
+            PIDTarget.passToCSV(true);
+        }
+    }
+
+    public void setSendData(boolean sendData){dataDelay = sendData? 50:0;}
+    public void setDataDelay(int dataDelay, String name){
+        this.dataDelay = dataDelay;
+        targetName = name;
     }
 }
