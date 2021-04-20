@@ -40,7 +40,7 @@ public class CurvatureConverter implements IConverter {
 
     public CurvatureConverter(double d, boolean regularDirections) {
         halfWheelDist = d / 2.0;
-        emergencyConverter = new ReverseLocalizerConverter(d);
+        emergencyConverter = new ReverseLocalizerConverter(d, regularDirections);
         this.regularDirections = regularDirections;
     }
 

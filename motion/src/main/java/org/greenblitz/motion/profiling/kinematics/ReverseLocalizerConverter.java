@@ -8,10 +8,17 @@ import org.greenblitz.motion.base.Vector2D;
 public class ReverseLocalizerConverter implements IConverter {
 
     private double wheelDist;
+    private boolean regularDirections;
 
     public ReverseLocalizerConverter(double d) {
-        wheelDist = d;
+        this(d, true);
     }
+
+    public ReverseLocalizerConverter(double d, boolean regularDirections){
+        wheelDist = d;
+        this.regularDirections = regularDirections;
+    }
+
 
     @Override
     public Vector2D convert(Vector2D byLinAng) {
@@ -21,9 +28,14 @@ public class ReverseLocalizerConverter implements IConverter {
         https://matrixcalc.org/en/slu.html#solve-using-Cramer%27s-rule%28%7B%7B1/2,1/2,0,0,v%7D,%7B1/d,-1/d,0,0,o%7D%7D%29
          */
 
-        double leftMotorV = (wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0;
-        double rightMotorV = (-wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0;
+        double fasterMotor =  (-wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0; //TODO for some reason faster and slower were the wrong way did swap should try and understand cause
+        double slowerMotor = (wheelDist * byLinAng.getY() + 2 * byLinAng.getX()) / 2.0;
 
-        return new Vector2D(leftMotorV, rightMotorV);
+        if (regularDirections) {
+            return new Vector2D(slowerMotor, fasterMotor);
+        } else {
+            return new Vector2D(fasterMotor, slowerMotor);
+
     }
+}
 }
