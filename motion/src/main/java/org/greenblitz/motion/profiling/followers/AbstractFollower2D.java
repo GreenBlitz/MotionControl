@@ -1,6 +1,7 @@
 package org.greenblitz.motion.profiling.followers;
 
 import org.greenblitz.debug.RemoteCSVTarget;
+import org.greenblitz.debug.RemoteCSVTargetBuffer;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.CollapsingPIDController;
 import org.greenblitz.motion.profiling.MotionProfile2D;
@@ -13,14 +14,15 @@ public abstract class AbstractFollower2D {
     protected double kVl, kAl;
     protected double kVr, kAr;
     protected MotionProfile2D profile;
+    protected boolean started;
 
 
-    protected RemoteCSVTarget wheelTarget;
-    protected RemoteCSVTarget errorTarget;
-    protected RemoteCSVTarget globalTarget;
-    protected RemoteCSVTarget leftOutputTarget;
-    protected RemoteCSVTarget rightOutputTarget;
-    protected boolean sendData = false;
+    protected RemoteCSVTargetBuffer wheelTarget;
+    protected RemoteCSVTargetBuffer errorTarget;
+    protected RemoteCSVTargetBuffer globalTarget;
+//    protected RemoteCSVTargetBuffer leftOutputTarget;
+//    protected RemoteCSVTargetBuffer rightOutputTarget;
+    protected int dataDelay = 0;
 
     /**
      * Use with EXTREME CAUTION. this is used for dynamic motion profiling and is
@@ -79,6 +81,10 @@ public abstract class AbstractFollower2D {
      * @return A vector of power to each motor in the format (left, right)
      */
     public Vector2D run(double leftCurr, double rightCurr, double angularVel, long curTime) {
+        if(!started){
+            startTime = curTime - 1;
+            started = true;
+        }
         return forceRun(leftCurr, rightCurr, angularVel, (curTime - startTime) / 1000.0);
     }
 
@@ -100,8 +106,19 @@ public abstract class AbstractFollower2D {
      * @param val whether to send data or not
      */
     public void setSendData(boolean val) {
-        sendData = val;
+        dataDelay = val ? 50 : 0;
     }
 
-    public void atEnd(){}
+    public void setDataDelay(int val){dataDelay = val;}
+
+
+    public void sendCSV(){
+        if(dataDelay != 0) {
+            globalTarget.passToCSV(true);
+            wheelTarget.passToCSV(true);
+//            errorTarget.passToCSV(true);
+//            leftOutputTarget.passToCSV(true);
+//            rightOutputTarget.passToCSV(true);
+        }
+    }
 }
