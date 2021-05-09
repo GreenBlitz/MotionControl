@@ -1,0 +1,272 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+THE HOLY MOTION UNIT STADARD
+\end_layout
+
+\begin_layout Section*
+Angle, Angular Velocity, Angular Acceleration
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Positive Direction: 
+\series default
+counter clockwise 
+\begin_inset Formula $\circlearrowleft$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Units: 
+\series default
+
+\begin_inset Formula $Rad$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{Rad}{Sec}$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{Rad}{Sec^{2}}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Zero angle direction in relation to the robot: 
+\series default
+Forward, 
+\begin_inset Formula $\uparrow$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Usage of Degrees
+\end_layout
+
+\begin_layout Standard
+The name of a function getting/returning an angle in degrees must end with
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Degrees
+\begin_inset Quotes erd
+\end_inset
+
+.
+ For example, getAngularVelocityDegrees()
+\begin_inset Newline newline
+\end_inset
+
+Degrees will be used 
+\series bold
+only
+\series default
+ for making data more intuitive for humans and 
+\series bold
+not for calculations!!
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+Therefore, non-local variable's unit must never
+\series bold
+ 
+\series default
+be degrees.
+ 
+\end_layout
+
+\begin_layout Section*
+Distance, Linear Velocity, Linear Acceleation
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Positive Direction: 
+\series default
+Robot's Forward, 
+\begin_inset Formula $\uparrow$
+\end_inset
+
+
+\series bold
+
+\begin_inset Newline newline
+\end_inset
+
+Units: 
+\begin_inset Formula $m$
+\end_inset
+
+
+\series default
+, 
+\begin_inset Formula $\frac{m}{Sec}$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{m}{Sec^{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Time
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Units: 
+\begin_inset Formula $Sec$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Type: 
+\series default
+double
+\end_layout
+
+\begin_layout Subsection*
+Usage of MilliSeconds
+\end_layout
+
+\begin_layout Standard
+There will be none.
+\begin_inset Newline newline
+\end_inset
+
+getTime() Function in Time class in GBLib will provide the time in seconds
+\end_layout
+
+\begin_layout Section*
+Coordinate system
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+X-axis: 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Y-axis: 
+\begin_inset Formula $\uparrow$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Direction of robot's forward when enabled: 
+\begin_inset Formula $\uparrow$
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
