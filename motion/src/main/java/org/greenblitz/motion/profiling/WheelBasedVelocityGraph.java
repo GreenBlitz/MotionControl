@@ -1,10 +1,12 @@
 package org.greenblitz.motion.profiling;
 
 import org.greenblitz.motion.base.TwoTuple;
+import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.curve.ICurve;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -67,19 +69,19 @@ class WheelBasedVelocityGraph {
 //            latestFilterIndex = i;
 //        }
 
-        segments.get(0).developForwards(vStart, maxVBar);
-        segments.get(segCount - 1).developBackwards(maxVBar, vEnd);
+        segments.get(0).developForwards(new Vector2D(vStart * segments.get(0).phi(segments.get(0).curvatureStartBar, true), vStart));
+        segments.get(segCount - 1).developBackwards(new Vector2D(vEnd * segments.get(segCount - 1).phi(segments.get(segCount - 1).curvatureStartBar, true), vEnd));
 
         for (int i = 1; i < segCount - 1; i++) {
             segments.get(i)
-                    .developForwards(segments.get(i - 1).velocityEndForwards, segments.get(i + 1).vMax);
+                    .developForwards(segments.get(i - 1).velocityEndForwards);
 
             segments.get(segCount - 1 - i)
-                    .developBackwards(segments.get(segCount - 2 - i).vMax, segments.get(segCount - i).velocityStartBackwards);
+                    .developBackwards(segments.get(segCount - i).velocityStartBackwards);
         }
 
-        segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards, vEnd);
-        segments.get(0).developBackwards(vStart, segments.get(1).velocityStartBackwards);
+        segments.get(segCount - 1).developForwards(segments.get(segCount - 2).velocityEndForwards);
+        segments.get(0).developBackwards(segments.get(1).velocityStartBackwards);
 
     }
 
@@ -111,10 +113,10 @@ class WheelBasedVelocityGraph {
                         -> -(maximumInitialAccel / maximumAsymptoticVelocity) * currentVelocity + maximumInitialAccel;
 
         // All velocities are of the right wheel
-        public double velocityStartForwards;
-        public double velocityEndForwards;
-        public double velocityStartBackwards;
-        public double velocityEndBackwards;
+        public Vector2D velocityStartForwards;
+        public Vector2D velocityEndForwards;
+        public Vector2D velocityStartBackwards;
+        public Vector2D velocityEndBackwards;
 
         public double vMax;
         public double vMaxRaw;
@@ -166,10 +168,13 @@ class WheelBasedVelocityGraph {
          *
          *
          * @param x some normalized curvature
+         * @param leftOverRight is left over right
          * @return The ration between the left and right wheel velocities (l / r)
          */
-        public double phi(double x) {
-            return (1 - x) / (1 + x);
+        public double phi(double x, boolean leftOverRight) {
+            if(leftOverRight)
+                return (1 - x) / (1 + x);
+            return (1 + x) / (1 - x);
         }
 
         /**
@@ -191,64 +196,120 @@ class WheelBasedVelocityGraph {
             distanceStart = start;
             distanceEnd = end;
             dx = distanceEnd - distanceStart;
-            vMax = Math.min(
-                    curvatureStart >= 0 ? maximumVel : maximumVel / phi(curvatureStartBar),
-                    curvatureEnd >= 0 ? maximumVel : maximumVel / phi(curvatureEndBar)
-            ); // Either the right wheel is faster (then vMax = maximumVel) or the left wheel is faster (then vMax = maximumVel / phi(curvatureEndBar))
+            vMax = maximumVel;
             vMaxRaw = vMax;
 
         }
 
-        public void developForwards(double velocityStart, double velocityEndMax) {
+        public void developForwards(Vector2D velocityStart) {
             velocityStartForwards = velocityStart;
 
-            // a_m = maximum acceleration
-            double a_m = psi.getRealMaxAccel(velocityStartForwards, maxVBar, maxABar);
-
-            // dx_r = distance passed by right wheel.
+            // dx_r = distance passed by right wheel, dx_l = distance passed by the left wheel
             // Calculated assuming path is arch. Just draw it and calculate with definitions it's simple
             double dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
+            double dx_l = dx * (1 - curvatureBar);
 
+            boolean isRightFaster = curvatureEnd > 0;
+
+            double fasterV, slowerV, dxFast, dxSlow;
+            if(isRightFaster){
+                fasterV = velocityStartForwards.getY();
+                slowerV = velocityStartForwards.getX();
+                dxFast = dx_r;
+                dxSlow = dx_l;
+            }else{
+                fasterV = velocityStartForwards.getX();
+                slowerV = velocityStartForwards.getY();
+                dxFast = dx_l;
+                dxSlow = dx_r;
+            }
+
+            // a_m = maximum acceleration
+            double a_m = psi.getRealMaxAccel(fasterV, maxVBar, maxABar);
             // Calculated end velocity by distance. just develop the kinematics it's pretty easy.
-            velocityEndForwards = Math.min(Math.min(vMax, velocityEndMax),
-                    Math.sqrt(velocityStartForwards*velocityStartForwards + 2 * a_m * dx_r));
+            double fasterEndForwards = Math.min(vMax, Math.sqrt(fasterV*fasterV + 2 * a_m * dxFast));
 
             // Calculate the same thing exactly from the perspective of the left wheel.
             // Needed to make a_m accurate for both wheels.
-            double u_s = velocityStartForwards * phi(curvatureStartBar);
-            double a_lm =
-                    psi.getRealMaxAccel(u_s, maxVBar, maxABar);
-            double dx_l = dx * (1 - curvatureBar);
+            double aSlower;
+            if(curvatureEndBar > 1 || curvatureEndBar < -1){
+                aSlower = -psi.getRealMaxAccel(-slowerV, maxVBar, maxABar);
+                fasterEndForwards = Math.min(fasterEndForwards,
+                        -Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureEndBar, isRightFaster));
+            }
+            else{
+                aSlower = psi.getRealMaxAccel(slowerV, maxVBar, maxABar);
+                fasterEndForwards = Math.min(fasterEndForwards,
+                        Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureEndBar, isRightFaster));
+            }
 
-            velocityEndForwards = Math.min(velocityEndForwards,
-                    Math.sqrt(u_s*u_s + 2 * a_lm * dx_l)/phi(curvatureEndBar));
 
+            if(isRightFaster){
+                //phi(kappaBar, true) = left / right => left = right * phi(kappaBar, true)
+                velocityEndForwards.setX(fasterEndForwards * phi(fasterEndForwards, true));
+                velocityEndForwards.setY(fasterEndForwards);
+            }else{
+                //phi(kappaBar, false) = right / left => right = left * phi(kappaBar, true)
+                velocityEndForwards.setX(fasterEndForwards);
+                velocityEndForwards.setY(fasterEndForwards * phi(fasterEndForwards, false));
+            }
         }
 
         // Note that start and end are by time.
-        public void developBackwards(double velocityStartMax, double velocityEnd) {
+        public void developBackwards(Vector2D velocityEnd){
             // See developForwards for detailed explanation
+            velocityEndBackwards = velocityEnd;
 
-            velocityEndBackwards = velocityEnd; // v_e is here
+            // dx_r = distance passed by right wheel, dx_l = distance passed by the left wheel
+            // Calculated assuming path is arch. Just draw it and calculate with definitions it's simple
+            double dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
+            double dx_l = dx * (1 - curvatureBar);
+
+            boolean isRightFaster = curvatureStart > 0;
+
+            double fasterV, slowerV, dxFast, dxSlow;
+            if(isRightFaster){
+                fasterV = velocityEndBackwards.getY();
+                slowerV = velocityEndBackwards.getX();
+                dxFast = dx_r;
+                dxSlow = dx_l;
+            }else{
+                fasterV = velocityEndBackwards.getX();
+                slowerV = velocityEndBackwards.getY();
+                dxFast = dx_l;
+                dxSlow = dx_r;
+            }
 
             // Step 1: find a_m
             // a_m is decided by an approximation (assumes curvature is constant)
-            double a_m = psi.getRealMaxAccel(-velocityEndBackwards, maxVBar, maxABar);
+            double a_m = psi.getRealMaxAccel(-fasterV, maxVBar, maxABar);
             // Step 2: v_e
-            double dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
-            velocityStartBackwards = Math.min(Math.min(vMax, velocityStartMax),
-                    Math.sqrt(velocityEndBackwards*velocityEndBackwards + 2 * a_m * dx_r));
+            double fasterStartBackwards = Math.min(vMax, Math.sqrt(fasterV*fasterV + 2 * a_m * dxFast));
 
-            // calc the same thing from left wheel prespective
-            double u_e = velocityEndBackwards * phi(curvatureEndBar);
-            double a_lm = psi.getRealMaxAccel(u_e, maxVBar, maxABar);
-            double dx_l = dx * (1 - curvatureBar);
+            // calc the same thing from slower wheel prespective
+            double aSlower;
+            if(curvatureStartBar > 1 || curvatureStartBar < -1){
+                aSlower = -psi.getRealMaxAccel(slowerV, maxVBar, maxABar);
+                fasterStartBackwards = Math.min(fasterStartBackwards,
+                        -Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureStartBar, isRightFaster));
+            }else{
+                aSlower = psi.getRealMaxAccel(-slowerV, maxVBar, maxABar);
+                fasterStartBackwards = Math.min(fasterStartBackwards,
+                        Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureStartBar, isRightFaster));
+            }
 
-            velocityStartBackwards = Math.min(velocityStartBackwards,
-                    Math.sqrt(u_e*u_e + 2 * a_lm * dx_l)/phi(curvatureStartBar));
-
+            if(isRightFaster){
+                //phi(kappaBar, true) = left / right => left = right * phi(kappaBar, true)
+                velocityStartBackwards.setX(fasterStartBackwards * phi(fasterStartBackwards, true));
+                velocityStartBackwards.setY(fasterStartBackwards);
+            }else{
+                //phi(kappaBar, false) = right / left => right = left * phi(kappaBar, true)
+                velocityStartBackwards.setX(fasterStartBackwards);
+                velocityStartBackwards.setY(fasterStartBackwards * phi(fasterStartBackwards, false));
+            }
         }
 
+        //TODO: check filter for wheel based
         public void filter(List<Segment> segs, int subject, int tailSize) {
             int start = Math.max(subject - tailSize, 0);
             int end = Math.min(subject + tailSize, segs.size() - 1);
@@ -279,10 +340,24 @@ class WheelBasedVelocityGraph {
          * @return the two profiles for each wheel for this segment (left is first, right is second)
          */
         public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart) {
-            double velStartR = Math.min(velocityStartForwards, velocityStartBackwards);
-            double velEndR = velocityStartForwards <= velocityStartBackwards ? velocityEndForwards : velocityEndBackwards;
-            double velStartL = velStartR * phi(curvatureStartBar);
-            double velEndL = velEndR * phi(curvatureEndBar);
+            double velStartR, velStartL;
+            if(Math.abs(velocityStartForwards.getY()) > Math.abs(velocityStartBackwards.getY())){
+                velStartR = velocityStartBackwards.getY();
+                velStartL = velocityStartBackwards.getX();
+            }else{
+                velStartR = velocityStartForwards.getY();
+                velStartL = velocityStartForwards.getX();
+            }
+
+            double velEndR, velEndL;
+            if(Math.abs(velocityEndForwards.getY()) > Math.abs(velocityEndBackwards.getY())){
+                velEndR = velocityEndBackwards.getY();
+                velEndL = velocityEndBackwards.getX();
+            }else{
+                velEndR = velocityEndForwards.getY();
+                velEndL = velocityEndForwards.getX();
+            }
+
             // For dt, '0.25 * (velStartR + velStartL + velEndR + velEndL)' is the linear velocity (check it).
             double dt = dx / (0.25 * (velStartR + velStartL + velEndR + velEndL));
 
