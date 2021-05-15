@@ -206,7 +206,7 @@ class WheelBasedVelocityGraph {
             curvatureStartBar = convertKappa(curvatureStart);
             curvatureEndBar = convertKappa(curvatureEnd);
             curvature = (curvatureStart + curvatureEnd) * 0.5; // Rough approximation of the curvature of the whole segment
-            curvatureBar = convertKappa(curvature);
+            curvatureBar = (curvatureStartBar + curvatureEndBar) * 0.5;
             distanceStart = start;
             distanceEnd = end;
             dx = distanceEnd - distanceStart;
