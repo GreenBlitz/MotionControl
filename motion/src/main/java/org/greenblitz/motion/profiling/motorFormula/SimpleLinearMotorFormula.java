@@ -1,6 +1,9 @@
-package org.greenblitz.motion.profiling;
+package org.greenblitz.motion.profiling.motorFormula;
 
-public class SimpleLinearMotorFormula implements IMotorFormula {
+import org.greenblitz.motion.base.Vector2D;
+import org.greenblitz.motion.profiling.motorFormula.AbstractMotorFormula;
+
+public class SimpleLinearMotorFormula extends AbstractMotorFormula {
 
     private double ka;
     private double kv;
@@ -20,9 +23,10 @@ public class SimpleLinearMotorFormula implements IMotorFormula {
      * Step 9 - Learn to count, start from 0 this time
      */
 
-    public SimpleLinearMotorFormula(double ka, double kv) {
-        this.ka = ka;
-        this.kv = kv;
+    public SimpleLinearMotorFormula(double maxVel, double maxAcc, double defaultPower) {
+        super(defaultPower, maxVel);
+        this.kv = 1.0 / maxVel;
+        this.ka = 1.0 / maxAcc;
     }
 
     @Override

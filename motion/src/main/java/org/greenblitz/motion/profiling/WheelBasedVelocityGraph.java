@@ -3,10 +3,10 @@ package org.greenblitz.motion.profiling;
 import org.greenblitz.motion.base.TwoTuple;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.profiling.curve.ICurve;
+import org.greenblitz.motion.profiling.motorFormula.AbstractMotorFormula;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  *
@@ -18,11 +18,12 @@ class WheelBasedVelocityGraph {
 
     protected double wheelBaseLength;
     protected double maxVBar;
-    protected double maxABar;
 
     private int latestFilterIndex = -1;
     private int latestFilterTail;
     private double latestFilterValue = 0;
+
+    private AbstractMotorFormula motorFormula;
 
     private static double EPSILON = 0.0000001;
 
@@ -33,17 +34,16 @@ class WheelBasedVelocityGraph {
      * @param track
      * @param vStart
      * @param vEnd
-     * @param maxVel
-     * @param maxAcc
      * @param wheelBaseL
      * @param tailSize
      */
-    public WheelBasedVelocityGraph(List<ICurve> track, double vStart, double vEnd, double maxVel,
-                                 double maxAcc, double wheelBaseL, int tailSize) {
+    public WheelBasedVelocityGraph(List<ICurve> track, double vStart, double vEnd, double wheelBaseL,
+                                   int tailSize, AbstractMotorFormula formula) {
 
-        maxVBar = maxVel;
-        maxABar = maxAcc;
+        maxVBar = motorFormula.getMaxVel();
         wheelBaseLength = wheelBaseL;
+
+        this.motorFormula = formula;
 
         double tmpLength = 0;
 
@@ -57,7 +57,7 @@ class WheelBasedVelocityGraph {
             curvatureStart = curve.getCurvature(0);
             curvatureEnd = curve.getCurvature(1);
             segments.add(new Segment(tmpLength, tmpLength + curveLen,
-                    curvatureStart, curvatureEnd, maxVel)
+                    curvatureStart, curvatureEnd, maxVBar)
             );
             tmpLength += curveLen;
         }
@@ -110,15 +110,6 @@ class WheelBasedVelocityGraph {
     }
 
     class Segment {
-
-        /**
-         * The interpolator converting current velocity to maximum acceleration.
-         * linear isn't the best possible conversion, but it's pretty good.
-         */
-        public final AccelerationInterpolator psi =
-                (currentVelocity, maximumAsymptoticVelocity, maximumInitialAccel)
-                        -> -(maximumInitialAccel / maximumAsymptoticVelocity) * currentVelocity + maximumInitialAccel;
-
         // All velocities are of the right wheel
         public Vector2D velocityStartForwards;
         public Vector2D velocityEndForwards;
@@ -238,7 +229,7 @@ class WheelBasedVelocityGraph {
             }
 
             // a_m = maximum acceleration
-            double a_m = psi.getRealMaxAccel(fasterV, maxVBar, maxABar);
+            double a_m = motorFormula.getAcc(fasterV);
             // Calculated end velocity by distance. just develop the kinematics it's pretty easy.
             double fasterEndForwards = Math.min(vMax, Math.sqrt(fasterV*fasterV + 2 * a_m * dxFast));
 
@@ -246,12 +237,12 @@ class WheelBasedVelocityGraph {
             // Needed to make a_m accurate for both wheels.
             double aSlower;
             if(curvatureEndBar > 1 || curvatureEndBar < -1){
-                aSlower = -psi.getRealMaxAccel(-slowerV, maxVBar, maxABar);
+                aSlower = motorFormula.getAcc(slowerV, -motorFormula.getDefaultPower());
                 fasterEndForwards = Math.min(fasterEndForwards,
                         -Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureEndBar, isRightFaster));
             }
             else{
-                aSlower = psi.getRealMaxAccel(slowerV, maxVBar, maxABar);
+                aSlower = motorFormula.getAcc(slowerV);
                 fasterEndForwards = Math.min(fasterEndForwards,
                         Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureEndBar, isRightFaster));
             }
@@ -290,18 +281,18 @@ class WheelBasedVelocityGraph {
 
             // Step 1: find a_m
             // a_m is decided by an approximation (assumes curvature is constant)
-            double a_m = psi.getRealMaxAccel(-fasterV, maxVBar, maxABar);
+            double a_m = -motorFormula.getAcc(fasterV, -motorFormula.getDefaultPower());
             // Step 2: v_e
             double fasterStartBackwards = Math.min(vMax, Math.sqrt(fasterV*fasterV + 2 * a_m * dxFast));
 
             // calc the same thing from slower wheel prespective
             double aSlower;
             if(curvatureStartBar > 1 || curvatureStartBar < -1){
-                aSlower = -psi.getRealMaxAccel(slowerV, maxVBar, maxABar);
+                aSlower = -motorFormula.getAcc(slowerV);
                 fasterStartBackwards = Math.min(fasterStartBackwards,
                         -Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureStartBar, isRightFaster));
             }else{
-                aSlower = psi.getRealMaxAccel(-slowerV, maxVBar, maxABar);
+                aSlower = -motorFormula.getAcc(slowerV, -motorFormula.getDefaultPower());
                 fasterStartBackwards = Math.min(fasterStartBackwards,
                         Math.sqrt(slowerV*slowerV + 2 * aSlower * dxSlow)/phi(curvatureStartBar, isRightFaster));
             }
