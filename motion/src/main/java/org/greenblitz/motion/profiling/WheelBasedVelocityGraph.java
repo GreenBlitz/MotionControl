@@ -24,6 +24,8 @@ class WheelBasedVelocityGraph {
     private int latestFilterTail;
     private double latestFilterValue = 0;
 
+    private static double EPSILON = 0.0000001;
+
     protected List<Segment> segments;
 
     /**
@@ -93,8 +95,13 @@ class WheelBasedVelocityGraph {
         MotionProfile1D right = new MotionProfile1D();
         TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> segs;
 
+        double sumOfDxL = 0;
+        double sumOfDxR = 0;
+
         for (Segment s : segments) {
-            segs = s.toSegment(t);
+            segs = s.toSegment(t,sumOfDxL,sumOfDxR);
+            sumOfDxL += s.dx_l;
+            sumOfDxR += s.dx_r;
             t = segs.getFirst().tEnd;
             left.unsafeAddSegment(segs.getFirst());
             right.unsafeAddSegment(segs.getSecond());
@@ -132,6 +139,9 @@ class WheelBasedVelocityGraph {
         public double distanceEnd;
         public double dx;
 
+        private double dx_r;
+        private double dx_l;
+
         /**
          *
          * We have: omega/Lv = kappa.
@@ -154,7 +164,11 @@ class WheelBasedVelocityGraph {
          * @return this curvature normalized for the robot
          */
         public double convertKappa(double kappa){
-            return kappa * wheelBaseLength * 0.5;
+            double curvatureBar = kappa * wheelBaseLength * 0.5;
+            if(Math.abs(curvatureBar) == 1){
+                return curvatureBar * (1 + EPSILON);
+            }
+            return curvatureBar;
         }
 
         /**
@@ -199,15 +213,14 @@ class WheelBasedVelocityGraph {
             vMax = maximumVel;
             vMaxRaw = vMax;
 
+            // dx_r = distance passed by right wheel, dx_l = distance passed by the left wheel
+            // Calculated assuming path is arch. Just draw it and calculate with definitions it's simple
+            dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
+            dx_l = dx * (1 - curvatureBar);
         }
 
         public void developForwards(Vector2D velocityStart) {
             velocityStartForwards = velocityStart;
-
-            // dx_r = distance passed by right wheel, dx_l = distance passed by the left wheel
-            // Calculated assuming path is arch. Just draw it and calculate with definitions it's simple
-            double dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
-            double dx_l = dx * (1 - curvatureBar);
 
             boolean isRightFaster = curvatureEnd > 0;
 
@@ -259,11 +272,6 @@ class WheelBasedVelocityGraph {
         public void developBackwards(Vector2D velocityEnd){
             // See developForwards for detailed explanation
             velocityEndBackwards = velocityEnd;
-
-            // dx_r = distance passed by right wheel, dx_l = distance passed by the left wheel
-            // Calculated assuming path is arch. Just draw it and calculate with definitions it's simple
-            double dx_r = dx * (1 + curvatureBar); //dx * (1 + 0.5 * curvature * wheelBaseLength);
-            double dx_l = dx * (1 - curvatureBar);
 
             boolean isRightFaster = curvatureStart > 0;
 
@@ -339,7 +347,7 @@ class WheelBasedVelocityGraph {
          * @param tStart The start time of this segment within the general path
          * @return the two profiles for each wheel for this segment (left is first, right is second)
          */
-        public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart) {
+        public TwoTuple<MotionProfile1D.Segment, MotionProfile1D.Segment> toSegment(double tStart, double sumOfDxL, double sumOfDxR) {
             double velStartR, velStartL;
             if(Math.abs(velocityStartForwards.getY()) > Math.abs(velocityStartBackwards.getY())){
                 velStartR = velocityStartBackwards.getY();
@@ -361,18 +369,18 @@ class WheelBasedVelocityGraph {
             // For dt, '0.25 * (velStartR + velStartL + velEndR + velEndL)' is the linear velocity (check it).
             double dt = dx / (0.25 * (velStartR + velStartL + velEndR + velEndL));
 
-            MotionProfile1D.Segment right = new MotionProfile1D.Segment(
-                    tStart,
-                    tStart + dt,
-                    (velEndR - velStartR) / dt,
-                    velStartR,
-                    velEndR);
             MotionProfile1D.Segment left = new MotionProfile1D.Segment(
                     tStart,
                     tStart + dt,
                     (velEndL - velStartL) / dt,
                     velStartL,
-                    velEndL);
+                    sumOfDxL);
+            MotionProfile1D.Segment right = new MotionProfile1D.Segment(
+                    tStart,
+                    tStart + dt,
+                    (velEndR - velStartR) / dt,
+                    velStartR,
+                    sumOfDxR);
             return new TwoTuple<>(left, right);
         }
 
