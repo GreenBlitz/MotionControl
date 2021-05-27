@@ -125,29 +125,26 @@ public class ChassisProfiler2D {
      * Generated a profile such that the X profile is the left wheel and the Y profile is the right wheel
      * @param locations
      * @param jump
-     * @param velocityStart
-     * @param velocityEnd
      * @param wheelBase
      * @param tForCurve
      * @param tailSize
      * @return A profile such that the X profile is the left wheel and the Y profile is the right wheel
      */
-    public static MotionProfile2D generateProfileByWheel(List<State> locations,
-                                                  double jump,
-                                                  double velocityStart, double velocityEnd,
-                                                  double wheelBase, double tForCurve, int tailSize, AbstractMotorFormula motorFormula) {
-
+    public static MotionProfile2D generateProfileByWheel(List<State> locations, double jump,
+                                                         double wheelBase, double tForCurve, int tailSize,
+                                                         AbstractMotorFormula motorFormula) {
         int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
 
         List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
 
-        WheelBasedVelocityGraph velByLoc = new WheelBasedVelocityGraph(subCurves, velocityStart, velocityEnd,
-                wheelBase, tailSize, motorFormula);
+        WheelBasedVelocityGraph velByLoc = new WheelBasedVelocityGraph(subCurves, locations.get(0).getLinearVelocity(),
+                locations.get(locations.size()-1).getLinearVelocity(), wheelBase, tailSize, motorFormula);
 
         return velByLoc.generateProfile();
     }
 
-    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve, int capacity) {
+    private static List<ICurve> dividePathToSubCurves(List<State> locations, double jump, double tForCurve,
+                                                      int capacity) {
         List<ICurve> subCurves = new ArrayList<>(capacity);
         State first, second;
         for (int i = 0; i < locations.size() - 1; i++) {

@@ -37,9 +37,7 @@ public class ChassisProfiler2DCSVGenerators {
         long time = System.currentTimeMillis();
 
         for (int i = 0; i < 1; i++) {
-            brofile = ChassisProfiler2D.generateProfileByWheel(
-                    states,
-                    .001, 0, 0, 0.55,
+            brofile = ChassisProfiler2D.generateProfileByWheel(states, .001, 0.55,
                     1.0, 400, new SimpleLinearMotorFormula(4,5.5,0.8));
         }
         System.out.println("Full Generation");
