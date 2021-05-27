@@ -48,10 +48,11 @@ public class QuinticSplineGenerator {
      * @param start The starting position of the quintic polynomial
      * @param end   The end position of the polynomial
      * @param t     The "time" of the polynomial. If the polynomial is
-     *              it is <math>\gamma : [0, t] \to \mathbb{R}^2</math> then this variable is t.
+     *              it is gamma : [0, t] -> R^2 then this variable is t.
      * @return An ICurve of the polynomial
      */
     public static PolynomialCurve generateSpline(State start, State end, double t) {
+        //gets and returns state by global standard but calculates with opposite angles //TODO: fix
         double angS = -start.getAngle(); //in order to keep with the global standard
         double angE = -end.getAngle();
 

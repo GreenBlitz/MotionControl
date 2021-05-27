@@ -21,12 +21,13 @@ public class CubicSplineGenerator {
      * @param start The starting position of the quintic polynomial
      * @param end   The end position of the polynomial
      * @param t     The "time" of the polynomial. If the polynomial is
-     *              it is <math>\gamma : [0, t] \to \mathbb{R}^2</math> then this variable is t.
+     *              it is gamma : [0, t] -> R^2 then this variable is t.
      * @return An ICurve of the polynomial
      */
     public static PolynomialCurve generateSpline(State start, State end, double t) {
-        double angS = start.getAngle();
-        double angE = end.getAngle();
+        //gets and returns state by global standard but calculates with opposite angles //TODO: fix
+        double angS = -start.getAngle();
+        double angE = -end.getAngle();
 
         return new PolynomialCurve(3,
                 getParams(start.getX(), end.getX(), Math.sin(angS), Math.sin(angE), t),
