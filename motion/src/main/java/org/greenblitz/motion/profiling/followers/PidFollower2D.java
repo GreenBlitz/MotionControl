@@ -9,6 +9,8 @@ import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
 import org.greenblitz.motion.profiling.kinematics.IConverter;
 import org.greenblitz.motion.profiling.kinematics.ReverseLocalizerConverter;
+import org.greenblitz.motion.profiling.motorFormula.SimpleLinearMotorFormula;
+import org.greenblitz.utils.Time;
 
 /**
  * To use this, call init before each run.
@@ -30,8 +32,6 @@ public class PidFollower2D extends AbstractFollower2D {
     private double angularPIDOut = 0, rightPID = 0, leftPID = 0;
 
 
-
-
     /**
      * coef  = coefficient
      * ff    = feed forward
@@ -39,10 +39,6 @@ public class PidFollower2D extends AbstractFollower2D {
      * acc   = acceleration
      * ang   = angle\angular
      *
-     * @param kVl          coef for linear vel ff
-     * @param kAl          coef for linear acc ff
-     * @param kVr          coef for angular vel ff
-     * @param kAr          coef for angular acc ff
      * @param vals         values for the PID controller on the wheel velocities
      * @param collapseVals The threshold of error at which the I value of the wheel vel PID resets
      * @param pidLimit     The maximum output of the PID controllers (for each one)
@@ -51,20 +47,17 @@ public class PidFollower2D extends AbstractFollower2D {
      * @param wheelDist    The distance between the right side of the chassis and the left (meters)
      * @param profile      The motion profile to follow
      */
-    public PidFollower2D(double kVl, double kAl, double kVr, double kAr,
+    public PidFollower2D(SimpleLinearMotorFormula formula,
                          PIDObject vals, double collapseVals, double pidLimit, PIDObject angVals, double angCollapse, double wheelDist,
                          MotionProfile2D profile) {
-        this.kVl = kVl;
-        this.kAl = kAl;
-        this.kVr = kVr;
-        this.kAr = kAr;
+        this.formula = formula;
         this.profile = profile;
         this.wheelDist = wheelDist;
         leftController = new CollapsingPIDController(vals, collapseVals);
         rightController = new CollapsingPIDController(vals, collapseVals);
         angularVelocityController = new CollapsingPIDController(angVals, angCollapse);
         PIDLimit = pidLimit;
-        if (Double.isNaN(kVl + kAl + kVr + kAr + wheelDist + collapseVals + angCollapse)) {
+        if (Double.isNaN(wheelDist + collapseVals + angCollapse)) {
             throw new RuntimeException("Something is NaN");
         }
     }
@@ -83,7 +76,7 @@ public class PidFollower2D extends AbstractFollower2D {
         }
 
         started = false;
-        startTime = System.currentTimeMillis();
+        startTime = Time.getTime();
         if(dataDelay != 0){
             leftController.setDataDelay(dataDelay, "leftPID");
             angularVelocityController.setDataDelay(dataDelay, "angularPID");
@@ -179,8 +172,8 @@ public class PidFollower2D extends AbstractFollower2D {
 //
 //        }
 
-        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID - angularPIDOut,
-                rightMotorV * kVr + rightMotorA * kAr + rightPID + angularPIDOut);
+        return new Vector2D(formula.getPower(leftMotorV,leftMotorA) + leftPID - angularPIDOut,
+                formula.getPower(rightMotorV,rightMotorA) + rightPID + angularPIDOut);
     }
 
     public PIDController getLeftPidController(){

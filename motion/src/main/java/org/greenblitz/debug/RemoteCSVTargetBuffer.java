@@ -5,13 +5,13 @@ import java.util.ArrayList;
 public class RemoteCSVTargetBuffer {
     RemoteCSVTarget target;
     ArrayList<double[]> buffer;
-    private long delay;
+    private double delay;
 
     public RemoteCSVTargetBuffer(String fileName, String... names){
-        this(fileName, 50, names);
+        this(fileName, 0.05, names);
     }
 
-    public RemoteCSVTargetBuffer(String fileName, long delay, String... names){
+    public RemoteCSVTargetBuffer(String fileName, double delay, String... names){
         target = RemoteCSVTarget.initTarget(fileName, names);
         buffer = new ArrayList<double[]>();
         this.delay = delay;
@@ -28,7 +28,7 @@ public class RemoteCSVTargetBuffer {
         for(int i=0; i<buffer.size(); i++){
             target.report(buffer.get(i));
             try {
-                Thread.sleep(delay);
+                Thread.sleep((long)(1000 * delay));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

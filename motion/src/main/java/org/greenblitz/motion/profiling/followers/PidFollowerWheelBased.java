@@ -4,6 +4,9 @@ import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pid.CollapsingPIDController;
 import org.greenblitz.motion.pid.PIDObject;
 import org.greenblitz.motion.profiling.MotionProfile2D;
+import org.greenblitz.motion.profiling.motorFormula.AbstractMotorFormula;
+import org.greenblitz.motion.profiling.motorFormula.SimpleLinearMotorFormula;
+import org.greenblitz.utils.Time;
 
 public class PidFollowerWheelBased extends AbstractFollower2D{
 
@@ -17,35 +20,28 @@ public class PidFollowerWheelBased extends AbstractFollower2D{
      * acc   = acceleration
      * ang   = angle\angular
      *
-     * @param kVl          coef for linear vel ff
-     * @param kAl          coef for linear acc ff
-     * @param kVr          coef for angular vel ff
-     * @param kAr          coef for angular acc ff
      * @param vals         values for the PID controller on the wheel velocities
      * @param collapseVals The threshold of error at which the I value of the wheel vel PID resets
      * @param pidLimit     The maximum output of the PID controllers (for each one)
      * @param profile      The motion profile to follow
      */
-    public PidFollowerWheelBased(double kVl, double kAl, double kVr, double kAr,
+    public PidFollowerWheelBased(AbstractMotorFormula formula,
                                  PIDObject vals, double collapseVals, double pidLimit,
                                  MotionProfile2D profile){
-        this.kVl = kVl;
-        this.kAl = kAl;
-        this.kVr = kVr;
-        this.kAr = kAr;
+        this.formula = formula;
         this.profile = profile;
         this.leftController = new CollapsingPIDController(vals, collapseVals);
         this.rightController = new CollapsingPIDController(vals, collapseVals);
         this.PIDLimit = pidLimit;
 
-        if(Double.isNaN(kVl + kAl + kVr + kAr + collapseVals)){
-            throw new RuntimeException("Something is NaN");
+        if(Double.isNaN(collapseVals)){
+            throw new RuntimeException("collapseVals is NaN");
         }
     }
 
     @Override
     public void init() {
-        startTime = System.currentTimeMillis(); //TODO: replace millis with sec
+        startTime = Time.getTime();
         leftController.configure(0, 0, -PIDLimit, PIDLimit, Double.NaN);
         rightController.configure(0, 0, -PIDLimit, PIDLimit, Double.NaN);
 
@@ -84,7 +80,7 @@ public class PidFollowerWheelBased extends AbstractFollower2D{
             throw new RuntimeException("LeftPID or RightPID are NaN");
         }
 
-        return new Vector2D(leftMotorV * kVl + leftMotorA * kAl + leftPID,
-                rightMotorV * kVr + rightMotorA * kAr + rightPID);
+        return new Vector2D(formula.getPower(leftMotorV,leftMotorA) + leftPID,
+                formula.getPower(rightMotorV,rightMotorA) + rightPID);
     }
 }

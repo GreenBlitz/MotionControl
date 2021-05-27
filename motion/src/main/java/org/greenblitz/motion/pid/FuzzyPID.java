@@ -253,17 +253,17 @@ public class FuzzyPID extends PIDController {
         if (isFinished(current))
             return 0;
 
-        var err = m_goal - current;
-        var dt = updateTime();
+        double err = m_goal - current;
+        double dt = updateTime();
 
         double dKp = m_obj.getKp() * dkp_range * ruleSet.calculate(new double[]{err / MaxError, (err - m_previousError) / dt / MaxErrorChange}, KpRules);
-        var p = (m_obj.getKp() + dKp) * err;
+        double p = (m_obj.getKp() + dKp) * err;
 
         m_integral += err * dt;
-        var i = m_obj.getKi() * m_integral;
+        double i = m_obj.getKi() * m_integral;
 
         double dKd = m_obj.getKd() * dkd_range * ruleSet.calculate(new double[]{err, (err - m_previousError) / dt}, KdRules);
-        var d = (m_obj.getKd() + dKd) * (err - m_previousError) / dt;
+        double d = (m_obj.getKd() + dKd) * (err - m_previousError) / dt;
 
         m_previousError = err;
         double calc = clamp(p + i + d + m_obj.getKf());

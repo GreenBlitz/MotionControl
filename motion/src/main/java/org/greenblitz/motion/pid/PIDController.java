@@ -3,15 +3,16 @@ package org.greenblitz.motion.pid;
 import org.greenblitz.debug.RemoteCSVTargetBuffer;
 import org.greenblitz.motion.exceptions.UninitializedPIDException;
 import org.greenblitz.motion.tolerance.ITolerance;
+import org.greenblitz.utils.Time;
 
 public class PIDController {
 
     protected PIDObject m_obj;
-    protected long m_previousTime;
+    protected double m_previousTime;
     protected double m_goal;
     protected double m_previousError;
     protected double m_integral;
-    protected long startTime;
+    protected double startTime;
 
     protected double m_minimumOutput;
     protected double m_maximumOutput;
@@ -22,7 +23,7 @@ public class PIDController {
     protected ITolerance m_tolerance;
 
     private RemoteCSVTargetBuffer PIDTarget;
-    private int dataDelay = 0;
+    private double dataDelay = 0;
     private String targetName = "PIDTarget";
 
     public PIDController(PIDObject obj, ITolerance tolerance) {
@@ -57,9 +58,9 @@ public class PIDController {
         m_previousError = goal - curr;
         resetIntegralZone(0);
         configureOutputLimits(limitLower, limitUpper);
-        m_previousTime = System.currentTimeMillis();
+        m_previousTime = Time.getTime();
         m_absoluteMinimumOut = absoluteMinimumOut;
-        startTime = System.currentTimeMillis();
+        startTime = Time.getTime();
         if(dataDelay != 0){
             PIDTarget = new RemoteCSVTargetBuffer(targetName, dataDelay, "time", "P", "I", "D", "kf", "PID");
         }
@@ -93,20 +94,20 @@ public class PIDController {
         if (isFinished(current))
             return 0;
 
-        var err = (m_goal - current) * m_obj.getInverted();
-        var dt = updateTime();
+        double err = (m_goal - current) * m_obj.getInverted();
+        double dt = updateTime();
 
-        var p = m_obj.getKp() * err;
+        double p = m_obj.getKp() * err;
 
         m_integral += err * dt;
-        var i = m_obj.getKi() * m_integral;
+        double i = m_obj.getKi() * m_integral;
 
-        var d = 0.0;
-        if (Math.abs(dt) >= 1)
+        double d = 0.0;
+        if (Math.abs(dt) >= 0.001)
             d = m_obj.getKd() * (err - m_previousError) / dt;
 
         m_previousError = err;
-        if(dataDelay != 0 ) PIDTarget.report((System.currentTimeMillis() - startTime)/1000.0, p, i, d, m_obj.getKf(), p + i + d + m_obj.getKf());
+        if(dataDelay != 0 ) PIDTarget.report(Time.getTime() - startTime, p, i, d, m_obj.getKf(), p + i + d + m_obj.getKf());
         return clampFully(p + i + d + m_obj.getKf());
     }
 
@@ -147,10 +148,10 @@ public class PIDController {
     }
 
     protected double updateTime() {
-        var current = System.currentTimeMillis();
-        double ms = current - m_previousTime;
+        double current = Time.getTime();
+        double sec = current - m_previousTime;
         m_previousTime = current;
-        return ms;
+        return sec;
     }
 
     protected double clamp(double value) {
@@ -170,8 +171,8 @@ public class PIDController {
         }
     }
 
-    public void setSendData(boolean sendData){dataDelay = sendData? 50:0;}
-    public void setDataDelay(int dataDelay, String name){
+    public void setSendData(boolean sendData){dataDelay = sendData? 0.05:0;}
+    public void setDataDelay(double dataDelay, String name){
         this.dataDelay = dataDelay;
         targetName = name;
     }
