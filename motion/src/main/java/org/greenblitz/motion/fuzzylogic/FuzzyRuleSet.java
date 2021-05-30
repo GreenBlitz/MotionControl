@@ -30,16 +30,19 @@ public class FuzzyRuleSet {
     }
 
     public double calculate(double[] normalizedValues, List<Rule> rules) {
+        if(true) {
+            throw new RuntimeException("method gave compilation error");
+        }
         if (normalizedValues.length != inputNum)
             throw new RuntimeException("you are dumb as hell, you inserted the wrong amount of values to the function") {
             };
-        List<Double>[] allMemFuncOut = new ArrayList[inputNum];
+        //List<Double>[] allMemFuncOut = new ArrayList[inputNum];
         for (int i = 0; i < normalizedValues.length; i++) {
             List<Double> memFuncOut = new ArrayList<>();
             for (FuzzyValue fuzzyValue : input[i]) {
                 memFuncOut.add(fuzzyValue.getInMemFunc().membershipFunction(normalizedValues[i]));
             }
-            allMemFuncOut[i] = memFuncOut;
+          //  allMemFuncOut[i] = memFuncOut;
         }
 
         double[] outVals = new double[output.size()];
@@ -47,7 +50,7 @@ public class FuzzyRuleSet {
             double value = 1;
             FuzzyValue[] fVals = rule.getConditions();
             for (int i = 0; i < inputNum; i++) {
-                value = AND(value, allMemFuncOut[i].get(input[i].lastIndexOf(fVals[i])));
+         //       value = AND(value, allMemFuncOut[i].get(input[i].lastIndexOf(fVals[i])));
             }
             outVals[output.lastIndexOf(rule.getResult())] = value;
         }
