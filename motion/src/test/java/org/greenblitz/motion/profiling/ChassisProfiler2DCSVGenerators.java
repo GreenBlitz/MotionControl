@@ -4,6 +4,7 @@ import org.greenblitz.motion.base.Position;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.base.Vector2D;
 import org.greenblitz.motion.pathing.Path;
+import org.greenblitz.motion.profiling.motorFormula.SimpleLinearMotorFormula;
 import org.greenblitz.utils.CSVWrapper;
 import org.junit.jupiter.api.Test;
 
@@ -38,10 +39,9 @@ public class ChassisProfiler2DCSVGenerators {
         for (int i = 0; i < 1; i++) {
             brofile = ChassisProfiler2D.generateProfileByWheel(
                     states,
-                    .001, 0, 0,
-                    4, 5.5, 0.55, 1.0, 400);
+                    .001, 0, 0, 0.55,
+                    1.0, 400, new SimpleLinearMotorFormula(4,5.5,0.8));
         }
-
         System.out.println("Full Generation");
         System.out.println(System.currentTimeMillis() - time);
 
