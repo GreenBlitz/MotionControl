@@ -4,6 +4,7 @@ import org.greenblitz.motion.base.Point;
 import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.ICurve;
 import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
+import org.greenblitz.motion.profiling.motorFormula.AbstractMotorFormula;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,8 +127,6 @@ public class ChassisProfiler2D {
      * @param jump
      * @param velocityStart
      * @param velocityEnd
-     * @param maxVel
-     * @param maxAcc
      * @param wheelBase
      * @param tForCurve
      * @param tailSize
@@ -136,14 +135,14 @@ public class ChassisProfiler2D {
     public static MotionProfile2D generateProfileByWheel(List<State> locations,
                                                   double jump,
                                                   double velocityStart, double velocityEnd,
-                                                  double maxVel, double maxAcc, double wheelBase,
-                                                  double tForCurve, int tailSize) {
+                                                  double wheelBase, double tForCurve, int tailSize, AbstractMotorFormula motorFormula) {
 
         int capacity = ((int) ((locations.size() - 1) / jump)) + locations.size() + 1;
 
         List<ICurve> subCurves = dividePathToSubCurves(locations, jump, tForCurve, capacity);
 
-        WheelBasedVelocityGraph velByLoc = new WheelBasedVelocityGraph(subCurves, velocityStart, velocityEnd, maxVel, maxAcc, wheelBase, tailSize);
+        WheelBasedVelocityGraph velByLoc = new WheelBasedVelocityGraph(subCurves, velocityStart, velocityEnd,
+                wheelBase, tailSize, motorFormula);
 
         return velByLoc.generateProfile();
     }
