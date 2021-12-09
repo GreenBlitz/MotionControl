@@ -4,11 +4,14 @@ import org.greenblitz.motion.base.State;
 import org.greenblitz.motion.profiling.curve.spline.PolynomialCurve;
 import org.greenblitz.motion.profiling.curve.spline.QuinticSplineGenerator;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 
-public class CurveTesting{
-    private static final String ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+import java.util.Scanner;
 
+public class CurveTesting{
     public static void main(String[] args) {
         //Galactic Search Challenge
         //RED Path A
@@ -18,7 +21,6 @@ public class CurveTesting{
         redPathA.add(new State(inchToMeter(5), inchToMeter(2), -1.975, 3, 8));
         redPathA.add(new State(inchToMeter(6), inchToMeter(5), -1.77, 3.6, 9.5));
         redPathA.add(new State(inchToMeter(11), inchToMeter(4), -0.5*Math.PI, 0, 0));
-        //printPath(redPathA);
 
         //BLUE Path A
         ArrayList<State> bluePathA = new ArrayList<>();
@@ -27,7 +29,6 @@ public class CurveTesting{
         bluePathA.add(new State(inchToMeter(7),inchToMeter(4),-1.9,3.6,2));
         bluePathA.add(new State(inchToMeter(9),inchToMeter(3),-1.9,3.6,2));
         bluePathA.add(new State(inchToMeter(11),inchToMeter(2),-1.9,0,0));
-        //printPath(bluePathA);
 
         //RED Path B
         ArrayList<State> redPathB = new ArrayList<>();
@@ -36,7 +37,6 @@ public class CurveTesting{
         redPathB.add(new State(inchToMeter(5),inchToMeter(2),-1.55,3.6,9.5));
         redPathB.add(new State(inchToMeter(7),inchToMeter(4),-1.15,3.6,9.5));
         redPathB.add(new State(inchToMeter(11),inchToMeter(5),-1.15,0,0));
-        //printPath(redPathB);
 
         //BLUE Path B
         ArrayList<State> bluePathB = new ArrayList<>();
@@ -45,25 +45,39 @@ public class CurveTesting{
         bluePathB.add(new State(inchToMeter(8),inchToMeter(4),-1.75,3.6,9.5));
         bluePathB.add(new State(inchToMeter(10),inchToMeter(2),-1.85,3.6,6.5));
         bluePathB.add(new State(inchToMeter(11),inchToMeter(2),-0.5*Math.PI,0,0));
-        //printPath(bluePathB);
+
+        new Thread(() -> {plotPath(redPathA, "Red Path A");}).start();
+        new Thread(() -> {plotPath(bluePathA, "Blue Path A");}).start();
+        new Thread(() -> {plotPath(redPathB,  "Red Path B");}).start();
+        new Thread(() -> {plotPath(bluePathB,  "Blue Path B");}).start();
     }
 
-    public static void printPath(ArrayList<State> path){
-        int k = 0;
+    public static void plotPath(ArrayList<State> path, String pathName){
+        // arguments for new process
+        String[] args = new String[path.size() + 2];
+        args[0] = "python";
+        args[1] = System.getProperty("user.dir") + "/motion/src/test/java/org/greenblitz/motion/Plotter.py";
+        args[2] = pathName;
+
+        // creating the polynomial strings for the x and y
         for(int i = 0; i < path.size() - 1; i++){
             PolynomialCurve currCurve = QuinticSplineGenerator.generateSpline(path.get(i), path.get(i+1));
-            char currLetterA = ABC.charAt(k);
-            char currLetterB = ABC.charAt(k+1);
-            k += 2;
-            String strX = currLetterA + "(t) = ";
-            String strY = currLetterB + "(t) = ";
-            for(int j = currCurve.getRank(); j > 0; j--){
-                if(Math.abs(currCurve.getX()[j]) >= 0.0001)
-                    strX += currCurve.getX()[j] + "t^" + j + " + ";
-                if(Math.abs(currCurve.getY()[j]) >= 0.0001)
-                    strY += currCurve.getY()[j] + "t^" + j + " + ";
+            String strX = "";
+            String strY = "";
+            for(int j = 0; j < currCurve.getRank(); j++){
+                strX += currCurve.getX()[j] + ",";
+                strY += currCurve.getY()[j] + ",";
             }
-            System.out.println("("+currLetterA+"(0),"+currLetterB+"(0))\n("+currLetterA+"(1),"+currLetterB+"(1))\n("+currLetterA+"(t),"+currLetterB+"(t))\n" + strX + currCurve.getX()[0] + "\n" + strY + currCurve.getY()[0]);
+            strX += currCurve.getX()[currCurve.getRank()];
+            strY += currCurve.getY()[currCurve.getRank()];
+            args[i+3] = strX + "|" + strY;
+        }
+
+        // calling the python plotter
+        try {
+            Process process = Runtime.getRuntime().exec(args);
+        } catch (Exception e) {
+            System.out.println("Exception Raised " + e.toString());
         }
     }
 
