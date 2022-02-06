@@ -56,7 +56,7 @@ public class CurveTesting{
         // arguments for new process
         String[] args = new String[path.size() + 2];
         args[0] = "python";
-        args[1] = System.getProperty("user.dir") + "/motion/src/test/java/org/greenblitz/motion/Plotter.py";
+        args[1] = System.getProperty("user.dir") + "\\motion\\src\\test\\java\\org\\greenblitz\\motion\\Plotter.py";
         args[2] = pathName;
 
         // creating the polynomial strings for the x and y
