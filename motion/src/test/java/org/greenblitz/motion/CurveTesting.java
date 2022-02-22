@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class CurveTesting{
@@ -56,25 +57,26 @@ public class CurveTesting{
         // arguments for new process
         String[] args = new String[path.size() + 2];
         args[0] = "python";
-        args[1] = System.getProperty("user.dir") + "\\motion\\src\\test\\java\\org\\greenblitz\\motion\\Plotter.py";
+        args[1] = "\"" + System.getProperty("user.dir") + "\\motion\\src\\test\\java\\org\\greenblitz\\motion\\Plotter.py\"";
         args[2] = pathName;
 
         // creating the polynomial strings for the x and y
         for(int i = 0; i < path.size() - 1; i++){
             PolynomialCurve currCurve = QuinticSplineGenerator.generateSpline(path.get(i), path.get(i+1));
-            String strX = "";
-            String strY = "";
+            StringBuilder strX = new StringBuilder();
+            StringBuilder strY = new StringBuilder();
             for(int j = 0; j < currCurve.getRank(); j++){
-                strX += currCurve.getX()[j] + ",";
-                strY += currCurve.getY()[j] + ",";
+                strX.append(currCurve.getX()[j]).append(",");
+                strY.append(currCurve.getY()[j]).append(",");
             }
-            strX += currCurve.getX()[currCurve.getRank()];
-            strY += currCurve.getY()[currCurve.getRank()];
+            strX.append(currCurve.getX()[currCurve.getRank()]);
+            strY.append(currCurve.getY()[currCurve.getRank()]);
             args[i+3] = strX + "|" + strY;
         }
 
         // calling the python plotter
         try {
+            System.out.println("ran process: " + Arrays.toString(args));
             Process process = Runtime.getRuntime().exec(args);
         } catch (Exception e) {
             System.out.println("Exception Raised " + e.toString());
