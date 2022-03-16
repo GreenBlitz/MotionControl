@@ -97,8 +97,9 @@ public class PIDController {
         var dt = updateTime();
 
         var p = m_obj.getKp() * err;
-
-        m_integral += err * dt;
+        if (m_obj.getIZone() == 0 || err <= m_obj.getIZone()) {
+            m_integral += err * dt;
+        }
         var i = m_obj.getKi() * m_integral;
 
         var d = 0.0;

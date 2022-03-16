@@ -3,6 +3,7 @@ package org.greenblitz.motion.pid;
 public class PIDObject {
 
     private double m_kp, m_kd, m_ki, m_kf;
+    private double iZone;
     private int inverted = 1;
 
     @Override
@@ -12,14 +13,20 @@ public class PIDObject {
                 ", kd=" + m_kd +
                 ", ki=" + m_ki +
                 ", kf=" + m_kf +
-                ", inv=" + inverted + "}";
+                ", inv=" + inverted +
+                ", iZone="+ iZone+ "}";
     }
 
     public PIDObject(double kp, double ki, double kd, double kf, int inv) {
+        this(kp, ki, kd, kf, inv, 0);
+    }
+    
+    public PIDObject(double kp, double ki, double kd, double kf, int inv, double iZone) {
         this.m_kp = kp;
         this.m_kd = kd;
         this.m_ki = ki;
         this.m_kf = kf;
+        this.iZone = iZone;
         setInverted(inv);
     }
 
@@ -93,7 +100,15 @@ public class PIDObject {
     public double getKf() {
         return m_kf;
     }
-
+    
+    public double getIZone() {
+        return iZone;
+    }
+    
+    public void setIZone(double iZone) {
+        this.iZone = iZone;
+    }
+    
     public void setKf(double m_kf) {
         this.m_kf = m_kf;
     }
